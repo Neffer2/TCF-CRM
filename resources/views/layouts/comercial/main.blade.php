@@ -911,7 +911,41 @@
         </div>
       </nav>
       <!-- End Navbar -->
-      @yield('profile-card')
+      <div class="card shadow-lg mx-4 card-profile-bottom">
+        <div class="card-body p-3">
+            <div class="row gx-4">
+                <div class="col-auto">
+                    <div class="avatar avatar-xl position-relative">
+                        <img src="../../../assets/img/team-1.jpg" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+                    </div>
+                </div>
+            <div class="col-auto my-auto">
+              <div class="h-100">
+                <h5 class="mb-1">
+                  Sayo Kravits
+                </h5>
+                <p class="mb-0 font-weight-bold text-sm">
+                  Public Relations
+                </p>
+              </div>
+            </div> 
+            <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+              <a href="{{ route('dashboard') }}" type="button" class="btn btn-default btn-icon">
+                <span class="btn-inner--icon"><i class="ni ni-bullet-list-67"></i></span>
+                <span class="btn-inner--text">Base</span>
+              </a>
+              <a href="{{ route('base-upload') }}" type="button" class="btn btn-default btn-icon">
+                <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
+                <span class="btn-inner--text">Subir</span>
+              </a>
+              <a type="button" class="btn btn-default btn-icon">
+                <span class="btn-inner--icon"><i class="ni ni-settings-gear-65"></i></span>
+                <span class="btn-inner--text">Ajustes</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="container-fluid py-4"> 
         @yield('content')
         
@@ -946,7 +980,7 @@
               </div>
             </div>
           </div>
-        </footer> 
+        </footer>  
       </div>
     </div>
     <div class="fixed-plugin">
@@ -1037,6 +1071,10 @@
     <!-- Kanban scripts -->
     <script src="{{ asset('assets/js/plugins/dragula/dragula.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/jkanban/jkanban.js') }}"></script>
+    <!-- Sweet Alerts -->
+    <script src="{{ asset('assets/js/plugins/sweetalert.min.js') }}"></script>
+    @yield('scripts-imports')
+    @yield('scripts')
     <script>
       var win = navigator.platform.indexOf('Win') > -1;
       if (win && document.querySelector('#sidenav-scrollbar')) {
