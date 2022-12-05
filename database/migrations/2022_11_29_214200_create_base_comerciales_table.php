@@ -19,14 +19,14 @@ class CreateBaseComercialesTable extends Migration
             $table->string('nom_cliente');
             $table->string('nom_proyecto');
             $table->string('cod_cc');
-            $table->decimal('valor_proyecto');
+            $table->decimal('valor_proyecto', 10, 2);
             $table->string('com_1')->nullable();
             $table->string('com_2')->nullable();
             $table->string('com_3')->nullable();
             $table->foreignId('id_estado');
             $table->foreign('id_estado')->references('id')->on('estados_cuenta');
             $table->date('fecha_inicio')->nullable();
-            $table->date('fecha_fin')->nullable();
+            $table->date('dura_mes')->nullable();
             $table->foreignId('id_user');
             $table->foreign('id_user')->references('id')->on('users');
             $table->timestamps(); 

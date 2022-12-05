@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\BaseComercialImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class ComercialController extends Controller
@@ -15,9 +17,12 @@ class ComercialController extends Controller
     }
 
     public function upload_base (Request $request){
+         
         $request->validate([
-            'base_xls' => ['required','mimetypes:xlsx, csv, xls', 'max:10000']
+            'base_xls' => 'required|mimes:xlsx, csv, xls'
         ]);
-        dd($request->file);
+
+        Excel::import(new BaseComercialImport, $request->base_xls);
+        return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
     }
 }

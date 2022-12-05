@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
   <meta charset="utf-8" /> 
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   @livewireStyles
@@ -814,10 +814,21 @@
             </div>
             <ul class="navbar-nav justify-content-end">
               <li class="nav-item d-flex align-items-center">
-                <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
-                  <i class="fa fa-user me-sm-1"></i>
-                  <span class="d-sm-inline d-none">Sign In</span>
-                </a>
+                @auth
+                  <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
+                      <i class="ni ni-button-power"></i>
+                      <span class="d-sm-inline d-none">Salir</span>
+                    </a>  
+                  </form>    
+                @endauth
+                @guest
+                  <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
+                    <i class="fa fa-user me-sm-1"></i>
+                    <span class="d-sm-inline d-none">Sign In</span>
+                  </a>
+                @endguest
               </li>
               <li class="nav-item d-xl-none ps-3 pe-0 d-flex align-items-center">
                 <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
@@ -922,26 +933,36 @@
             <div class="col-auto my-auto">
               <div class="h-100">
                 <h5 class="mb-1">
-                  Sayo Kravits
+                  {{ Auth::user()->name }}
                 </h5>
                 <p class="mb-0 font-weight-bold text-sm">
-                  Public Relations
+                  {{ Auth::user()->email }}
                 </p>
               </div>
-            </div> 
+            </div>
             <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-              <a href="{{ route('dashboard') }}" type="button" class="btn btn-default btn-icon">
-                <span class="btn-inner--icon"><i class="ni ni-bullet-list-67"></i></span>
-                <span class="btn-inner--text">Base</span>
-              </a>
-              <a href="{{ route('base-upload') }}" type="button" class="btn btn-default btn-icon">
-                <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
-                <span class="btn-inner--text">Subir</span>
-              </a>
-              <a type="button" class="btn btn-default btn-icon">
-                <span class="btn-inner--icon"><i class="ni ni-settings-gear-65"></i></span>
-                <span class="btn-inner--text">Ajustes</span>
-              </a>
+              <div class="nav-wrapper position-relative end-0">
+                <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
+                      <i class="ni ni-app"></i>
+                      <span class="ms-2">Base</span>
+                    </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a href="{{ route('base-upload') }}" class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
+                      <i class="ni ni-cloud-upload-96"></i>
+                      <span class="ms-2">Subir</span>
+                    </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
+                      <i class="ni ni-settings-gear-65"></i>
+                      <span class="ms-2">Settings</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -957,12 +978,12 @@
                   © <script>
                     document.write(new Date().getFullYear())
                   </script>,
-                  made with <i class="fa fa-heart"></i> by
-                  <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                  for a better web.
+                  Hecho con <i class="fa fa-heart"></i> por
+                  <a href="https://iglumarketingdigital.com/" class="font-weight-bold" target="_blank">Igl&uacute; Marketing Digital</a>
+                  digitalizamos tus sueños.
                 </div>
               </div>
-              <div class="col-lg-6">
+              {{-- <div class="col-lg-6">
                 <ul class="nav nav-footer justify-content-center justify-content-lg-end">
                   <li class="nav-item">
                     <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
@@ -977,7 +998,7 @@
                     <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
                   </li>
                 </ul>
-              </div>
+              </div> --}}
             </div>
           </div>
         </footer>  
@@ -1083,7 +1104,23 @@
         }
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
-      </script>
+      @if($errors->any())
+        Swal.fire(
+        '!Oppss tenemos un problema',
+        `@foreach($errors->all() as $error)
+            {{ $error }}
+        @endforeach`,
+        'error'
+        );
+      @endif 
+      @if (session('success'))
+      Swal.fire(
+        'Hecho',
+        `{{ session('success') }}`,
+        'success'
+        );
+      @endif 
+    </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
