@@ -5,10 +5,10 @@
           <div class="card">
           <!-- Card header -->
           <div class="card-header">
-              <h5 class="mb-0">Datatable Search</h5>
-              <p class="text-sm mb-0">
-              A lightweight, extendable, dependency-free javascript HTML table plugin.
-              </p>
+              <h5 class="mb-0">Base comercial</h5>
+              {{-- <p class="text-sm mb-0">
+                A lightweight, extendable, dependency-free javascript HTML table plugin.
+              </p> --}}
           </div>
           <div class="table-responsive">
               <table class="table table-flush" id="datatable-search">

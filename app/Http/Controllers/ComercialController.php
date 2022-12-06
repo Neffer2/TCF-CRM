@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\BaseComercialImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use App\Models\Base_comercial;
 
 class ComercialController extends Controller
 {
@@ -22,7 +23,8 @@ class ComercialController extends Controller
             'base_xls' => 'required|mimes:xlsx, csv, xls'
         ]);
 
-        Excel::import(new BaseComercialImport, $request->base_xls);
+        Base_comercial::truncate();
+        Excel::import(new BaseComercialImport, $request->base_xls);  
         return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
     }
 }

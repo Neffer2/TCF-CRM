@@ -15,7 +15,7 @@ class BaseComercialImport implements ToModel, WithHeadingRow
     * 
     * @return \Illuminate\Database\Eloquent\Model|null
     */
-    public function model(array $row)
+    public function model(array $row) 
     {
         /* id estado converter */
         $estado = $this->estado_validate($row['estado']);

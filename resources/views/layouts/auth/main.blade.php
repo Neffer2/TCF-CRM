@@ -19,6 +19,7 @@
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  @livewireStyles
 </head>
 
 <body class="">
@@ -803,7 +804,7 @@
     </div>
   </div>
   <main class="main-content main-content-bg mt-0">
-    <div class="page-header min-vh-100" style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-basic.jpg');">
+    <div class="page-header min-vh-100" style="background-image: url('{{ asset('assets/img/hero-1.jpg') }}');">
       <span class="mask bg-gradient-dark opacity-6"></span>
       <div class="container">
         <div class="row justify-content-center">
@@ -873,7 +874,7 @@
           </a>
           <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
             <span class="text-lg fab fa-github"></span>
-          </a>
+          </a> 
         </div>
       </div>
       <div class="row">
@@ -932,6 +933,7 @@
       );
     @endif 
   </script>
+  @livewireScripts
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

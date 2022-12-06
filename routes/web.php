@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController; 
+use App\Http\Controllers\AdminController; 
+use App\Http\Controllers\HomeController; 
  
 /*
 |--------------------------------------------------------------------------
@@ -15,26 +17,26 @@ use App\Http\Controllers\ComercialController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
-Route::get('/admin', function () {
-    return view('admin.index');
-});
+/* Home */
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');    
+/* --- */
 
+
+/* Admin */  
+    Route::get('/dashboard-admin', [AdminController::class, 'index'])->middleware(['auth'])->middleware(['admin'])->name('dashboard-admin');     
+/* --- */ 
 
 /* commercial */ 
     /* base - functions */ 
-        Route::get('/dashboard', [ComercialController::class, 'index'])->middleware(['auth'])->name('dashboard');  
+        Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');  
         Route::get('/base-upload', [ComercialController::class, 'show_upload'])->middleware(['auth'])->name('base-upload');  
 
         Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload');  
     /* --- */
 /* --- */ 
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth'])->name('dashboard');
-
-require __DIR__.'/auth.php';
+require __DIR__.'/auth.php'; 
  
