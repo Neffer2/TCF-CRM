@@ -26,7 +26,8 @@ Route::get('/', function () {
 
 
 /* Admin */  
-    Route::get('/dashboard-admin', [AdminController::class, 'index'])->middleware(['auth'])->middleware(['admin'])->name('dashboard-admin');     
+    Route::get('/dashboard-admin', [AdminController::class, 'index'])->middleware(['auth'])->middleware(['admin'])->name('dashboard-admin'); 
+    Route::get('/mi-equpo', [AdminController::class, 'show_team'])->middleware(['auth'])->middleware(['admin'])->name('mi-equpo');     
 /* --- */ 
 
 /* commercial */ 
@@ -38,5 +39,5 @@ Route::get('/', function () {
     /* --- */
 /* --- */ 
 
-require __DIR__.'/auth.php'; 
+require __DIR__.'/auth.php';  
  

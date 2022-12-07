@@ -1107,7 +1107,7 @@
       @if($errors->any())
         Swal.fire(
         '!Oppss tenemos un problema',
-        `@foreach($errors->all() as $error)
+        `@foreach($errors->all() as $error) 
             {{ $error }}
         @endforeach`,
         'error'

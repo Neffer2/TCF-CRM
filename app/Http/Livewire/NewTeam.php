@@ -3,10 +3,12 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+use App\Models\User;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Hash;
 
-class RegisterLive extends Component
-{ 
+class NewTeam extends Component 
+{
     public $name = '';
     public $email = '';
     public $telefono = '';
@@ -15,11 +17,11 @@ class RegisterLive extends Component
 
     public function render()
     {
-        return view('livewire.register-live');
+        return view('livewire.new-team');
     }
  
     public function updatedName (){
-        $this->validate(['name' => ['required', 'string', 'max:255']]);
+        $data = $this->validate(['name' => ['required', 'string', 'max:255']]);
     }
 
     public function updatedEmail (){ 
@@ -37,4 +39,21 @@ class RegisterLive extends Component
     public function updatedPasswordConfirmation (){
         $this->validate(['password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]]);
     }
+
+    public function store (){
+        $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'telefono' => ['required', 'unique:users', 'numeric'],
+            'password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]
+        ]);
+
+        User::create([
+            'name' => $name,
+            'email' => $email,
+            'telefono' => $telefono,
+            'password' => Hash::make($password)
+        ]);
+    }
 }
+ 

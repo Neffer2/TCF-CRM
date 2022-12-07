@@ -2,7 +2,7 @@
     <div class="mb-3">
         <input id="name"
                 wire:model="name" 
-                class="form-control"
+                class="form-control @error('name') is-invalid @enderror"
                 type="text"
                 name="name"
                 placeholder="Nombre"
@@ -15,7 +15,7 @@
     <div class="mb-3"> 
         <input id="email"
                 wire:model="email" 
-                class="form-control"
+                class="form-control @error('email') is-invalid @enderror"
                 type="email"
                 name="email" 
                 placeholder="Correo"
@@ -24,33 +24,43 @@
         @error('email') 
             <div class="text-danger font-weight-bold" style="font-size: 12px;">{{ $message }}</div>
         @enderror
-    </div> 
+    </div>
+    <div class="mb-3">
+        <input id="telefono"
+                wire:model="telefono"  
+                class="form-control @error('telefono') is-invalid @enderror"
+                type="number"
+                name="telefono"
+                placeholder="Celular"
+                value="{{ old('telefono') }}"
+                required autofocus>
+        @error('telefono') 
+            <div class="text-danger font-weight-bold" style="font-size: 12px;">{{ $message }}</div>
+        @enderror
+    </div>
     <div class="mb-3">
         <input id="password"
-                wire:model.lazy="password" 
-                class="form-control"
+                wire:model.lazy="password"  
+                class="form-control @error('password') is-invalid @enderror"
                 type="password"
                 name="password"
                 placeholder="Tu contraseña"
                 required autocomplete="new-password">
-            @error('password') 
-                <div class="text-danger font-weight-bold" style="font-size: 12px;">
-                    @foreach ($errors->all() as $error)
-                        {{ $error }} <br>
-                    @endforeach
-                </div>
-            @enderror                
+        @error('password') 
+            <div class="text-danger font-weight-bold" style="font-size: 12px;">
+                @foreach ($errors->all() as $error)
+                    {{ $error }} <br>
+                @endforeach
+            </div>
+        @enderror                
     </div>
     <div class="mb-3">
         <input id="password_confirmation"
-                wire:model.lazy="passwordConfirmation" 
+                wire:model="passwordConfirmation" 
                 class="form-control"
                 type="password"
                 placeholder="Confirma tu contraseña"
                 name="password_confirmation" required>
-        @error('password') 
-            
-        @enderror 
     </div>
     <div class="form-check form-check-info text-start">
         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>

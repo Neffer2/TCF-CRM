@@ -2,12 +2,12 @@
     <div class="mb-3">
         <input id="email"
                 wire:model="email"
-                class="form-control"
+                class="form-control @error('email') is-invalid @enderror"
                 type="email"
-                name="email"
+                name="email" 
                 value="{{ old('email') }}"
                 required autofocus>
-        @error('email') 
+        @error('email')  
             <div class="text-danger font-weight-bold" style="font-size: 12px;">
                 @foreach ($errors->all() as $error)
                     {{ $error }} <br>
