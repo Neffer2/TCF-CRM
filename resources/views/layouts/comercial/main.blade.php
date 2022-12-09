@@ -19,10 +19,11 @@
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
 <body class="g-sidenav-show bg-gray-100">
     <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}'); background-position-y: 50%;">
-      {{-- <span class="mask bg-gradient-warning opacity-6"></span> --}}
+      <span class="mask bg-gradient-warning opacity-6"></span>
     </div>
     <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
       <div class="sidenav-header">
@@ -922,51 +923,7 @@
         </div>
       </nav>
       <!-- End Navbar -->
-      <div class="card shadow-lg mx-4 card-profile-bottom">
-        <div class="card-body p-3">
-            <div class="row gx-4">
-                <div class="col-auto">
-                    <div class="avatar avatar-xl position-relative">
-                        <img src="../../../assets/img/team-1.jpg" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
-                    </div>
-                </div>
-            <div class="col-auto my-auto">
-              <div class="h-100">
-                <h5 class="mb-1">
-                  {{ Auth::user()->name }}
-                </h5>
-                <p class="mb-0 font-weight-bold text-sm">
-                  {{ Auth::user()->email }}
-                </p>
-              </div>
-            </div>
-            <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-              <div class="nav-wrapper position-relative end-0">
-                <ul class="nav nav-pills nav-fill p-1" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
-                      <i class="ni ni-app"></i>
-                      <span class="ms-2">Base</span>
-                    </a>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <a href="{{ route('base-upload') }}" class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
-                      <i class="ni ni-cloud-upload-96"></i>
-                      <span class="ms-2">Subir</span>
-                    </a>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
-                      <i class="ni ni-settings-gear-65"></i>
-                      <span class="ms-2">Settings</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      @yield('profile-card')
       <div class="container-fluid py-4"> 
         @yield('content')
         
