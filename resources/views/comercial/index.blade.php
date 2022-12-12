@@ -1,6 +1,6 @@
 @extends('layouts.comercial.main')
   @section('profile-card')
-    <div class="card shadow-lg mx-4 card-profile-bottom">
+    <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
       <div class="card-body p-3">
         <div class="row gx-4">
           <div class="col-auto">
@@ -33,12 +33,12 @@
                     <span class="ms-2">Subir</span>
                   </a>
                 </li>
-                <li class="nav-item" role="presentation">
+                {{-- <li class="nav-item" role="presentation">
                   <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
                     <i class="ni ni-settings-gear-65"></i>
                     <span class="ms-2">Settings</span>
                   </a>
-                </li>
+                </li> --}}
               </ul>
             </div>
           </div>
@@ -48,7 +48,7 @@
   @endsection
 
   @section('content')    
-    <div x-data="menu" @fire-toggle.window="Toggle">
+    <div x-data="menu" @fire-toggle.window="Toggle"> 
 
       <div class="row mt-4" x-show="!toggle[0]" x-transition>
         <div class="col-12 col-md-12 col-xl-12">
@@ -70,33 +70,7 @@
       </div> 
 
       <div class="row mt-4" x-show="!toggle[1]" x-transition>
-        <div class="col-12">
-          <div class="card">
-          <!-- Card header -->
-            <div class="card-header">
-              <h5 class="mb-0">Base comercial</h5>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-flush" id="datatable-search">
-                <thead class="thead-light">
-                <tr>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Proyecto</th>
-                  <th>COD_CC</th>
-                  <th>Valor</th>
-                  <th>Estado</th>
-                  <th>Inicio</th>
-                  <th>Fin</th>
-                </tr>
-                </thead>
-                <tbody>
-                    @livewire('base-list')
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        @livewire('base-list', ['user_id' => Auth::user()->id])
       </div>
     </div>
   @endsection

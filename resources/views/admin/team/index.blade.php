@@ -6,7 +6,7 @@
     {{-- <div class="min-height-300 bg-primary position-absolute w-100"></div>  --}}
 @endsection
     @section('profile-card') 
-        <div class="card shadow-lg mx-4 card-profile-bottom ">
+        <div class="card shadow-lg mx-4 card-profile-bottom mt-4">
             <div class="card-body p-3">
                 <div class="row gx-4">
                     <div class="col-auto">
@@ -16,73 +16,50 @@
                     </div>
                     <div class="col-auto my-auto">
                         <div class="h-100">
-                            <h5 class="mb-1">Sayo Kravits</h5>
-                            <p class="mb-0 font-weight-bold text-sm">Public Relations</p>
-                        </div>
+                            <h5 class="mb-1">{{ Auth::user()->name }}</h5>
+                            <p class="mb-0 font-weight-bold text-sm">{{ Auth::user()->user_rol->description }}</p> 
+                        </div> 
                     </div>
                 </div>
             </div>
         </div>
     @endsection
     @section('content')
-        <div class="col-12"> 
-            <div class="card overflow-scroll">
-                <div class="card-body d-flex">
-                    <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
-                        <a href="javascript:;" class="avatar avatar-lg border-1 rounded-circle bg-gradient-primary"><i class="fas fa-plus text-white"></i></a>
-                        <p class="mb-0 text-sm" style="margin-top:6px;">Nuevo</p>
-                    </div>
-                    <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
-                        <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="../../../assets/img/team-1.jpg"></a>
-                        <p class="mb-0 text-sm">Abbie W</p>
-                    </div>
-                    <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
-                        <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="../../../assets/img/team-2.jpg"></a>
-                        <p class="mb-0 text-sm">Boris U</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div x-data="menuTeam">
+            <div class="col-12"> 
+                <div class="card overflow-scroll">
+                    <div class="card-body d-flex">
+                        <div x-on:click="Toggle('new-item')" class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
+                            <a href="javascript:;" class="avatar avatar-lg border-1 rounded-circle bg-gradient-primary"><i class="fas fa-plus text-white"></i></a>
+                            <p class="mb-0 text-sm" style="margin-top:6px;">Nuevo</p>
+                        </div>
 
-        {{-- <div class="col-12">
-            <div class="card">
-                <!-- Card header -->
-                <div class="card-header">
-                    <h5 class="mb-0">Base comercial</h5>
-                </div>
-                    <div class="table-responsive">
-                        <table class="table table-flush" id="datatable-search">
-                            <thead class="thead-light">
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Proyecto</th>
-                                <th>COD_CC</th>
-                                <th>Valor</th>
-                                <th>Estado</th>
-                                <th>Inicio</th>
-                                <th>Fin</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                @livewire('base-list')
-                            </tbody>
-                        </table>
+                        @foreach ($listUsers as $user)
+                            <div x-on:click="Toggle('user-item', {{ $user->id }})" class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
+                                <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="../../../assets/img/team-1.jpg"></a>
+                                <p class="mb-0 text-sm">{!! strtok($user->name, ' ') !!}</p>
+                            </div>
+                        @endforeach  
                     </div>
                 </div>
             </div>
-        </div> --}}
 
-        <div class="col-12">
-            <div class="col-lg-12 col-12 mx-auto">
-                <div class="card card-body mt-4">
-                    <h6 class="mb-0">Nuevo miembro</h6>
-                    <p class="text-sm mb-0">Agrega un nuevo miembro para tu equipo.</p>
-                    <hr class="horizontal dark my-3">
-                    @livewire('new-team') 
-                </div>
+            <div class="col-12" x-show="toggle" x-transition x-cloak> 
+                @livewire('base-list', [0])   
             </div>
-        </div>
+        
+            <div class="col-12" x-show="!toggle" x-transition x-cloak>
+                <div class="col-lg-12 col-12 mx-auto">
+                    <div class="card card-body mt-4">
+                        <h6 class="mb-0">Nuevo miembro</h6>
+                        <p class="text-sm mb-0">Agrega un nuevo miembro para tu equipo.</p>
+                        <hr class="horizontal dark my-3">
+                        @livewire('new-team')   
+                    </div>
+                </div>
+            </div> 
+            
+        </div> 
     @endsection 
 
     @section('scripts-imports')
@@ -94,5 +71,23 @@
             searchable: true,
             fixedHeight: true
             });
+
+            function menuTeam (item){
+                return {
+                    toggle: false,
+                    activeItem: 'new-item',
+                    Toggle (item, user_id = null){
+                        if (!(item === this.activeItem)){
+                            this.toggle = !this.toggle; 
+                            this.activeItem = item;   
+                        }
+
+                        // Si el item es del usuaario, entonces envía la señal con el ID
+                        if (item == 'user-item'){
+                            Livewire.emit('live-base', [user_id]);
+                        }
+                    }
+                }
+            }
         </script>
     @endsection 

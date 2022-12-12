@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -11,6 +12,7 @@ class AdminController extends Controller
     }
 
     public function show_team (){
-        return view('admin.team.index');  
+        $listUsers = User::all(); 
+        return view('admin.team.index', ['listUsers' => $listUsers]);  
     } 
 }

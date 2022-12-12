@@ -1,4 +1,7 @@
 @extends('layouts.auth.main')
+    @section('auth-title')
+        Formulario de registro
+    @endsection
     @section('form')
         <form method="POST" action="{{ route('register') }}" role="form">
             @csrf   

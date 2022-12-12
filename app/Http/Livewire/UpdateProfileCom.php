@@ -5,29 +5,38 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\Rol;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 
-class NewTeam extends Component 
+
+class UpdateProfileCom extends Component
 {
+    public $storedUserData = '';
+
+    // Models
     public $name = '';
     public $email = '';
     public $telefono = '';
     public $password = '';
-    public $rol = '';
     public $passwordConfirmation = ''; 
-
-
-    public $rolList = '';
 
     public function render()
     {
-        return view('livewire.new-team');
+        return view('livewire.update-profile-com');
     }
- 
+
+    public function mount (){
+        $this->storedUserData = User::where('id', Auth::user()->id)->first();
+
+        $this->name = $this->storedUserData->name;
+        $this->email = $this->storedUserData->email;
+        $this->telefono = $this->storedUserData->telefono;
+    } 
+
     public function updatedName (){
         $data = $this->validate(['name' => ['required', 'string', 'max:255']]);
-    }
+    } 
 
     public function updatedEmail (){ 
         $this->validate(['email' => ['required', 'string', 'email', 'max:255', 'unique:users']]);
@@ -45,32 +54,24 @@ class NewTeam extends Component
         $this->validate(['password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]]);
     }
 
-    public function updatedRol(){
-        $this->validate(['rol' => ['required']]);
-    }
-
-    public function mount (){
-        $this->rolList = Rol::all();
-    }
-
-    public function store (){
+    public function update (){
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'telefono' => ['required', 'unique:users', 'numeric'],
-            'rol' => ['required'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'telefono' => ['required', 'numeric'],
             'password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]
         ]);
 
-        User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'telefono' => $this->telefono,
-            'rol' => $this->rol,
-            'password' => Hash::make($this->password)
-        ]);
+        $user = User::where('id', Auth::user()->id)->first();
+        $user->name = $this->name;
+        $user->email = $this->email;
+        $user->telefono = $this->telefono;
+        $user->telefono = $this->telefono; 
+        $user->password = Hash::make($this->password);
 
-        return redirect()->route('mi-equpo')->with('success', '¡Nuevo integrante añadido exitosamente!');
+        $user->update();
+
+        return redirect()->route('actualizar-perfil-com')->with('success', '¡Datos actualizados axitosamente!');
     }
-} 
+}
  

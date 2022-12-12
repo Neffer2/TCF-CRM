@@ -9,12 +9,16 @@ use App\Models\Base_comercial;
 
 class ComercialController extends Controller
 {
-    public function index (){
+    public function index (){ 
         return view('comercial.index');
     }
 
     public function show_upload (){
         return view('comercial.base.upload');
+    }
+
+    public function showActualizarPerfil (){
+        return view('comercial.ajustes.perfil.actualizar');
     }
 
     public function upload_base (Request $request){
@@ -27,4 +31,6 @@ class ComercialController extends Controller
         Excel::import(new BaseComercialImport, $request->base_xls);  
         return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
     }
+
+     
 }

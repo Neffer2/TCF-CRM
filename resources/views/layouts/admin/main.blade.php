@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
   <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
   <title>
-    Argon Dashboard 2 PRO  by Creative Tim
+    Admin || {{ Auth::user()->name}}
   </title>
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -18,6 +18,7 @@
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
 </head>
 <body class="g-sidenav-show   bg-gray-100">
@@ -407,6 +408,8 @@
   <script src="{{ asset('assets/js/plugins/countup.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/round-slider.min.js') }}"></script>
+  <!-- Sweet Alerts -->
+  <script src="{{ asset('assets/js/plugins/sweetalert.min.js') }}"></script>
   @yield('scripts-imports')
   @yield('scripts')
   <script>
@@ -421,7 +424,7 @@
       Swal.fire(
       '!Oppss tenemos un problema',
       `@foreach($errors->all() as $error)
-          {{ $error }}
+          {{ $error }} 
       @endforeach`,
       'error'
       );
