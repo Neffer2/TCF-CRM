@@ -8,16 +8,20 @@ use App\Models\Rol;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
+use Livewire\WithFileUploads;
 
 
 class UpdateProfileCom extends Component
 {
+    use WithFileUploads;
+
     public $storedUserData = '';
 
     // Models
     public $name = '';
     public $email = '';
     public $telefono = '';
+    public $avatar = '';
     public $password = '';
     public $passwordConfirmation = ''; 
 
@@ -32,6 +36,7 @@ class UpdateProfileCom extends Component
         $this->name = $this->storedUserData->name;
         $this->email = $this->storedUserData->email;
         $this->telefono = $this->storedUserData->telefono;
+        $this->avatar = $this->storedUserData->avatar;
     } 
 
     public function updatedName (){
@@ -48,7 +53,7 @@ class UpdateProfileCom extends Component
 
     public function updatedPassword (){
         $this->validate(['password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]]);
-    }
+    } 
 
     public function updatedPasswordConfirmation (){
         $this->validate(['password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]]);
@@ -59,6 +64,7 @@ class UpdateProfileCom extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'telefono' => ['required', 'numeric'],
+            // 'avatar' => ['mimes:jpeg,jpg,png,gif|max:1000'],
             'password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]
         ]);
 
@@ -66,6 +72,7 @@ class UpdateProfileCom extends Component
         $user->name = $this->name;
         $user->email = $this->email;
         $user->telefono = $this->telefono;
+        $user->avatar = $this->avatar->store('photos');
         $user->telefono = $this->telefono; 
         $user->password = Hash::make($this->password);
 

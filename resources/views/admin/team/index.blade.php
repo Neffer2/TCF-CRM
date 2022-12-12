@@ -30,7 +30,7 @@
                 <div class="card overflow-scroll">
                     <div class="card-body d-flex">
                         <div x-on:click="Toggle('new-item')" class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
-                            <a href="javascript:;" class="avatar avatar-lg border-1 rounded-circle bg-gradient-primary"><i class="fas fa-plus text-white"></i></a>
+                            <a href="javascript:;" class="avatar avatar-lg border-1 rounded-circle bg-gradient-warning"><i class="fas fa-plus text-white"></i></a>
                             <p class="mb-0 text-sm" style="margin-top:6px;">Nuevo</p>
                         </div>
 
@@ -44,8 +44,33 @@
                 </div>
             </div>
 
-            <div class="col-12" x-show="toggle" x-transition x-cloak> 
-                @livewire('base-list', [0])   
+            <div class="col-12" x-show="toggle" x-transition x-cloak>
+                <div class="col-lg-12 col-12 mx-auto">
+                    <div class="card card-body mt-4">
+
+
+                        
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a class="btn bg-gradient-warning" data-bs-toggle="collapse" href="#base-user" role="button" aria-expanded="false" aria-controls="base-user">
+                                    Base comercial
+                                </a>
+                                <a class="btn bg-gradient-primary" data-bs-toggle="collapse" href="#info-user" role="button" aria-expanded="false" aria-controls="info-user">
+                                    Informaci&oacute;n
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="collapse mb-3" id="base-user">
+                                @livewire('admin.base-com-team', [0])
+                            </div> 
+                            <div class="collapse" id="info-user">
+                                @livewire('admin.user-info', [0]) 
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         
             <div class="col-12" x-show="!toggle" x-transition x-cloak>
@@ -54,7 +79,7 @@
                         <h6 class="mb-0">Nuevo miembro</h6>
                         <p class="text-sm mb-0">Agrega un nuevo miembro para tu equipo.</p>
                         <hr class="horizontal dark my-3">
-                        @livewire('new-team')   
+                        @livewire('admin.new-team')   
                     </div>
                 </div>
             </div> 
@@ -85,6 +110,7 @@
                         // Si el item es del usuaario, entonces envía la señal con el ID
                         if (item == 'user-item'){
                             Livewire.emit('live-base', [user_id]);
+                            Livewire.emit('live-info', [user_id]);
                         }
                     }
                 }

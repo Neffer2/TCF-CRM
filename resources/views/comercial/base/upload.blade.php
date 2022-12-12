@@ -12,7 +12,7 @@
                         <input name="base_xls" type="file" required/>
                     </div>
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" name="button" class="btn bg-gradient-primary m-0 ms-2">Cargar</button>
+                        <button type="submit" name="button" class="btn bg-gradient-warning m-0 ms-2">Cargar</button>
                     </div>
                 </form>
             </div>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\User;
@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class NewTeam extends Component 
 {
+    // MODELS
     public $name = '';
     public $email = '';
     public $telefono = '';
@@ -17,12 +18,13 @@ class NewTeam extends Component
     public $rol = '';
     public $passwordConfirmation = ''; 
 
-
+    // OTHER VARS
     public $rolList = '';
+    public $random_pass = '';
 
     public function render()
     {
-        return view('livewire.new-team');
+        return view('livewire.admin.new-team');
     }
  
     public function updatedName (){
@@ -50,7 +52,13 @@ class NewTeam extends Component
     }
 
     public function mount (){
-        $this->rolList = Rol::all();
+        $this->rolList = Rol::all(); 
+    }
+
+    public function random_pass (){
+        $this->random_pass = bin2hex(openssl_random_pseudo_bytes(4));
+        $this->password = $this->random_pass;
+        $this->passwordConfirmation = $this->random_pass;
     }
 
     public function store (){
@@ -72,5 +80,6 @@ class NewTeam extends Component
 
         return redirect()->route('mi-equpo')->with('success', '¡Nuevo integrante añadido exitosamente!');
     }
+
 } 
  

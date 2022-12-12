@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
   <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
   <title>
-    Admin || {{ Auth::user()->name}}
+    Admin - {{ Auth::user()->name}}
   </title>
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -145,10 +145,10 @@
                 <i class="ni ni-box-2"></i>
               </a>
             </li>
-            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Smart Home</li>
+            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Inicio</a></li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0 text-white">Smart Home</h6>
+          <h6 class="font-weight-bolder mb-0 text-white">Dashboard</h6>
         </nav>
         <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
           <a href="javascript:;" class="nav-link p-0">
@@ -162,8 +162,8 @@
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <div class="input-group">
-              <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-              <input type="text" class="form-control" placeholder="Type here...">
+              {{-- <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span> --}}
+              {{-- <input type="text" class="form-control" placeholder="Type here..."> --}}
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">

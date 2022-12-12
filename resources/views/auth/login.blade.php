@@ -5,7 +5,7 @@
     @section('form')
         <form method="POST" action="{{ route('login') }}" role="form" class="text-start">
             @csrf
-            @livewire('login-live') 
+            @livewire('auth.login-live') 
         </form>
     @endsection 
 

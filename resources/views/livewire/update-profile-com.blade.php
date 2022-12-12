@@ -1,6 +1,6 @@
 <form wire:submit.prevent="update">
     <div>
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="name">Nombre</label> 
@@ -81,7 +81,7 @@
                             @endforeach
                         </div>
                     @enderror  
-                    <button type="button" class="btn bg-gradient-secondary">Generar contraseña</button>
+                    <button type="button" class="btn bg-gradient-secondary mt-1">Generar contraseña</button>
                 </div>
             </div>
             <div class="col-md-3">
@@ -93,6 +93,26 @@
                         type="password"
                         placeholder="Confirma tu contraseña"
                         name="password_confirmation">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="author align-items-center">
+                    <img src="{{ asset("public/photos/$storedUserData->avatar") }}" alt="Foto de perfil" class="avatar shadow">
+                    <div class="name ps-3">
+                        <div class="form-group">
+                            <label for="avatar">Avatar</label>
+                            <input id="avatar"
+                                wire:model="avatar" 
+                                class="form-control"
+                                type="file"
+                                name="avatar"> 
+                            @error('avatar')  
+                                <div class="text-danger font-weight-bold" style="font-size: 12px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

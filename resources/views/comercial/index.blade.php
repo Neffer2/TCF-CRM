@@ -50,7 +50,7 @@
   @section('content')    
     <div x-data="menu" @fire-toggle.window="Toggle"> 
 
-      <div class="row mt-4" x-show="!toggle[0]" x-transition>
+      <div class="row mt-4" x-show="!toggle[0]" x-transition x-cloak>
         <div class="col-12 col-md-12 col-xl-12">
           <div class="card card-body mt-4">
               <h5 class="mb-0">Actualiza tu base comercial</h5>
@@ -62,15 +62,15 @@
                   <input name="base_xls" type="file" required/>
                 </div>
                 <div class="d-flex justify-content-end mt-4">
-                  <button type="submit" name="button" class="btn bg-gradient-primary m-0 ms-2">Cargar</button>
+                  <button type="submit" name="button" class="btn bg-gradient-warning m-0 ms-2">Cargar</button>
                 </div>
               </form>
           </div>
         </div>
       </div> 
 
-      <div class="row mt-4" x-show="!toggle[1]" x-transition>
-        @livewire('base-list', ['user_id' => Auth::user()->id])
+      <div class="row mt-4" x-show="!toggle[1]" x-transition> 
+        @livewire('com.base-list', ['user_id' => Auth::user()->id]) 
       </div>
     </div>
   @endsection

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Com;
 
 use Livewire\Component;
 use App\Models\Base_comercial;
@@ -8,11 +8,10 @@ use App\Models\Base_comercial;
 class BaseList extends Component 
 {
     public $list;   
-    protected $listeners = ['live-base' => 'mount'];
 
     public function render()
     {
-        return view('livewire.base-list');
+        return view('livewire.com.base-list');
     }
 
     public function mount ($user_id){

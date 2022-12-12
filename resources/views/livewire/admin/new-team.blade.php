@@ -89,7 +89,10 @@
                             @endforeach
                         </div>
                     @enderror  
-                    <button type="button" class="btn bg-gradient-secondary">Generar contraseña</button>
+                    @if ($random_pass)
+                        <input type="text" wire:model="random_pass" disabled class="form-control mt-1">
+                    @endif
+                    <button wire:click="random_pass" type="button" class="btn bg-gradient-secondary mt-1">Generar contraseña</button>
                 </div>
             </div>
             <div class="col-md-3">

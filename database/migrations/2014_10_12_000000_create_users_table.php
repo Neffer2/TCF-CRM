@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->foreignId('rol')->default('2');
             $table->foreign('rol')->references('id')->on('roles_user');
+            $table->string('avatar')->nullable()->default('avatar.jpg');;
             $table->rememberToken();
             $table->timestamps(); 
         });

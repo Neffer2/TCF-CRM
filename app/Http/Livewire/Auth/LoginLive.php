@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Auth;
 
 use Livewire\Component;
 
@@ -11,7 +11,7 @@ class LoginLive extends Component
 
     public function render()
     {
-        return view('livewire.login-live');
+        return view('livewire.auth.login-live');
     }
 
     public function updatedEmail (){

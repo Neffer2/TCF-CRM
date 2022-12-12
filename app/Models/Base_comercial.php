@@ -24,5 +24,13 @@ class Base_comercial extends Model
         'dura_mes',
         'id_user' 
     ];
+
+    public function user_rol(){
+        return $this->hasOne(Rol::class, 'id', 'rol');
+    }
+
+    public function estado_cuenta (){
+        return $this->hasOne(EstadoCuenta::class, 'id', 'id_estado');
+    }
 }
   

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Validation\Rules;
@@ -15,7 +15,7 @@ class RegisterLive extends Component
 
     public function render()
     {
-        return view('livewire.register-live');
+        return view('livewire.auth.register-live');
     }
  
     public function updatedName (){
