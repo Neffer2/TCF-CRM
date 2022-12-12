@@ -36,7 +36,10 @@
 
                         @foreach ($listUsers as $user)
                             <div x-on:click="Toggle('user-item', {{ $user->id }})" class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
-                                <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="../../../assets/img/team-1.jpg"></a>
+                                @php
+                                    $aux = str_replace('public/', '', $user->avatar);
+                                @endphp
+                                <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="{{ asset("storage/$aux") }}"></a>
                                 <p class="mb-0 text-sm">{!! strtok($user->name, ' ') !!}</p>
                             </div>
                         @endforeach  

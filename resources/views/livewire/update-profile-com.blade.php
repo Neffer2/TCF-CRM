@@ -99,7 +99,10 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="author align-items-center">
-                    <img src="{{ asset("public/photos/$storedUserData->avatar") }}" alt="Foto de perfil" class="avatar shadow">
+                    @php
+                        $aux = str_replace('public/', '', $storedUserData->avatar);
+                    @endphp
+                    <img src="{{ asset("storage/$aux") }}" alt="Foto de perfil" class="avatar shadow">
                     <div class="name ps-3">
                         <div class="form-group">
                             <label for="avatar">Avatar</label>
@@ -115,7 +118,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> 
         <div class="row">
             <div class="col-md-6">
                 <button class="btn bg-gradient-warning">Actualizar datos</button>

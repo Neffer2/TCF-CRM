@@ -72,7 +72,7 @@ class UpdateProfileCom extends Component
         $user->name = $this->name;
         $user->email = $this->email;
         $user->telefono = $this->telefono;
-        $user->avatar = $this->avatar->store('photos');
+        $user->avatar = $this->avatar->store('public/photos');
         $user->telefono = $this->telefono; 
         $user->password = Hash::make($this->password);
 
