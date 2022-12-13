@@ -80,8 +80,11 @@
                                 {{ $error }} <br>
                             @endforeach
                         </div>
-                    @enderror  
-                    <button type="button" class="btn bg-gradient-secondary mt-1">Generar contraseña</button>
+                    @enderror
+                    @if ($random_pass)
+                        <input type="text" wire:model="random_pass" disabled class="form-control mt-1">
+                    @endif  
+                    <button type="button" wire:click="random_pass" class="btn bg-gradient-secondary mt-1">Generar contraseña</button>
                 </div>
             </div>
             <div class="col-md-3">
@@ -93,7 +96,7 @@
                         type="password"
                         placeholder="Confirma tu contraseña"
                         name="password_confirmation">
-                </div>
+                </div> 
             </div>
         </div>
         <div class="row">

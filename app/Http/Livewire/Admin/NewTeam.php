@@ -8,7 +8,7 @@ use App\Models\Rol;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 
-class NewTeam extends Component 
+class NewTeam extends Component  
 {
     // MODELS
     public $name = '';

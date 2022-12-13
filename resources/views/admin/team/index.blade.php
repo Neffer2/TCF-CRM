@@ -10,8 +10,11 @@
             <div class="card-body p-3">
                 <div class="row gx-4">
                     <div class="col-auto">
+                        @php
+                            $aux = str_replace('public/', '', Auth::user()->avatar);    
+                        @endphp
                         <div class="avatar avatar-xl position-relative">
-                            <img src="../../../assets/img/team-1.jpg" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+                            <img src="{{ asset("storage/$aux") }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
                         </div>
                     </div>
                     <div class="col-auto my-auto">
@@ -50,10 +53,6 @@
             <div class="col-12" x-show="toggle" x-transition x-cloak>
                 <div class="col-lg-12 col-12 mx-auto">
                     <div class="card card-body mt-4">
-
-
-                        
-
                         <div class="row">
                             <div class="col-md-6">
                                 <a class="btn bg-gradient-warning" data-bs-toggle="collapse" href="#base-user" role="button" aria-expanded="false" aria-controls="base-user">

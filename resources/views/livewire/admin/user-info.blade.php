@@ -32,7 +32,12 @@
                 </ul>
             </p>
             <div class="author align-items-center">
-                <img src="{{ asset('assets/img/team-4.jpg') }}" alt="..." class="avatar shadow">
+                @php
+                    if ($userInfo){
+                        $aux = str_replace('public/', '', $userInfo->avatar);    
+                    }
+                @endphp
+                <img @if ($userInfo) src="{{ asset("storage/$aux") }}" @endif alt="Foto de perfil" class="avatar shadow">
                     <div class="name ps-3">
                         <span>
                             @if ($userInfo)

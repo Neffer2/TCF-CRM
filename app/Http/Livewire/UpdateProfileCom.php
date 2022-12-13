@@ -25,6 +25,9 @@ class UpdateProfileCom extends Component
     public $password = '';
     public $passwordConfirmation = ''; 
 
+    // OTHER  VARS
+    public $random_pass = '';
+
     public function render()
     {
         return view('livewire.update-profile-com');
@@ -59,8 +62,14 @@ class UpdateProfileCom extends Component
         $this->validate(['password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]]);
     }
 
+    public function random_pass (){
+        $this->random_pass = bin2hex(openssl_random_pseudo_bytes(4));
+        $this->password = $this->random_pass;
+        $this->passwordConfirmation = $this->random_pass;
+    }
+
     public function update (){
-        $this->validate([
+        $this->validate([ 
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'telefono' => ['required', 'numeric'],
