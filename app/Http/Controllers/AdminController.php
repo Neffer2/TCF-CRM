@@ -14,5 +14,13 @@ class AdminController extends Controller
     public function show_team (){
         $listUsers = User::all(); 
         return view('admin.team.index', ['listUsers' => $listUsers]);  
-    } 
+    }
+
+    public function showActualizarPerfil (){
+        return view('admin.ajustes.perfil.actualizar');
+    }
+
+    public function showBaseComercialGeneral (){
+        return view('admin.data.base-comercial');
+    }
 }

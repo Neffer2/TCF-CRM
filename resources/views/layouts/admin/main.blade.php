@@ -23,13 +23,12 @@
 </head>
 <body class="g-sidenav-show   bg-gray-100">
   @yield('hero-style')
-  <!-- Barra lateral -->
+  <!-- Barra lateral --> 
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
-    <div class="sidenav-header">
+    <div class="sidenav-header d-flex align-items-center justify-content-center">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0" href="https://demos.creative-tim.com/argon-dashboard-pro/pages/dashboards/default.html " target="_blank">
-        <img src="../../assets/img/logo-ct-dark.png" class="navbar-brand-img h-100" alt="main_logo">
-        <span class="ms-1 font-weight-bold">Argon Dashboard 2 PRO</span>
+      <a class="navbar-brand m-0 d-flex flex-column" href="{{ route('dashboard') }}">
+        <img src="{{ asset('assets/img/bull-logo.png') }}" class="navbar-brand-img h-100" alt="main_logo">
       </a>
     </div>
     <hr class="horizontal dark mt-0">
@@ -43,7 +42,7 @@
             <span class="nav-link-text ms-1">Dashboards</span>
           </a>
           <div class="collapse  show " id="dashboardsExamples">
-            <ul class="nav ms-4">
+            <ul class="nav ms-4"> 
               {{-- <li class="nav-item ">
                 <a class="nav-link " href="../../pages/dashboards/landing.html">
                   <span class="sidenav-mini-icon"> L </span>
@@ -55,7 +54,7 @@
                   <span class="sidenav-mini-icon"> D </span>
                   <span class="sidenav-normal"> Default </span>
                 </a>
-              </li> --}}
+              </li> --}} 
               <li class="nav-item active">
                 <a class="nav-link active" href="../../pages/dashboards/smart-home.html">
                   <span class="sidenav-mini-icon"> S </span>
@@ -63,9 +62,9 @@
                 </a>
               </li>
               <li class="nav-item ">
-                <a class="nav-link " href="../../pages/dashboards/automotive.html">
+                <a class="nav-link " href="{{ route('base-comercial-general') }}">
                   <span class="sidenav-mini-icon"> A </span>
-                  <span class="sidenav-normal"> Automotive </span>
+                  <span class="sidenav-normal"> Base comercial </span>
                 </a>
               </li>
               {{-- <li class="nav-item ">
@@ -100,18 +99,36 @@
           </div>
         </li>
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="true">
+          <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Acciones</span>
           </a>
-          <div class="collapse show" id="applicationsExamples" style="">
+          <div class="collapse" id="applicationsExamples" style="">
             <ul class="nav ms-4">
               <li class="nav-item ">
                 <a class="nav-link " href="{{ route('mi-equpo') }}">
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Mi equipo </span>
+                </a>
+              </li>
+            </ul> 
+          </div>
+        </li>
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Ajustes</span>
+          </a>
+          <div class="collapse" id="ajustes" style="">
+            <ul class="nav ms-4"> 
+              <li class="nav-item ">
+                <a class="nav-link " href="{{ route('actualizar-perfil-adm') }}">  
+                  <span class="sidenav-mini-icon"> K </span>
+                  <span class="sidenav-normal"> Actualizar perfil </span>
                 </a>
               </li>
             </ul> 
@@ -275,7 +292,7 @@
         </div>
       </div>
     </nav>
-    @yield('profile-card')
+    @yield('profile-card') 
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">

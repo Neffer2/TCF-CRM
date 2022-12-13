@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Livewire\WithFileUploads;
 
 
-class UpdateProfileCom extends Component
+class UpdateProfile extends Component
 {
     use WithFileUploads;
 
@@ -30,7 +30,7 @@ class UpdateProfileCom extends Component
 
     public function render()
     {
-        return view('livewire.update-profile-com');
+        return view('livewire.update-profile');
     }
 
     public function mount (){
@@ -74,20 +74,32 @@ class UpdateProfileCom extends Component
             'email' => ['required', 'string', 'email', 'max:255'],
             'telefono' => ['required', 'numeric'],
             // 'avatar' => ['mimes:jpeg,jpg,png,gif|max:1000'],
-            'password' => ['required', 'same:passwordConfirmation', Rules\Password::defaults()]
+            'password' => ['same:passwordConfirmation', Rules\Password::defaults()]
         ]);
 
         $user = User::where('id', Auth::user()->id)->first();
         $user->name = $this->name;
         $user->email = $this->email;
         $user->telefono = $this->telefono;
-        $user->avatar = $this->avatar->store('public/photos');
+        
+        if ($this->avatar != $user->avatar){
+            $user->avatar = $this->avatar->store('public/photos');
+        }
+
         $user->telefono = $this->telefono; 
-        $user->password = Hash::make($this->password);
+        if ($this->password != ''){
+            $user->password = Hash::make($this->password);
+        }
 
         $user->update();
 
-        return redirect()->route('actualizar-perfil-com')->with('success', '¡Datos actualizados axitosamente!');
+        if (Auth::user()->rol == 1){
+            return redirect()->route('actualizar-perfil-adm')->with('success', '¡Datos actualizados axitosamente!');
+        }elseif (Auth::user()->rol == 2) {
+            return redirect()->route('actualizar-perfil-com')->with('success', '¡Datos actualizados axitosamente!');
+        }else {
+            return redirect()->route('dashboard')->with('success', '¡Datos actualizados axitosamente!');
+        }
     }
 }
  

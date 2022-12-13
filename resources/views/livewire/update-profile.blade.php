@@ -5,7 +5,7 @@
                 <div class="form-group">
                     <label for="name">Nombre</label> 
                     <input id="name"
-                            wire:model="name" 
+                            wire:model="name"   
                             class="form-control @error('name') is-invalid @enderror"
                             type="text"
                             name="name"
@@ -15,7 +15,7 @@
                         <div class="text-danger font-weight-bold" style="font-size: 12px;">{{ $message }}</div>
                     @enderror
                 </div>
-            </div>
+            </div> 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="email">Correo</label>

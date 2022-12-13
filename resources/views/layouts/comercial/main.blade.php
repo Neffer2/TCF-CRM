@@ -100,7 +100,7 @@
                 </li> --}}
               </ul>
             </div>
-          </li>  
+          </li>   
           <li class="nav-item">
             <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="true">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
