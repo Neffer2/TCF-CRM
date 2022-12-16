@@ -54,7 +54,7 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group"> 
-                    <label for="exampleFormControlInput1">Tel&eacute;fono</label>
+                    <label for="exampleFormControlInput1">Rol</label>
                     <select id="telefono"
                             wire:model="rol"  
                             class="form-control @error('rol') is-invalid @enderror"

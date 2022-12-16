@@ -23,4 +23,8 @@ class AdminController extends Controller
     public function showBaseComercialGeneral (){
         return view('admin.data.base-comercial');
     }
+
+    public function showPresupuestos (){
+        return view('admin.data.base-comercial');
+    }
 }
