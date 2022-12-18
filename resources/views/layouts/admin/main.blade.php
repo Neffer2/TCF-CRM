@@ -108,7 +108,7 @@
           <div class="collapse" id="acciones" style="">
             <ul class="nav ms-4">
               <li class="nav-item ">
-                <a class="nav-link " href="{{ route('mi-equpo') }}">
+                <a class="nav-link " href="{{ route('presupuesto') }}"> 
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Presupuesto </span>
                 </a>

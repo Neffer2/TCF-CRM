@@ -25,6 +25,6 @@ class AdminController extends Controller
     }
 
     public function showPresupuestos (){
-        return view('admin.data.base-comercial');
+        return view('admin.acciones.presupuesto');
     }
 }
