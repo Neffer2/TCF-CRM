@@ -15,7 +15,7 @@ class CreateAnosTable extends Migration
     {
         Schema::create('anos', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
+            $table->string('description')->unique();
             $table->timestamps();
         });
     }

@@ -31,19 +31,7 @@
 
             <hr>
             <div class="card-header" x-show="conf" x-transition x-cloak>
-                <div class="card card-body">
-                    <div class="col-md-12">
-                        <h6 class="mb-0">Nuevo año</h5> 
-                        <p class="text-sm mb-0">Generar un nuevo año.</p>
-                    </div>
-                    <form>
-                        <div class="form-group">
-                            <label for="">Año</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <button class="btn bg-gradient-warning">Crear</button>
-                    </form>
-                </div>
+                @livewire('admin.presupuestos.nuevo-año')  
                 <hr>
             </div>
         </div>
@@ -292,9 +280,9 @@
     <script> 
         function menu (){
             return {
-                lista: false,
+                lista: true,
                 asignar: false,
-                conf: true,
+                conf: false,
                 Toggle(item){
                     if (item === "lista"){
                         this.lista = true

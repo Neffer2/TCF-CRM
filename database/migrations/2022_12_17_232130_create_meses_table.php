@@ -19,8 +19,8 @@ class CreateMesesTable extends Migration
 
             $table->foreignId('ano_id');
             $table->foreign('ano_id')->references('id')->on('anos');
-            $table->date('f_inicio');
-            $table->date('f_fin');
+            $table->date('f_inicio')->nullable();
+            $table->date('f_fin')->nullable();
             $table->timestamps();
         });
     }

@@ -443,7 +443,7 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-    @if($errors->any())
+    @if($errors->any()) 
       Swal.fire(
       '!Oppss tenemos un problema',
       `@foreach($errors->all() as $error)

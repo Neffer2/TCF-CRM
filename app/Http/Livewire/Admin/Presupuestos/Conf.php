@@ -4,10 +4,19 @@ namespace App\Http\Livewire\Admin\Presupuestos;
 
 use Livewire\Component;
 use App\models\Año;
+use App\models\Mes;
 
 class Conf extends Component
 {   
-    public $años = '';
+    // help vars
+    public $años = ''; 
+    public $storedAñoData;
+
+    // models
+    public $añoModel;
+
+    // listeners
+    protected $listeners = ['refresh' => 'mount'];
 
     public function render()
     {
@@ -22,4 +31,7 @@ class Conf extends Component
         $this->años = Año::select('id', 'description')->get();
     }
 
+    public function updatedAñomodel(){
+        $this->storedAñoData = Mes::where('ano_id', $this->añoModel)->get();   
+    }
 }
