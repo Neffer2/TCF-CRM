@@ -5,7 +5,7 @@
     </div>
     {{-- <div class="min-height-300 bg-primary position-absolute w-100"></div>  --}}
 @endsection 
-
+  
 @section('content')
     <div x-data="menu" class="row">
         <div class="col-lg-3 col-md-12">
@@ -19,13 +19,13 @@
                     <li x-on:click="Toggle('asignar')" class="nav-item">
                         <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#dashboard-tabs-vertical" role="tab" aria-controls="code" aria-selected="false">
                             Asignar
-                        </a>
+                        </a> 
                     </li>
                     <li x-on:click="Toggle('conf')" class="nav-item">
                         <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#payments-tabs-vertical" role="tab" aria-controls="code" aria-selected="false">
                             Configurar
                         </a>
-                    </li>
+                    </li> 
                 </ul>
             </div>
 
