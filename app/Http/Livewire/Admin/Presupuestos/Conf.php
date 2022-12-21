@@ -5,17 +5,18 @@ namespace App\Http\Livewire\Admin\Presupuestos;
 use Livewire\Component;
 use App\models\Año;
 use App\models\Mes;
+use Illuminate\Validation\Rules;
 
 class Conf extends Component
 {   
     // help vars
     public $años = '';  
-    public $storedAñoData; 
+    public $storedAñoData;  
 
     // models
     public $añoModel;
     
-    public $eneroIn;
+    public $eneroIn; 
     public $eneroFin;
     public $febreroIn;
     public $febreroFin;
@@ -96,7 +97,36 @@ class Conf extends Component
     }
 
     public function updateMeses (){
-        $dates = [
+
+        $this->validate([ 
+            'eneroIn' => ['required', 'date'],
+            'eneroFin' => ['required', 'date'],
+            'febreroIn' => ['required', 'date'],
+            'febreroFin' => ['required', 'date'],
+            'marzoIn' => ['required', 'date'],
+            'marzoFin' => ['required', 'date'],
+            'abrilIn' => ['required', 'date'],
+            'abrilFin' => ['required', 'date'],
+            'mayoIn' => ['required', 'date'],
+            'mayoFin' => ['required', 'date'],
+            'junioIn' => ['required', 'date'],
+            'junioFin' => ['required', 'date'],
+            'junioFin' => ['required', 'date'],
+            'julioIn' => ['required', 'date'],
+            'julioFin' => ['required', 'date'],
+            'agostoIn' => ['required', 'date'],
+            'agostoFin' => ['required', 'date'],
+            'septiembreIn' => ['required', 'date'],
+            'septiembreFin' => ['required', 'date'],
+            'octubreIn' => ['required', 'date'],
+            'octubreFin' => ['required', 'date'],
+            'noviembreIn' => ['required', 'date'],
+            'noviembreFin' => ['required', 'date'],
+            'diciembreIn' => ['required', 'date'],
+            'diciembreFin' => ['required', 'date']
+        ]);
+
+        $dates = [ 
             $this->eneroIn, 
             $this->eneroFin, 
             $this->febreroIn, 
@@ -122,16 +152,18 @@ class Conf extends Component
             $this->diciembreIn,
             $this->diciembreFin,
         ];
+
         
         $meses = Mes::where('ano_id', $this->añoModel)->get();
-
+        
         $key = 0;
         foreach ($meses as $mes){
             $mes->f_inicio = $dates[$key];
             $mes->f_fin = $dates[$key+1];
+            $mes->update();
             $key += 2;
         }
 
-        $mes->update();
+        return redirect()->back()->with('success', '¡Año generado exitosamente!'); 
     }
 }

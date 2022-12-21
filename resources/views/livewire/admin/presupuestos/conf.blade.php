@@ -117,7 +117,7 @@
                                 <label for="">Fecha de finalizaci&oacute;n</label>
                                 <input class="form-control" type="date" wire:model="agostoFin">
                             </div>
-                        </div>
+                        </div> 
                         <hr class="horizontal dark my-3">
                         <div class="row col-md-6">
                             <div class="col-md-3">
@@ -170,7 +170,7 @@
                         </div>
                         <hr class="horizontal dark my-3">
                         <div class="col-md-6">
-                            <button class="btn bg-gradient-primary">Guardar fechas</button>
+                            <button class="btn bg-gradient-warning">Guardar fechas</button>
                         </div>
                         @endif
                     </div>
@@ -178,4 +178,26 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+            );
+        </script>  
+    @endif
+    @if($errors->any()) 
+        <script>
+            Swal.fire(
+                'Upps!',
+                `<ul style="list-style: square inside;">
+                    @foreach ($errors->all() as $error)
+                        <li> {{ $error }} </li>
+                    @endforeach
+                </ul>`,
+                'error'
+            );
+        </script>
+    @enderror
 </div>

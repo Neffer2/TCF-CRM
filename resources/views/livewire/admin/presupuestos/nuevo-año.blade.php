@@ -20,6 +20,6 @@
                 `{{ session('success') }}`,
                 'success'
             );
-        </script> 
+        </script>   
     @endif
 </div>
