@@ -5,17 +5,16 @@
                 <div>
                     <h5 class="mb-0">Asignar</h5> 
                     <p class="text-sm mb-0">Asigna un presupuesto a cada uno de los miembros de tu equipo.</p>
-                </div>
-                <hr> 
-                <div class="row">
+                </div> 
+                <hr>  
+                <div class="row"> 
                     <form wire:submit.prevent="getPresupuestoStored" class="row">
                         <div class="col-md-6"> 
-                            {{ $comercialesModel }}
                             <select class="form-control" wire:model="comercialesModel" required>
                                 <option value="">Seleccionar</option>
                                 @foreach ($comercialesStored as $comercial)
                                     <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
-                                @endforeach
+                                @endforeach 
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -31,17 +30,20 @@
                             <button class="btn bg-gradient-warning">Consultar</button>
                         </div>
                     </form>
-                </div>
+                </div> 
             </div>
             <div class="card card-body">
-                <form action="">
+                <form wire:submit.prevent="updatePresupuestos" class="row">
                     <div class="row">
+                        <div class="col-md-12 d-flex justify-content-center card-header">
+                            <h5>{{ $comercialName }} - {{ $añoDescription }}</h5>
+                        </div> 
                         <div class="col-md-2 d-flex justify-content-center">
                             <label for="">Enero</label>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="eneroModel">
                             </div>
                         </div>
                         
@@ -50,7 +52,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="febreroModel">
                             </div>
                         </div>
                     </div>
@@ -61,7 +63,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="marzoModel">
                             </div>
                         </div>
 
@@ -70,7 +72,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="abrilModel">
                             </div>
                         </div>
                     </div>
@@ -81,16 +83,16 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="mayoModel">
                             </div>
                         </div>
 
-                        <div class="col-md-2 d-flex justify-content-center aling-items-center">
+                        <div class="col-md-2 d-flex justify-content-center aling-items-center" wire:model="mayoModel">
                             <label for="">Junio</label>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="junioModel">
                             </div>
                         </div>
                     </div>
@@ -101,7 +103,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="julioModel">
                             </div>
                         </div>
 
@@ -110,7 +112,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="agostoModel">
                             </div>
                         </div>
                     </div>
@@ -121,7 +123,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="septiembreModel">
                             </div>
                         </div>
 
@@ -130,9 +132,9 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="octubreModel">
                             </div>
-                        </div>
+                        </div> 
                     </div>
                     <hr class="horizontal dark my-3">
                     <div class="row">
@@ -141,7 +143,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="noviembreModel">
                             </div>
                         </div>
 
@@ -150,12 +152,14 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input class="form-control" type="number">
+                                <input class="form-control" type="number" wire:model="diciembreModel">
                             </div>
                         </div>
                     </div>
-                    <button class="btn bg-gradient-warning"> Guardar cambios </button>
-                </form>
+                    <div class="col-md-4">
+                        <button class="btn bg-gradient-warning"> Guardar cambios </button>
+                    </div>
+                </form>  
             </div>
         </div>
     </div>
@@ -165,7 +169,7 @@
                 'Hecho',
                 `{{ session('success') }}`,
                 'success'
-            );
+            ); 
         </script>  
     @endif
     @if($errors->any()) 

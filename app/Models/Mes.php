@@ -13,6 +13,7 @@ class Mes extends Model
 
     protected $fillable = [
         'description',
+        'identifier',
         'ano_id',
         'f_inicio',
         'f_fin' 

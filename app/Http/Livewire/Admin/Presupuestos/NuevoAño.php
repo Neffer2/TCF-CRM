@@ -32,17 +32,19 @@ class NuevoAño extends Component
         $currentYear = date('Y');
         $nextYear = date('Y', strtotime('+1 years'));
         $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $identifiers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 
         $this->validate(['description' => ['required', 'unique:anos', 'numeric', "min:$currentYear", "max:$nextYear"]]);
          
         Año::create([
-            'description' => $this->description
+            'description' => $this->description 
         ]); 
 
         $created_year = Año::select('id')->where('description', "$this->description")->first();
-        foreach ($meses as $mes){
+        foreach ($meses as $key =>$mes){
             Mes::create([
-                'ano_id' => $created_year->id,
+                'ano_id' => $created_year->id, 
+                'identifier' => $identifiers[$key],
                 'description' => $mes
             ]);
         }

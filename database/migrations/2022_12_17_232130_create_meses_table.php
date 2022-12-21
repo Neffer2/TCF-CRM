@@ -16,6 +16,7 @@ class CreateMesesTable extends Migration
         Schema::create('meses', function (Blueprint $table) {
             $table->id();
             $table->string('description');
+            $table->string('identifier');
 
             $table->foreignId('ano_id');
             $table->foreign('ano_id')->references('id')->on('anos');

@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\models\Año;
 use App\models\Mes;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Collection;
 
 class Conf extends Component
 {   
@@ -59,41 +60,46 @@ class Conf extends Component
 
     public function updatedAñomodel(){
         $this->storedAñoData = Mes::where('ano_id', $this->añoModel)->get();
-        $this->eneroIn = $this->storedAñoData[0]->f_inicio;
-        $this->eneroFin = $this->storedAñoData[0]->f_fin;
 
-        $this->febreroIn = $this->storedAñoData[1]->f_inicio;
-        $this->febreroFin = $this->storedAñoData[1]->f_fin;
+        if (!$this->storedAñoData->isEmpty()){ 
+            $this->eneroIn = $this->storedAñoData[0]->f_inicio;
+            $this->eneroFin = $this->storedAñoData[0]->f_fin;
 
-        $this->marzoIn = $this->storedAñoData[2]->f_inicio;
-        $this->marzoFin = $this->storedAñoData[2]->f_fin;
+            $this->febreroIn = $this->storedAñoData[1]->f_inicio;
+            $this->febreroFin = $this->storedAñoData[1]->f_fin;
 
-        $this->abrilIn = $this->storedAñoData[3]->f_inicio;
-        $this->abrilFin = $this->storedAñoData[3]->f_fin;
+            $this->marzoIn = $this->storedAñoData[2]->f_inicio;
+            $this->marzoFin = $this->storedAñoData[2]->f_fin;
 
-        $this->mayoIn = $this->storedAñoData[4]->f_inicio;
-        $this->mayoFin = $this->storedAñoData[4]->f_fin;
+            $this->abrilIn = $this->storedAñoData[3]->f_inicio;
+            $this->abrilFin = $this->storedAñoData[3]->f_fin;
 
-        $this->junioIn = $this->storedAñoData[5]->f_inicio;
-        $this->junioFin = $this->storedAñoData[5]->f_fin;
+            $this->mayoIn = $this->storedAñoData[4]->f_inicio;
+            $this->mayoFin = $this->storedAñoData[4]->f_fin;
 
-        $this->julioIn = $this->storedAñoData[6]->f_inicio;
-        $this->julioFin = $this->storedAñoData[6]->f_fin;
+            $this->junioIn = $this->storedAñoData[5]->f_inicio;
+            $this->junioFin = $this->storedAñoData[5]->f_fin;
 
-        $this->agostoIn = $this->storedAñoData[7]->f_inicio;
-        $this->agostoFin = $this->storedAñoData[7]->f_fin;
+            $this->julioIn = $this->storedAñoData[6]->f_inicio;
+            $this->julioFin = $this->storedAñoData[6]->f_fin;
 
-        $this->septiembreIn = $this->storedAñoData[8]->f_inicio;
-        $this->septiembreFin = $this->storedAñoData[8]->f_fin;
+            $this->agostoIn = $this->storedAñoData[7]->f_inicio;
+            $this->agostoFin = $this->storedAñoData[7]->f_fin;
 
-        $this->octubreIn = $this->storedAñoData[9]->f_inicio;
-        $this->octubreFin = $this->storedAñoData[9]->f_fin;
+            $this->septiembreIn = $this->storedAñoData[8]->f_inicio;
+            $this->septiembreFin = $this->storedAñoData[8]->f_fin;
 
-        $this->noviembreIn = $this->storedAñoData[10]->f_inicio;
-        $this->noviembreFin = $this->storedAñoData[10]->f_fin;
+            $this->octubreIn = $this->storedAñoData[9]->f_inicio;
+            $this->octubreFin = $this->storedAñoData[9]->f_fin;
 
-        $this->diciembreIn = $this->storedAñoData[11]->f_inicio;
-        $this->diciembreFin = $this->storedAñoData[11]->f_fin;
+            $this->noviembreIn = $this->storedAñoData[10]->f_inicio;
+            $this->noviembreFin = $this->storedAñoData[10]->f_fin;
+
+            $this->diciembreIn = $this->storedAñoData[11]->f_inicio;
+            $this->diciembreFin = $this->storedAñoData[11]->f_fin;
+        }else{
+            $this->storedAñoData = false;
+        }
     }
 
     public function updateMeses (){
