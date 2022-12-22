@@ -88,7 +88,7 @@
                           <span class="sidenav-normal"> VR Info </span>
                         </a>
                       </li>
-                    </ul>
+                    </ul> 
                   </div>
                 </li> --}}
                 {{-- <li class="nav-item ">
@@ -285,7 +285,6 @@
                   </script>,
                   Hecho con <i class="fa fa-heart"></i> por
                   <a href="https://iglumarketingdigital.com/" class="font-weight-bold" target="_blank">Igl&uacute; Marketing Digital</a>
-                  digitalizamos tus sueños.
                 </div>
               </div>
               {{-- <div class="col-lg-6">
