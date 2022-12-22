@@ -31,7 +31,7 @@ class AsignarPresupuesto extends Component
     public $diciembreModel;
 
     // Help vars
-    
+    protected $listeners = ['refresh' => 'mount'];
 
     public function render()
     {

@@ -11,14 +11,13 @@
                 @foreach ($comerciales as $comercial)
                     <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
                 @endforeach
-            </select> 
+            </select>  
         </div>
         <div class="card-body">
             <div class="row"> 
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Año</label>
-                        {{ $año }}
                         <select name="" id="" class="form-control" wire:model="año">
                             <option value="">Seleccionar</option>
                             @foreach ($años as $año)
@@ -26,9 +25,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="author align-items-center">
+                    {{-- <div class="author align-items-center">
                         <img src="./assets/img/kit/pro/team-2.jpg" alt="..." class="avatar shadow">
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="col-md-9">
                     <div class="table-responsive">
@@ -43,7 +42,7 @@
                                 @foreach ($presupuestos as $presupuesto)
                                     <tr>
                                         <td>
-                                            <p class="text-sm text-secondary mb-0">{{ $presupuesto->mes_id }}</p>
+                                            <p class="text-sm text-secondary mb-0">{{ $presupuesto->presupuesto_mes->description }}</p>
                                         </td>
                                         <td>
                                             <p class="text-sm text-secondary mb-0">{{ $presupuesto->valor }}</p>

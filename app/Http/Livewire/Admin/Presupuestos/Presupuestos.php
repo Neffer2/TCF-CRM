@@ -9,7 +9,7 @@ use App\models\Año;
 
 class Presupuestos extends Component
 {
-    // Model    
+    // Model     
     public $comercial; 
     public $año; 
     
@@ -18,6 +18,7 @@ class Presupuestos extends Component
     public $comerciales; 
     public $presupuestos = [];
     public $años = [];
+    protected $listeners = ['refresh' => 'mount'];
 
     public function render()
     {
@@ -43,12 +44,6 @@ class Presupuestos extends Component
 
         if ($comercial){
             return $this->presupuestos = Presupuesto::select('mes_id', 'valor', 'id_user')->where('id_user', $this->comercial)->get();
-        }
-
-        if ($año){
-            return $this->presupuestos = Presupuesto::select('ano_id', 'mes_id', 'valor', 'id_user')
-                                                ->where('ano_id', $this->año)
-                                                ->get();
         }
     }
 

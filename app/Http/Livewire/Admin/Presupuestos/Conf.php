@@ -38,7 +38,7 @@ class Conf extends Component
     public $octubreIn;
     public $octubreFin;
     public $noviembreIn;
-    public $noviembreFin;
+    public $noviembreFin; 
     public $diciembreIn;
     public $diciembreFin;
 
