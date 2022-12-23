@@ -303,7 +303,7 @@
     <div class="container-fluid py-4">
       <div class="row">
         @yield('content')
-        
+      </div> 
       
       <footer class="footer pt-3">
         <div class="container-fluid">
