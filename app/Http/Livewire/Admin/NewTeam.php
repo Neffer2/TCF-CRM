@@ -76,7 +76,7 @@ class NewTeam extends Component
             'telefono' => $this->telefono,
             'rol' => $this->rol,
             'password' => Hash::make($this->password)
-        ]);
+        ]); 
 
         return redirect()->route('mi-equpo')->with('success', '¡Nuevo integrante añadido exitosamente!');
     }

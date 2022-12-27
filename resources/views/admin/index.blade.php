@@ -213,7 +213,7 @@
                 </div>
                 <div class="card-body pt-1">
                     <div class="row">
-                        <div class="col-md-4 text-center">
+                        <div class="col-md-4 text-center d-flex justify-content-center">
                             <div class="">
                                 <div class="p-3">
                                     <div class="d-flex">
@@ -225,34 +225,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">$87,000</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">$87,000</h5>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 text-center">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">%80</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">%80</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4 text-center">
+                        <div class="col-md-4 text-center d-flex justify-content-center">
                             <div class="">
                                 <div class="p-3">
                                     <div class="d-flex">
@@ -264,34 +254,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">$87,000</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">$87,000</h5>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">%80</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">%80</h5>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>  
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 text-center d-flex justify-content-center">
                             <div class="">
                                 <div class="p-3">
                                     <div class="d-flex">
@@ -303,34 +283,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">$87,000</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">$87,000</h5>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="">
-                                <div class="p-3">
-                                    <div class="d-flex">
-                                        <div class="numbers">
-                                            <p class="text-sm mb-0 text-uppercase font-weight-bold"><br><br></p>
-                                            <h5 class="font-weight-bolder mb-0">%80</h5>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center d-flex justify-content-center pb-3">
+                            <div class="d-flex align-items-end">
+                                <div class="numbers">
+                                    <h5 class="font-weight-bolder mb-0">%80</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 text-center d-flex justify-content-center">
                             <div class="">
                                 <div class="p-3">
                                     <div class="d-flex">

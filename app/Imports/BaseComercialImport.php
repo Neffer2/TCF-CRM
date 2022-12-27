@@ -7,21 +7,23 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class BaseComercialImport implements ToModel, WithHeadingRow
+
+class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
 {
-    /**
+    /** 
     * @param array $row
     * 
     * @return \Illuminate\Database\Eloquent\Model|null
     */
-    public function model(array $row) 
+    public function model(array $row)  
     {
         /* id estado converter */
         $estado = $this->estado_validate($row['estado']);
         if ($estado == "ERROR"){
-            dd("ERROR");
-        }
+            return redirect()->back()->with('Error', '¡Estado inválido!');
+        } 
         /* --- */
         return new Base_comercial([ 
             'fecha' => Date::excelToDateTimeObject($row['fecha']),

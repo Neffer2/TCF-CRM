@@ -95,7 +95,7 @@ class AsignarPresupuesto extends Component
             'diciembreModel' => ['required', 'numeric'],
             'añosModel' => ['required'],
             'comercialesModel' => ['required']
-        ]);
+        ]); 
         
         $presupuestosXmes = Presupuesto::where('ano_id', $this->añosModel)->where('id_user', $this->comercialesModel)->get();
         if (!$presupuestosXmes->isEmpty()){

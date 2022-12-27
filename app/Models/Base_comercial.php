@@ -21,7 +21,7 @@ class Base_comercial extends Model
         'com_3',
         'id_estado',
         'fecha_inicio',
-        'dura_mes',
+        'dura_mes', 
         'id_user' 
     ];
 
@@ -31,7 +31,7 @@ class Base_comercial extends Model
 
     // public function user_rol(){
     //     return $this->hasOne(Rol::class, 'id', 'rol');
-    // }
+    // } 
 
     public function estado_cuenta (){
         return $this->hasOne(EstadoCuenta::class, 'id', 'id_estado');

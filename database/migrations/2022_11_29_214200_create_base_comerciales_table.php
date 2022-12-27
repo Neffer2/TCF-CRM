@@ -16,6 +16,7 @@ class CreateBaseComercialesTable extends Migration
         Schema::create('base_comerciales', function (Blueprint $table) {
             $table->id();
             $table->date('fecha');
+            $table->date('fecha');
             $table->string('nom_cliente');
             $table->string('nom_proyecto');
             $table->string('cod_cc');

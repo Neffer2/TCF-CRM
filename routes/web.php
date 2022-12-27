@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController; 
+use App\Http\Controllers\ContableController; 
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\HomeController; 
  
@@ -44,5 +45,14 @@ Route::get('/', function () {
     /* --- */
 /* --- */  
 
-require __DIR__.'/auth.php';  
+/* contable */ 
+    /* base - functions */  
+        Route::get('/dashboard-con', [ContableController::class, 'index'])->middleware(['auth'])->middleware(['contable'])->name('dashboard-con');  
+        Route::get('/actualizar-perfil-con', [ContableController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['contable'])->name('actualizar-perfil-con');  
+
+        Route::post('/helisa-upload', [ContableController::class, 'helisa_upload'])->middleware(['auth'])->name('helisa-upload');  
+    /* --- */
+/* --- */
+
+require __DIR__.'/auth.php';   
  
