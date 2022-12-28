@@ -18,7 +18,6 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            {{ $añosModel }}
                             <select class="form-control" wire:model="añosModel" required>
                                 <option value="">Seleccionar</option>
                                 @foreach ($añosStored as $año)

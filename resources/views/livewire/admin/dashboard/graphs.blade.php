@@ -8,7 +8,7 @@
                 </button>
             </div>
         </div> 
-        <div class="card-body p-3">
+        <div class="card-body p-3"> 
             <div class="row">
                 <div class="col-5 text-center">
                     <div class="chart">
@@ -96,7 +96,7 @@
             </div>
         </div>
     </div>
-    {{-- <div class="col-lg-6 mt-lg-0 mt-4">
+    <div class="col-lg-6 mt-lg-0 mt-4">
         <div class="row">
             <div class="col-sm-6">
                 <div class="card h-100">
@@ -119,10 +119,12 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
+    
     @section('scripts')
         <script>
             let donut = document.getElementById('donut'); 
+            // let dataGraph1 = {{ json_encode($dataGraph1) }}
             new Chart(donut, {
                 type: "doughnut",
                 data: {
@@ -135,7 +137,7 @@
                     pointRadius: 2,
                     borderWidth: 2,
                     backgroundColor: ['#2152ff', '#3A416F', '#f53939', '#a8b8d8', '#5e72e4'],
-                    data: [15, 20, 12, 60, 20],
+                    data: [1,2,3,4,5],
                     fill: false
                 }],
                 },
@@ -177,6 +179,14 @@
                 },
                 },
             });
+
+            function addData(chart, label, data) {
+                chart.data.labels.push(label);
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.push(data);
+                });
+                chart.update();
+            }
         </script>
     @endsection
 </div>

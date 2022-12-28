@@ -5,7 +5,6 @@
                 <h5 class="mb-0">Lista de presupuestos</h5> 
             </div>
             <hr>
-            {{ $comercial }}
             <select class="form-control" wire:model="comercial"> 
                 <option value="">Seleccionar</option>
                 @foreach ($comerciales as $comercial)
@@ -48,7 +47,7 @@
                                             <p class="text-sm text-secondary mb-0">{{ $presupuesto->valor }}</p>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endforeach 
                             </tbody>
                         </table>
                     </div>

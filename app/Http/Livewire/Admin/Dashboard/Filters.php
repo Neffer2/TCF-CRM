@@ -32,16 +32,19 @@ class Filters extends Component
 
     public function updatedComercial(){
         $this->signals();
-    }
+    } 
 
     public function signals (){
-        $this->emit('Graphs', ['mes' => $this->mes, 'comercial' => $this->comercial]);
+        $this->emit('Graphs', ['año' => date("Y"), 'mes' => $this->mes, 'comercial' => $this->comercial]);
+        $this->emit('Block1', ['año' => date("Y"), 'mes' => $this->mes, 'comercial' => $this->comercial]);
     }
 
     public function getFilters (){
         $año = Año::select('id')->where('description', date("Y"))->first();
-        $this->StdMes = Mes::select('id', 'description')->where('ano_id', $año->id)->get();
-        // 
-        $this->StdComercial = User::select('id', 'name')->where('rol', 2)->get();
+        if ($año){
+            $this->StdMes = Mes::select('id', 'description')->where('ano_id', $año->id)->get();
+            // 
+            $this->StdComercial = User::select('id', 'name')->where('rol', 2)->get();
+        }
     }
 }

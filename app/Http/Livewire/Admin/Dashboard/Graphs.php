@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 class Graphs extends Component
 {
     //Models
+        //Graph1
+        public $labelsGraph1 = [];
+        public $dataGraph1 = [];
 
     protected $listeners = ['Graphs' => 'graph1'];
 
@@ -16,13 +19,16 @@ class Graphs extends Component
     {
         return view('livewire.admin.dashboard.graphs');
     }
-
+ 
     public function graph1 ($filters){
-        $orders = DB::table('base_comerciales')
-                ->select('id_estado', DB::raw('COUNT(id_estado)'))
+        $estados_count = DB::table('base_comerciales')
+                ->select('id_estado', DB::raw('COUNT(id_estado) AS count_estados'))
                 ->groupBy('id_estado')
                 ->havingRaw('COUNT(id_estado) > 1')
                 ->get();
-        dd($orders);
+             
+        foreach ($estados_count as $estado) {
+            array_push($this->dataGraph1, $estado->count_estados);
+        }
     }
 }   
