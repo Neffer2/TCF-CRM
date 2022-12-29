@@ -21,14 +21,14 @@ class ComercialController extends Controller
         return view('comercial.ajustes.perfil.actualizar');
     }
 
-    public function upload_base (Request $request){
+    public function upload_base (Request $request){ 
          
         $request->validate([
             'base_xls' => 'required|mimes:xlsx, csv, xls'
-        ]); 
+        ]);  
 
-        Base_comercial::truncate(); 
-        Excel::import(new BaseComercialImport, $request->base_xls);  
+        Base_comercial::truncate();  
+        Excel::import(new BaseComercialImport, request()->file('base_xls')->store('temp'));  
         return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
     } 
 }

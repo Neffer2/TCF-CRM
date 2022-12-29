@@ -44,7 +44,7 @@
                             <div class="numbers">
                                 <p class="text-white text-uppercase text-sm mb-0 opacity-7">CUMPLIMIENTO VTA MENSUAL</p>
                                 <h5 class="text-white font-weight-bolder mb-0">
-                                    {{ $cumpli_acum_venta_men }} %
+                                    {{ $cumpli_venta_men }} %
                                 </h5>
                             </div>
                         </div>
@@ -101,9 +101,9 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-white text-uppercase text-sm mb-0 opacity-7">CUMPLIMIENTO VTA MENSUAL</p>
+                                <p class="text-white text-uppercase text-sm mb-0 opacity-7">CUMPLIMIENTO VTA ACUMULADO</p>
                                 <h5 class="text-white font-weight-bolder mb-0">
-                                    {{ $cumpli_venta_men }} %
+                                    {{ $cumpli_acum_venta_men }} %
                                 </h5>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                     <div class="row">
                         <div class="col-8">
                             <div class="numbers">
-                                <p class="text-white text-uppercase text-sm mb-0 opacity-7">CUMPLIMIENTO VTA ACUMULADO</p>
+                                <p class="text-white text-uppercase text-sm mb-0 opacity-7">PRESUPUESTO POR CUMPLIR</p>
                                 <h5 class="text-white font-weight-bolder mb-0">
                                     {{ $presto_x_cumplir }} %
                                 </h5>

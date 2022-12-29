@@ -41,7 +41,9 @@ class Block1 extends Component
         $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);
 
         $this->updateCumpli_venta_men();
-        $this->updatecumpli_acum_venta_men();
+        $this->updateCumpli_acum_venta_men();
+        $this->updateCumpli_acum_venta_men();
+        $this->updatePresto_x_cumplir();
     }
 
     public function getMes ($mes){
@@ -145,18 +147,30 @@ class Block1 extends Component
             foreach ($presupuestos as $value) {
                 $this->presto_acumulado += $value->valor;
             }
+        }else {
+            $this->presto_acumulado = 0;
         }
-    }
+    } 
 
     public function updateCumpli_venta_men (){
         if ($this->presto_mensual > 0){
             $this->cumpli_venta_men = ($this->venta_facturada/$this->presto_mensual)*100;
+        }else{
+            $this->cumpli_venta_men = 0;
         }
     } 
 
-    public function updatecumpli_acum_venta_men (){
+    public function updateCumpli_acum_venta_men (){
         if ($this->presto_acumulado > 0){
             $this->cumpli_acum_venta_men = ($this->venta_consolidada/$this->presto_acumulado)*100;
+        }else {
+            $this->cumpli_acum_venta_men = 0;
+        }
+    }
+
+    public function updatePresto_x_cumplir (){
+        if ($this->presto_acumulado){
+            $this->presto_x_cumplir = $this->presto_acumulado - 100;
         }
     }
 }

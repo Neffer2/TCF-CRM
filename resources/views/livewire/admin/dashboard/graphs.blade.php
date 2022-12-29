@@ -123,70 +123,70 @@
     
     @section('scripts')
         <script>
-            let donut = document.getElementById('donut'); 
-            // let dataGraph1 = {{ json_encode($dataGraph1) }}
-            new Chart(donut, {
-                type: "doughnut",
-                data: {
-                labels: ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco'],
-                datasets: [{
-                    label: "Projects",
-                    weight: 9,
-                    cutout: 60,
-                    tension: 0.9,
-                    pointRadius: 2,
-                    borderWidth: 2,
-                    backgroundColor: ['#2152ff', '#3A416F', '#f53939', '#a8b8d8', '#5e72e4'],
-                    data: [1,2,3,4,5],
-                    fill: false
-                }],
-                },
-                options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                    display: false,
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                scales: {
-                    y: {
-                    grid: {
-                        drawBorder: false,
-                        display: false,
-                        drawOnChartArea: false,
-                        drawTicks: false,
-                    },
-                    ticks: {
-                        display: false
-                    }
-                    },
-                    x: {
-                    grid: {
-                        drawBorder: false,
-                        display: false,
-                        drawOnChartArea: false,
-                        drawTicks: false,
-                    },
-                    ticks: {
-                        display: false,
-                    }
-                    },
-                },
-                },
-            });
+            // let donut = document.getElementById('donut'); 
+            // // let dataGraph1 = {{ json_encode($dataGraph1) }}
+            // new Chart(donut, {
+            //     type: "doughnut",
+            //     data: {
+            //     labels: ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco'],
+            //     datasets: [{
+            //         label: "Projects",
+            //         weight: 9,
+            //         cutout: 60,
+            //         tension: 0.9,
+            //         pointRadius: 2,
+            //         borderWidth: 2,
+            //         backgroundColor: ['#2152ff', '#3A416F', '#f53939', '#a8b8d8', '#5e72e4'],
+            //         data: [1,2,3,4,5],
+            //         fill: false
+            //     }],
+            //     },
+            //     options: {
+            //     responsive: true,
+            //     maintainAspectRatio: false,
+            //     plugins: {
+            //         legend: {
+            //         display: false,
+            //         }
+            //     },
+            //     interaction: {
+            //         intersect: false,
+            //         mode: 'index',
+            //     },
+            //     scales: {
+            //         y: {
+            //         grid: {
+            //             drawBorder: false,
+            //             display: false,
+            //             drawOnChartArea: false,
+            //             drawTicks: false,
+            //         },
+            //         ticks: {
+            //             display: false
+            //         }
+            //         },
+            //         x: {
+            //         grid: {
+            //             drawBorder: false,
+            //             display: false,
+            //             drawOnChartArea: false,
+            //             drawTicks: false,
+            //         },
+            //         ticks: {
+            //             display: false,
+            //         }
+            //         },
+            //     },
+            //     },
+            // });
 
-            function addData(chart, label, data) {
-                chart.data.labels.push(label);
-                chart.data.datasets.forEach((dataset) => {
-                    dataset.data.push(data);
-                });
-                chart.update();
-            }
+            // function addData(chart, label, data) {
+            //     chart.data.labels.push(label);
+            //     chart.data.datasets.forEach((dataset) => {
+            //         dataset.data.push(data);
+            //     });
+            //     chart.update();
+            // }
         </script>
     @endsection
 </div>
