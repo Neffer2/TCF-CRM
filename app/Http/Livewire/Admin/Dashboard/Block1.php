@@ -8,6 +8,7 @@ use App\Models\Mes;
 use App\Models\Año;
 use App\Models\Helisa;
 use App\Models\Presupuesto;
+use Illuminate\Support\Facades\DB;
 
 class Block1 extends Component
 {   
@@ -37,11 +38,14 @@ class Block1 extends Component
         $this->getVentaFacturada($año->description, $mes, $filters['comercial']);
         $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);
         $this->getPresupuesto($mes, $filters['comercial']);
-        $this->getPresupuestoAcumulado($mes, $filters['comercial']);
+        $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);
+
+        $this->updateCumpli_venta_men();
+        $this->updatecumpli_acum_venta_men();
     }
 
     public function getMes ($mes){
-        $mes = Mes::select('id', 'description', 'f_inicio', 'f_fin')->where('id', $mes)->first();
+        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('id', $mes)->first();
         return $mes;
     }
 
@@ -92,15 +96,19 @@ class Block1 extends Component
             array_push($filters_array, ['comercial', $comercial]);
         }
         
-        $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
-                    ->where($filters_array)
-                    ->whereBetween('fecha', [$first_month->f_inicio, $mes->f_fin])
-                    ->get();
+        // Si no hay mes no hay venta consolidada
+        if ($mes){
+            $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
+                        ->where($filters_array)
+                        ->whereBetween('fecha', [$first_month->f_inicio, $mes->f_fin])
+                        ->get();
 
-        $this->venta_consolidada = 0;
-        foreach ($helisa_results as $helisa_result){
-            $this->venta_consolidada += $helisa_result->base_factura;
+            $this->venta_consolidada = 0;
+            foreach ($helisa_results as $helisa_result){
+                $this->venta_consolidada += $helisa_result->base_factura;
+            }
         }
+
     }
 
     public function getPresupuesto($mes, $comercial) {
@@ -124,7 +132,31 @@ class Block1 extends Component
         }                                   
     }
 
-    public function getPresupuestoAcumulado (){
+    public function getPresupuestoAcumulado ($año_id, $mes, $comercial){
+        // Si no hay mes, no hay presupuesto acumulado
+        if ($mes) {
+            if ($comercial){
+                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
+            }else {
+                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
+            }
+    
+            $this->presto_acumulado = 0;
+            foreach ($presupuestos as $value) {
+                $this->presto_acumulado += $value->valor;
+            }
+        }
+    }
 
+    public function updateCumpli_venta_men (){
+        if ($this->presto_mensual > 0){
+            $this->cumpli_venta_men = ($this->venta_facturada/$this->presto_mensual)*100;
+        }
+    } 
+
+    public function updatecumpli_acum_venta_men (){
+        if ($this->presto_acumulado > 0){
+            $this->cumpli_acum_venta_men = ($this->venta_consolidada/$this->presto_acumulado)*100;
+        }
     }
 }
