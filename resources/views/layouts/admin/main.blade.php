@@ -39,7 +39,7 @@
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-shop text-primary text-sm opacity-10"></i>
             </div>
-            <span class="nav-link-text ms-1">Dashboards</span>
+            <span class="nav-link-text ms-1">Inicio</span>
           </a>
           <div class="collapse  show " id="dashboardsExamples">
             <ul class="nav ms-4"> 
@@ -56,14 +56,14 @@
                 </a> 
               </li> --}} 
               <li class="nav-item active">
-                <a class="nav-link active" href="../../pages/dashboards/smart-home.html">
-                  <span class="sidenav-mini-icon"> S </span>
-                  <span class="sidenav-normal"> Smart Home </span>
+                <a class="nav-link active" href="{{ route('dashboard-admin') }}">
+                  <span class="sidenav-mini-icon"> D </span>
+                  <span class="sidenav-normal"> Dashboard </span>
                 </a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link " href="{{ route('base-comercial-general') }}">
-                  <span class="sidenav-mini-icon"> A </span>
+                  <span class="sidenav-mini-icon"> B </span>
                   <span class="sidenav-normal"> Base comercial </span>
                 </a>
               </li>
@@ -109,13 +109,13 @@
             <ul class="nav ms-4">
               <li class="nav-item ">
                 <a class="nav-link " href="{{ route('presupuesto') }}"> 
-                  <span class="sidenav-mini-icon"> K </span>
+                  <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Presupuesto </span>
                 </a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link " href="{{ route('mi-equpo') }}">
-                  <span class="sidenav-mini-icon"> K </span>
+                  <span class="sidenav-mini-icon"> M </span>
                   <span class="sidenav-normal"> Mi equipo </span>
                 </a>
               </li>
@@ -142,7 +142,7 @@
         </li>
       </ul>
     </div>
-    <div class="sidenav-footer mx-3 my-3">
+    <!-- <div class="sidenav-footer mx-3 my-3">
       <div class="card card-plain shadow-none" id="sidenavCard">
         <img class="w-60 mx-auto" src="../../assets/img/illustrations/icon-documentation.svg" alt="sidebar_illustration">
         <div class="card-body text-center p-3 w-100 pt-0">
@@ -153,7 +153,7 @@
         </div>
       </div>
       <a href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard" target="_blank" class="btn btn-dark btn-sm w-100 mb-3">Documentation</a>
-    </div>
+    </div> -->
   </aside>
   <!-- End Barra lateral -->
   
@@ -216,12 +216,12 @@
                 </div>
               </a>
             </li>
-            <li class="nav-item px-3 d-flex align-items-center">
+            <!-- <li class="nav-item px-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-white p-0">
                 <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
               </a>
-            </li>
-            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+            </li> -->
+            <!-- <li class="nav-item dropdown pe-2 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-bell cursor-pointer"></i>
               </a>
@@ -293,7 +293,7 @@
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -318,7 +318,7 @@
               </div>
             </div>
             <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+              <!-- <ul class="nav nav-footer justify-content-center justify-content-lg-end">
                 <li class="nav-item">
                   <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
                 </li>
@@ -331,7 +331,7 @@
                 <li class="nav-item">
                   <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
                 </li>
-              </ul>
+              </ul> -->
             </div>
           </div>
         </div>

@@ -57,7 +57,9 @@
         <div class="col-12 col-md-12 col-xl-12">
           <div class="card card-body mt-4"> 
               <h5 class="mb-0">Actualizar reporte Helisa</h5>
-              <p class="text-sm mb-0">Para actualizar el reporte Helisa necesitas utilizar &eacute;ste <a href="#"><b>formato</b></a>.</p>
+              <p class="text-sm mb-0">Para actualizar el reporte Helisa necesitas utilizar &eacute;ste <a href="{{ asset('formatos/contable/Formato Reporte Helisa.xlsx') }}"><b>formato</b></a>.</p>
+              <h6 class="mb-0">¿Tienes dudas?</h6>
+              <p class="text-sm mb-0">Aqu&iacute; tienes un documento de <a href="{{ asset('formatos/contable/Ejemplo Reporte Helisa.xlsx') }}"><b>ejemplo</b></a>.</p>
               <label class="mt-4 form-label">Carga tu hoja de c&aacute;lculo</label>
               <form action="{{ route('helisa-upload') }}" enctype="multipart/form-data" method="POST" class="form-control">
                 @csrf
@@ -73,8 +75,8 @@
       </div> 
 
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-        @livewire('con.helisa-list') 
-      </div>
+        @livewire('cont.helisa-list')  
+      </div> 
     </div>
   @endsection
 

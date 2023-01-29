@@ -57,7 +57,18 @@
         <div class="col-12 col-md-12 col-xl-12">
           <div class="card card-body mt-4">
               <h5 class="mb-0">Actualiza tu base comercial</h5>
-              <p class="text-sm mb-0">Para actualizar tu base comercial necesitas utilizar &eacute;ste <a href="#"><b>formato</b></a>.</p>
+              <p class="text-sm mb-0">Para actualizar tu base comercial necesitas utilizar &eacute;ste <a href="{{ asset('formatos/comercial/Formato Base Comercial.xlsx') }}"><b>formato</b></a>.
+                <br><br>
+                Ten en cuanta los siguientes puntos para poder subir tu base comercial: 
+                <ul class="text-sm mb-0">
+                  <li class="">El formato de <b>Fecha</b> deber ser AAAA-MM-DD <b>(2022-05-16)</b>.</li>
+                  <li class="">Solo utilizar los estados de la lista.</li>
+                  <li class="">No eliminar la hoja <b>CONF</b>.</li>
+                  <li class="">El <b>Valor de Proyecto</b> debe ser cero ( 0 ) si es que &eacute;ste a&uacute;n est&aacute; sin definir.</b></li>
+                </ul>
+              </p>
+              <h6 class="mb-0">¿Tienes dudas?</h6>
+              <p class="text-sm mb-0">Aqu&iacute; tienes un documento de <a href="{{ asset('formatos/comercial/Ejemplo Base Comercial.xlsx') }}"><b>ejemplo</b></a>.</p>
               <label class="mt-4 form-label">Carga tu hoja de c&aacute;lculo</label>
               <form action="{{ route('base-upload') }}" enctype="multipart/form-data" method="POST" class="form-control">
                 @csrf

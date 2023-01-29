@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Livewire\Con;
+namespace App\Http\Livewire\Cont;
 
-use Livewire\Component; 
+use Livewire\Component;
 use App\Models\Helisa;
 
 class HelisaList extends Component
@@ -11,11 +11,10 @@ class HelisaList extends Component
 
     public function render()
     {
-        return view('livewire.con.helisa-list');
+        return view('livewire.cont.helisa-list');
     }
 
     public function mount(){
         $this->list = Helisa::all();
     }
 }
- 

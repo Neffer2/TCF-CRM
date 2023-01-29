@@ -8,14 +8,15 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
+class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFormulas, WithValidation
 {
     /**
     * @param array $row
     * 
     * @return \Illuminate\Database\Eloquent\Model|null
-    */
+    */ 
     public function model(array $row)
     {   
         $row['comercial'] = $this->user_validate($row['comercial']);
@@ -40,12 +41,32 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
         ]);
     }
 
+    public function rules(): array
+    {
+        return [
+            'fecha' => ['required'],
+            'tipo_doc' => ['required'],
+            'numero_doc' => ['required'],
+            'concepto' => ['required'],
+            'identidad' => ['required'],
+            'nombre_del_tercero' => ['required'],
+            'centro_costo' => ['required'],
+            'nombre_centro_de_costo' => ['required'],
+            'comercial' => ['required'],
+            'participacion' => ['required'],
+            'base_factura' => ['required'],
+            'mes' => ['required'],
+            'ano' => ['required'],
+            'comision' => ['required']
+        ];
+    }
+
     public function user_validate($user){
         $user = User::select('id', 'name')->where('name', $user)->first();
         if ($user){
             return $user->id;
         }
-        return "ERROR";
+        return "ERROR"; 
     }
 }
  

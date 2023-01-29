@@ -41,32 +41,14 @@
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-shop text-primary text-sm opacity-10"></i>
               </div>
-              <span class="nav-link-text ms-1">Dashboards</span>
+              <span class="nav-link-text ms-1">Inicio</span>
             </a>
             <div class="collapse  show " id="dashboardsExamples">
               <ul class="nav ms-4">
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " href="../../pages/dashboards/landing.html">
-                    <span class="sidenav-mini-icon"> L </span>
-                    <span class="sidenav-normal"> Landing </span>
-                  </a>
-                </li> --}}
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " href="../../pages/dashboards/default.html">
-                    <span class="sidenav-mini-icon"> D </span>
-                    <span class="sidenav-normal"> Default </span>
-                  </a>
-                </li> --}}
                 <li class="nav-item active">
-                  <a class="nav-link active" href="../../pages/dashboards/smart-home.html">
-                    <span class="sidenav-mini-icon"> S </span>
-                    <span class="sidenav-normal"> Smart Home </span>
-                  </a>
-                </li>
-                <li class="nav-item ">
-                  <a class="nav-link " href="../../pages/dashboards/automotive.html">
-                    <span class="sidenav-mini-icon"> A </span>
-                    <span class="sidenav-normal"> Automotive </span>
+                  <a class="nav-link active" href="{{ route('dashboard-com') }}">
+                    <span class="sidenav-mini-icon"> B </span>
+                    <span class="sidenav-normal"> Base comercial </span>
                   </a>
                 </li>
                 {{-- <li class="nav-item ">
@@ -111,7 +93,7 @@
               <ul class="nav ms-4"> 
                 <li class="nav-item ">
                   <a class="nav-link " href="{{ route('actualizar-perfil-com') }}"> 
-                    <span class="sidenav-mini-icon"> K </span>
+                    <span class="sidenav-mini-icon"> A </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>
                 </li>
@@ -120,7 +102,7 @@
           </li>
         </ul>
       </div>
-      <div class="sidenav-footer mx-3 my-3">
+      <!-- <div class="sidenav-footer mx-3 my-3">
         <div class="card card-plain shadow-none" id="sidenavCard">
           <img class="w-60 mx-auto" src="../../assets/img/illustrations/icon-documentation.svg" alt="sidebar_illustration">
           <div class="card-body text-center p-3 w-100 pt-0">
@@ -131,7 +113,7 @@
           </div>
         </div>
         <a href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard" target="_blank" class="btn btn-dark btn-sm w-100 mb-3">Documentation</a>
-      </div>
+      </div> -->
     </aside>
     <!-- -->
     <div class="main-content position-relative max-height-vh-100 h-100">
@@ -140,10 +122,10 @@
         <div class="container-fluid py-1">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 ps-2 me-sm-6 me-5">
-              <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="javascript:;">Pages</a></li>
-              <li class="breadcrumb-item text-sm text-white active" aria-current="page">Profile Overview</li>
+              <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="javascript:;">Inicio</a></li>
+              <li class="breadcrumb-item text-sm text-white active" aria-current="page">Base comercial</li>
             </ol>
-            <h6 class="text-white font-weight-bolder ms-2">Profile Overview</h6>
+            <h6 class="text-white font-weight-bolder ms-2">Comercial</h6>
           </nav>
           <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none">
             <a href="javascript:;" class="nav-link text-white p-0">
@@ -188,12 +170,12 @@
                   </div>
                 </a>
               </li>
-              <li class="nav-item px-3 d-flex align-items-center">
+              <!-- <li class="nav-item px-3 d-flex align-items-center">
                 <a href="javascript:;" class="nav-link text-white p-0">
                   <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
                 </a>
-              </li>
-              <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              </li> -->
+              <!-- <li class="nav-item dropdown pe-2 d-flex align-items-center">
                 <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fa fa-bell cursor-pointer"></i>
                 </a>
@@ -265,7 +247,7 @@
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> -->
             </ul>
           </div>
         </div>
@@ -309,9 +291,9 @@
       </div>
     </div>
     <div class="fixed-plugin">
-      <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+      <!-- <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
         <i class="fa fa-cog py-2"> </i>
-      </a>
+      </a> -->
       <div class="card shadow-lg">
         <div class="card-header pb-0 pt-3 bg-transparent ">
           <div class="float-start">
@@ -411,9 +393,11 @@
       @if($errors->any())
         Swal.fire(
         '!Oppss tenemos un problema',
-        `@foreach($errors->all() as $error) 
-            {{ $error }}
-        @endforeach`,
+        `<ul style='text-align: initial; list-style-type: none;'>
+          @foreach($errors->all() as $error) 
+            <li>{{ $error }}<li>
+          @endforeach
+        </ul>`,
         'error'
         );
       @endif 

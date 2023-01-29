@@ -20,7 +20,7 @@ class CreatePresupuestosTable extends Migration
 
             $table->foreignId('mes_id');
             $table->foreign('mes_id')->references('id')->on('meses');
-            $table->decimal('valor', 10, 2);
+            $table->decimal('valor', 15, 2);
             // comercial
             $table->foreignId('id_user');
             $table->foreign('id_user')->references('id')->on('users');
