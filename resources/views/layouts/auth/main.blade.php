@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../../../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../../../assets/img/favicon.png">
+  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
+  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
     Argon Dashboard 2 PRO by Creative Tim
   </title>
@@ -840,7 +841,7 @@
   <!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
   <footer class="footer py-5">
     <div class="container">
-      <div class="row">
+      {{-- <div class="row">
         <div class="col-lg-8 mb-4 mx-auto text-center">
           <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
             Company
@@ -871,20 +872,15 @@
           <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
             <span class="text-lg fab fa-instagram"></span>
           </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
-            <span class="text-lg fab fa-pinterest"></span>
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
-            <span class="text-lg fab fa-github"></span>
-          </a> 
         </div>
-      </div>
+      </div> --}}
       <div class="row">
         <div class="col-8 mx-auto text-center mt-1">
           <p class="mb-0 text-secondary">
-            Copyright © <script>
+            <a href="https://www.bullmarketing.com.co/" target="_blank">BullMarketing</a>
+              Copyright © <script>
               document.write(new Date().getFullYear())
-            </script> Soft by Creative Tim.
+            </script> <br> Hecho con ❤ por <a href="https://iglumarketingdigital.com/" target="_blank">Iglú Marketing Digital</a>
           </p>
         </div>
       </div> 
