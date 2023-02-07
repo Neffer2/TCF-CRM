@@ -38,7 +38,9 @@ class Block1 extends Component
     public function default(){
         // Obtiene el último año cargado
         $latest_year = Año::select('description')->orderBy('created_at', 'DESC')->first();
-        $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => null]);
+        if ($latest_year){
+            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => null]);
+        }
     }
 
     public function getData($filters = null) {
