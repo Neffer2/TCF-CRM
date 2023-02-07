@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
-use App\models\Base_comercial;
+use App\Models\Base_comercial;
 
 class BaseComercial extends Component
 {   

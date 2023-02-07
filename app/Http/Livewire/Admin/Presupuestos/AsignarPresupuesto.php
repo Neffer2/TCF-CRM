@@ -3,10 +3,10 @@
 namespace App\Http\Livewire\Admin\Presupuestos;
 
 use Livewire\Component;
-use App\models\Año;
-use App\models\User;
-use App\models\Presupuesto;
-use App\models\Mes;
+use App\Models\Año;
+use App\Models\User;
+use App\Models\Presupuesto;
+use App\Models\Mes;
 use Illuminate\Validation\Rules;
 
 class AsignarPresupuesto extends Component

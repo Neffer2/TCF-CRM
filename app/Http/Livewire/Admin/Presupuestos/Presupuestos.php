@@ -3,9 +3,9 @@
 namespace App\Http\Livewire\Admin\Presupuestos;
 
 use Livewire\Component;
-use App\models\User;
-use App\models\Presupuesto;
-use App\models\Año;
+use App\Models\User;
+use App\Models\Presupuesto;
+use App\Models\Año;
 
 class Presupuestos extends Component
 {
