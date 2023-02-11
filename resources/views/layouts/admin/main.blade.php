@@ -63,9 +63,15 @@
                 </a>
               </li>
               <li class="nav-item ">
+                <a class="nav-link " href="{{ route('estado-facturacion') }}">
+                  <span class="sidenav-mini-icon"> E </span>
+                  <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
+                </a>
+              </li>
+              <li class="nav-item ">
                 <a class="nav-link " href="{{ route('base-comercial-general') }}">
                   <span class="sidenav-mini-icon"> B </span>
-                  <span class="sidenav-normal"> Base comercial </span>
+                  <span class="sidenav-normal"> Base comercial general </span>
                 </a>
               </li>
               {{-- <li class="nav-item ">

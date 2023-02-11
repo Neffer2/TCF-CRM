@@ -27,4 +27,8 @@ class AdminController extends Controller
     public function showPresupuestos (){
         return view('admin.acciones.presupuesto');
     }
+
+    public function estadoFacturacion(){
+        return view('admin.data.estado-facturacion');
+    }
 }

@@ -18,7 +18,7 @@ use App\Http\Controllers\HomeController;
 */
 
 Route::get('/', function () { 
-    return redirect()->route('login');
+    return redirect()->route('login'); 
 });
 
 /* Home */
@@ -32,6 +32,7 @@ Route::get('/', function () {
     Route::get('/actualizar-perfil-adm', [AdminController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['admin'])->name('actualizar-perfil-adm');   
     Route::get('/base-comercial-general', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');   
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');   
+    Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
 
 /* --- */ 
  
