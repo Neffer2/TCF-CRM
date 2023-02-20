@@ -168,17 +168,19 @@ class Block1 extends Component
         // Si no hay mes, hace el conteo de todos los meses
         if ($mes) {
             if ($comercial){
-                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
+                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
             }else {
-                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
+                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
             }
-        }else {
+        }else { 
             if ($comercial){
                 $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE id_user = $comercial AND ano_id = $año_id"));
             }else {
                 $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE ano_id = $año_id"));
             }
         }
+
+        // dd($presupuestos);
         $this->presto_acumulado = 0;
         foreach ($presupuestos as $value) {
             $this->presto_acumulado += $value->valor;

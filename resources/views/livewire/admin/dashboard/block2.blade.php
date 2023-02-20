@@ -16,8 +16,12 @@
                     <div class="p-3">
                         <div class="d-flex">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-uppercase font-weight-bold">EJECUCIÓN X FACTURAR</p>
-                                <h5 class="font-weight-bolder mb-0">${{ number_format($xfacturar,2,".",",") }}</h5>
+                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                        EJECUCIÓN X FACTURAR
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">${{ number_format($xfacturar,2,".",",") }}</h5>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -37,9 +41,13 @@
                 <div class="">
                     <div class="p-3">
                         <div class="d-flex">
-                            <div class="numbers">
-                                <p class="text-sm mb-0 text-uppercase font-weight-bold">VENTA<br>EJECUCIÓN</p>
-                                <h5 class="font-weight-bolder mb-0">${{ number_format($ventaejecucion,2,".",",") }}</h5>
+                            <div class="numbers"> 
+                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                        VENTA<br>EJECUCIÓN
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">${{ number_format($ventaejecucion,2,".",",") }}</h5>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -59,8 +67,12 @@
                     <div class="p-3">
                         <div class="d-flex">
                             <div class="numbers">
-                                <p class="text-sm mb-0 text-uppercase font-weight-bold">VENTA</p>
-                                <h5 class="font-weight-bolder mb-0">${{ number_format($venta,2,".",",") }}</h5>
+                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                        VENTA
+                                    </p>
+                                    <h5 class="font-weight-bolder mb-0">${{ number_format($venta,2,".",",") }}</h5>
+                                </a>
                             </div>
                         </div>
                     </div>

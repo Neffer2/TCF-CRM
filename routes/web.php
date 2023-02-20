@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController; 
 use App\Http\Controllers\ContableController; 
 use App\Http\Controllers\AdminController; 
-use App\Http\Controllers\HomeController; 
+use App\Http\Controllers\HomeController;  
  
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +34,7 @@ Route::get('/', function () {
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');   
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
 
+    Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 
  
 /* commercial */ 

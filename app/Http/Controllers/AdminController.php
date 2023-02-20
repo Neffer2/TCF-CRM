@@ -16,7 +16,7 @@ class AdminController extends Controller
         return view('admin.team.index', ['listUsers' => $listUsers]);  
     }
 
-    public function showActualizarPerfil (){
+    public function showActualizarPerfil (){ 
         return view('admin.ajustes.perfil.actualizar');
     }
 
@@ -28,7 +28,7 @@ class AdminController extends Controller
         return view('admin.acciones.presupuesto');
     }
 
-    public function estadoFacturacion(){
-        return view('admin.data.estado-facturacion');
+    public function estadoFacturacion(Request $request){ 
+        return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]);
     }
 }

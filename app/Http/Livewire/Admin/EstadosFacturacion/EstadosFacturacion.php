@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Admin\EstadosFacturacion;
 
 use Livewire\Component;
-use App\Models\Base_comercial;
+use App\dels\Base_comercial;
 use App\Models\Helisa;
 use App\Models\Mes;
 use App\Models\Año;
@@ -14,7 +14,7 @@ class EstadosFacturacion extends Component
 {   
     protected $listeners = ['Block1' => 'getData'];
     //Models 
-    public $xfacturar = [];
+    public $xfacturar = []; 
     public $ejecucion = [];
     public $venta = [];
  
@@ -23,8 +23,27 @@ class EstadosFacturacion extends Component
         return view('livewire.admin.estados-facturacion.estados-facturacion');
     }
 
+    public function mount($año = null, $mes = null, $comercial = null){
+        if (!($año == null && $mes == null && $comercial == null)){
+            $this->getData(['año' => $año, 'mes' => $mes, 'comercial' => $comercial]);
+        }else {
+            return $this->default();
+        }
+    }
+
+    public function default(){ 
+        // Obtiene el último año cargado
+        $latest_year = Año::select('id','description')->orderBy('created_at', 'DESC')->first();
+        if ($latest_year){
+            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => null]);
+        }
+    }
+
     public function getData($filters){
-        // dd($filters);
+        if ($filters == null){
+            return $this->default();
+        }
+
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
 
@@ -65,7 +84,10 @@ class EstadosFacturacion extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
         // SELECT nom_cliente, SUM(valor_proyecto) FROM `base_comerciales` WHERE id_estado = 3 GROUP BY nom_cliente;
 
@@ -98,7 +120,10 @@ class EstadosFacturacion extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         $Base_results = DB::table('base_comerciales')
@@ -130,7 +155,10 @@ class EstadosFacturacion extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         $Base_results = DB::table('base_comerciales')

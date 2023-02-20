@@ -18,7 +18,7 @@
                 </div>
             </div> 
         </div>
-        <hr>
+        <hr> 
         <div class="col-ms-12 col-md-12 col-xl-12">
             <div class="row">
                 <div class="col-md-12">
@@ -28,7 +28,7 @@
                                 @livewire('admin.dashboard.filters')
                             </div>
                             <hr>
-                            @livewire('admin.estados-facturacion.estados-facturacion')
+                            @livewire('admin.estados-facturacion.estados-facturacion', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial])
                         </div>
                     </div>
                 </div>

@@ -45,9 +45,15 @@
                                         <table class="table align-items-center mb-0">
                                             @foreach($proyectos as $key => $producto)
                                                 <tr>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $key+1 }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $producto->nom_proyecto }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">$ {{ number_format($producto->valor_proyecto,2,".",",") }}</td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ $key+1 }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ substr($producto->nom_proyecto, 0, 30) }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                        $ {{ number_format($producto->valor_proyecto,2,".",",") }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </table>
@@ -109,9 +115,15 @@
                                         <table class="table align-items-center mb-0">
                                             @foreach($proyectos as $key => $producto)
                                                 <tr>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $key+1 }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $producto->nom_proyecto }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">$ {{ number_format($producto->valor_proyecto,2,".",",") }}</td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ $key+1 }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ substr($producto->nom_proyecto, 0, 30) }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                        $ {{ number_format($producto->valor_proyecto,2,".",",") }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </table>
@@ -173,9 +185,15 @@
                                         <table class="table align-items-center mb-0">
                                             @foreach($proyectos as $key => $producto)
                                                 <tr>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $key+1 }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">{{ $producto->nom_proyecto }}</td>
-                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">$ {{ number_format($producto->valor_proyecto,2,".",",") }}</td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ $key+1 }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7">
+                                                        {{ substr($producto->nom_proyecto, 0, 30) }}
+                                                    </td>
+                                                    <td class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                        $ {{ number_format($producto->valor_proyecto,2,".",",") }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </table>

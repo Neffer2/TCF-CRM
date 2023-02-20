@@ -20,6 +20,11 @@ class Block2 extends Component
     public $venta_facturada = 0;
     public $ventatotal = 0;
     public $presto_mensual = 0;
+        //Filtros
+        public $año;
+        public $mes;
+        public $comercial;
+
 
     /* Sumatorio de ventas */
     public $sum_1 = 0;
@@ -57,6 +62,12 @@ class Block2 extends Component
         if ($filters == null){
             return $this->default();
         }
+
+        /* Filstros para enviar a la vista (estados facturacion) */
+            $this->año = $filters['año'];
+            $this->mes = $filters['mes'];
+            $this->comercial = $filters['comercial'];
+        /* --- */
 
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
@@ -103,7 +114,10 @@ class Block2 extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
@@ -132,7 +146,10 @@ class Block2 extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
@@ -161,7 +178,10 @@ class Block2 extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, [$año->description."-01-01", $año->description."-12-31"]);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
@@ -184,7 +204,10 @@ class Block2 extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, ['2009-01-01', '2029-01-01']);
+            $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
+            $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
+
+            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
         if ($comercial_id){
