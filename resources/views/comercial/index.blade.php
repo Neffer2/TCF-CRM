@@ -84,7 +84,8 @@
       </div> 
 
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-        @livewire('com.base-list', ['user_id' => Auth::user()->id]) 
+        @livewire('com.new-proyecto')
+        @livewire('com.base-list', ['user_id' => Auth::user()->id])  
       </div>
     </div>
   @endsection
@@ -108,6 +109,15 @@
                 });
                 this.toggle[index.detail] = true;
               }
+          }
+        }
+
+        function new_project(){
+          return {
+            form_project: false,
+            show_form(){
+              this.form_project = !this.form_project;
+            }
           }
         }
     </script>

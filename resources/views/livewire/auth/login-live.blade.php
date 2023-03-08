@@ -22,7 +22,7 @@
                 type="password" 
                 name="password"
                 required autocomplete="current-password"> 
-        @error('password') 
+        @error('password')  
             <div class="text-danger font-weight-bold" style="font-size: 12px;">
                 @foreach ($errors->all() as $error)
                     {{ $error }} <br>
