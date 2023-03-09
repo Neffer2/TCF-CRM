@@ -391,25 +391,29 @@
         }
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
-      @if($errors->any())
-        Swal.fire(
-        '!Oppss tenemos un problema',
-        `<ul style='text-align: initial; list-style-type: none;'>
-          @foreach($errors->all() as $error) 
-            <li>{{ $error }}<li>
-          @endforeach
-        </ul>`,
-        'error'
-        );
-      @endif 
-      @if (session('success'))
-      Swal.fire(
-        'Hecho',
-        `{{ session('success') }}`,
-        'success'
-        );
-      @endif 
     </script>
+    @if($errors->any())
+      <script>
+        Swal.fire(
+          '!Oppss tenemos un problema',
+          `<ul style='text-align: initial; list-style-type: none;'>
+            @foreach($errors->all() as $error) 
+              <li>{{ $error }}<li>
+            @endforeach
+          </ul>`,
+          'error'
+        );
+      </script>
+    @endif 
+    @if (session('success'))
+      <script>
+        Swal.fire(
+          'Hecho',
+          `{{ session('success') }}`,
+          'success'
+        );
+      </script>
+    @endif 
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

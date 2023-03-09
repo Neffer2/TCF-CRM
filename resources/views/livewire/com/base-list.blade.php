@@ -8,6 +8,7 @@
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">
                 <tr> 
+                    <th>#</th>
                     <th>Fecha</th>
                     <th>Cliente</th>
                     <th>Proyecto</th> 
@@ -16,20 +17,58 @@
                     <th>Estado</th>
                     <th>Inicio</th>
                     <th>Fin</th>
+                    <th>ACCIONES</th>
                 </tr> 
                 </thead> 
                 <tbody>  
-                    @foreach ($list as $item)
-                    <tr>
+                    @foreach ($list as $key => $item)
+                    <tr>  
+                        <td>{{ $key+=1 }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->nom_cliente }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->nom_proyecto }}</td>
-                        <td class="text-sm font-weight-normal">{{ $item->cod_cc }}</td>  
+                        <td class="text-sm font-weight-normal">{{ $item->cod_cc }}</td> 
                         <td class="text-sm font-weight-normal">{{ number_format($item->valor_proyecto) }}</td>
-                        <td class="text-sm font-weight-normal">{{ $item->estado_cuenta->description }}</td>
+                        <td>
+                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
+                                @csrf
+                                <select name="estado_id" onchange="this.form.submit()">
+                                    @foreach ($estados as $estado)
+                                        @if ($item->estado_cuenta->id == $estado->id)
+                                            <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                        @else 
+                                            <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </form>
+                        </td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha_inicio }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->dura_mes }}</td>
-                    </tr>
+                        <td>
+                            <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button>
+                        </td>
+                    </tr> 
+                    <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form action="{{ route('delete-proyecto', $item->id) }}" method="POST">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">¿Estas seguro?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                        Desea eliminar el proyeto: <b>{{ $item->nom_proyecto }}</b>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                     @endforeach
                 </tbody>
             </table>

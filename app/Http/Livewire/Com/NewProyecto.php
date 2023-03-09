@@ -4,7 +4,9 @@ namespace App\Http\Livewire\Com;
 
 use Livewire\Component;
 use App\Models\EstadoCuenta;
+use App\Models\Base_comercial;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {      
@@ -17,8 +19,8 @@ class NewProyecto extends Component
     public $com_1 = ""; 
     public $com_2 = ""; 
     public $id_estado = "";
-    public $fecha_inicio = "";
-    public $dura_mes = "";
+    public $fecha_inicio = null;
+    public $dura_mes = null;
 
     //USEFUL VARS
     public $estados = []; 
@@ -58,14 +60,61 @@ class NewProyecto extends Component
     }
 
     public function updateFechaInicio(){
-        $this->validate(['fecha_inicio' => ['date']]);
+        $this->validate(['fecha_inicio' => ['present']]);
     }
 
     public function updateDuraMes(){
-        $this->validate(['dura_mes' => ['date']]);
+        $this->validate(['dura_mes' => ['present']]);
     }
 
     public function getEstados(){
         $this->estados = EstadoCuenta::select('id', 'description')->get();
+    }
+
+    public function store (){
+        $this->validate([
+            'fecha' => ['required', 'date'],
+            'nom_cliente' => ['required', 'string'],
+            'nom_proyecto' => ['required', 'string'],
+            'cod_cc' => ['required', 'string'],
+            'valor_proyecto' => ['required', 'numeric'],
+            'com_1' => 'string',
+            'id_estado' => ['required', 'numeric'],
+            'fecha_inicio' => ['present'],
+            'dura_mes' => ['present']
+        ]);
+ 
+        $base_comercial = new Base_comercial;
+        $base_comercial->fecha = $this->fecha;
+        $base_comercial->nom_cliente = $this->nom_cliente;
+        $base_comercial->nom_proyecto = $this->nom_proyecto;
+        $base_comercial->cod_cc = $this->cod_cc;
+        $base_comercial->valor_proyecto = $this->valor_proyecto;
+        $base_comercial->com_1 = $this->com_1;
+        $base_comercial->id_estado = $this->id_estado;
+        if ($this->fecha_inicio){
+            $base_comercial->fecha_inicio = $this->fecha_inicio;
+        }
+        if ($this->dura_mes){
+            $base_comercial->dura_mes = $this->dura_mes;
+        }
+        $base_comercial->id_user = Auth::id();
+        $base_comercial->save();
+        // $this->limpiar();
+
+        return redirect()->route('dashboard')->with('success', '¡Proyecto creado exitosamente!');
+    }
+ 
+    public function limpiar(){
+        $this->fecha = ""; 
+        $this->nom_cliente = ""; 
+        $this->nom_proyecto = ""; 
+        $this->cod_cc = ""; 
+        $this->valor_proyecto = ""; 
+        $this->com_1 = ""; 
+        $this->com_2 = ""; 
+        $this->id_estado = "";
+        $this->fecha_inicio = null;
+        $this->dura_mes = null;
     }
 }
