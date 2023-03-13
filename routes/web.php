@@ -44,6 +44,7 @@ Route::get('/', function () {
         // Route::get('/base-upload', [ComercialController::class, 'show_upload'])->middleware(['auth'])->name('base-upload');  
 
         Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload'); 
+        Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export'); 
         
         // Delete proyecto
         Route::post('/delete-proyecto/{id_user?}', [ComercialController::class, 'delete_proyecto'])->middleware(['auth'])->name('delete-proyecto'); 

@@ -2,7 +2,7 @@
     <div class="card card-body mt-4">
         <!-- Card header --> 
         <div class="card-header">
-            <h5 class="mb-0">Base comercial</h5>
+            <h5 class="mb-0">Base comercial</h5>            
         </div>
         <div class="table-responsive">
             <table class="table table-flush" id="datatable-search">
@@ -65,7 +65,7 @@
                                         <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
                                         <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                         </form>
                     </div>
@@ -73,5 +73,13 @@
                 </tbody>
             </table>
         </div>
+
+        <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
+            @csrf
+            <button type="submit" class="btn bg-gradient-warning mt-3">
+                <span class="btn-inner--icon"><i class="ni ni-cloud-download-95 me-1"></i></span>
+                <span class="btn-inner--text">Descargar Base Comercial</span>
+            </button>
+        </form>
     </div>
 </div>

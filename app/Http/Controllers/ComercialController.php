@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\BaseSheetHandler;
+use App\Exports\BaseExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Base_comercial;
@@ -23,7 +24,6 @@ class ComercialController extends Controller
         return view('comercial.ajustes.perfil.actualizar');
     } 
 
-
     // Hubo que hacer esto porque livewire no es compatible con el datatable
     public function delete_proyecto($user_id){
         Base_comercial::destroy($user_id);
@@ -38,7 +38,6 @@ class ComercialController extends Controller
         return redirect()->back()->with('success', 'Estado actualizado exitosamente.');
     }
     
-
     public function upload_base (Request $request){ 
          
         $request->validate([
@@ -48,6 +47,11 @@ class ComercialController extends Controller
         Base_comercial::where('id_user', Auth::user()->id)->delete();  
         Excel::import(new BaseSheetHandler, $request->base_xls);  
         return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
-    } 
+    }
+
+    public function export_base($user_id){
+        $name = Auth::user()->name;
+        return Excel::download(new BaseExport, $name." Base.xlsx");
+    }
 }
  
