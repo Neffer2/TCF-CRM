@@ -60,6 +60,9 @@ Route::get('/', function () {
 
         Route::post('/helisa-upload', [ContableController::class, 'helisa_upload'])->middleware(['auth'])->middleware(['contable'])->name('helisa-upload');  
         Route::post('/vaciar_helisa', [ContableController::class, 'helisa_truncate'])->middleware(['auth'])->middleware(['contable'])->name('vaciar_helisa'); 
+ 
+        // Delete proyecto
+        Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */
 

@@ -15,7 +15,7 @@ class Helisa extends Model
         'tipo_doc',  
         'num_doc',
         'concepto',
-        'identidad', 
+        'identidad',  
         'nom_tercero',
         'centro',
         'nom_centro_costo',
@@ -27,7 +27,7 @@ class Helisa extends Model
         'mes',
         'año',
         'comision'
-    ];
+    ]; 
 
     public function comercial_user (){
         return $this->hasOne(User::class, 'id', 'comercial');

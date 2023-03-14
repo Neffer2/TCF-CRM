@@ -30,5 +30,11 @@ class ContableController extends Controller
         Helisa::truncate();
         return redirect()->route('dashboard-con')->with('success', '¡La base datos ha sido vaciada con éxito!');
     }
+
+    // Hubo que hacer esto porque livewire no es compatible con el datatable
+    public function delete_registro($id){
+        Helisa::destroy($id);
+        return redirect()->back()->with('success', 'Registrado eliminado exitosamente.');
+    } 
 }
   
