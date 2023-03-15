@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Exports\HelisaExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\HelisaContableImport; 
 use App\Models\Helisa;
@@ -36,5 +37,9 @@ class ContableController extends Controller
         Helisa::destroy($id);
         return redirect()->back()->with('success', 'Registrado eliminado exitosamente.');
     } 
+ 
+    public function export_helisa(){
+        return Excel::download(new HelisaExport, "Reporte Helisa.xlsx");
+    }
 }
   

@@ -81,7 +81,7 @@
         <button type="button" class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Vaciar Helisa
         </button>
-        
+
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -105,5 +105,13 @@
                 </div>
             </div>
         </div>
+ 
+        <form action="{{ route('helisa-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
+            @csrf
+            <button type="submit" class="btn bg-gradient-warning mt-3">
+                <span class="btn-inner--icon"><i class="ni ni-cloud-download-95 me-1"></i></span>
+                <span class="btn-inner--text">Descargar Reporte Helisa</span>
+            </button>
+        </form>
     </div>
 </div>

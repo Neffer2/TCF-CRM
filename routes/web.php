@@ -59,8 +59,10 @@ Route::get('/', function () {
         Route::get('/actualizar-perfil-con', [ContableController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['contable'])->name('actualizar-perfil-con');  
 
         Route::post('/helisa-upload', [ContableController::class, 'helisa_upload'])->middleware(['auth'])->middleware(['contable'])->name('helisa-upload');  
+        Route::post('/helisa-export/{id_user?}', [ContableController::class, 'export_helisa'])->middleware(['auth'])->name('helisa-export'); 
         Route::post('/vaciar_helisa', [ContableController::class, 'helisa_truncate'])->middleware(['auth'])->middleware(['contable'])->name('vaciar_helisa'); 
- 
+
+
         // Delete proyecto
         Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
