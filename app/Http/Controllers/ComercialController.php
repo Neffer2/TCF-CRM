@@ -18,7 +18,7 @@ class ComercialController extends Controller
 
     public function show_upload (){
         return view('comercial.base.upload');
-    }
+    } 
 
     public function showActualizarPerfil (){
         return view('comercial.ajustes.perfil.actualizar');
