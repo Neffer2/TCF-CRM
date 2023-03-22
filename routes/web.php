@@ -5,6 +5,7 @@ use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\ContableController; 
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\HomeController;  
+use App\Http\Controllers\AsistenteController;  
  
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +68,12 @@ Route::get('/', function () {
         Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */
+ 
+/* commercial */ 
+    /* base - functions */  
+    Route::get('/dashboard-asis', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-asis');  
+/* --- */
+/* --- */  
 
 require __DIR__.'/auth.php';   
  

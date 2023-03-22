@@ -8,7 +8,7 @@
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">
                 <tr> 
-                    <th>#</th> 
+                    <th>#</th>
                     <th>Fecha</th>
                     <th>Cliente</th>
                     <th>Proyecto</th> 
@@ -49,7 +49,7 @@
                                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                                         @endif
                                     @endforeach
-                                </select>
+                                </select> 
                             </form>
                         </td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha_inicio }}</td>
@@ -66,7 +66,7 @@
                     </tr> 
                     <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
                         <div class="modal-dialog"> 
-                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
+                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST"> 
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">

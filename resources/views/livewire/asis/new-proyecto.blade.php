@@ -127,7 +127,7 @@
                     <div class="col-md-4">
                         <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
                     </div>
-                </div>
+                </div> 
             </form>
         </div> 
     </div>

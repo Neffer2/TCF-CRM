@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Livewire\Com;
+namespace App\Http\Livewire\Asis;
 
 use Livewire\Component;
 use App\Models\EstadoCuenta;
-use App\Models\Base_comercial;
+use App\Models\Base_comercial; 
+use App\Models\Asistente;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 
-class NewProyecto extends Component
+class NewProyecto extends Component 
 {      
     // MODELS 
     public $fecha = ""; 
@@ -23,12 +24,17 @@ class NewProyecto extends Component
     public $dura_mes = null;
 
     //USEFUL VARS
-    public $estados = []; 
+    public $estados = [];
+    public $idComercialAsignado = [];  
 
     public function render()
     {   
         $this->getEstados();
-        return view('livewire.com.new-proyecto');
+        return view('livewire.asis.new-proyecto');
+    }
+
+    public function mount(){
+        $this->idComercialAsignado = Asistente::where('asistente_id', Auth::id())->first();
     }
 
     public function updatedFecha(){ 
@@ -98,10 +104,9 @@ class NewProyecto extends Component
         if ($this->dura_mes){
             $base_comercial->dura_mes = $this->dura_mes;
         }
-        $base_comercial->id_user = Auth::id();
+        $base_comercial->id_user = $this->idComercialAsignado->comercial_id;
         $base_comercial->id_asistente = Auth::id();
-        $base_comercial->save();
-        // $this->limpiar();
+        $base_comercial->save(); 
 
         return redirect()->route('dashboard')->with('success', '¡Proyecto creado exitosamente!');
     }

@@ -29,6 +29,9 @@ class CreateBaseComercialesTable extends Migration
             $table->date('dura_mes')->nullable();
             $table->foreignId('id_user');
             $table->foreign('id_user')->references('id')->on('users');
+
+            $table->foreignId('id_asistente')->nullable();
+            $table->foreign('id_asistente')->references('id')->on('users');
             $table->timestamps(); 
         });
     }

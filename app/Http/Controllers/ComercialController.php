@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\BaseSheetHandler;
 use App\Exports\BaseExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -30,9 +30,16 @@ class ComercialController extends Controller
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
     } 
 
-    public function update_proyecto(Request $request, $user_id){
-        $proyecto = Base_comercial::where('id',$user_id)->first(); 
+    public function update_proyecto(Request $request, $proyecto_id){ 
+        $request->validate([
+            'nom_cliente' => 'string|min:0',
+            'nom_proyecto' => 'string|min:0',
+            'cod_cc' => 'string|min:0',
+            'valor_proyecto' => 'numeric',
+            'id_estado' => 'numeric'
+        ]); 
 
+        $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
         if ($request->nom_cliente){
             $proyecto->nom_cliente = $request->nom_cliente;
         }
@@ -52,11 +59,12 @@ class ComercialController extends Controller
         if ($request->estado_id){
             $proyecto->id_estado = $request->estado_id;
         }
+        
+        $proyecto->id_asistente = Auth::user()->id;
 
         $proyecto->update();
-
         return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
-    }
+    } 
     
     public function upload_base (Request $request){ 
          

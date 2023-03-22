@@ -22,16 +22,17 @@ class Base_comercial extends Model
         'id_estado',
         'fecha_inicio',
         'dura_mes', 
-        'id_user' 
+        'id_user',
+        'id_asistente', 
     ];
 
     public function comercial (){
         return $this->hasOne(User::class, 'id', 'id_user');
-    } 
+    }
 
-    // public function user_rol(){
-    //     return $this->hasOne(Rol::class, 'id', 'rol');
-    // } 
+    public function asistente (){
+        return $this->hasOne(User::class, 'id', 'id_asistente');
+    }
 
     public function estado_cuenta (){
         return $this->hasOne(EstadoCuenta::class, 'id', 'id_estado');

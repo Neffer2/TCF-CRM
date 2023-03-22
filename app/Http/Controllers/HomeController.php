@@ -14,6 +14,8 @@ class HomeController extends Controller
             return redirect()->route('dashboard-com');
         }elseif (Auth::user()->rol == 3){
             return redirect()->route('dashboard-con');
+        }elseif (Auth::user()->rol == 4){
+            return redirect()->route('dashboard-asis'); 
         } 
     }
 } 
