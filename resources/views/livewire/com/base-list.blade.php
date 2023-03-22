@@ -55,12 +55,12 @@
                         <td class="text-sm font-weight-normal">{{ $item->dura_mes }}</td>
                         <td  colspan="2">
                             <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button>
-                            <button class="btn btn-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
+                            <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
                         </td>
-                    </tr>
+                    </tr> 
                     <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <form action="{{ route('delete-proyecto', $item->id) }}" method="POST">
+                        <div class="modal-dialog"> 
+                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -72,38 +72,46 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Cliente</label>
-                                                    <input name="" class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <input name="nom_cliente" class="form-control" type="text" value="{{ $item->nom_cliente }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Proyecto</label>
-                                                    <input class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <input name="nom_proyecto" class="form-control" type="text" value="{{ $item->nom_proyecto }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">COD_CC</label>
-                                                    <input class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <input name="cod_cc" class="form-control" type="text" value="{{ $item->cod_cc }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Valor</label>
-                                                    <input class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <input name="valor_proyecto" class="form-control" type="number" value="{{ $item->valor_proyecto }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Estado</label>
-                                                    <input class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <select name="estado_id" class="form-control" style="cursor: pointer; width: 171px">
+                                                        @foreach ($estados as $estado)
+                                                            @if ($item->estado_cuenta->id == $estado->id)
+                                                                <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                                            @else 
+                                                                <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
+                                        <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
                                     </div>
                                 </div>
                             </form>
@@ -124,7 +132,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
+                                        <button type="submit" class="btn bg-gradient-danger">Eliminar</button>
                                     </div>
                                 </div> 
                             </div>

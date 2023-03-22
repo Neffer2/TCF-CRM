@@ -32,10 +32,30 @@ class ComercialController extends Controller
 
     public function update_proyecto(Request $request, $user_id){
         $proyecto = Base_comercial::where('id',$user_id)->first(); 
-        $proyecto->id_estado = $request->estado_id;
+
+        if ($request->nom_cliente){
+            $proyecto->nom_cliente = $request->nom_cliente;
+        }
+
+        if ($request->nom_proyecto){
+            $proyecto->nom_proyecto = $request->nom_proyecto;
+        }
+
+        if ($request->cod_cc){
+            $proyecto->cod_cc = $request->cod_cc;
+        }
+
+        if ($request->valor_proyecto){
+            $proyecto->valor_proyecto = $request->valor_proyecto;
+        }
+
+        if ($request->estado_id){
+            $proyecto->id_estado = $request->estado_id;
+        }
+
         $proyecto->update();
 
-        return redirect()->back()->with('success', 'Estado actualizado exitosamente.');
+        return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
     }
     
     public function upload_base (Request $request){ 
@@ -45,7 +65,7 @@ class ComercialController extends Controller
         ]);   
 
         Base_comercial::where('id_user', Auth::user()->id)->delete();  
-        Excel::import(new BaseSheetHandler, $request->base_xls);  
+        Excel::import(new BaseSheetHandler, $request->base_xls);   
         return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
     }
 
