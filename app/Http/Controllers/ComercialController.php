@@ -14,7 +14,11 @@ class ComercialController extends Controller
 {
     public function index (){ 
         return view('comercial.index');
-    } 
+    }
+    
+    public function base (){ 
+        return view('comercial.base');
+    }
 
     public function show_upload (){
         return view('comercial.base.upload');

@@ -102,8 +102,8 @@ class NewProyecto extends Component
         $base_comercial->id_asistente = Auth::id();
         $base_comercial->save();
         // $this->limpiar();
-
-        return redirect()->route('dashboard')->with('success', '¡Proyecto creado exitosamente!');
+ 
+        return redirect()->route('dashboard-base')->with('success', '¡Proyecto creado exitosamente!');
     }
  
     public function limpiar(){

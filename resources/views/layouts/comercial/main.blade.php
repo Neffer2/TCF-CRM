@@ -37,7 +37,7 @@
       <hr class="horizontal dark mt-0">
       <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
-          <li class="nav-item">
+          <li class="nav-item"> 
             <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-shop text-primary text-sm opacity-10"></i>
@@ -48,9 +48,15 @@
               <ul class="nav ms-4">
                 <li class="nav-item active">
                   <a class="nav-link active" href="{{ route('dashboard-com') }}">
+                    <span class="sidenav-mini-icon"> D </span>
+                    <span class="sidenav-normal"> Dashboard </span> 
+                  </a>
+                </li>
+                <li class="nav-item dashboard">
+                  <a class="nav-link" href="{{ route('dashboard-base') }}"> 
                     <span class="sidenav-mini-icon"> B </span>
                     <span class="sidenav-normal"> Base comercial </span>
-                  </a>
+                  </a> 
                 </li>
                 {{-- <li class="nav-item ">
                   <a class="nav-link " data-bs-toggle="collapse" aria-expanded="false" href="#vrExamples">
@@ -255,8 +261,8 @@
       </nav>
       <!-- End Navbar -->
       @yield('profile-card')
-      <div class="container-fluid py-4"> 
-        @yield('content')
+        <div class="container-fluid py-4"> 
+      @yield('content')
         
         <footer class="footer pt-3  ">
           <div class="container-fluid">

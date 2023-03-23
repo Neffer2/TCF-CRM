@@ -17,7 +17,7 @@ class asistente
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user()->rol == 4) { 
+        if (Auth::user()->rol == 5) { 
             return $next($request);  
         }
         return redirect()->route('dashboard');  

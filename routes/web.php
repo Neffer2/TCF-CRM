@@ -38,9 +38,10 @@ Route::get('/', function () {
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 
  
-/* commercial */ 
+/* commercial */  
     /* base - functions */  
         Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');  
+        Route::get('/dashboard-base', [ComercialController::class, 'base'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-base');  
         Route::get('/actualizar-perfil-com', [ComercialController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['comercial'])->name('actualizar-perfil-com');  
         // Route::get('/base-upload', [ComercialController::class, 'show_upload'])->middleware(['auth'])->name('base-upload');  
 
