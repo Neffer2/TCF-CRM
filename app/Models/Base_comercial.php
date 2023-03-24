@@ -20,6 +20,7 @@ class Base_comercial extends Model
         'com_2',
         'com_3',
         'id_estado',
+        'id_cuenta',
         'fecha_inicio',
         'dura_mes', 
         'id_user',
@@ -32,10 +33,15 @@ class Base_comercial extends Model
 
     public function asistente (){
         return $this->hasOne(User::class, 'id', 'id_asistente');
-    }
+    } 
 
     public function estado_cuenta (){
         return $this->hasOne(EstadoCuenta::class, 'id', 'id_estado');
+    }
+
+    /* Cuenta (Bull o V2V) */
+    public function cuenta (){
+        return $this->hasOne(Cuenta::class, 'id', 'id_cuenta');
     }
 }
   

@@ -20,6 +20,7 @@
                     <th>Debito</th>
                     <th>Credito</th>
                     <th>Comercial</th>
+                    <th>Cuenta</th>
                     <th>Participaci&oacute;n</th>
                     <th>Base factura</th>
                     <th>Mes</th>
@@ -29,7 +30,7 @@
                 </tr>  
                 </thead> 
                 <tbody>  
-                    @foreach ($list as $key => $item)
+                    @foreach ($list as $key => $item) 
                     <tr>
                         <td class="text-sm font-weight-normal">{{ $key+=1 }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha }}</td>
@@ -43,6 +44,7 @@
                         <td class="text-sm font-weight-normal">{{ $item->debito }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->credito }}</td> 
                         <td class="text-sm font-weight-normal">{{ $item->comercial_user->name }}</td>
+                        <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->participacion }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->base_factura }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->mes }}</td>

@@ -27,10 +27,12 @@ class CreateHelisaTable extends Migration
             $table->decimal('credito', 12, 2)->nullable();
             $table->foreignId('comercial');
             $table->foreign('comercial')->references('id')->on('users');
+            $table->foreignId('id_cuenta')->default(1);
+            $table->foreign('id_cuenta')->references('id')->on('cuentas');
             $table->string('participacion');
             $table->decimal('base_factura', 12, 2); 
             $table->string('mes');
-            $table->string('año');
+            $table->string('año'); 
             $table->decimal('comision', 12, 2); 
             $table->timestamps();
         });

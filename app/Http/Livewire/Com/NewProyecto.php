@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Com;
 
 use Livewire\Component;
 use App\Models\EstadoCuenta;
+use App\Models\Cuenta;
 use App\Models\Base_comercial;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
@@ -19,15 +20,18 @@ class NewProyecto extends Component
     public $com_1 = ""; 
     public $com_2 = ""; 
     public $id_estado = "";
+    public $id_cuenta = "";
     public $fecha_inicio = null;
     public $dura_mes = null;
 
     //USEFUL VARS
     public $estados = []; 
+    public $cuentas = []; 
 
     public function render()
     {   
         $this->getEstados();
+        $this->getCuentas();
         return view('livewire.com.new-proyecto');
     }
 
@@ -59,6 +63,10 @@ class NewProyecto extends Component
         $this->validate(['id_estado' => ['required', 'numeric']]);
     }
 
+    public function updatedIdCuenta(){ 
+        $this->validate(['id_cuenta' => ['required', 'numeric']]);
+    }
+
     public function updateFechaInicio(){
         $this->validate(['fecha_inicio' => ['present']]);
     }
@@ -71,6 +79,10 @@ class NewProyecto extends Component
         $this->estados = EstadoCuenta::select('id', 'description')->get();
     }
 
+    public function getCuentas(){
+        $this->cuentas = Cuenta::select('id', 'description')->get();
+    }
+
     public function store (){
         $this->validate([
             'fecha' => ['required', 'date'],
@@ -80,6 +92,7 @@ class NewProyecto extends Component
             'valor_proyecto' => ['required', 'numeric'],
             'com_1' => 'string',
             'id_estado' => ['required', 'numeric'],
+            'id_cuenta' => ['numeric'],
             'fecha_inicio' => ['present'],
             'dura_mes' => ['present']
         ]);
@@ -91,17 +104,24 @@ class NewProyecto extends Component
         $base_comercial->cod_cc = $this->cod_cc;
         $base_comercial->valor_proyecto = $this->valor_proyecto;
         $base_comercial->com_1 = $this->com_1;
+
+        if ($this->id_cuenta){ 
+            $base_comercial->id_cuenta = $this->id_cuenta;
+        }
+
         $base_comercial->id_estado = $this->id_estado;
+
         if ($this->fecha_inicio){
             $base_comercial->fecha_inicio = $this->fecha_inicio;
         }
-        if ($this->dura_mes){
+
+        if ($this->dura_mes){ 
             $base_comercial->dura_mes = $this->dura_mes;
         }
+
         $base_comercial->id_user = Auth::id();
         $base_comercial->id_asistente = Auth::id();
         $base_comercial->save();
-        // $this->limpiar();
  
         return redirect()->route('dashboard-base')->with('success', '¡Proyecto creado exitosamente!');
     }

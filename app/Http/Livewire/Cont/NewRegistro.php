@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Año;
 use App\Models\Mes;
+use App\Models\Cuenta;
 use App\Models\Helisa;
 use Illuminate\Validation\Rules;
 
@@ -14,7 +15,7 @@ class NewRegistro extends Component
     // MODELS
     public $fecha = ""; 
     public $tipo_doc = ""; 
-    public $num_doc = ""; 
+    public $num_doc = "";  
     public $concepto = ""; 
     public $identidad = ""; 
     public $nom_tercero = ""; 
@@ -23,6 +24,7 @@ class NewRegistro extends Component
     public $debito = null;
     public $credito = null;
     public $comercial = null;
+    public $id_cuenta = "";
     public $participacion = null;
     public $base_factura = null;
     public $mes = null;
@@ -30,7 +32,8 @@ class NewRegistro extends Component
     public $comision = null;
 
     //USEFUL VARS
-    public $comerciales = []; 
+    public $comerciales = [];
+    public $cuentas = []; 
     public $años = []; 
     public $meses = []; 
     
@@ -39,6 +42,7 @@ class NewRegistro extends Component
         $this->getComerciales();
         $this->getAños();
         $this->getMeses();
+        $this->getCuentas();
         return view('livewire.cont.new-registro');
     }
 
@@ -52,6 +56,10 @@ class NewRegistro extends Component
 
     public function getMeses(){
         $this->meses = Mes::select('id','description')->where('id', '<', 13)->get();
+    }
+
+    public function getCuentas(){
+        $this->cuentas = Cuenta::select('id', 'description')->get();
     }
 
     public function updatedFecha(){
@@ -129,15 +137,15 @@ class NewRegistro extends Component
             'centro' => ['required', 'string'],
             'nom_centro_costo' => ['required', 'string'],
             'debito' => ['required', 'numeric'],
-            'credito' => ['required', 'numeric'],
+            'credito' => ['required', 'numeric'], 
             'comercial' => ['required', 'numeric'],
+            'id_cuenta' => ['numeric'],
             'participacion' => ['required', 'numeric'],
             'base_factura' => ['required', 'numeric'],
             'mes' => ['required', 'string'],
             'año' => ['required', 'string'],
             'comision' => ['required', 'numeric']
         ]);
-
         
         $helisa = new Helisa;
         $helisa->fecha = $this->fecha;
@@ -151,6 +159,11 @@ class NewRegistro extends Component
         $helisa->debito = $this->debito;
         $helisa->credito = $this->credito;
         $helisa->comercial = $this->comercial;
+
+        if ($this->id_cuenta){ 
+            $helisa->id_cuenta = $this->id_cuenta;
+        }
+
         $helisa->participacion = $this->participacion;
         $helisa->base_factura = $this->base_factura;
         $helisa->mes = $this->mes;

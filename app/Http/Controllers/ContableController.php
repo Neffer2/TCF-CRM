@@ -26,7 +26,7 @@ class ContableController extends Controller
         Excel::import(new HelisaContableImport, $request->helisa_xls);  
         return redirect()->route('dashboard-con')->with('success', '¡Reporte Helisa cargado exitosamente!');
     }
-
+ 
     public function helisa_truncate (){
         Helisa::truncate();
         return redirect()->route('dashboard-con')->with('success', '¡La base datos ha sido vaciada con éxito!');

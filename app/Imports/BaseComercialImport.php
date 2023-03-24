@@ -22,12 +22,19 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
         /* id estado converter */
         $estado = $this->estado_validate($row['estado']);
         if ($estado == "ERROR"){
-            echo "Éste estado no es válido";
+            echo "<b style='color: red;'>Éste estado no es válido<b>";
             dd($row);
-            exit(); 
         } 
-
         /* --- */
+
+        /* Cuenta: Bull o V2V */
+        $cuenta = $this->cuenta_validate($row['cuenta']);
+        if ($cuenta == "ERROR"){
+            echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
+            dd($row);
+        } 
+        /* --- */
+
         return new Base_comercial([ 
             'fecha' => Date::excelToDateTimeObject($row['fecha']),
             'nom_cliente' => $row['cliente'],
@@ -38,6 +45,7 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
             'com_2' => $row['com2'],
             'com_3' => $row['com3'],
             'id_estado' => $estado,
+            'id_cuenta' => $cuenta, 
             'fecha_inicio' => Date::excelToDateTimeObject($row['f_inicio']),
             'dura_mes' => Date::excelToDateTimeObject($row['dura_mes']), 
             'id_user' => Auth::user()->id,
@@ -68,7 +76,7 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
                 break;
             case "PROPUESTA":
                 $estado = 5;
-                break;
+                break; 
             case "VENTA":
                 $estado = 6;
                 break;
@@ -76,9 +84,24 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
                 $estado = 7;
                 break;
             default: 
-                $estado = "ERROR";      
+                $estado = "ERROR";
             break;
         }
         return $estado;
+    }
+
+    public function cuenta_validate ($cuenta){
+        switch ($cuenta){
+            case "BULL MARKETING":
+                $cuenta = 1;
+                break;
+            case "V2V":
+                $cuenta = 2;
+                break;
+            case "":
+                $cuenta = 1;
+                break;
+        }
+        return $cuenta;
     }
 }

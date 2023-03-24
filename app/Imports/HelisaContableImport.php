@@ -19,7 +19,22 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
     */ 
     public function model(array $row)
     {   
-        $row['comercial'] = $this->user_validate($row['comercial']);
+        /* Cuenta: Bull o V2V */
+        $comercial = $this->user_validate($row['comercial']); 
+        if ($comercial == "ERROR"){
+            echo "<b style='color: red;'>Éste usuario no existe, comnuníquese con el administrador<b>";
+            dd($row);
+        } 
+        /* --- */
+
+        /* Cuenta: Bull o V2V */
+        $cuenta = $this->cuenta_validate($row['cuenta']);
+        if ($cuenta == "ERROR"){
+            echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
+            dd($row);
+        } 
+        /* --- */
+
         return new Helisa([
             'fecha' => Date::excelToDateTimeObject($row['fecha']),
             'tipo_doc' => $row['tipo_doc'],
@@ -31,8 +46,8 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
             'nom_centro_costo' => $row['nombre_centro_de_costo'],
             'debito' => $row['debito'],
             'credito' => $row['credito'],
-            'comercial' => $row['comercial'],
-            // 'comercial' => 1,
+            'comercial' => $comercial,
+            'id_cuenta' => $cuenta, 
             'participacion' => $row['participacion'],
             'base_factura' => $row['base_factura'],
             'mes' => $row['mes'],
@@ -67,6 +82,21 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
             return $user->id;
         }
         return "ERROR"; 
+    }
+
+    public function cuenta_validate ($cuenta){
+        switch ($cuenta){
+            case "BULL MARKETING":
+                $cuenta = 1;
+                break;
+            case "V2V":
+                $cuenta = 2;
+                break;
+            case "":
+                $cuenta = 1;
+                break;
+        }
+        return $cuenta;
     }
 }
  

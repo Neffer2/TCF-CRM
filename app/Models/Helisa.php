@@ -22,6 +22,7 @@ class Helisa extends Model
         'debito',
         'credito',
         'comercial',
+        'id_cuenta',
         'participacion',
         'base_factura',
         'mes',
@@ -32,4 +33,9 @@ class Helisa extends Model
     public function comercial_user (){
         return $this->hasOne(User::class, 'id', 'comercial');
     } 
+
+    /* Cuenta (Bull o V2V) */
+    public function cuenta (){
+        return $this->hasOne(Cuenta::class, 'id', 'id_cuenta');
+    }
 }

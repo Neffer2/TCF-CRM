@@ -15,6 +15,7 @@
                     <th>COD_CC</th>
                     <th>Valor</th> 
                     <th>Estado</th>
+                    <th>Cuenta</th>
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Editor</th>
@@ -48,10 +49,11 @@
                                         @else 
                                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                                         @endif
-                                    @endforeach
+                                    @endforeach  
                                 </select>
                             </form>
                         </td>
+                        <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha_inicio }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->dura_mes }}</td>
                         <td class="text-sm font-weight-normal">
@@ -77,37 +79,51 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">Cliente</label>
-                                                    <input name="nom_cliente" class="form-control" type="text" value="{{ $item->nom_cliente }}">
+                                                    <label for="nom_cliente">Cliente</label>
+                                                    <input id="nom_cliente" name="nom_cliente" class="form-control" type="text" value="{{ $item->nom_cliente }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">Proyecto</label>
-                                                    <input name="nom_proyecto" class="form-control" type="text" value="{{ $item->nom_proyecto }}" >
+                                                    <label for="nom_proyecto">Proyecto</label>
+                                                    <input id="nom_proyecto" name="nom_proyecto" class="form-control" type="text" value="{{ $item->nom_proyecto }}" >
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">COD_CC</label>
-                                                    <input name="cod_cc" class="form-control" type="text" value="{{ $item->cod_cc }}">
+                                                    <label for="cod_cc">COD_CC</label>
+                                                    <input id="cod_cc" name="cod_cc" class="form-control" type="text" value="{{ $item->cod_cc }}">
                                                 </div>
                                             </div> 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">Valor</label>
-                                                    <input name="valor_proyecto" class="form-control" type="number" value="{{ $item->valor_proyecto }}">
+                                                    <label for="valor_proyecto">Valor</label>
+                                                    <input id="valor_proyecto" name="valor_proyecto" class="form-control" type="number" value="{{ $item->valor_proyecto }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">Estado</label>
-                                                    <select name="estado_id" class="form-control" style="cursor: pointer; width: 171px">
+                                                    <label for="estado_id">Estado</label>
+                                                    <select id="estado_id" name="estado_id" class="form-control">
                                                         @foreach ($estados as $estado)
                                                             @if ($item->estado_cuenta->id == $estado->id)
                                                                 <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
                                                             @else 
                                                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group"> 
+                                                    <label for="id_cuenta">Cuenta</label>
+                                                    <select id="id_cuenta" name="id_cuenta" class="form-control">
+                                                        @foreach ($cuentas as $cuenta)
+                                                            @if ($item->cuenta->id == $cuenta->id)
+                                                                <option selected value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
+                                                            @else 
+                                                                <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
                                                             @endif
                                                         @endforeach
                                                     </select>

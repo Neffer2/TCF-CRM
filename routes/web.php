@@ -70,7 +70,7 @@ Route::get('/', function () {
     /* --- */
 /* --- */
  
-/* commercial */ 
+/* Asistenet */ 
     /* base - functions */  
     Route::get('/dashboard-asis', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-asis');  
 /* --- */

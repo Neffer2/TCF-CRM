@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ComercialController extends Controller 
 {
-    public function index (){ 
+    public function index (){  
         return view('comercial.index');
     }
     
@@ -40,7 +40,8 @@ class ComercialController extends Controller
             'nom_proyecto' => 'string|min:0',
             'cod_cc' => 'string|min:0',
             'valor_proyecto' => 'numeric',
-            'id_estado' => 'numeric'
+            'id_estado' => 'numeric',
+            'id_cuenta' => 'numeric'
         ]); 
 
         $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
@@ -59,9 +60,13 @@ class ComercialController extends Controller
         if ($request->valor_proyecto){
             $proyecto->valor_proyecto = $request->valor_proyecto;
         }
-
+        
         if ($request->estado_id){
             $proyecto->id_estado = $request->estado_id;
+        }
+
+        if ($request->id_cuenta){
+            $proyecto->id_cuenta = $request->id_cuenta;
         }
         
         $proyecto->id_asistente = Auth::user()->id;
@@ -70,15 +75,14 @@ class ComercialController extends Controller
         return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
     } 
     
-    public function upload_base (Request $request){ 
-         
+    public function upload_base (Request $request){          
         $request->validate([
             'base_xls' => 'required|mimes:xlsx, csv, xls'
         ]);   
-
+ 
         Base_comercial::where('id_user', Auth::user()->id)->delete();  
         Excel::import(new BaseSheetHandler, $request->base_xls);   
-        return redirect()->route('dashboard')->with('success', '¡Base comercial cargada exitosamente!');
+        return redirect()->route('dashboard-base')->with('success', '¡Base comercial cargada exitosamente!');
     }
 
     public function export_base($user_id){
