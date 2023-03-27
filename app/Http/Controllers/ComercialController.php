@@ -15,6 +15,10 @@ class ComercialController extends Controller
     public function index (){  
         return view('comercial.index');
     }
+
+    public function gestionComercial(){
+        return view('comercial.gestion');
+    }
     
     public function base (){ 
         return view('comercial.base');

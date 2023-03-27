@@ -19,6 +19,9 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
     */ 
     public function model(array $row)    
     {   
+        // Éste código es compatible con el nuevo y antiguo formato.
+        // El formato establecido sigue siedo el mismo. Es decir, el antiguo.
+
         /* id estado converter */
         $estado = $this->estado_validate($row['estado']);
         if ($estado == "ERROR"){

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Mes;
 use App\Models\Año;
 use App\Models\Helisa;
+use App\Models\Cuenta;
 use App\Models\Presupuesto;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +28,11 @@ class Block1 extends Component
 
     // Useful vars
 
-    public function render()
+    public function render() 
     {
         return view('livewire.com.dashboard.block1');
     } 
-
+ 
     public function mount(){
         $this->default();
     }
@@ -39,8 +40,9 @@ class Block1 extends Component
     public function default(){
         // Obtiene el último año cargado
         $latest_year = Año::select('description')->orderBy('created_at', 'DESC')->first();
+        $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
         if ($latest_year){
-            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => Auth::id()]);
+            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
         }
     }
 
@@ -52,8 +54,8 @@ class Block1 extends Component
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
 
-        $this->getVentaFacturada($año->description, $mes, $filters['comercial']);
-        $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);
+        $this->getVentaFacturada($año->description, $mes, $filters['comercial'], $filters['cuenta']);
+        $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial'], $filters['cuenta']);
         $this->getPresupuesto($mes, $filters['comercial'], $año->id);
         $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);
 
@@ -76,7 +78,7 @@ class Block1 extends Component
     }
 
     /* Obtiene y filtra las ventas facturadas */
-    public function getVentaFacturada($año, $mes, $comercial) {
+    public function getVentaFacturada($año, $mes, $comercial, $cuenta) {
         /* Creo 2 arreglos que contendrán los filtros necesarios para la consulta */
         $filters_array = [];
         $date_filters_array = [];
@@ -94,6 +96,10 @@ class Block1 extends Component
         if ($comercial){
             array_push($filters_array, ['comercial', $comercial]);
         }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
+        }
     
         $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
                     ->where($filters_array)
@@ -106,7 +112,7 @@ class Block1 extends Component
         }
     }
 
-    public function getVentaConsolidada($año_id, $año_desc, $mes, $comercial) {
+    public function getVentaConsolidada($año_id, $año_desc, $mes, $comercial, $cuenta) {
         $first_month = Mes::select('id', 'description', 'f_inicio')->where([['identifier', 1], ['ano_id', $año_id]])->first();
         $last_month = Mes::select('id', 'description', 'f_fin')->where([['identifier', 12], ['ano_id', $año_id]])->first();
 
@@ -118,6 +124,10 @@ class Block1 extends Component
 
         if ($comercial){
             array_push($filters_array, ['comercial', $comercial]);
+        }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
         }
         
         // Si no hay mes no hay venta consolidada, hace la sumatoria de todos los meses

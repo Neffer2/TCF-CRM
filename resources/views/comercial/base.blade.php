@@ -48,7 +48,7 @@
         </div>
       </div>
     </div>
-  @endsection
+  @endsection 
 
   @section('content')    
     <div x-data="menu" @fire-toggle.window="Toggle"> 
@@ -89,7 +89,7 @@
       </div>
     </div>
   @endsection
-
+ 
   @section('scripts-imports')
     <script src="{{ asset('assets/js/plugins/datatables.js') }}"></script>
   @endsection

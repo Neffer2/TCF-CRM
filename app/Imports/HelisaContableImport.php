@@ -19,6 +19,9 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
     */ 
     public function model(array $row)
     {   
+        // Éste código es compatible con el nuevo y antiguo formato.
+        // El formato establecido sigue siedo el mismo. Es decir, el antiguo
+
         /* Cuenta: Bull o V2V */
         $comercial = $this->user_validate($row['comercial']); 
         if ($comercial == "ERROR"){

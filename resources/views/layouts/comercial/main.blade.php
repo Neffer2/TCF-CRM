@@ -53,6 +53,12 @@
                   </a>
                 </li>
                 <li class="nav-item dashboard">
+                  <a class="nav-link" href="{{ route('gestion-comercial') }}">  
+                    <span class="sidenav-mini-icon"> G </span>
+                    <span class="sidenav-normal"> Gesti&oacute;n comercial </span>
+                  </a> 
+                </li>
+                <li class="nav-item dashboard">
                   <a class="nav-link" href="{{ route('dashboard-base') }}"> 
                     <span class="sidenav-mini-icon"> B </span>
                     <span class="sidenav-normal"> Base comercial </span>

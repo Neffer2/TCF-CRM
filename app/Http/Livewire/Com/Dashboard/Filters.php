@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Año;
 use App\Models\Mes;
 use App\Models\User;
+use App\Models\Cuenta;
 use Illuminate\Support\Facades\Auth;
 
 class Filters extends Component
@@ -14,11 +15,13 @@ class Filters extends Component
     public $mes;
     public $comercial;
     public $año;
+    public $cuenta;
 
-    //Stored
+    //Useful vars
     public $StdMes = [];
     public $StdComercial = [];
     public $StdAño = [];
+    public $StdCuenta = [];
 
     public function render()
     {
@@ -45,14 +48,17 @@ class Filters extends Component
         $this->signals();
     } 
 
+    public function updatedCuenta(){
+        $this->signals();
+    } 
+
     public function signals (){
         /* Año debe ser string (description) */
         // Emite el año seleccionado
         if ($this->año){
             $año_desc = Año::select('description')->where('id', $this->año)->first();
             // $this->emit('Graphs', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => $this->comercial]);
-            $this->emit('Block1', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id()]);
-            $this->emit('Block2', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id()]);
+            $this->emit('Block1', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id(), 'cuenta' => $this->cuenta]);
         } 
     }
 
@@ -61,14 +67,15 @@ class Filters extends Component
             $this->StdMes = Mes::select('id', 'description')->where('ano_id', $this->año)->get();
             // 
             $this->StdComercial = User::select('id', 'name')->where('id', Auth::id())->get();
+            $this->StdCuenta = Cuenta::select('id', 'description')->get();
         }else {
             $this->StdMes = [];
             $this->StdComercial = [];
+            $this->StdCuenta = [];
 
             // Block1 refresh
             $this->emit('Block1');
-            $this->emit('Block2');
         }
-    }
+    } 
 }
 
