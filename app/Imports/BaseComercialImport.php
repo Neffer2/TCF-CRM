@@ -28,11 +28,16 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
         /* --- */
 
         /* Cuenta: Bull o V2V */
-        $cuenta = $this->cuenta_validate($row['cuenta']);
-        if ($cuenta == "ERROR"){
-            echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
-            dd($row);
-        } 
+        if (isset($row['cuenta'])){
+            $cuenta = $this->cuenta_validate($row['cuenta']);
+            if ($cuenta == "ERROR"){
+                echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
+                dd($row);
+            } 
+        }else {
+            $cuenta = 1;
+        }
+        
         /* --- */
 
         return new Base_comercial([ 

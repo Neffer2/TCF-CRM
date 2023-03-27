@@ -26,18 +26,18 @@ class HelisaContableImport implements ToModel, WithHeadingRow, WithCalculatedFor
             dd($row);
         } 
         /* --- */
-
+ 
+        /* Cuenta: Bull o V2V */
         if (isset($row['cuenta'])){
-            /* Cuenta: Bull o V2V */
             $cuenta = $this->cuenta_validate($row['cuenta']);
             if ($cuenta == "ERROR"){
                 echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
                 dd($row);
             } 
-            /* --- */
         }else {
             $cuenta = 1;
         }
+        /* --- */
 
         return new Helisa([
             'fecha' => Date::excelToDateTimeObject($row['fecha']),
