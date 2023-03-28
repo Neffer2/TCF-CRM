@@ -352,7 +352,7 @@
             <div class="form-check form-switch ps-0 ms-auto my-auto">
               <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
             </div>
-          </div>
+          </div> 
           <hr class="horizontal dark mb-1">
           <div class="d-flex my-4">
             <h6 class="mb-0">Sidenav Mini</h6>
@@ -404,7 +404,7 @@
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
     </script>
-    @if($errors->any())
+    @if($errors->any()) 
       <script>
         Swal.fire(
           '!Oppss tenemos un problema',

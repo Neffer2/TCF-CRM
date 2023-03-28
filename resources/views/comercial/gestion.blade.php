@@ -21,24 +21,6 @@
                 </p>
             </div>
           </div>
-          <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-            <div class="nav-wrapper position-relative end-0">
-              <ul x-data class="nav nav-pills nav-fill p-1" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <a @click="$dispatch('fire-toggle', 0)" class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
-                    <i class="ni ni-app"></i>
-                    <span class="ms-2">Base</span>
-                  </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <a @click="$dispatch('fire-toggle', 1)" href="{{ route('base-upload') }}" class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
-                    <i class="ni ni-cloud-upload-96"></i>
-                    <span class="ms-2">Subir</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -46,70 +28,29 @@
 
   @section('content')    
     <div class="card card-frame">
-        <div class="card-body">
-            <button class="btn bg-gradient-warning" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fas fa-plus text-white" aria-hidden="true"></i>
-            </button>
-            <div class="collapse" id="collapseExample">
-                <div class="card card-body">
-                    <form action="">
-                         <div class="form-group">
-                            <label for=""></label>
-                            <input type="text">
-                         </div>
-                    </form>                    
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-responsive">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Apellido</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Empresa</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cargo</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cel</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
-                            <th class="text-secondary opacity-7"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="d-flex px-2 py-1">
-                                    <div>
-                                        <img src="https://demos.creative-tim.com/soft-ui-design-system-pro/assets/img/team-2.jpg" class="avatar avatar-sm me-3">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="mb-0 text-xs">John Michael</h6>
-                                        <p class="text-xs text-secondary mb-0">john@creative-tim.com</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Manager</p>
-                                <p class="text-xs text-secondary mb-0">Organization</p>
-                            </td>
-                            <td class="align-middle text-center text-sm">
-                                <span class="badge badge-sm badge-success">Online</span>
-                            </td>
-                            <td class="align-middle">
-                                <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                                    Edit
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      <div class="card-body">
+        <div class="d-flex align-items-baseline">
+          <button class="btn bg-gradient-warning me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-plus text-white" aria-hidden="true"></i>
+          </button> 
+          <h5>
+            <b>Nuevo prospecto</b>
+          </h5>
         </div>
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body">
+            @livewire('com.gestion-comercial.nuevo-prospecto')       
+          </div>          
+        </div>
+        @livewire('com.gestion-comercial.gestion-list')
+      </div>
     </div>
   @endsection
  
   @section('scripts-imports')
     <script src="{{ asset('assets/js/plugins/datatables.js') }}"></script>
   @endsection
-  @section('scripts')
+  @section('scripts')  
     <script>
         const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
           searchable: true,
