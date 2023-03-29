@@ -11,16 +11,20 @@ class GestionList extends Component
     // Useful vars
     public $datos = [];
     public $estados = [];
-    protected $listeners = ['list' => 'mount'];
+    protected $listeners = ['list' => 'getData'];
 
     public function render()
-    {
+    {   
         return view('livewire.com.gestion-comercial.gestion-list');
     }
 
     public function mount(){
+        $this->getData();
+    }
+
+    public function getData(){
         $this->getEstados();
-        $this->datos = GestionComercial::select('nombre','apellido','empresa','cargo','id_estado','correo','celular')->get();
+        $this->datos = GestionComercial::select('id','nombre','apellido','empresa','cargo','id_estado','correo','celular')->get();
     }
 
     public function getEstados(){

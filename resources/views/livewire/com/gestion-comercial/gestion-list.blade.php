@@ -1,3 +1,4 @@
+<script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -10,7 +11,7 @@
                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Detalles</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody> 
             @foreach ($datos as $dato)
                 <tr>
                     <td>
@@ -39,14 +40,55 @@
                         </select>
                     </td>
                     <td class="align-middle d-flex justify-content-center">
-                        <button class="btn bg-gradient-warning">
-                            ⏩
+                        <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
+                            <i class="fa-solid fa-arrows-spin fa-spin fa-lg"></i>
                         </button>
                     </td>
                     <td class="align-middle">
                         <button class="btn bg-gradient-primary">Ver mas</button>
                     </td>
                 </tr>
+                @if($dato->id_estado == 1)
+                    <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                {{ $dato->nombre }} Estado 1
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn bg-gradient-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($dato->id_estado == 2)
+                    <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                {{ $dato->nombre }} Estado 2
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn bg-gradient-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @endforeach
         </tbody>
     </table>

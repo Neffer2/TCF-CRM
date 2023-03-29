@@ -87,7 +87,7 @@ class NuevoProspecto extends Component
         $gestiones->direccion = $this->direccion;
         $gestiones->save();
 
-        $this->limpiar();
+        // $this->limpiar();
         $this->emit('list');
         return redirect()->back()->with('success', 'Prospecto creado exitosamente')->withInput();
     }
