@@ -49,7 +49,7 @@ class NuevoProspecto extends Component
     public function updatedCorreo(){
         $this->validate(['correo' => ['required', 'string']]);
     }
-
+ 
     public function updatedWeb(){
         $this->validate(['web' => ['required', 'string']]);
     }
@@ -80,14 +80,14 @@ class NuevoProspecto extends Component
         $gestiones->apellido = $this->apellido;
         $gestiones->empresa = $this->empresa;
         $gestiones->cargo = $this->cargo;
-        $gestiones->correo = $this->correo;
+        $gestiones->correo = $this->correo; 
         $gestiones->celular = $this->celular;
         $gestiones->pbx = $this->pbx;
         $gestiones->web = $this->web;
         $gestiones->direccion = $this->direccion;
         $gestiones->save();
 
-        // $this->limpiar();
+        $this->limpiar();
         $this->emit('list');
         return redirect()->back()->with('success', 'Prospecto creado exitosamente')->withInput();
     }
