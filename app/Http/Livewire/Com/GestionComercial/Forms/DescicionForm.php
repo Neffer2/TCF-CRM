@@ -26,15 +26,6 @@ class DescicionForm extends Component
             'causa' => 'required|string'
         ]);
     }
-
-    public function storeVenta(){
-        $lead = GestionComercial::where('id', $this->lead_id)->first();
-        $lead->causa = $this->causa;
-        $lead->id_estado = 5;
-        $lead->update();
-
-        return redirect()->route('gestion-comercial')->with('success', '¡Proyecto marcado como venta exitosamente!');
-    }
      
     public function storePerdido(){
         $this->validate([

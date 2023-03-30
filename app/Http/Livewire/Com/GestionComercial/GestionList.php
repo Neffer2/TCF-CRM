@@ -9,7 +9,7 @@ use Livewire\WithPagination;
 
 class GestionList extends Component 
 { 
-    use WithPagination;
+    use WithPagination; 
     protected $paginationTheme = 'bootstrap'; 
     
     // Useful vars
@@ -19,10 +19,11 @@ class GestionList extends Component
     public function render()
     {   
         $this->getData();
-        return view('livewire.com.gestion-comercial.gestion-list', ['datos' => GestionComercial::select('id','nombre','apellido','empresa','cargo','id_estado','correo','celular')->orderBy('id', 'asc')->paginate(5)]);
+        $datos = GestionComercial::select('id','nombre','apellido','empresa','cargo','id_estado','correo','celular')->orderBy('id', 'asc')->paginate(5);
+        return view('livewire.com.gestion-comercial.gestion-list', ['datos' => $datos]);
     }
 
-    public function getData(){
+    public function getData(){ 
         $this->estados = EstadoGestionComercial::select('id', 'description')->get();
     }
 } 
