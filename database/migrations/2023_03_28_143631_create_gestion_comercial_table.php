@@ -43,7 +43,10 @@ class CreateGestionComercialTable extends Migration
             // Estados
             $table->foreignId('id_estado')->default(1);
             $table->foreign('id_estado')->references('id')->on('estados_gestion_comercial');
-            $table->timestamps();
+            // Usuarios 
+            $table->foreignId('id_user');
+            $table->foreign('id_user')->references('id')->on('users');        
+            $table->timestamps(); 
         });
     }
 

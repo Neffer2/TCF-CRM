@@ -27,12 +27,15 @@ class CreateBaseComercialesTable extends Migration
             $table->foreign('id_estado')->references('id')->on('estados_cuenta');
             $table->date('fecha_inicio')->nullable();
             $table->date('dura_mes')->nullable();
-            $table->foreignId('id_user');
+            $table->foreignId('id_user'); 
             $table->foreign('id_user')->references('id')->on('users');        
             $table->foreignId('id_asistente')->nullable();
             $table->foreign('id_asistente')->references('id')->on('users');
             $table->foreignId('id_cuenta')->default(1);
             $table->foreign('id_cuenta')->references('id')->on('cuentas');
+
+            $table->foreignId('id_gestion')->nullable();
+            $table->foreign('id_gestion')->references('id')->on('gestion_comercial');
             $table->timestamps(); 
         });
     }

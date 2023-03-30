@@ -85,6 +85,7 @@ class NuevoProspecto extends Component
         $gestiones->pbx = $this->pbx;
         $gestiones->web = $this->web;
         $gestiones->direccion = $this->direccion;
+        $gestiones->id_user = Auth::id();
         $gestiones->save();
 
         $this->limpiar();
