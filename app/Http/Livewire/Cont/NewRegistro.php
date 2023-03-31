@@ -98,24 +98,23 @@ class NewRegistro extends Component
 
     public function updatedDebito(){
         $this->credito = 0;
-        $this->baseComercial($this->debito);
         $this->validate(['debito' => ['required', 'numeric']]); 
+        $this->baseComercial($this->debito);
     }
     
     public function updatedCredito(){
         $this->debito = 0;
-        $this->baseComercial($this->credito);
         $this->validate(['credito' => ['required', 'numeric']]); 
+        $this->baseComercial($this->credito);
     }
 
     public function updatedPorcentaje(){
+        $this->validate(['porcentaje' => ['numeric']]); 
         if ($this->credito == 0){
             $this->baseComercial($this->debito);
         }elseif ($this->debito == 0){
             $this->baseComercial($this->credito);
         }
-
-        $this->validate(['porcentaje' => ['numeric']]); 
     }
 
     public function updatedComercial(){
