@@ -72,7 +72,7 @@
               </form>
           </div>
         </div>
-      </div> 
+      </div>  
 
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
         @livewire('cont.new-registro') 

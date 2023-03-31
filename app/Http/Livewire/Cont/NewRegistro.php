@@ -30,12 +30,14 @@ class NewRegistro extends Component
     public $mes = null;
     public $año = null;
     public $comision = null;
+    public $porcentaje;
 
     //USEFUL VARS
     public $comerciales = [];
     public $cuentas = []; 
     public $años = []; 
     public $meses = []; 
+
     
     public function render()
     {
@@ -95,11 +97,25 @@ class NewRegistro extends Component
     }
 
     public function updatedDebito(){
+        $this->credito = 0;
+        $this->baseComercial($this->debito);
         $this->validate(['debito' => ['required', 'numeric']]); 
     }
-
+    
     public function updatedCredito(){
+        $this->debito = 0;
+        $this->baseComercial($this->credito);
         $this->validate(['credito' => ['required', 'numeric']]); 
+    }
+
+    public function updatedPorcentaje(){
+        if ($this->credito == 0){
+            $this->baseComercial($this->debito);
+        }elseif ($this->debito == 0){
+            $this->baseComercial($this->credito);
+        }
+
+        $this->validate(['porcentaje' => ['numeric']]); 
     }
 
     public function updatedComercial(){
@@ -119,11 +135,17 @@ class NewRegistro extends Component
     }
 
     public function updatedAño(){
-        $this->validate(['año' => ['required', 'string']]); 
+        $this->validate(['año' => ['required', 'string']]);  
     }
 
     public function updatedComision(){
         $this->validate(['comision' => ['required', 'numeric']]); 
+    }
+
+    public function baseComercial($value){
+        if ($this->porcentaje > 0 && $value != 0){
+            $this->base_factura = ($value * $this->porcentaje)/100;
+        }
     }
 
     public function store(){
@@ -138,6 +160,7 @@ class NewRegistro extends Component
             'nom_centro_costo' => ['required', 'string'],
             'debito' => ['required', 'numeric'],
             'credito' => ['required', 'numeric'], 
+            'porcentaje' => ['numeric'], 
             'comercial' => ['required', 'numeric'],
             'id_cuenta' => ['numeric'],
             'participacion' => ['required', 'numeric'],
@@ -159,6 +182,7 @@ class NewRegistro extends Component
         $helisa->debito = $this->debito;
         $helisa->credito = $this->credito;
         $helisa->comercial = $this->comercial;
+        $helisa->base_factura = $this->base_factura;
 
         if ($this->id_cuenta){ 
             $helisa->id_cuenta = $this->id_cuenta;

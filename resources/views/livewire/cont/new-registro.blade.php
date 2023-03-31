@@ -122,7 +122,20 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label for="porcentaje">%</label>
+                            <input wire:model="porcentaje" id="porcentaje" type="number" name="porcentaje"
+                            class="form-control @error('porcentaje') is-invalid @elseif(strlen($porcentaje) > 0) is-valid @enderror"
+                            value="{{ old('porcentaje') }}" placeholder="%">
+                            @error('porcentaje')
+                                <div id="porcentaje" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="comercial">Comercial: </label>
                             <select wire:model="comercial" id="comercial" type="text" name="comercial"
@@ -137,10 +150,10 @@
                                 <div id="comercial" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
+                            @enderror 
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_cuenta">Cuenta: </label>
                             <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado">

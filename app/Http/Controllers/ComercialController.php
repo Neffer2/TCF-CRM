@@ -43,7 +43,7 @@ class ComercialController extends Controller
             'nom_cliente' => 'string|min:0',
             'nom_proyecto' => 'string|min:0',
             'cod_cc' => 'string|min:0',
-            'valor_proyecto' => 'numeric',
+            'valor_proyecto' => 'numeric', 
             'id_estado' => 'numeric',
             'id_cuenta' => 'numeric'
         ]); 

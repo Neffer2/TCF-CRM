@@ -22,9 +22,10 @@ class CreateHelisaTable extends Migration
             $table->string('identidad');
             $table->string('nom_tercero');
             $table->string('centro'); 
-            $table->string('nom_centro_costo');
+            $table->string('nom_centro_costo'); 
             $table->decimal('debito', 12, 2)->nullable();
             $table->decimal('credito', 12, 2)->nullable();
+            $table->string('porcentaje')->default(100);
             $table->foreignId('comercial');
             $table->foreign('comercial')->references('id')->on('users');
             $table->foreignId('id_cuenta')->default(1);

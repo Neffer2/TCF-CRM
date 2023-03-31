@@ -37,6 +37,57 @@ class ContableController extends Controller
         Helisa::destroy($id);
         return redirect()->back()->with('success', 'Registrado eliminado exitosamente.');
     } 
+
+    public function update_helisa(Request $request, $proyecto_id){
+        $request->validate([
+            'fecha' => ['required'],
+            'tipo_doc' => ['required', 'string'],
+            'num_doc' => ['required', 'string'],
+            'concepto' => ['required', 'string'],
+            'identidad' => ['required', 'string'],
+            'nom_tercero' => ['required', 'string'],
+            'centro' => ['required', 'string'],
+            'nom_centro_costo' => ['required', 'string'],
+            'debito' => ['required', 'numeric'],
+            'credito' => ['required', 'numeric'], 
+            'porcentaje' => ['numeric'], 
+            'comercial' => ['required', 'numeric'],
+            'id_cuenta' => ['numeric'],
+            'participacion' => ['required', 'numeric'],
+            'base_factura' => ['required', 'numeric'],
+            'mes' => ['required', 'string'],
+            'año' => ['required', 'string'],
+            'comision' => ['required', 'numeric']
+        ]); 
+
+        $helisa = Helisa::where('id', $proyecto_id)->first(); 
+
+        $helisa->fecha = $request->fecha;
+        $helisa->tipo_doc = $request->tipo_doc;
+        $helisa->num_doc = $request->num_doc;
+        $helisa->concepto = $request->concepto;
+        $helisa->identidad = $request->identidad;
+        $helisa->nom_tercero = $request->nom_tercero;
+        $helisa->centro = $request->centro;
+        $helisa->nom_centro_costo = $request->nom_centro_costo;
+        $helisa->debito = $request->debito;
+        $helisa->credito = $request->credito;
+        $helisa->comercial = $request->comercial;
+        $helisa->base_factura = $request->base_factura;
+
+        if ($request->id_cuenta){ 
+            $helisa->id_cuenta = $request->id_cuenta;
+        }
+
+        $helisa->participacion = $request->participacion;
+        $helisa->base_factura = $request->base_factura;
+        $helisa->mes = $request->mes;
+        $helisa->año = $request->año;
+        $helisa->comision = $request->comision;
+        $helisa->update();
+
+        return redirect()->route('dashboard')->with('success', '¡Datos guardados exitosamente!');
+    }
  
     public function export_helisa(){
         return Excel::download(new HelisaExport, "Reporte Helisa.xlsx");

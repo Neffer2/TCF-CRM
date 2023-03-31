@@ -138,7 +138,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> 
 
                     <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="Modal" aria-hidden="true">
                         <div class="modal-dialog">

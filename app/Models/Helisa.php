@@ -21,6 +21,7 @@ class Helisa extends Model
         'nom_centro_costo',
         'debito',
         'credito',
+        'porcentaje',
         'comercial',
         'id_cuenta',
         'participacion',
