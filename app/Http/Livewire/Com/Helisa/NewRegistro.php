@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Cont;
+namespace App\Http\Livewire\Com\Helisa;
 
 use Livewire\Component;
 use App\Models\User;
@@ -11,7 +11,7 @@ use App\Models\Helisa;
 use Illuminate\Validation\Rules;
 
 class NewRegistro extends Component
-{     
+{   
     // MODELS
     public $fecha = ""; 
     public $tipo_doc = "";  
@@ -36,16 +36,15 @@ class NewRegistro extends Component
     public $comerciales = [];
     public $cuentas = []; 
     public $años = []; 
-    public $meses = []; 
+    public $meses = [];
 
-    
     public function render()
-    {
+    {   
         $this->getComerciales();
         $this->getAños();
         $this->getMeses();
         $this->getCuentas();
-        return view('livewire.cont.new-registro');
+        return view('livewire.com.helisa.new-registro');
     }
 
     public function getComerciales(){
