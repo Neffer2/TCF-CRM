@@ -18,11 +18,11 @@ class ComercialController extends Controller
 
     public function gestionComercial(){
         return view('comercial.gestion');
-    }
+    } 
     
     public function base (){ 
         return view('comercial.base');
-    }
+    } 
 
     public function show_upload (){
         return view('comercial.base.upload');
@@ -31,6 +31,10 @@ class ComercialController extends Controller
     public function showActualizarPerfil (){
         return view('comercial.ajustes.perfil.actualizar');
     } 
+
+    public function comercialHelisa(){
+        return view('comercial.helisa.index');
+    }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable
     public function delete_proyecto($user_id){
@@ -45,8 +49,8 @@ class ComercialController extends Controller
             'cod_cc' => 'string|min:0',
             'valor_proyecto' => 'numeric', 
             'id_estado' => 'numeric',
-            'id_cuenta' => 'numeric'
-        ]); 
+            'id_cuenta' => 'numeric' 
+        ]);  
 
         $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
         if ($request->nom_cliente){
