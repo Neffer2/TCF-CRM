@@ -182,8 +182,8 @@ class NewRegistro extends Component
         $helisa->debito = $this->debito;
         $helisa->credito = $this->credito;
         $helisa->comercial = $this->comercial;
-        $helisa->base_factura = $this->base_factura;
-
+        $helisa->porcentaje = $this->porcentaje;
+        
         if ($this->id_cuenta){ 
             $helisa->id_cuenta = $this->id_cuenta;
         }
