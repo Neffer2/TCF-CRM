@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ComercialController extends Controller 
 {
-    public function index (){  
+    public function index(){  
         return view('comercial.index');
     }
 
@@ -25,20 +25,24 @@ class ComercialController extends Controller
         return view('comercial.helisa.index'); 
     }
     
-    public function base (){ 
+    public function base(){ 
         return view('comercial.base');
     } 
 
-    public function show_upload (){
+    public function show_upload(){
         return view('comercial.base.upload');
     } 
  
-    public function showActualizarPerfil (){
+    public function showActualizarPerfil(){
         return view('comercial.ajustes.perfil.actualizar');
     }  
 
     public function comercialHelisa(){
         return view('comercial.helisa.index');
+    }
+
+    public function Contactos(){
+        return view('comercial.contactos'); 
     }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable
