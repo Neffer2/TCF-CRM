@@ -25,7 +25,7 @@ class NewRegistro extends Component
     public $credito = null;
     public $comercial = null;
     public $id_cuenta = "";
-    public $participacion = null;
+    public $participacion = 0;
     public $base_factura = null;
     public $mes = null;
     public $año = null;
@@ -37,7 +37,6 @@ class NewRegistro extends Component
     public $cuentas = []; 
     public $años = []; 
     public $meses = []; 
-
     
     public function render()
     {
@@ -98,18 +97,19 @@ class NewRegistro extends Component
 
     public function updatedDebito(){
         $this->credito = 0;
-        $this->validate(['debito' => ['required', 'numeric']]); 
+        $this->validate(['debito' => ['required', 'numeric', 'min:1']]); 
+        $this->debito = ($this->debito * -1);
         $this->baseComercial($this->debito);
     }
     
     public function updatedCredito(){
         $this->debito = 0;
-        $this->validate(['credito' => ['required', 'numeric']]); 
+        $this->validate(['credito' => ['required', 'numeric', 'min:1']]); 
         $this->baseComercial($this->credito);
     }
 
     public function updatedPorcentaje(){
-        $this->validate(['porcentaje' => ['numeric']]); 
+        $this->validate(['porcentaje' => ['numeric', 'max:100', 'min:1']]); 
         if ($this->credito == 0){
             $this->baseComercial($this->debito);
         }elseif ($this->debito == 0){
@@ -159,7 +159,7 @@ class NewRegistro extends Component
             'nom_centro_costo' => ['required', 'string'],
             'debito' => ['required', 'numeric'],
             'credito' => ['required', 'numeric'], 
-            'porcentaje' => ['numeric'], 
+            'porcentaje' => ['numeric', 'max:100', 'min:1'],
             'comercial' => ['required', 'numeric'],
             'id_cuenta' => ['numeric'],
             'participacion' => ['required', 'numeric'],
@@ -175,13 +175,14 @@ class NewRegistro extends Component
         $helisa->num_doc = $this->num_doc;
         $helisa->concepto = $this->concepto;
         $helisa->identidad = $this->identidad;
-        $helisa->nom_tercero = $this->nom_tercero;
+        $helisa->nom_tercero = $this->nom_tercero;  
         $helisa->centro = $this->centro;
         $helisa->nom_centro_costo = $this->nom_centro_costo;
         $helisa->debito = $this->debito;
         $helisa->credito = $this->credito;
         $helisa->comercial = $this->comercial;
         $helisa->base_factura = $this->base_factura;
+        $helisa->porcentaje = $this->porcentaje;
 
         if ($this->id_cuenta){ 
             $helisa->id_cuenta = $this->id_cuenta;

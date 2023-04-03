@@ -53,6 +53,12 @@
                   </a>
                 </li>
                 <li class="nav-item dashboard">
+                  <a class="nav-link" href="{{ route('gestion-helisa') }}">  
+                    <span class="sidenav-mini-icon"> H </span>
+                    <span class="sidenav-normal"> Helisa </span>
+                  </a> 
+                </li>
+                <li class="nav-item dashboard">
                   <a class="nav-link" href="{{ route('gestion-comercial') }}">  
                     <span class="sidenav-mini-icon"> G </span>
                     <span class="sidenav-normal"> Gesti&oacute;n comercial </span>
