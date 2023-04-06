@@ -53,9 +53,9 @@
                   </a>
                 </li>
                 <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('gestion-comercial') }}">  
-                    <span class="sidenav-mini-icon"> G </span>
-                    <span class="sidenav-normal"> Gesti&oacute;n comercial </span>
+                  <a class="nav-link" href="{{ route('gestion-helisa') }}">  
+                    <span class="sidenav-mini-icon"> H </span>
+                    <span class="sidenav-normal"> Helisa </span>
                   </a> 
                 </li>
                 <li class="nav-item dashboard">
@@ -64,48 +64,44 @@
                     <span class="sidenav-normal"> Base comercial </span>
                   </a> 
                 </li>
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " data-bs-toggle="collapse" aria-expanded="false" href="#vrExamples">
-                    <span class="sidenav-mini-icon"> V </span>
-                    <span class="sidenav-normal"> Virtual Reality <b class="caret"></b></span>
+              </ul>
+            </div>
+          </li>  
+          <li class="nav-item"> 
+            <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link" aria-controls="dashboardsGestion" role="button" aria-expanded="false">
+              <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="ni ni-badge text-primary text-sm opacity-10"></i>
+              </div>
+              <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
+            </a>
+            <div class="collapse" id="dashboardsGestion">
+              <ul class="nav ms-4">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('contactos') }}">
+                    <span class="sidenav-mini-icon text-xs"> C </span>
+                    <span class="sidenav-normal"> Contactos </span>
                   </a>
-                  <div class="collapse " id="vrExamples">
-                    <ul class="nav nav-sm flex-column">
-                      <li class="nav-item">
-                        <a class="nav-link " href="../../pages/dashboards/vr/vr-default.html">
-                          <span class="sidenav-mini-icon text-xs"> V </span>
-                          <span class="sidenav-normal"> VR Default </span>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link " href="../../pages/dashboards/vr/vr-info.html">
-                          <span class="sidenav-mini-icon text-xs"> V </span>
-                          <span class="sidenav-normal"> VR Info </span>
-                        </a>
-                      </li>
-                    </ul> 
-                  </div>
-                </li> --}}
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " href="../../pages/dashboards/crm.html">
-                    <span class="sidenav-mini-icon"> C </span>
-                    <span class="sidenav-normal"> CRM </span>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('gestion-comercial') }}">
+                    <span class="sidenav-mini-icon text-xs"> NP </span>
+                    <span class="sidenav-normal"> Nuevo prospecto </span>
                   </a>
-                </li> --}}
+                </li>            
               </ul>
             </div>
           </li>   
           <li class="nav-item">
-            <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="true">
+            <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
               </div>
               <span class="nav-link-text ms-1">Ajustes</span>
             </a>
-            <div class="collapse show" id="applicationsExamples" style="">
+            <div class="collapse" id="applicationsExamples" style="">
               <ul class="nav ms-4"> 
-                <li class="nav-item ">
-                  <a class="nav-link " href="{{ route('actualizar-perfil-com') }}"> 
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('actualizar-perfil-com') }}"> 
                     <span class="sidenav-mini-icon"> A </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>
@@ -115,18 +111,6 @@
           </li>
         </ul>
       </div>
-      <!-- <div class="sidenav-footer mx-3 my-3">
-        <div class="card card-plain shadow-none" id="sidenavCard">
-          <img class="w-60 mx-auto" src="../../assets/img/illustrations/icon-documentation.svg" alt="sidebar_illustration">
-          <div class="card-body text-center p-3 w-100 pt-0">
-            <div class="docs-info">
-              <h6 class="mb-0">Need help?</h6>
-              <p class="text-xs font-weight-bold mb-0">Please check our docs</p>
-            </div>
-          </div>
-        </div>
-        <a href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard" target="_blank" class="btn btn-dark btn-sm w-100 mb-3">Documentation</a>
-      </div> -->
     </aside>
     <!-- -->
     <div class="main-content position-relative max-height-vh-100 h-100">

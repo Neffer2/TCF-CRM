@@ -53,7 +53,7 @@ class ContableController extends Controller
             'porcentaje' => ['numeric'], 
             'comercial' => ['required', 'numeric'],
             'id_cuenta' => ['numeric'],
-            'participacion' => ['required', 'numeric'],
+            // 'participacion' => ['required', 'numeric'],
             'base_factura' => ['required', 'numeric'],
             'mes' => ['required', 'string'],
             'año' => ['required', 'string'],
@@ -79,7 +79,7 @@ class ContableController extends Controller
             $helisa->id_cuenta = $request->id_cuenta;
         }
 
-        $helisa->participacion = $request->participacion;
+        $helisa->participacion = 0;
         $helisa->base_factura = $request->base_factura;
         $helisa->mes = $request->mes;
         $helisa->año = $request->año;

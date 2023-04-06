@@ -22,14 +22,24 @@
             </div>
           </div>
         </div>
-      </div> 
-    </div> 
-  @endsection 
- 
-  @section('content')     
-    <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-      @livewire('com.helisa.new-registro')  
-      @livewire('com.helisa.helisa-list')  
+      </div>
+    </div>
+  @endsection  
+
+  @section('content')    
+    <div class="card card-frame">
+      <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    @livewire('com.gestion-comercial.nuevo-prospecto')         
+                </div>
+            </div>
+            <div class="col-md-6">
+                @livewire('com.gestion-comercial.gestion-list')
+            </div>
+        </div>        
+      </div>
     </div>
   @endsection
  

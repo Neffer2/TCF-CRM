@@ -101,7 +101,7 @@
                 @enderror
             </div>
             <div class="col-md-3">
-                <button class="btn bg-gradient-warning mb-0">Crear nuevo proyecto</button>
+                <button class="btn bg-gradient-warning mb-0">Crear nuevo prospecto</button>
             </div>
         </div>
     </form>

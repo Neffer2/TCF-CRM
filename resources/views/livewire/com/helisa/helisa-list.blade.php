@@ -55,10 +55,10 @@
                                 <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
                             </td>
                         </tr>
-                        {{-- edit modal --}} 
+                        {{-- edit modal --}}  
                         <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
                             <div class="modal-dialog"> 
-                                <form action="{{ route('update-helisa', $item->id) }}" method="POST">
+                                <form action="{{ route('com-update-helisa', $item->id) }}" method="POST">
                                     @csrf
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -118,14 +118,14 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="debito">D&eacute;bito:</label>
-                                                        <input id="debito" type="number" name="debito" class="form-control" value="{{ $item->debito }}" placeholder="D&eacute;bito">
+                                                        <input id="debito" type="text" name="debito" class="form-control" value="{{ $item->debito }}" placeholder="D&eacute;bito">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="credito">Cr&eacute;dito: </label>
-                                                        <input id="credito" type="number" name="credito" class="form-control" value="{{ $item->credito }}" placeholder="Cr&eacute;dito">
-                                                    </div>
+                                                        <input id="credito" type="text" name="credito" class="form-control" value="{{ $item->credito }}" placeholder="Cr&eacute;dito">
+                                                    </div> 
                                                 </div>
                                                 <div class="col-md-1">
                                                     <div class="form-group">
@@ -172,7 +172,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="base_factura">Base factura: </label>
-                                                        <input id="base_factura" type="number" name="base_factura" class="form-control" value="{{ $item->base_factura }}" placeholder="Base factura">
+                                                        <input id="base_factura" type="text" name="base_factura" class="form-control" value="{{ $item->base_factura }}" placeholder="Base factura">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -211,14 +211,11 @@
                                                         <input id="comision" type="number" name="comision" class="form-control" value="{{ $item->comision }}" placeholder="Comisi&oacute;n">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <button class="btn bg-gradient-warning">Guardar cambios</button>
-                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
+                                            <button type="submit" class="btn bg-gradient-warning">Guardar cambios</button>
                                         </div>
                                     </div>
                                 </form>
@@ -251,9 +248,9 @@
         </div>
         <br>
         <!-- Button trigger modal -->
-        <button type="button" class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        {{-- <button type="button" class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Vaciar Helisa
-        </button>
+        </button> --}}
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -268,7 +265,7 @@
                     <div class="modal-body">
                         Los datos se eliminar&aacute;n permanentemente.
                     </div>
-                    <form action="{{ route('vaciar_helisa') }}" method="POST">
+                    <form action="{{ route('vaciar_helisa') }}" method="POST"> 
                         @csrf
                         <div class="modal-footer">
                             <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
@@ -279,12 +276,12 @@
             </div>
         </div>
  
-        <form action="{{ route('helisa-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
+        {{-- <form action="{{ route('helisa-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
             @csrf
             <button type="submit" class="btn bg-gradient-warning mt-3">
                 <span class="btn-inner--icon"><i class="ni ni-cloud-download-95 me-1"></i></span>
                 <span class="btn-inner--text">Descargar Reporte Helisa</span>
             </button>
-        </form>
+        </form> --}}
     </div>
 </div>

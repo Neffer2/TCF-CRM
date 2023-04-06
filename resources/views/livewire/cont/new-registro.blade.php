@@ -43,13 +43,15 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group"> 
                             <label for="concepto">Concepto:</label>
-                            <input wire:model.lazy="concepto" id="dback">
+                            <input wire:model.lazy="concepto" id="concepto" type="text" name="concepto" class="form-control @error('concepto') is-invalid @elseif(strlen($concepto) > 0) is-valid @enderror" value="{{ old('concepto') }}" placeholder="Concepto" required>
+                            @error('concepto')
+                                <div id="concepto" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
-                        </div>
+                            @enderror 
+                        </div> 
                     </div> 
                     <div class="col-md-3">
                         <div class="form-group">
@@ -57,10 +59,7 @@
                             <input wire:model.lazy="identidad" id="identidad" type="text" name="identidad" class="form-control @error('identidad') is-invalid @elseif(strlen($identidad) > 0) is-valid @enderror" value="{{ old('identidad') }}" placeholder="Identidad" required>
                             @error('identidad')
                                 <div id="identidad" class="invalid-feedback">
-                                    {{ $message }}concepto" type="text" name="concepto" class="form-control @error('concepto') is-invalid @elseif(strlen($concepto) > 0) is-valid @enderror" value="{{ old('concepto') }}" placeholder="Concepto" required>
-                            @error('concepto')
-                                <div id="concepto" class="invalid-fee
-                                </div>
+                                    {{ $message }}
                             @enderror
                         </div>
                     </div>
@@ -101,7 +100,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="debito">D&eacute;bito:</label>
-                            <input wire:model="debito" id="debito" type="number" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
+                            <input wire:model.lazy="debito" id="debito" type="number" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
                                     {{ $message }}
@@ -168,8 +167,8 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="col-md-4">
+                    </div> 
+                    {{-- <div class="col-md-4">
                         <div class="form-group">
                             <label for="participacion">Participaci&oacute;n: </label>
                             <input wire:model="participacion" id="participacion" type="text" name="participacion"
@@ -181,13 +180,13 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="base_factura">Base factura: </label>
                             <input wire:model="base_factura" id="base_factura" type="number" name="base_factura"
                             class="form-control @error('base_factura') is-invalid @elseif(strlen($base_factura) > 0) is-valid @enderror"
-                            value="{{ old('base_factura') }}" placeholder="Base factura">
+                            value="{{ old('base_factura') }}" placeholder="Base factura" disabled>
                             @error('base_factura')
                                 <div id="base_factura" class="invalid-feedback">
                                     {{ $message }}

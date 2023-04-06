@@ -77,7 +77,7 @@
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
         @livewire('cont.new-registro') 
         @livewire('cont.helisa-list')  
-      </div> 
+      </div>
     </div>
   @endsection
 

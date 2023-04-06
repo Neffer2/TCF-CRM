@@ -9,6 +9,7 @@ use App\Models\Mes;
 use App\Models\Cuenta; 
 use App\Models\Helisa;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Auth;
 
 class NewRegistro extends Component
 {   
@@ -23,9 +24,8 @@ class NewRegistro extends Component
     public $nom_centro_costo = "";
     public $debito = null;
     public $credito = null;
-    public $comercial = null;
     public $id_cuenta = "";
-    public $participacion = null;
+    public $participacion = 0;
     public $base_factura = null;
     public $mes = null;
     public $año = null;
@@ -33,22 +33,16 @@ class NewRegistro extends Component
     public $porcentaje;
 
     //USEFUL VARS
-    public $comerciales = [];
     public $cuentas = []; 
     public $años = []; 
-    public $meses = [];
+    public $meses = []; 
 
     public function render()
     {   
-        $this->getComerciales();
         $this->getAños();
         $this->getMeses();
         $this->getCuentas();
         return view('livewire.com.helisa.new-registro');
-    }
-
-    public function getComerciales(){
-        $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
     }
 
     public function getAños(){
@@ -97,27 +91,24 @@ class NewRegistro extends Component
 
     public function updatedDebito(){
         $this->credito = 0;
-        $this->validate(['debito' => ['required', 'numeric']]); 
+        $this->validate(['debito' => ['required', 'numeric', 'min:1']]); 
+        $this->debito = ($this->debito * -1);
         $this->baseComercial($this->debito);
     }
     
     public function updatedCredito(){
         $this->debito = 0;
-        $this->validate(['credito' => ['required', 'numeric']]); 
+        $this->validate(['credito' => ['required', 'numeric', 'min:1']]); 
         $this->baseComercial($this->credito);
     }
 
     public function updatedPorcentaje(){
-        $this->validate(['porcentaje' => ['numeric']]); 
+        $this->validate(['porcentaje' => ['numeric', 'max:100', 'min:1']]); 
         if ($this->credito == 0){
             $this->baseComercial($this->debito);
         }elseif ($this->debito == 0){
             $this->baseComercial($this->credito);
         }
-    }
-
-    public function updatedComercial(){
-        $this->validate(['comercial' => ['required', 'numeric']]); 
     }
 
     public function updatedParticipacion(){
@@ -158,8 +149,7 @@ class NewRegistro extends Component
             'nom_centro_costo' => ['required', 'string'],
             'debito' => ['required', 'numeric'],
             'credito' => ['required', 'numeric'], 
-            'porcentaje' => ['numeric'], 
-            'comercial' => ['required', 'numeric'],
+            'porcentaje' => ['numeric', 'max:100', 'min:1'],
             'id_cuenta' => ['numeric'],
             'participacion' => ['required', 'numeric'],
             'base_factura' => ['required', 'numeric'],
@@ -172,15 +162,16 @@ class NewRegistro extends Component
         $helisa->fecha = $this->fecha;
         $helisa->tipo_doc = $this->tipo_doc;
         $helisa->num_doc = $this->num_doc;
-        $helisa->concepto = $this->concepto;
+        $helisa->concepto = $this->concepto; 
         $helisa->identidad = $this->identidad;
-        $helisa->nom_tercero = $this->nom_tercero;
+        $helisa->nom_tercero = $this->nom_tercero;  
         $helisa->centro = $this->centro;
         $helisa->nom_centro_costo = $this->nom_centro_costo;
         $helisa->debito = $this->debito;
         $helisa->credito = $this->credito;
-        $helisa->comercial = $this->comercial;
+        $helisa->comercial = Auth::user()->id;
         $helisa->base_factura = $this->base_factura;
+        $helisa->porcentaje = $this->porcentaje;
 
         if ($this->id_cuenta){ 
             $helisa->id_cuenta = $this->id_cuenta;
@@ -191,8 +182,8 @@ class NewRegistro extends Component
         $helisa->mes = $this->mes;
         $helisa->año = $this->año;
         $helisa->comision = $this->comision;
-        $helisa->save();
+        $helisa->save(); 
 
-        return redirect()->route('dashboard')->with('success', 'Registro creado exitosamente!');
+        return redirect()->route('gestion-helisa')->with('success', 'Registro creado exitosamente!');
     }
 }
