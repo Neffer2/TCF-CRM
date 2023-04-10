@@ -85,7 +85,7 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('gestion-comercial') }}">
                     <span class="sidenav-mini-icon text-xs"> NP </span>
-                    <span class="sidenav-normal"> Nuevo prospecto </span>
+                    <span class="sidenav-normal"> Prospectos </span>
                   </a>
                 </li>            
               </ul>

@@ -59,6 +59,8 @@ Route::get('/', function () {
         Route::post('/update-proyecto/{id_user?}', [ComercialController::class, 'update_proyecto'])->middleware(['auth'])->name('update-proyecto');
         // Update proyecto Helisa 
         Route::post('/com-update-helisa/{id_user?}', [ComercialController::class, 'update_helisa'])->middleware(['auth'])->middleware(['comercial'])->name('com-update-helisa'); 
+        // Update proyecto gestion comercial 
+        Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->middleware(['comercial'])->name('update-gestion-comercial'); 
     /* --- */
 /* --- */  
 

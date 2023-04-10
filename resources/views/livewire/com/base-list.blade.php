@@ -19,7 +19,7 @@
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Editor</th>
-                    <th>ACCIONES</th>
+                    <th>ACCIONES</th> 
                 </tr> 
                 </thead> 
                 <tbody>   

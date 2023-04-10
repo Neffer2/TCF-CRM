@@ -7,6 +7,7 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Proyecto</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estado</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Siguiente estado</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Acciones</th>
                 </tr> 
             </thead>
             <tbody>  
@@ -38,19 +39,34 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td class="align-middle d-flex justify-content-center">
-                            @if($dato->id_estado != 4)
+                        <td class="align-middle" style="width: 10%">
+                            @if($dato->id_estado == 5)
                                 <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
-                                    <i class="fa-solid fa-arrows-spin fa-spin fa-lg"></i>
+                                    Vendido
                                 </button>
-                            @else 
-                                <button class="btn bg-gradient-warning me-3" data-bs-toggle="modal" data-bs-target="#Modalventa{{ $dato->id }}">
-                                    Venta
-                                </button>
-                                <button class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#ModalPerdido{{ $dato->id }}">
+                            @elseif ($dato->id_estado == 6)
+                                <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
                                     Perdido
                                 </button>
-                            @endif
+                            @else 
+                                @if($dato->id_estado != 4)
+                                    <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
+                                        <i class="fa-solid fa-arrows-spin fa-spin fa-lg"></i>
+                                    </button>
+                                @else 
+                                    <button class="btn bg-gradient-warning me-3" data-bs-toggle="modal" data-bs-target="#Modalventa{{ $dato->id }}">
+                                        Venta
+                                    </button>
+                                    <button class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#ModalPerdido{{ $dato->id }}">
+                                        Perdido
+                                    </button>
+                                @endif
+                            @endif 
+                        </td>
+                        <td>
+                            <a class="btn bg-gradient-primary" href="{{ route('update-gestion-comercial', $dato->id) }}"> 
+                                Editar
+                            </a>
                         </td>
                     </tr>
                     @if($dato->id_estado == 1)

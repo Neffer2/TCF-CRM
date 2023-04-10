@@ -49,16 +49,8 @@
     </div>
   @endsection
  
-  @section('scripts-imports')
-    <script src="{{ asset('assets/js/plugins/datatables.js') }}"></script>
-  @endsection
   @section('scripts')  
     <script>
-        const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
-          searchable: true,
-          fixedHeight: true
-        });
-
         function menu(){ 
           return {
             toggle: [true, false],

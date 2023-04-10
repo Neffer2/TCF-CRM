@@ -9,7 +9,7 @@ use App\Models\GestionComercial;
 use App\Models\User;
 use Livewire\WithFileUploads;
 
-class CotizacionForm extends Component
+class CotizacionForm extends Component 
 {    
     use WithFileUploads;
 

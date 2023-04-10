@@ -20,7 +20,7 @@
                         <div id="contacto" class="invalid-feedback">
                             {{ $message }}
                         </div>
-                    @enderror 
+                    @enderror
                 </div>
             </div>
             <div class="col-md-12">
