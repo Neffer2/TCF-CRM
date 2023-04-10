@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
 use App\Models\Helisa;
+use App\Models\Contacto;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +37,7 @@ class ComercialController extends Controller
     public function showActualizarPerfil(){
         return view('comercial.ajustes.perfil.actualizar');
     }  
-
+ 
     public function comercialHelisa(){
         return view('comercial.helisa.index');
     }
@@ -49,6 +50,11 @@ class ComercialController extends Controller
     public function delete_proyecto($user_id){
         Base_comercial::destroy($user_id);
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
+    } 
+
+    public function delete_contacto($id){
+        Contacto::destroy($id);
+        return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
     } 
 
     public function update_proyecto(Request $request, $proyecto_id){ 
@@ -105,7 +111,6 @@ class ComercialController extends Controller
             'debito' => ['required', 'numeric'],
             'credito' => ['required', 'numeric'], 
             'porcentaje' => ['numeric'], 
-            'comercial' => ['required', 'numeric'],
             'id_cuenta' => ['numeric'],
             'base_factura' => ['required', 'numeric'],
             'mes' => ['required', 'string'],
@@ -125,7 +130,6 @@ class ComercialController extends Controller
         $helisa->nom_centro_costo = $request->nom_centro_costo;
         $helisa->debito = $request->debito;
         $helisa->credito = $request->credito;
-        $helisa->comercial = $request->comercial;
         $helisa->base_factura = $request->base_factura; 
 
         if ($request->id_cuenta){ 

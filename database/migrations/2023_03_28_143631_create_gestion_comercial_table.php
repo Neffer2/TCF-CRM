@@ -16,20 +16,26 @@ class CreateGestionComercialTable extends Migration
         Schema::create('gestion_comercial', function (Blueprint $table) {
             $table->id();
             // Prospecto
-            $table->string('nombre'); 
-            $table->string('apellido');
-            $table->string('empresa');
-            $table->string('cargo');
-            $table->string('celular');
-            $table->string('correo');
-            $table->string('web');
-            $table->string('pbx');
-            $table->string('direccion');
+            // $table->string('nombre'); 
+            // $table->string('apellido');
+            // $table->string('empresa');
+            // $table->string('cargo');
+            // $table->string('celular');
+            // $table->string('correo');
+            // $table->string('web');
+            // $table->string('pbx');
+            // $table->string('direccion');
+            $table->foreignId('id_contacto');
+            $table->foreign('id_contacto')->references('id')->on('contactos');        
+
             // Oportunidad
-            $table->string('contacto')->nullable();
+            $table->string('tipo_contacto')->nullable();
             $table->string('desc_contacto')->nullable();
             // Cotizacion 
             $table->decimal('presto_cot', 15, 2)->default(0);
+            $table->string('porcentaje')->nullable();
+            $table->foreignId('comercial_2')->nullable();
+            $table->foreign('comercial_2')->references('id')->on('users');        
             $table->string('nom_proyecto_cot')->nullable();
             $table->date('fecha_estimada_cot')->nullable();
             $table->string('cotizacion_file')->nullable();

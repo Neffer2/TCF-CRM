@@ -10,7 +10,7 @@
                             {{ $message }}
                         </div>
                     @enderror
-                </div>
+                </div> 
             </div>
             <div class="col-md-8">
                 <div class="form-group"> 
@@ -53,31 +53,64 @@
                         <div id="valor_proyecto" class="invalid-feedback">
                             {{ $message }}
                         </div>
-                    @enderror
+                    @enderror 
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="com_1">Comercial 1:</label>
-                    <input wire:model.lazy="com_1" id="com_1" type="text" name="com_1" class="form-control @error('com_1') is-invalid @elseif(strlen($com_1) > 0) is-valid @enderror" value="{{ old('com_1') }}" placeholder="Comercial 1">
-                    @error('com_1')
-                        <div id="com_1" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+            @if ($porcentaje == 50)
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="com_2">Comercial 2:</label>
+                        <select wire:model.lazy="com_2" id="com_2" type="text" name="com_2" class="form-control @error('com_2') is-invalid @elseif(strlen($com_2) > 0) is-valid @enderror" value="{{ old('com_2') }}" placeholder="Comercial 2" disabled>
+                            <option value="">Seleccionar</option>
+                            @foreach ($comerciales as $comercial)
+                                <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('com_2')
+                            <div id="com_2" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div> 
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="com_2">Comercial 2:</label>
-                    <input wire:model.lazy="com_2" id="com_2" type="text" name="com_2" class="form-control @error('com_2') is-invalid @elseif(strlen($com_2) > 0) is-valid @enderror" value="{{ old('com_2') }}" placeholder="Comercial 2">
-                    @error('com_2')
-                        <div id="com_2" class="invalid-feedback">
-                            {{ $message }}
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="porcentaje">Porcentaje:</label>
+                        <select wire:model.lazy="porcentaje" id="porcentaje" type="text" name="porcentaje" class="form-control @error('porcentaje') is-invalid @elseif(strlen($porcentaje) > 0) is-valid @enderror" value="{{ old('porcentaje') }}" disabled>
+                            <option value="">Seleccionar</option>
+                            @foreach ($porcentajes as $porcentaje_)
+                                <option value="{{ $porcentaje_ }}">{{ $porcentaje_ }}%</option>
+                            @endforeach
+                        </select>
+                        @error('porcentaje')
+                            <div id="porcentaje" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div> 
+                </div>
+                <div class="col-md-12 mb-2">
+                    <p><b>Porcentaje 50%</b></p>
+                    <div class="row gy-2">
+                        <div class="col-md-6">  
+                            <input type="text" class="form-control" disabled value="{{ auth()->user()->name }}">
                         </div>
-                    @enderror
-                </div> 
-            </div>
+                        <div class="col-md-6">  
+                            <input type="text" class="form-control" disabled value="{{ $valorEjemplo }}">
+                        </div>
+                        <div class="col-md-6">  
+                            <select wire:model.lazy="com_2" id="com_2" type="text" name="com_2" class="form-control" disabled>
+                                @foreach ($comerciales as $comercial)
+                                    <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6">  
+                            <input type="text" class="form-control" disabled value="{{ $valorEjemplo }}">
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="id_estado">Estado: </label>
@@ -97,7 +130,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="id_cuenta">Cuenta: </label>
-                    <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado">
+                    <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado" required>
                         <option value="">Seleccionar</option>
                         @foreach ($cuentas as $cuenta)
                             <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>

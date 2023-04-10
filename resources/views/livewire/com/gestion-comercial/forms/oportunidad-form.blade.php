@@ -20,7 +20,7 @@
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="contacto">Descripci&oacute;n:</label>
-                    <textarea cols="30" rows="10" class="form-control @error('descOportunidad') is-invalid @elseif(strlen($descOportunidad) > 0) is-valid @enderror" value="{{ old('descOportunidad') }}" placeholder="Describe detalles de tu reunión" wire:model.lazy="descOportunidad" required></textarea>
+                    <textarea cols="30" rows="10" class="form-control @error('descOportunidad') is-invalid @elseif(strlen($descOportunidad) > 0) is-valid @enderror" value="{{ old('descOportunidad') }}" placeholder="Describe los detalles de tu reunión." wire:model.lazy="descOportunidad" required></textarea>
                     @error('descOportunidad')
                         <div id="descOportunidad" class="invalid-feedback">
                             {{ $message }}

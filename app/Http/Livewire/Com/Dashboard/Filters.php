@@ -59,6 +59,7 @@ class Filters extends Component
             $año_desc = Año::select('description')->where('id', $this->año)->first();
             // $this->emit('Graphs', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => $this->comercial]);
             $this->emit('Block1', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id(), 'cuenta' => $this->cuenta]);
+            $this->emit('Block2', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id(), 'cuenta' => $this->cuenta]);
         } 
     }
 
@@ -75,6 +76,7 @@ class Filters extends Component
 
             // Block1 refresh
             $this->emit('Block1');
+            $this->emit('Block2');
         }
     } 
 }

@@ -9,4 +9,8 @@ class GestionComercial extends Model
 {
     use HasFactory;
     protected $table = 'gestion_comercial'; 
+
+    public function contacto (){
+        return $this->hasOne(Contacto::class, 'id', 'id_contacto');
+    } 
 }

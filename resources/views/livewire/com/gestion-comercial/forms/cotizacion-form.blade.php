@@ -3,19 +3,19 @@
         <div class="row"> 
             <div class="col-md-12">
                 <div class="form-group mb-1">
-                    <label for="contacto">Nombre Proyecto:</label>
+                    <label for="nom_proyecto">Nombre Proyecto:</label>
                     <input type="text" id="nom_proyecto" class="form-control @error('nom_proyecto') is-invalid @elseif(strlen($nom_proyecto) > 0) is-valid @enderror" value="{{ old('nom_proyecto') }}" wire:model.lazy="nom_proyecto" required>
                     @error('nom_proyecto')
                         <div id="nom_proyecto" class="invalid-feedback">
-                            {{ $message }}
+                            {{ $message }} 
                         </div>
                     @enderror
                 </div>
-            </div>
+            </div> 
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="presupuesto">Presupuesto:</label>
-                    <input type="number" id="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required>
+                    <input type="text" id="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required>
                     @error('presupuesto')
                         <div id="presupuesto" class="invalid-feedback">
                             {{ $message }}
@@ -23,6 +23,40 @@
                     @enderror
                 </div> 
             </div>
+            <div class="col-md-6">
+                <div class="form-group mb-1">
+                    <label for="porcentaje">Porcentaje:</label>
+                    <select type="text" id="porcentaje" class="form-control @error('porcentaje') is-invalid @elseif(strlen($porcentaje) > 0) is-valid @enderror" value="{{ old('porcentaje') }}" wire:model.lazy="porcentaje" required>
+                            <option value="">Seleccionar</option>
+                        @foreach ($porcentajes as $porcentaje_)
+                            <option value="{{ $porcentaje_ }}">{{ $porcentaje_ }}%</option>
+                        @endforeach
+                    </select>
+                    @error('porcentaje')
+                        <div id="porcentaje" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div> 
+            </div>
+            @if ($porcentaje == 50)
+                <div class="col-md-6">
+                    <div class="form-group mb-1">
+                        <label for="com_2">Comercial 2:</label>
+                        <select type="text" id="com_2" class="form-control @error('com_2') is-invalid @elseif(strlen($com_2) > 0) is-valid @enderror" value="{{ old('com_2') }}" wire:model.lazy="com_2" required>
+                                <option value="">Seleccionar</option>
+                            @foreach ($comerciales as $comercial)
+                                <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('com_2')
+                            <div id="com_2" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div> 
+                </div>
+            @endif
             <div class="col-md-12">
                 <label for="fecha">Fecha estimada de respuesta:</label>
                 <input type="date" id="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('fecha') }}" wire:model.lazy="fecha" required>

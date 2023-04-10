@@ -39,7 +39,7 @@ class OportunidadForm extends Component
         ]);
 
         $lead = GestionComercial::where('id', $this->lead_id)->first();
-        $lead->contacto = $this->contacto;
+        $lead->tipo_contacto = $this->contacto;
         $lead->desc_contacto = $this->descOportunidad;
         $lead->id_estado = 2;
         $lead->update();

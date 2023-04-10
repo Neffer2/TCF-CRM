@@ -15,7 +15,7 @@
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="presupuesto">Presupuesto:</label>
-                    <input type="number" id="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required>
+                    <input type="text" id="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required>
                     @error('presupuesto')
                         <div id="presupuesto" class="invalid-feedback">
                             {{ $message }}

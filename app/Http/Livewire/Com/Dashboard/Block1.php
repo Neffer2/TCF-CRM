@@ -19,7 +19,7 @@ class Block1 extends Component
     // Models
     public $venta_facturada = 0;
     public $venta_consolidada = 0;
-    public $presto_mensual = 0;
+    public $presto_mensual = 0; 
     public $presto_acumulado = 0;
 
     public $cumpli_venta_men = 0;

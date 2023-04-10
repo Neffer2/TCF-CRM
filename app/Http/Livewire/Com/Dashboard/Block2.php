@@ -1,16 +1,19 @@
 <?php
 
-namespace App\Http\Livewire\Admin\Dashboard;
+namespace App\Http\Livewire\Com\Dashboard;
 
 use Livewire\Component;
 use App\Models\Base_comercial;
-use App\Models\Helisa; 
+use App\Models\Helisa;
 use App\Models\Mes;
 use App\Models\Año;
+use App\Models\Cuenta;
 use App\Models\Presupuesto;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Block2 extends Component
-{
+{   
     protected $listeners = ['Block2' => 'getData'];
 
     // Models
@@ -39,7 +42,7 @@ class Block2 extends Component
 
     public function render()
     {
-        return view('livewire.admin.dashboard.block2');
+        return view('livewire.com.dashboard.block2');
     }
 
     public function mount(){
@@ -49,8 +52,9 @@ class Block2 extends Component
     public function default(){ 
         // Obtiene el último año cargado
         $latest_year = Año::select('id','description')->orderBy('created_at', 'DESC')->first();
+        $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
         if ($latest_year){
-            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => null]);
+            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
         }
     }
 
@@ -73,12 +77,12 @@ class Block2 extends Component
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
 
-        $this->xfacturar = $this->getXfacturar($filters['comercial'], $mes, $año);
-        $this->ventaejecucion = $this->getVentaEjecucion($filters['comercial'], $mes, $año);
-        $this->venta = $this->getVenta($filters['comercial'], $mes, $año);
-        $this->ventatotal = $this->getVentaTotal($filters['comercial'], $mes, $año);
+        $this->xfacturar = $this->getXfacturar($filters['comercial'], $mes, $año, $filters['cuenta']);
+        $this->ventaejecucion = $this->getVentaEjecucion($filters['comercial'], $mes, $año, $filters['cuenta']);
+        $this->venta = $this->getVenta($filters['comercial'], $mes, $año, $filters['cuenta']);
+        $this->ventatotal = $this->getVentaTotal($filters['comercial'], $mes, $año, $filters['cuenta']);
         /* Sumatorio ventas */
-        $this->getSumVentas($filters['comercial'], $mes, $año);
+        $this->getSumVentas($filters['comercial'], $mes, $año, $filters['cuenta']);
         /* % ESTADO POR FACTURAR + VENTA FACTURADA */
         $this->getPers($filters['comercial'], $mes, $año);
     }
@@ -98,7 +102,7 @@ class Block2 extends Component
     /* Obtiene la sumatoria de ejecucionxfacturar
         @params int, obj, obj
     */
-    public function getXfacturar($comercial_id, $mes, $año){
+    public function getXfacturar($comercial_id, $mes, $año, $cuenta){
         $this->xfacturar = 0;
         // Arreglos que manejan los filtros
         $filters_array = [];
@@ -109,6 +113,10 @@ class Block2 extends Component
 
         if ($comercial_id){
             array_push($filters_array, ['id_user', $comercial_id]);
+        }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
         }
 
         /* Si no hay mes, trae todos los meses del año actual*/
@@ -131,7 +139,7 @@ class Block2 extends Component
     /* Obtiene la sumatoria de ventas ejecucion
         @params int, obj, obj
     */
-    public function getVentaEjecucion($comercial_id, $mes, $año){
+    public function getVentaEjecucion($comercial_id, $mes, $año, $cuenta){
         $this->ventaejecucion = 0;
         // Arreglos que manejan los filtros
         $filters_array = [];
@@ -142,6 +150,10 @@ class Block2 extends Component
 
         if ($comercial_id){
             array_push($filters_array, ['id_user', $comercial_id]);
+        }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
         }
 
         if ($mes){
@@ -163,7 +175,7 @@ class Block2 extends Component
     /* Obtiene la sumatoria de ventas ejecucion
         @params int, obj, obj
     */
-    public function getVenta($comercial_id, $mes, $año){
+    public function getVenta($comercial_id, $mes, $año, $cuenta){
         $this->venta = 0;
         // Arreglos que manejan los filtros
         $filters_array = [];
@@ -174,6 +186,10 @@ class Block2 extends Component
 
         if ($comercial_id){
             array_push($filters_array, ['id_user', $comercial_id]);
+        }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
         }
 
         if ($mes){
@@ -192,8 +208,8 @@ class Block2 extends Component
         return $Base_results;
     }
 
-    /* Obtiene y filtra las ventas facturadas, para calcular la venta total */
-    public function getVentaTotal($comercial_id, $mes, $año) {
+    /* Obtiene y filtra las ventas facturadas, para calcular la venta total real de HELISA*/
+    public function getVentaTotal($comercial_id, $mes, $año, $cuenta) {
         /* Creo 2 arreglos que contendrán los filtros necesarios para la consulta */
         $filters_array = [];
         $date_filters_array = [];
@@ -213,6 +229,10 @@ class Block2 extends Component
 
         if ($comercial_id){
             array_push($filters_array, ['comercial', $comercial_id]);
+        }
+
+        if ($cuenta){
+            array_push($filters_array, ['id_cuenta', $cuenta]);
         }
         
         $this->venta_facturada = 0;
@@ -246,7 +266,7 @@ class Block2 extends Component
 
         if ($comercial_id){
             array_push($filters_array, ['id_user', $comercial_id]);
-        }
+        }  
 
         $presupuesto = Presupuesto::select('id', 'valor')
                                     ->where($filters_array)

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Com\GestionComercial;
 
 use App\Models\GestionComercial;
+use App\Models\Contacto;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
  
@@ -11,80 +12,32 @@ use Livewire\Component;
 class NuevoProspecto extends Component  
 {    
     //Models 
-    public $nombre;
-    public $apellido;
-    public $empresa;
-    public $cargo;
-    public $celular; 
-    public $correo;
-    public $web;
-    public $pbx;
-    public $direccion;
+    public $contacto;
+
+    // Useful vars
+    public $contactos = [];
 
     public function render() 
     {
+        $this->getContactos();
         return view('livewire.com.gestion-comercial.nuevo-prospecto');
     }
 
-    public function updatedNombre(){
-        $this->validate(['nombre' => ['required', 'string']]);
+    public function getContactos(){
+        $this->contactos = Contacto::where('id_user', Auth::id())->get();
     }
-
-    public function updatedApellido(){
-        $this->validate(['apellido' => ['required', 'string']]);
-    }
-
-    public function updatedEmpresa(){
-        $this->validate(['empresa' => ['required', 'string']]);
-    }
-
-    public function updatedCargo(){
-        $this->validate(['cargo' => ['required', 'string']]);
-    }
-
-    public function updatedCelular(){
-        $this->validate(['cargo' => ['required', 'string']]);
-    }
-
-    public function updatedCorreo(){
-        $this->validate(['correo' => ['required', 'string']]);
-    }
- 
-    public function updatedWeb(){
-        $this->validate(['web' => ['required', 'string']]);
-    }
-
-    public function updatedPbx(){
-        $this->validate(['pbx' => ['required', 'string']]);
-    }
-
-    public function updatedDireccion(){
-        $this->validate(['direccion' => ['required', 'string']]);
+    
+    public function updatedContacto (){
+        $this->validate(['contacto' => ['required', 'numeric']]);
     }
 
     public function store(){
         $this->validate([
-            'nombre' => ['required', 'string'],
-            'apellido' => ['required', 'string'],
-            'empresa' => ['required', 'string'],
-            'cargo' => ['required', 'string'],
-            'celular' => ['required', 'string'],
-            'correo' => ['required', 'string'],
-            'pbx' => ['required', 'string'],
-            'web' => ['required', 'string'],
-            'direccion' => ['required', 'string']
+            'contacto'  => ['required', 'numeric'],
         ]);
 
         $gestiones = new GestionComercial;
-        $gestiones->nombre = $this->nombre;
-        $gestiones->apellido = $this->apellido;
-        $gestiones->empresa = $this->empresa;
-        $gestiones->cargo = $this->cargo;
-        $gestiones->correo = $this->correo; 
-        $gestiones->celular = $this->celular;
-        $gestiones->pbx = $this->pbx;
-        $gestiones->web = $this->web;
-        $gestiones->direccion = $this->direccion;
+        $gestiones->id_contacto = $this->contacto;
         $gestiones->id_user = Auth::id();
         $gestiones->save();
 

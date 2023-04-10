@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GestionList extends Component 
 { 
-    use WithPagination; 
+    use WithPagination;  
     protected $paginationTheme = 'bootstrap'; 
     
     // Useful vars
@@ -20,7 +20,7 @@ class GestionList extends Component
     public function render()
     {   
         $this->getData();
-        $datos = GestionComercial::select('id','nombre','apellido','empresa','cargo','id_estado','correo','celular')->where('id_user', Auth::id())->orderBy('id', 'asc')->paginate(5);
+        $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot')->where('id_user', Auth::id())->orWhere('comercial_2', Auth::id())->orderBy('id', 'asc')->paginate(5);
         return view('livewire.com.gestion-comercial.gestion-list', ['datos' => $datos]);
     }
 

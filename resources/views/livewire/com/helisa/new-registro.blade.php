@@ -100,7 +100,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="debito">D&eacute;bito:</label>
-                            <input wire:model.lazy="debito" id="debito" type="number" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
+                            <input wire:model.lazy="debito" id="debito" type="text" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
                                     {{ $message }}
@@ -111,7 +111,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="credito">Cr&eacute;dito: </label>
-                            <input wire:model="credito" id="credito" type="number" name="credito"
+                            <input wire:model="credito" id="credito" type="text" name="credito"
                             class="form-control @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror"
                             value="{{ old('credito') }}" placeholder="Cr&eacute;dito">
                             @error('credito')

@@ -53,6 +53,8 @@ Route::get('/', function () {
         Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export');         
         // Delete proyecto
         Route::post('/delete-proyecto/{id_user?}', [ComercialController::class, 'delete_proyecto'])->middleware(['auth'])->name('delete-proyecto'); 
+        // Delete contacto
+        Route::post('/delete-contacto/{id?}', [ComercialController::class, 'delete_contacto'])->middleware(['auth'])->name('delete-contacto'); 
         // Update proyecto
         Route::post('/update-proyecto/{id_user?}', [ComercialController::class, 'update_proyecto'])->middleware(['auth'])->name('update-proyecto');
         // Update proyecto Helisa 

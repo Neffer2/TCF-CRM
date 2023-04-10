@@ -29,9 +29,10 @@
   @section('content')    
     <div class="card card-frame">
       <div class="card-body">
-        <div class="d-flex align-items-baseline">
-          <button class="btn bg-gradient-warning me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            <i class="fas fa-plus text-white" aria-hidden="true"></i>
+        <div class="d-flex align-items-baseline" x-data="{ collapse: true}" x-cloak>
+          <button class="btn bg-gradient-warning me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" x-on:click="collapse = !collapse">
+            <i class="fas fa-plus text-white" aria-hidden="true" x-show="collapse"></i>
+            <i class="fa-solid fa-minus text-white" aria-hidden="true" x-cloak x-show="!collapse"></i>
           </button> 
           <h5>
             <b>Nuevo prospecto</b>

@@ -25,16 +25,19 @@
       </div>
     </div>
   @endsection
-
+ 
   @section('content')  
   <div class="row">
     <div class="col-ms-12 col-md-12 col-xl-12">
       <div class="card">
           <div class="card-header pb-0"> 
-              @livewire('com.dashboard.filters')
+            @livewire('com.dashboard.filters')
           </div> 
           <div class="card-body pt-1">
             @livewire('com.dashboard.block1') 
+          </div>  
+          <div class="card-body pb-1">
+            @livewire('com.dashboard.block2')   
           </div> 
       </div>
     </div>

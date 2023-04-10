@@ -3,12 +3,11 @@
         <table class="table">
             <thead> 
                 <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Datos personales</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Datos corporativos</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Celular</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estado</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Siguiente estado</th>
-                </tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Datos de contacto</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Proyecto</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estado</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Siguiente estado</th>
+                </tr> 
             </thead>
             <tbody>  
                 @foreach ($datos as $dato)
@@ -19,17 +18,14 @@
                                     <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
-                                    <h6 class="mb-0 text-xs">{{ $dato->nombre }} {{ $dato->apellido }}</h6>
-                                    <p class="text-xs text-secondary mb-0">{{ $dato->correo }}</p>
+                                    <h6 class="mb-0 text-xs">{{ $dato->contacto->nombre }} {{ $dato->contacto->apellido }}</h6>
+                                    <p class="text-xs text-secondary mb-0">{{ $dato->contacto->correo }}</p>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <p class="text-xs font-weight-bold mb-0">{{ $dato->cargo }}</p>
-                            <p class="text-xs text-secondary mb-0">{{ $dato->empresa }}</p>
-                        </td>
-                        <td>
-                            <p class="text-xs text-secondary mt-3">{{ $dato->celular }}</p>
+                            <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->empresa }}</p>
+                            <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
                         </td>
                         <td> 
                             <select name="" id="" class="form-control" disabled>
@@ -71,7 +67,7 @@
                                     </div> 
                                     <div class="modal-body">
                                         {{-- formulario oportunidad --}} 
-                                        <div :wire:key="'item-'.$dato->id">
+                                        <div :wire:key="'item-'.$dato->id"> 
                                             @livewire('com.gestion-comercial.forms.oportunidad-form', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
                                         </div>
                                     </div>
