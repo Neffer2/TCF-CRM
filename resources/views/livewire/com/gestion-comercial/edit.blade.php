@@ -1,6 +1,6 @@
 <div>
-    <div class="row">
-        <form wire:submit.prevent="updateContacto">  
+    <form wire:submit.prevent="updateContacto">  
+        <div class="row">
             <div class="col-md-12">
                 <h5><b>EDITAR CONTACTO</b></h5>  
             </div>        
@@ -23,11 +23,11 @@
             <div class="col-md-12 d-flex justify-content-end">
                 <button class="btn bg-gradient-warning">Guardar</button>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
     <hr class="horizontal dark my-3">
-    <div class="row">
-        <form wire:submit.prevent="updateOportunidad">  
+    <form wire:submit.prevent="updateOportunidad">  
+        <div class="row">
             <div class="col-md-12">
                 <h5><b>EDITAR PROPUESTA</b></h5>  
             </div>        
@@ -59,106 +59,151 @@
             <div class="col-md-12 d-flex justify-content-end">
                 <button class="btn bg-gradient-warning">Guardar</button>
             </div>        
-        </form>
-    </div>
+        </div>
+    </form>
     <hr class="horizontal dark my-3">
-    <div class="row">
-        <div class="col-md-12">
-            <h5><b>EDITAR COTIZACI&Oacute;N</b></h5>  
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Nombre proyecto:</label>
-                <input type="text" class="form-control">
+    <form wire:submit.prevent="updateCotizacion">
+        <div class="row">
+            <div class="col-md-12">
+                <h5><b>EDITAR COTIZACI&Oacute;N</b></h5>  
             </div>
-        </div>        
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Presupuesto:</label>
-                <input type="text" class="form-control">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="nom_proyecto">Nombre proyecto:</label>
+                    <input id="nom_proyecto" wire:model.lazy="nom_proyecto" class="form-control @error('nom_proyecto') is-invalid @elseif(strlen($nom_proyecto) > 0) is-valid @enderror" value="{{ old('nom_proyecto') }}">
+                    @error('nom_proyecto')
+                        <div id="nom_proyecto" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>        
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="presupuesto">Presupuesto:</label>
+                    <input id="presupuesto" wire:model.lazy="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}">
+                    @error('presupuesto')
+                        <div id="presupuesto" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="fecha">Fecha estimada:</label>
+                    <input type="date" id="fecha" wire:model.lazy="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('fecha') }}">
+                    @error('fecha')
+                        <div id="fecha" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="porcentaje">Porcentaje:</label>
+                    <select id="porcentaje" wire:model.lazy="porcentaje" class="form-control @error('porcentaje') is-invalid @elseif(strlen($porcentaje) > 0) is-valid @enderror" value="{{ old('porcentaje') }}">
+                        @foreach ($porcentajes as $porcentaje_)
+                            <option value="{{ $porcentaje_ }}">{{ $porcentaje_ }}%</option>
+                        @endforeach
+                    </select>
+                    @error('porcentaje')
+                        <div id="porcentaje" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            @if ($porcentaje == 50)
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="com_2">Comercial 2:</label>
+                        <select type="text" id="com_2" wire:model.lazy="com_2" class="form-control @error('com_2') is-invalid @elseif(strlen($com_2) > 0) is-valid @enderror" value="{{ old('com_2') }}">
+                            <option value="">Seleccionar</option>
+                            @foreach ($comerciales as $comerciale)
+                                <option value="{{ $comerciale->id }}">{{ $comerciale->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('com_2')
+                            <div id="com_2" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+            @endif
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="cotizacionFile">Archivo cotizaci&oacute;n:</label>
+                    <input type="file" id="cotizacionFile" wire:model.lazy="cotizacionFile" class="form-control @error('cotizacionFile') is-invalid @elseif(strlen($cotizacionFile) > 0) is-valid @enderror" value="{{ old('cotizacionFile') }}">
+                    @error('cotizacionFile')
+                        <div id="cotizacionFile" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-end">
+                <button class="btn bg-gradient-warning">Guardar</button>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label for="">Fecha estimada:</label>
-                <input type="date" class="form-control">
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="form-group">
-                <label for="">Porcentaje:</label>
-                <select name="" id="" class="form-control">
-                    <option value="">Seleccionar</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="form-group">
-                <label for="">Comercial 2:</label>
-                <input type="text" class="form-control">
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="form-group">
-                <label for="">Archivo cotizaci&oacute;n:</label>
-                <input type="file" class="form-control">
-            </div>
-        </div>
-        <div class="col-md-12 d-flex justify-content-end">
-            <button class="btn bg-gradient-warning">Guardar</button>
-        </div>
-    </div>
+    </form>
     <hr class="horizontal dark my-3">
-    <div class="row">
-        <div class="col-md-12">
-            <h5><b>EDITAR PROPUESTA</b></h5>  
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Nombre proyecto:</label>
-                <input type="text" class="form-control">
+    <form wire:submit.prevent="updatePropuesta">
+        <div class="row">
+            <div class="col-md-12">
+                <h5><b>EDITAR PROPUESTA</b></h5>  
             </div>
-        </div>        
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Presupuesto:</label>
-                <input type="text" class="form-control">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="nom_proyecto_prop">Nombre proyecto:</label>
+                    <input type="text" id="nom_proyecto_prop" wire:model.lazy="nom_proyecto_prop" class="form-control @error('nom_proyecto_prop') is-invalid @elseif(strlen($nom_proyecto_prop) > 0) is-valid @enderror" value="{{ old('nom_proyecto_prop') }}">
+                    @error('nom_proyecto_prop')
+                        <div id="nom_proyecto_prop" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>        
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="presupuesto_prop">Presupuesto:</label>
+                    <input type="text" id="presupuesto_prop" wire:model.lazy="presupuesto_prop" class="form-control @error('presupuesto_prop') is-invalid @elseif(strlen($presupuesto_prop) > 0) is-valid @enderror" value="{{ old('presupuesto_prop') }}">
+                    @error('presupuesto_prop')
+                        <div id="presupuesto_prop" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fecha_prop">Fecha estimada:</label>
+                    <input type="date" id="fecha_prop" wire:model.lazy="fecha_prop" class="form-control @error('fecha_prop') is-invalid @elseif(strlen($fecha_prop) > 0) is-valid @enderror" value="{{ old('fecha_prop') }}">
+                    @error('fecha_prop')
+                        <div id="fecha_prop" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="cotizacionUrl_prop">Url cotizaci&oacute;n:</label>
+                    <input type="text" id="cotizacionUrl_prop" wire:model.lazy="cotizacionUrl_prop" class="form-control @error('cotizacionUrl_prop') is-invalid @elseif(strlen($cotizacionUrl_prop) > 0) is-valid @enderror" value="{{ old('cotizacionUrl_prop') }}">
+                    @error('cotizacionUrl_prop')
+                        <div id="cotizacionUrl_prop" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-end">
+                <button class="btn bg-gradient-warning">Guardar</button>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Fecha estimada:</label>
-                <input type="date" class="form-control">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Url cotizaci&oacute;n:</label>
-                <input type="text" class="form-control">
-            </div>
-        </div>
-        <div class="col-md-12 d-flex justify-content-end">
-            <button class="btn bg-gradient-warning">Guardar</button>
-        </div>
-    </div>
-    <hr class="horizontal dark my-3">
-    <div class="row">
-        <div class="col-md-12">
-            <h5><b>EDITAR GESTI&Oacute;N COMERCIAL</b></h5>  
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="">Gesti&oacute;n:</label>
-                <select name="" id="" class="form-control">
-                    <option value="">Venta</option>
-                    <option value="">Perdido</option>
-                </select>
-            </div>
-        </div>   
-        <div class="col-md-12 d-flex justify-content-end">
-            <button class="btn bg-gradient-warning">Guardar</button>
-        </div>     
-    </div>
+    </form>
     @if($errors->any()) 
         <script>
         Swal.fire(

@@ -28,7 +28,7 @@ class CotizacionForm extends Component
     public $comerciales = [];
 
     public function render() 
-    {
+    { 
         $this->getComerciales();
         return view('livewire.com.gestion-comercial.forms.cotizacion-form');
     }
