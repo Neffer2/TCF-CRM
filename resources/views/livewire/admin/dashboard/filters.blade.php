@@ -11,7 +11,7 @@
                 @foreach ($StdAño as $item)
                     <option value="{{ $item->id }}">{{ $item->description }}</option>
                 @endforeach
-            </select>
+            </select> 
         </div>
     </div>
     <div class="col-md-4">

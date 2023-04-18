@@ -12,7 +12,6 @@
                     <th>Fecha</th>
                     <th>Tipo Doc</th>
                     <th>N&uacute;mero Doc</th>
-                    <th>Concepto</th>
                     <th>Identidad</th>
                     <th>Nombre del tercero</th>
                     <th>Centro costo</th>
@@ -36,7 +35,7 @@
                             <td class="text-sm font-weight-normal">{{ $item->fecha }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->tipo_doc }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->num_doc }}</td>
-                            <td class="text-sm font-weight-normal">{{ $item->concepto }}</td>
+                            {{-- <td class="text-sm font-weight-normal">{{ $item->concepto }}</td> --}}
                             <td class="text-sm font-weight-normal">{{ $item->identidad }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->nom_tercero }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->centro }}</td>
@@ -85,12 +84,12 @@
                                                         <input id="num_doc" type="text" name="num_doc" class="form-control" value="{{ $item->num_doc }}" placeholder="N&uacute;mero Documento" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
+                                                {{-- <div class="col-md-6">
+                                                    <div class="form-group"> 
                                                         <label for="concepto">Concepto:</label>
                                                         <input id="concepto" type="text" name="concepto" class="form-control" value="{{ $item->concepto }}" placeholder="Concepto" required>
                                                     </div>
-                                                </div>
+                                                </div> --}} 
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="identidad">Identidad:</label>
@@ -232,7 +231,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                            ¿Desea eliminar el registro: <b>{{ $item->concepto }}</b>?
+                                            ¿Desea eliminar &eacute;ste registro?
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>

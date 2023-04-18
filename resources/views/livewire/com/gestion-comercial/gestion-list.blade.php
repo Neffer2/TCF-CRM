@@ -61,12 +61,14 @@
                                         Perdido
                                     </button>
                                 @endif
-                            @endif 
-                        </td>
+                            @endif  
+                        </td> 
                         <td>
-                            <a class="btn bg-gradient-primary" href="{{ route('update-gestion-comercial', $dato->id) }}"> 
-                                Editar
-                            </a>
+                            @if ($dato->id_estado != 5)
+                                <a class="btn bg-gradient-primary" href="{{ route('update-gestion-comercial', $dato->id) }}"> 
+                                    Editar
+                                </a>
+                            @endif
                         </td>
                     </tr>
                     @if($dato->id_estado == 1)

@@ -17,7 +17,7 @@ class NewRegistro extends Component
     public $fecha = ""; 
     public $tipo_doc = "";  
     public $num_doc = "";  
-    public $concepto = ""; 
+    // public $concepto = null; 
     public $identidad = "";  
     public $nom_tercero = ""; 
     public $centro = ""; 
@@ -69,9 +69,9 @@ class NewRegistro extends Component
         $this->validate(['num_doc' => ['required', 'string']]); 
     }
 
-    public function updatedConcepto(){
-        $this->validate(['concepto' => ['required', 'string']]); 
-    }
+    // public function updatedConcepto(){
+    //     $this->validate(['concepto' => ['required', 'string']]); 
+    // }
 
     public function updatedIdentidad(){
         $this->validate(['identidad' => ['required', 'string']]); 
@@ -127,7 +127,7 @@ class NewRegistro extends Component
         $this->validate(['año' => ['required', 'string']]);  
     }
 
-    public function updatedComision(){
+    public function updatedComision(){ 
         $this->validate(['comision' => ['required', 'numeric']]); 
     }
 
@@ -135,6 +135,12 @@ class NewRegistro extends Component
         if ($this->porcentaje > 0 && $value != 0){
             $this->base_factura = ($value * $this->porcentaje)/100;
         }
+
+        $this->getComision();
+    }
+
+    public function getComision(){
+        $this->comision = ($this->base_factura * (0.02));
     }
 
     public function store(){
@@ -142,7 +148,7 @@ class NewRegistro extends Component
             'fecha' => ['required'],
             'tipo_doc' => ['required', 'string'],
             'num_doc' => ['required', 'string'],
-            'concepto' => ['required', 'string'],
+            // 'concepto' => ['required', 'string'],
             'identidad' => ['required', 'string'],
             'nom_tercero' => ['required', 'string'],
             'centro' => ['required', 'string'],
@@ -162,7 +168,7 @@ class NewRegistro extends Component
         $helisa->fecha = $this->fecha;
         $helisa->tipo_doc = $this->tipo_doc;
         $helisa->num_doc = $this->num_doc;
-        $helisa->concepto = $this->concepto; 
+        // $helisa->concepto = $this->concepto; 
         $helisa->identidad = $this->identidad;
         $helisa->nom_tercero = $this->nom_tercero;  
         $helisa->centro = $this->centro;

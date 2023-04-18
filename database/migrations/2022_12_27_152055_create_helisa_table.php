@@ -18,7 +18,7 @@ class CreateHelisaTable extends Migration
             $table->date('fecha');
             $table->string('tipo_doc');
             $table->string('num_doc');
-            $table->string('concepto');
+            $table->string('concepto')->nullable();
             $table->string('identidad');
             $table->string('nom_tercero');
             $table->string('centro'); 

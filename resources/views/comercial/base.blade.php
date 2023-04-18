@@ -84,7 +84,8 @@
       </div> 
  
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-        @livewire('com.new-proyecto')
+        {{-- DEPRECATED --}}
+        {{-- @livewire('com.new-proyecto') --}}
         @livewire('com.base-list', ['user_id' => Auth::user()->id])  
       </div>
     </div>

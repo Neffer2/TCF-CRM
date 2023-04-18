@@ -10,7 +10,8 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
-{      
+{    
+    /*
     // MODELS 
     public $fecha = ""; 
     public $nom_cliente = ""; 
@@ -138,4 +139,5 @@ class NewProyecto extends Component
         $this->fecha_inicio = null;
         $this->dura_mes = null;
     }
+    */
 }

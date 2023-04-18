@@ -1,5 +1,6 @@
-<div class="col-lg-12 col-12 mx-auto"> 
-    <div class="card" x-data="new_project"> 
+{{-- DEPRECATED --}}
+{{-- <div class="col-lg-12 col-12 mx-auto"> 
+    <div class="card" x-data="new_project">  
         <div class="card-body d-flex justify-content-center">
             <div class="col-lg-2 col-md-2 col-sm-3 col-4 text-center">
                 <a x-on:click="show_form" href="javascript:;" class="avatar border-1 rounded-circle bg-gradient-warning"><i class="fas fa-plus text-white"></i></a>
@@ -147,4 +148,4 @@
             </form>
         </div> 
     </div>
-</div>
+</div> --}}

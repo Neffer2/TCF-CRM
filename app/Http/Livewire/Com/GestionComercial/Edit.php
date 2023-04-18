@@ -237,4 +237,10 @@ class Edit extends Component
 
         return redirect()->back()->with('success', 'Contacto actualizado exitosamente')->withInput();
     }
+
+    public function deleteProspecto(){
+        $gestion = $this->stored;
+        $gestion->delete();
+        return redirect()->route('gestion-comercial')->with('success', 'Contacto eliminado exitosamente');
+    }
 }

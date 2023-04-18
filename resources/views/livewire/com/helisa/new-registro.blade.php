@@ -42,7 +42,7 @@
                             @enderror 
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group"> 
                             <label for="concepto">Concepto:</label>
                             <input wire:model.lazy="concepto" id="concepto" type="text" name="concepto" class="form-control @error('concepto') is-invalid @elseif(strlen($concepto) > 0) is-valid @enderror" value="{{ old('concepto') }}" placeholder="Concepto" required>
@@ -52,7 +52,7 @@
                                 </div>
                             @enderror 
                         </div> 
-                    </div> 
+                    </div>  --}}
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="identidad">Identidad:</label>
@@ -63,7 +63,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="nom_tercero">Nombre Tercero</label>
                             <input wire:model.lazy="nom_tercero" id="nom_tercero" type="text" name="nom_tercero" class="form-control @error('nom_tercero') is-invalid @elseif(strlen($nom_tercero) > 0) is-valid @enderror" value="{{ old('nom_tercero') }}" placeholder="Nombre Tercero">
@@ -74,7 +74,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="centro">Centro de costos:</label>
                             <input wire:model.lazy="centro" id="centro" type="text" name="centro" class="form-control @error('centro') is-invalid @elseif(strlen($centro) > 0) is-valid @enderror" value="{{ old('centro') }}" placeholder="Centro de costos">
@@ -149,6 +149,19 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
+                            <label for="comision">Comisi&oacute;n: </label>
+                            <input wire:model="comision" id="comision" type="number" name="comision"
+                            class="form-control @error('comision') is-invalid @elseif(strlen($comision) > 0) is-valid @enderror"
+                            value="{{ old('comision') }}" placeholder="Comisi&oacute;n" disabled>
+                            @error('comision')
+                                <div id="comision" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
                             <label for="id_cuenta">Cuenta: </label>
                             <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado">
                                 <option value="">Seleccionar</option>
@@ -199,19 +212,6 @@
                             @enderror 
                         </div>
                     </div> 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="comision">Comisi&oacute;n: </label>
-                            <input wire:model="comision" id="comision" type="number" name="comision"
-                            class="form-control @error('comision') is-invalid @elseif(strlen($comision) > 0) is-valid @enderror"
-                            value="{{ old('comision') }}" placeholder="Comisi&oacute;n">
-                            @error('comision')
-                                <div id="comision" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
                     <div class="col-md-12">
                         <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
                     </div>

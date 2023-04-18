@@ -25,6 +25,8 @@ class Block1 extends Component
     public $presto_x_cumplir = 0;
 
     // Useful vars
+    public $latest_year;
+    public $latest_month;
 
     public function render()
     {
@@ -37,9 +39,10 @@ class Block1 extends Component
 
     public function default(){
         // Obtiene el último año cargado
-        $latest_year = Año::select('description')->orderBy('created_at', 'DESC')->first();
-        if ($latest_year){
-            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => null]);
+        $this->latest_year = Año::select('id','description')->orderBy('created_at', 'DESC')->first();
+        $this->latest_month = $this->getCurrentMes($this->latest_year);
+        if ($this->latest_year){
+            $this->getData(['año' => $this->latest_year->description, 'mes' => null, 'comercial' => null]);
         }
     }
 
@@ -52,14 +55,19 @@ class Block1 extends Component
         $año = $this->getAño($filters['año']);
 
         $this->getVentaFacturada($año->description, $mes, $filters['comercial']);
-        $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);
+        $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);        
         $this->getPresupuesto($mes, $filters['comercial'], $año->id);
-        $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);
-
+        $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);    
         $this->updateCumpli_venta_men();
         $this->updateCumpli_acum_venta_men();
         $this->updateCumpli_acum_venta_men();
         $this->updatePresto_x_cumplir();
+    }
+
+    /* Trae datos almacenados del mes */
+    public function getCurrentMes ($latest_year){
+        $mes = Mes::select('id')->where('identifier', number_format(date("m")))->where('ano_id', $latest_year->id)->first();
+        return $mes;
     }
 
     /* Trae datos almacenados del mes */
@@ -142,10 +150,6 @@ class Block1 extends Component
     public function getPresupuesto($mes, $comercial, $año) {
         $filters_array = [];
 
-        if ($mes){
-            array_push($filters_array, ['mes_id', $mes->id]);
-        }
-
         if ($año){
             array_push($filters_array, ['ano_id', $año]);
         }
@@ -154,9 +158,17 @@ class Block1 extends Component
             array_push($filters_array, ['id_user', $comercial]);
         }
 
+        if ($mes){
+            array_push($filters_array, ['mes_id', $mes->id]);
+        }else {
+            $presupuestos = Presupuesto::select('id', 'valor')
+                            ->where($filters_array)
+                            ->get();    
+        }
+
         $presupuestos = Presupuesto::select('id', 'valor')
-                                    ->where($filters_array)
-                                    ->get();
+                                ->where($filters_array)
+                                ->get();
 
         $this->presto_mensual = 0;
         foreach ($presupuestos as $presupuesto){
@@ -164,7 +176,7 @@ class Block1 extends Component
         }                                   
     }
 
-    public function getPresupuestoAcumulado ($año_id, $mes, $comercial){
+    public function getPresupuestoAcumulado ($año_id, $mes, $comercial, $general = null){
         // Si no hay mes, hace el conteo de todos los meses
         if ($mes) {
             if ($comercial){
@@ -180,7 +192,6 @@ class Block1 extends Component
             }
         }
 
-        // dd($presupuestos);
         $this->presto_acumulado = 0;
         foreach ($presupuestos as $value) {
             $this->presto_acumulado += $value->valor;

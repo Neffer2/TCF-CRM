@@ -44,7 +44,7 @@ class Filters extends Component
         $this->signals();
     } 
 
-    public function signals (){
+    public function signals (){ 
         /* Año debe ser string (description) */
         // Emite el año seleccionado
         if ($this->año){

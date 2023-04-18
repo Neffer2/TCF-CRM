@@ -204,6 +204,29 @@
             </div>
         </div>
     </form>
+    <hr>
+    <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#modal">Eliminar</button>
+    
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form wire:submit.prevent="deleteProspecto"> 
+                @csrf 
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">¿Estas seguro?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Desea eliminar &eacute;ste registro?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
+                    </div>
+                </div> 
+            </form>
+        </div>
+    </div> 
     @if($errors->any()) 
         <script>
         Swal.fire(
