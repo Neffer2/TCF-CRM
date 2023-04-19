@@ -66,7 +66,7 @@ class Block1 extends Component
 
     /* Trae datos almacenados del mes */
     public function getCurrentMes ($latest_year){
-        $mes = Mes::select('id')->where('identifier', number_format(date("m")))->where('ano_id', $latest_year->id)->first();
+        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('identifier', number_format(date("m")))->where('ano_id', $latest_year->id)->first();
         return $mes;
     }
 
@@ -161,19 +161,20 @@ class Block1 extends Component
         if ($mes){
             array_push($filters_array, ['mes_id', $mes->id]);
         }else {
-            $presupuestos = Presupuesto::select('id', 'valor')
-                            ->where($filters_array)
-                            ->get();    
+            // Si el mes es nulo, pero hay comercial
+            if ($comercial){
+                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
+            }
         }
-
-        $presupuestos = Presupuesto::select('id', 'valor')
-                                ->where($filters_array)
-                                ->get();
 
         $this->presto_mensual = 0;
         foreach ($presupuestos as $presupuesto){
             $this->presto_mensual += $presupuesto->valor;
         }                                   
+
+        if (is_null($comercial) && is_null($mes)){
+            $this->presto_mensual = 0;    
+        }
     }
 
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial, $general = null){
