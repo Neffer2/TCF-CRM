@@ -15,7 +15,7 @@ class BaseList extends Component
     public $cuentas = [];
     protected $listeners = ['proyectoAdded' => 'mount'];
 
-    public function render()
+    public function render() 
     {
         return view('livewire.com.base-list');
     } 

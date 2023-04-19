@@ -23,21 +23,53 @@
                     @enderror
                 </div> 
             </div>
-            <div class="col-md-6">
+            <div class="col-md-2">
                 <div class="form-group mb-1">
-                    <label for="porcentaje">Porcentaje:</label>
-                    <select type="text" id="porcentaje" class="form-control @error('porcentaje') is-invalid @elseif(strlen($porcentaje) > 0) is-valid @enderror" value="{{ old('porcentaje') }}" wire:model.lazy="porcentaje" required>
-                            <option value="">Seleccionar</option>
-                        @foreach ($porcentajes as $porcentaje_)
-                            <option value="{{ $porcentaje_ }}">{{ $porcentaje_ }}%</option>
-                        @endforeach
-                    </select>
-                    @error('porcentaje')
-                        <div id="porcentaje" class="invalid-feedback">
+                    <label for="">Participaciones:</label>
+                    <input type="number" class="form-control" value="1" wire:model="participaciones" required>
+                    @error('com_2')
+                        <div id="com_2" class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror
                 </div> 
+            </div>
+            <div class="row">
+                @for ($i = 0; $i < $participaciones; $i++)
+                    <div class="col-md-4">
+                        <div class="form-group mb-1">
+                            <label for="">Comercial:</label>
+                            <input type="number" class="form-control" wire:model.lazy="comercial{{ $i }}" required>
+                            @error('com_2')
+                                <div id="com_2" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div> 
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-1">
+                            <label for="">%:</label>
+                            <input type="number" class="form-control" required>
+                            @error('com_2')
+                                <div id="com_2" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div> 
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-1">
+                            <label for="">Valor:</label>
+                            <input type="number" class="form-control" required>
+                            @error('com_2')
+                                <div id="com_2" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div> 
+                    </div>
+                @endfor
             </div>
             @if ($porcentaje == 50)
                 <div class="col-md-6">

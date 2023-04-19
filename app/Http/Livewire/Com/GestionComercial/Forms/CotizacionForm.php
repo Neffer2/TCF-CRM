@@ -17,7 +17,7 @@ class CotizacionForm extends Component
     public $presupuesto; 
     public $nom_proyecto;
     public $fecha;
-    public $cotizacionFile;
+    public $cotizacionFile; 
     public $porcentaje;
     public $com_2;
 
@@ -26,6 +26,7 @@ class CotizacionForm extends Component
     public $lead_id = 0;
     public $porcentajes = ['100', '50'];
     public $comerciales = [];
+    public $participaciones = 1;
 
     public function render() 
     { 

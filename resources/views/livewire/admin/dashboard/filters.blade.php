@@ -22,7 +22,7 @@
                 </h6>
             </label>
             <select name="" id="mes_selector" class="form-control" wire:model="mes">
-                <option value="general">General</option>
+                <option value="">General</option>
                 @foreach ($StdMes as $item)
                     <option value="{{ $item->id }}">{{ $item->description }}</option>
                 @endforeach

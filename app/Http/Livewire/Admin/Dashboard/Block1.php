@@ -54,7 +54,7 @@ class Block1 extends Component
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
 
-        $this->getVentaFacturada($año->description, $mes, $filters['comercial']);
+        $this->getVentaFacturada($año->description, $mes, $filters['comercial'], $año->id);
         $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);        
         $this->getPresupuesto($mes, $filters['comercial'], $año->id);
         $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);    
@@ -83,7 +83,7 @@ class Block1 extends Component
     }
 
     /* Obtiene y filtra las ventas facturadas */
-    public function getVentaFacturada($año, $mes, $comercial) {
+    public function getVentaFacturada($año, $mes, $comercial, $año_id = null) {
         /* Creo 2 arreglos que contendrán los filtros necesarios para la consulta */
         $filters_array = [];
         $date_filters_array = [];
@@ -95,7 +95,8 @@ class Block1 extends Component
         if ($mes){
             array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
         }else {
-            array_push($date_filters_array, ['2009-01-01', '2029-01-01']);
+            $primerMes = Mes::select('id', 'description', 'f_inicio', 'f_fin')->where('ano_id', $año_id)->where('identifier', 1)->first();
+            array_push($date_filters_array, [$primerMes->f_inicio, $this->latest_month->f_fin]);
         }
 
         if ($comercial){
@@ -160,21 +161,22 @@ class Block1 extends Component
 
         if ($mes){
             array_push($filters_array, ['mes_id', $mes->id]);
+        }    
+        
+        // Si el mes es nulo pero el comercual no, muestra el presupuyesto mensual acumlado a la fecha
+        if (is_null($mes) && $comercial != ""){
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));            
+            // Si el mes y comercial son nulos, presupuesto es cero
         }else {
-            // Si el mes es nulo, pero hay comercial
-            if ($comercial){
-                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
-            }
+            $presupuestos = Presupuesto::select('id', 'valor')
+                                ->where($filters_array)
+                                ->get();
         }
-
+        
         $this->presto_mensual = 0;
         foreach ($presupuestos as $presupuesto){
             $this->presto_mensual += $presupuesto->valor;
         }                                   
-
-        if (is_null($comercial) && is_null($mes)){
-            $this->presto_mensual = 0;    
-        }
     }
 
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial, $general = null){

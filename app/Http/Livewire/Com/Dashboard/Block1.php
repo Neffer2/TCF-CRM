@@ -27,6 +27,8 @@ class Block1 extends Component
     public $presto_x_cumplir = 0;
 
     // Useful vars
+    public $latest_year;
+    public $latest_month;
 
     public function render() 
     {
@@ -39,11 +41,12 @@ class Block1 extends Component
 
     public function default(){
         // Obtiene el último año cargado
-        $latest_year = Año::select('description')->orderBy('created_at', 'DESC')->first();
+        $this->latest_year = Año::select('id', 'description')->orderBy('created_at', 'DESC')->first();
+        $this->latest_month = $this->getCurrentMes($this->latest_year);
         $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
-        if ($latest_year){
-            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
-        }
+        if ($this->latest_year){
+            $this->getData(['año' => $this->latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
+        } 
     }
 
     public function getData($filters = null) {
@@ -63,6 +66,12 @@ class Block1 extends Component
         $this->updateCumpli_acum_venta_men();
         $this->updateCumpli_acum_venta_men();
         $this->updatePresto_x_cumplir();
+    }
+
+    /* Trae datos almacenados del mes */
+    public function getCurrentMes ($latest_year){
+        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('identifier', number_format(date("m")))->where('ano_id', $latest_year->id)->first();
+        return $mes;
     }
 
     /* Trae datos almacenados del mes */
@@ -153,10 +162,6 @@ class Block1 extends Component
     public function getPresupuesto($mes, $comercial, $año) {
         $filters_array = [];
 
-        if ($mes){
-            array_push($filters_array, ['mes_id', $mes->id]);
-        }
-
         if ($año){
             array_push($filters_array, ['ano_id', $año]);
         }
@@ -165,10 +170,20 @@ class Block1 extends Component
             array_push($filters_array, ['id_user', $comercial]);
         }
 
-        $presupuestos = Presupuesto::select('id', 'valor')
-                                    ->where($filters_array)
-                                    ->get();
-
+        if ($mes){
+            array_push($filters_array, ['mes_id', $mes->id]);
+        }    
+        
+        // Si el mes es nulo pero el comercual no, muestra el presupuyesto mensual acumlado a la fecha
+        if (is_null($mes) && $comercial != ""){
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));            
+            // Si el mes y comercial son nulos, presupuesto es cero
+        }else {
+            $presupuestos = Presupuesto::select('id', 'valor')
+                                ->where($filters_array)
+                                ->get();
+        }
+        
         $this->presto_mensual = 0;
         foreach ($presupuestos as $presupuesto){
             $this->presto_mensual += $presupuesto->valor;
