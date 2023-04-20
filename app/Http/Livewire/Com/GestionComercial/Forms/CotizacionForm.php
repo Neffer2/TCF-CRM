@@ -18,8 +18,24 @@ class CotizacionForm extends Component
     public $nom_proyecto;
     public $fecha;
     public $cotizacionFile; 
-    public $porcentaje;
+    public $porcentaje; 
     public $com_2;
+
+    // porcentajes
+    public $comercial0;
+    public $comercial1;
+    public $comercial2;
+    public $comercial3;
+
+    public $porcentaje0 = 100;
+    public $porcentaje1;
+    public $porcentaje2;
+    public $porcentaje3;
+
+    public $valor0;
+    public $valor1;
+    public $valor2;
+    public $valor3;
 
     // Useful vars
     // Se decide utilizar "lead" como referencia a los registros del la tabla Gestion Comercial
@@ -27,6 +43,7 @@ class CotizacionForm extends Component
     public $porcentajes = ['100', '50'];
     public $comerciales = [];
     public $participaciones = 1;
+    public $testigoPorcentaje;
 
     public function render() 
     { 
@@ -34,23 +51,21 @@ class CotizacionForm extends Component
         return view('livewire.com.gestion-comercial.forms.cotizacion-form');
     }
 
-    public function getComerciales(){
-        $this->comerciales = User::select('id', 'name')->where('rol', 2)->where('id', '<>', Auth::id())->get();
+    public function mount(){
+        $this->comercial0 = Auth::id();
     }
 
-    public function updatedParticipaciones(){
-        if ($this->participaciones >= 4){$this->participaciones = 4;}
-        if ($this->participaciones <= 0){$this->participaciones = 1;}
-
-        $this->validate([
-            'participaciones' => 'required|numeric|min:1|max:4'
-        ]);
+    public function getComerciales(){
+        $this->comerciales = User::select('id', 'name')->where('rol', 2)->where('id', '<>', Auth::id())->get();
     }
 
     public function updatedPresupuesto (){
         $this->validate([
             'presupuesto' => 'required|numeric'
         ]);
+
+        $this->getValor();
+        $this->getTotalPorcentaje();
     }
 
     public function updatedNomProyecto (){
@@ -83,8 +98,155 @@ class CotizacionForm extends Component
         ]);
     }
 
-    public function store (){ 
+    /****** PARTICIPACIONES ******/
+    public function updatedParticipaciones(){
+        if ($this->participaciones >= 4){$this->participaciones = 4;}
+        if ($this->participaciones <= 0){$this->participaciones = 1;}
+
         $this->validate([
+            'participaciones' => 'required|numeric|min:1|max:4'
+        ]);
+
+        $this->getPorcentaje();
+        $this->getValor();
+        $this->getTotalPorcentaje();
+        $this->updatedTestigoPorcentaje();
+    }
+
+    public function updatedComercial0(){
+        $this->validate([
+            'comercial0' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedComercial1(){
+        $this->validate([
+            'comercial1' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedComercial2(){
+        $this->validate([
+            'comercial2' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedComercial3(){
+        $this->validate([
+            'comercial3' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedPorcentaje0(){
+        if ($this->porcentaje0 >= 100){$this->porcentaje0 = 100;}
+        if ($this->porcentaje0 <= 0){$this->porcentaje0 = 1;}
+
+        $this->validate([
+            'porcentaje0' => 'required|numeric|min: 1|max: 100'
+        ]);
+
+        $this->getValor();
+        $this->getTotalPorcentaje();
+        $this->updatedTestigoPorcentaje();
+    }
+
+    public function updatedPorcentaje1(){
+        if ($this->porcentaje1 >= 100){$this->porcentaje1 = 100;}
+        if ($this->porcentaje1 <= 0){$this->porcentaje1 = 1;}
+
+        $this->validate([
+            'porcentaje1' => 'required|numeric|min: 1|max: 100'
+        ]);
+
+        $this->getValor();
+        $this->getTotalPorcentaje();
+        $this->updatedTestigoPorcentaje();
+    }
+
+    public function updatedPorcentaje2(){
+        if ($this->porcentaje2 >= 100){$this->porcentaje2 = 100;}
+        if ($this->porcentaje2 <= 0){$this->porcentaje2 = 1;}
+
+        $this->validate([
+            'porcentaje2' => 'required|numeric|min: 1|max: 100'
+        ]);
+
+        $this->getValor();
+        $this->getTotalPorcentaje();
+        $this->updatedTestigoPorcentaje();
+    }
+
+    public function updatedPorcentaje3(){
+        if ($this->porcentaje3 >= 100){$this->porcentaje3 = 100;}
+        if ($this->porcentaje3 <= 0){$this->porcentaje3 = 1;}
+
+        $this->validate([
+            'porcentaje3' => 'required|numeric|min: 1|max: 100'
+        ]);
+
+        $this->getValor();
+        $this->getTotalPorcentaje();
+        $this->updatedTestigoPorcentaje();
+    }
+
+    public function updatedValor0(){
+        $this->validate([
+            'valor0' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedValor1(){
+        $this->validate([
+            'valor1' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedValor2(){
+        $this->validate([
+            'valor2' => 'required|numeric'
+        ]); 
+    }
+
+    public function updatedValor3(){
+        $this->validate([
+            'valor3' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedTestigoPorcentaje(){
+        $this->validate([
+            'testigoPorcentaje' => 'required|numeric|min:100|max:100'
+        ]);
+    }
+
+    public function getTotalPorcentaje(){
+        $i = 0;
+        $this->testigoPorcentaje = 0;
+        while($i < $this->participaciones){            
+            $this->testigoPorcentaje += $this->{'porcentaje'.$i}; 
+            $i++;
+        }
+    }
+
+    public function getValor(){
+        $i = 0;
+        while($i < $this->participaciones){     
+            $this->{'valor'.$i} = $this->presupuesto * ($this->{'porcentaje'.$i} / 100);
+            $i++;
+        }
+    }
+
+    public function getPorcentaje(){
+        $i = 0;
+        while($i < $this->participaciones){     
+            $this->{'porcentaje'.$i} = 100/$this->participaciones;
+            $i++;
+        }
+    }
+    /************/
+
+    public function store (){ 
+        $this->validate([ 
             'presupuesto' => 'required|numeric',
             'nom_proyecto' => 'required|string',
             'cotizacionFile' => 'required|max:1024',

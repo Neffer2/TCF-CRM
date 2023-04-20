@@ -23,50 +23,69 @@
                     @enderror
                 </div> 
             </div>
-            <div class="col-md-2">
-                <div class="form-group mb-1">
-                    <label for="participaciones">Participaciones:</label>
-                    <input type="number" id="participaciones" class="form-control @error('participaciones') is-invalid @elseif(strlen($participaciones) > 0) is-valid @enderror" value="{{ old('participaciones') }}" wire:model="participaciones" required>
-                    @error('participaciones')
-                        <div id="participaciones" class="invalid-feedback">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-1">
+                        <label for="participaciones">Participaciones:</label>
+                        <input type="number" id="participaciones" class="form-control @error('participaciones') is-invalid @elseif(strlen($participaciones) > 0) is-valid @enderror" value="{{ old('participaciones') }}" wire:model="participaciones" required>
+                        @error('participaciones')
+                            <div id="participaciones" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div> 
+                </div>
+                <div class="col-md-4">
+                    <label for="testigoPorcentaje">Total %: </label>
+                    <input disabled type="text" id="testigoPorcentaje" class="form-control @error('testigoPorcentaje') is-invalid @enderror" value="{{ old('testigoPorcentaje') }}" wire:model="testigoPorcentaje" required>
+                    @error('testigoPorcentaje')
+                        <div id="testigoPorcentaje" class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror
-                </div> 
+                </div>
+                <div class="col-md-4"></div>
             </div>
+            <hr class="horizontal dark mb-3">
             <div class="row">
                 @for ($i = 0; $i < $participaciones; $i++)
                     <div class="col-md-4">
                         <div class="form-group mb-1">
-                            <label for="">Comercial:</label>
-                            <input type="number" class="form-control" wire:model.lazy="comercial{{ $i }}" required>
-                            @error('com_2')
-                                <div id="com_2" class="invalid-feedback">
-                                    {{ $message }}
+                            <label for="comercial{{ $i }}">Comercial:</label>
+                            <select type="text" id="comercial{{ $i }}" class="form-control @if ($errors->has("comercial".$i)) is-invalid @elseif(strlen(${'comercial'.$i}) > 0) is-valid @enderror" wire:model.lazy="comercial{{ $i }}" required>
+                                <option value="">Seleccionar</option>
+                                @foreach ($comerciales as $comercial)
+                                    <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                                @endforeach
+                            </select>                                    
+                            {{-- {{ ${'comercial'.$i} }} --}}
+                            @if ($errors->has("comercial".$i))
+                                <div class="text-danger">
+                                    <small>{{ $errors->first("comercial".$i) }}</small>
                                 </div>
-                            @enderror
+                            @endif
                         </div> 
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
-                            <label for="">%:</label>
-                            <input type="number" class="form-control" required>
-                            @error('com_2')
-                                <div id="com_2" class="invalid-feedback">
-                                    {{ $message }}
+                            <label for="porcentaje{{ $i }}">%:</label>
+                            <input type="number" id="porcentaje{{ $i }}" class="form-control @if ($errors->has("porcentaje".$i)) is-invalid @elseif(strlen(${'porcentaje'.$i}) > 0) is-valid @enderror" wire:model.lazy="porcentaje{{ $i }}" required/>
+                            @if ($errors->has("porcentaje".$i))
+                                <div class="text-danger">
+                                    <small>{{ $errors->first("porcentaje".$i) }}</small>
                                 </div>
-                            @enderror
-                        </div> 
+                            @endif
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
-                            <label for="">Valor:</label>
-                            <input type="number" class="form-control" required>
-                            @error('com_2')
-                                <div id="com_2" class="invalid-feedback">
-                                    {{ $message }}
+                            <label for="valor{{ $i }}">Valor:</label>
+                            <input type="text" disabled id="valor{{ $i }}" class="form-control @if ($errors->has("valor".$i)) is-invalid @elseif(strlen(${'valor'.$i}) > 0) is-valid @enderror" wire:model.lazy="valor{{ $i }}" required/>
+                            @if ($errors->has("valor".$i))
+                                <div class="text-danger">
+                                    <small>{{ $errors->first("valor".$i) }}</small>
                                 </div>
-                            @enderror
+                            @endif
                         </div> 
                     </div>
                 @endfor
