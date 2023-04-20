@@ -38,6 +38,15 @@ class CotizacionForm extends Component
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->where('id', '<>', Auth::id())->get();
     }
 
+    public function updatedParticipaciones(){
+        if ($this->participaciones >= 4){$this->participaciones = 4;}
+        if ($this->participaciones <= 0){$this->participaciones = 1;}
+
+        $this->validate([
+            'participaciones' => 'required|numeric|min:1|max:4'
+        ]);
+    }
+
     public function updatedPresupuesto (){
         $this->validate([
             'presupuesto' => 'required|numeric'
@@ -95,5 +104,5 @@ class CotizacionForm extends Component
 
         return redirect()->route('gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
     }
-}
+} 
  

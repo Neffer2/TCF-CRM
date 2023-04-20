@@ -176,7 +176,7 @@ class Block1 extends Component
         
         // Si el mes es nulo pero el comercual no, muestra el presupuyesto mensual acumlado a la fecha
         if (is_null($mes) && $comercial != ""){
-            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));            
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = 8 AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."' AND id_user = $comercial"));            
             // Si el mes y comercial son nulos, presupuesto es cero
         }else {
             $presupuestos = Presupuesto::select('id', 'valor')

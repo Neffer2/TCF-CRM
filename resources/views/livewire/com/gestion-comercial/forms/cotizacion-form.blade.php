@@ -25,10 +25,10 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group mb-1">
-                    <label for="">Participaciones:</label>
-                    <input type="number" class="form-control" value="1" wire:model="participaciones" required>
-                    @error('com_2')
-                        <div id="com_2" class="invalid-feedback">
+                    <label for="participaciones">Participaciones:</label>
+                    <input type="number" id="participaciones" class="form-control @error('participaciones') is-invalid @elseif(strlen($participaciones) > 0) is-valid @enderror" value="{{ old('participaciones') }}" wire:model="participaciones" required>
+                    @error('participaciones')
+                        <div id="participaciones" class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror
