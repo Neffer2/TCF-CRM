@@ -40,18 +40,7 @@
                             {{ number_format($item->valor_proyecto) }}
                         </td>
                         <td>
-                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
-                                @csrf
-                                <select name="estado_id" onchange="this.form.submit()" class="form-control" style="cursor: pointer; width: 171px">
-                                    @foreach ($estados as $estado)
-                                        @if ($item->estado_cuenta->id == $estado->id)
-                                            <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                        @else 
-                                            <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                        @endif
-                                    @endforeach  
-                                </select>
-                            </form>
+                            {{ $item->estado_cuenta->description }}
                         </td>
                         <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha_inicio }}</td>
@@ -62,7 +51,7 @@
                             @endif                            
                         </td>
                         <td  colspan="2">
-                            <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button>
+                            {{-- <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button> --}}
                             <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
                         </td>
                     </tr> 

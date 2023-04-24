@@ -8,7 +8,7 @@
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
-    Asistente - {{ Auth::user()->name}}
+    Ejecutiv@ de cuenta - {{ Auth::user()->name}} 
   </title> 
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -52,34 +52,6 @@
                     <span class="sidenav-normal"> Base comercial </span>
                   </a>
                 </li>
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " data-bs-toggle="collapse" aria-expanded="false" href="#vrExamples">
-                    <span class="sidenav-mini-icon"> V </span>
-                    <span class="sidenav-normal"> Virtual Reality <b class="caret"></b></span>
-                  </a>
-                  <div class="collapse " id="vrExamples">
-                    <ul class="nav nav-sm flex-column">
-                      <li class="nav-item">
-                        <a class="nav-link " href="../../pages/dashboards/vr/vr-default.html">
-                          <span class="sidenav-mini-icon text-xs"> V </span>
-                          <span class="sidenav-normal"> VR Default </span>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link " href="../../pages/dashboards/vr/vr-info.html">
-                          <span class="sidenav-mini-icon text-xs"> V </span>
-                          <span class="sidenav-normal"> VR Info </span>
-                        </a>
-                      </li>
-                    </ul> 
-                  </div>
-                </li> --}}
-                {{-- <li class="nav-item ">
-                  <a class="nav-link " href="../../pages/dashboards/crm.html">
-                    <span class="sidenav-mini-icon"> C </span>
-                    <span class="sidenav-normal"> CRM </span>
-                  </a>
-                </li> --}}
               </ul>
             </div>
           </li>   

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {    
-    /*
+    /* DEPRECATED
     // MODELS 
     public $fecha = ""; 
     public $nom_cliente = ""; 

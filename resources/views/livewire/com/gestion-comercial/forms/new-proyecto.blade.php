@@ -2,16 +2,16 @@
     <form wire:submit.prevent="store">
         <div class="row">
             <div class="col-md-4">
-                <div class="form-group">
+                <div class="form-group"> 
                     <label for="fecha">Fecha:</label>
                     <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
                     @error('fecha')
                         <div id="fecha" class="invalid-feedback">
-                            {{ $message }}
+                            {{ $message }} 
                         </div>
                     @enderror
                 </div> 
-            </div>
+            </div> 
             <div class="col-md-8">
                 <div class="form-group"> 
                     <label for="nom_cliente">Nombre Cliente:</label>

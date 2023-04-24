@@ -1,9 +1,9 @@
-@extends('layouts.asistente.main')
+@extends('layouts.asistente.main') 
   @section('profile-card')
     <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
       <div class="card-body p-3">
         <div class="row gx-4">
-          <div class="col-auto"> 
+          <div class="col-auto">  
             <div class="avatar avatar-xl position-relative">
               @php
                 $aux = str_replace('public/', '', Auth::user()->avatar);
@@ -87,7 +87,7 @@
       </div>  
   
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-        @livewire('asis.new-proyecto') 
+        {{-- @livewire('asis.new-proyecto')  --}}
         @livewire('asis.base-list', ['user_id' => Auth::user()->id])   
       </div>
     </div>

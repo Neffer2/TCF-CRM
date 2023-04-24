@@ -8,17 +8,18 @@
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">
                 <tr> 
-                    <th>#</th>
+                    <th>#</th> 
                     <th>Fecha</th>
                     <th>Cliente</th>
                     <th>Proyecto</th> 
                     <th>COD_CC</th>
                     <th>Valor</th> 
                     <th>Estado</th>
+                    <th>Cuenta</th>
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Editor</th>
-                    <th>ACCIONES</th>
+                    <th>ACCIONES</th> 
                 </tr> 
                 </thead> 
                 <tbody>   
@@ -39,19 +40,9 @@
                             {{ number_format($item->valor_proyecto) }}
                         </td>
                         <td>
-                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
-                                @csrf
-                                <select name="estado_id" onchange="this.form.submit()" class="form-control" style="cursor: pointer; width: 171px">
-                                    @foreach ($estados as $estado)
-                                        @if ($item->estado_cuenta->id == $estado->id)
-                                            <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                        @else 
-                                            <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                        @endif
-                                    @endforeach
-                                </select> 
-                            </form>
+                            {{ $item->estado_cuenta->description }}
                         </td>
+                        <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha_inicio }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->dura_mes }}</td>
                         <td class="text-sm font-weight-normal">
@@ -60,69 +51,23 @@
                             @endif                            
                         </td>
                         <td  colspan="2">
-                            <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button>
+                            {{-- <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button> --}}
                             <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
                         </td>
                     </tr> 
                     <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
                         <div class="modal-dialog"> 
-                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST"> 
-                                @csrf
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar proyecto</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">Cliente</label>
-                                                    <input name="nom_cliente" class="form-control" type="text" value="{{ $item->nom_cliente }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">Proyecto</label>
-                                                    <input name="nom_proyecto" class="form-control" type="text" value="{{ $item->nom_proyecto }}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">COD_CC</label>
-                                                    <input name="cod_cc" class="form-control" type="text" value="{{ $item->cod_cc }}">
-                                                </div>
-                                            </div> 
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">Valor</label>
-                                                    <input name="valor_proyecto" class="form-control" type="number" value="{{ $item->valor_proyecto }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">Estado</label>
-                                                    <select name="estado_id" class="form-control" style="cursor: pointer; width: 171px">
-                                                        @foreach ($estados as $estado)
-                                                            @if ($item->estado_cuenta->id == $estado->id)
-                                                                <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                                            @else 
-                                                                <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
-                                    </div>
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar proyecto</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                            </form>
+                                <div :wire:key="'item-'.$item->id"> 
+                                    @livewire('com.base.edit', ['proyecto_id' => $item->id, key('item-'.$item->id)])   
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </div> 
 
                     <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="Modal" aria-hidden="true">
                         <div class="modal-dialog">

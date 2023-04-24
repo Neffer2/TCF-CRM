@@ -246,6 +246,7 @@ class CotizacionForm extends Component
             'fecha' => 'required|date',
 
             // PARTICIPACIONES 
+            'testigoPorcentaje' => 'required|numeric|min:100|max:100',
             'participaciones' => 'required|numeric|min:1|max:4',
             'porcentaje0' => 'required|numeric|min: 1|max: 100',
             'porcentaje1' => 'nullable|numeric|min: 1|max: 100',

@@ -6,12 +6,14 @@ use Livewire\Component;
 use App\Models\Base_comercial;
 use App\Models\EstadoCuenta;
 use App\Models\Asistente;
+use App\Models\Cuenta; 
 
 
 class BaseList extends Component 
 {
-    public $list;   
-    public $estados = [];
+    public $list;    
+    public $estados = []; 
+    public $cuentas = [];
     protected $listeners = ['proyectoAdded' => 'mount'];
 
     public function render()
@@ -23,8 +25,13 @@ class BaseList extends Component
         $this->estados = EstadoCuenta::select('id', 'description')->get();
     }
 
+    public function getCuentas(){
+        $this->cuentas = Cuenta::select('id', 'description')->get();
+    }
+
     public function mount ($user_id){
         $this->getEstados();
+        $this->getCuentas();
         $idComercialAsignado = Asistente::where('asistente_id', $user_id)->first();
         $this->list = Base_comercial::where('id_user', $idComercialAsignado->comercial_id)->get();
     }

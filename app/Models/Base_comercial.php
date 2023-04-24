@@ -24,6 +24,7 @@ class Base_comercial extends Model
         'fecha_inicio',
         'dura_mes', 
         'id_user',
+        'id_gestion', 
         'id_asistente', 
     ];
 
@@ -42,6 +43,11 @@ class Base_comercial extends Model
     /* Cuenta (Bull o V2V) */
     public function cuenta (){
         return $this->hasOne(Cuenta::class, 'id', 'id_cuenta');
+    }
+
+    /* Gestion comercial */
+    public function gestion (){
+        return $this->hasOne(GestionComercial::class, 'id', 'id_gestion');
     }
 }
   

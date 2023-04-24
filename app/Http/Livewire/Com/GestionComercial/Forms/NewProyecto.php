@@ -15,7 +15,7 @@ class NewProyecto extends Component
 {   
     // MODELS 
     public $fecha = ""; 
-    public $nom_cliente = ""; 
+    public $nom_cliente = "";  
     public $nom_proyecto = ""; 
     public $cod_cc; 
     public $valor_proyecto = ""; 
@@ -139,7 +139,7 @@ class NewProyecto extends Component
     }
 
     // Actualiza el estado en gestion comercial
-    public function storeVenta(){
+    public function storeVenta(){ 
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->id_estado = 5;
         $lead->update();
@@ -305,6 +305,7 @@ class NewProyecto extends Component
             'dura_mes' => ['present'],
 
             // PARTICIPACIONES 
+            'testigoPorcentaje' => 'required|numeric|min:100|max:100',
             'participaciones' => 'required|numeric|min:1|max:4',
             'porcentaje0' => 'required|numeric|min: 1|max: 100',
             'porcentaje1' => 'nullable|numeric|min: 1|max: 100',
@@ -329,6 +330,8 @@ class NewProyecto extends Component
             $base_comercial->nom_cliente = $this->nom_cliente;
             $base_comercial->nom_proyecto = $this->nom_proyecto;
             $base_comercial->cod_cc = $this->cod_cc; 
+            $base_comercial->valor_original = $this->valor_proyecto;
+            $base_comercial->porcentaje = $this->{'porcentaje'.$i};
             $base_comercial->valor_proyecto = $this->{'valor'.$i};
             $base_comercial->id_gestion = $this->lead_id;
             $base_comercial->id_cuenta = $this->id_cuenta;

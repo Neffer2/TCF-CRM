@@ -18,7 +18,9 @@ class CreateBaseComercialesTable extends Migration
             $table->date('fecha');
             $table->string('nom_cliente');
             $table->string('nom_proyecto'); 
-            $table->string('cod_cc')->nullable();
+            $table->string('cod_cc')->nullable(); 
+            $table->decimal('valor_original', 15, 2)->default(0)->nullable();
+            $table->string('porcentaje')->nullable();
             $table->decimal('valor_proyecto', 15, 2)->default(0)->nullable();
             $table->string('com_1')->nullable();
             $table->string('com_2')->nullable();
