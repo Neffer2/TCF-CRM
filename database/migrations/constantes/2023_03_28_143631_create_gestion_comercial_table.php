@@ -33,9 +33,21 @@ class CreateGestionComercialTable extends Migration
             $table->string('desc_contacto')->nullable();
             // Cotizacion 
             $table->decimal('presto_cot', 15, 2)->default(0);
+            $table->decimal('participaciones')->default(1);
             $table->string('porcentaje')->nullable();
+            $table->string('porcentaje_2')->nullable();
+            $table->string('porcentaje_3')->nullable();
+            $table->string('porcentaje_4')->nullable();
+
             $table->foreignId('comercial_2')->nullable();
             $table->foreign('comercial_2')->references('id')->on('users');        
+            // 
+            $table->foreignId('comercial_3')->nullable();
+            $table->foreign('comercial_3')->references('id')->on('users');        
+            // 
+            $table->foreignId('comercial_4')->nullable();
+            $table->foreign('comercial_4')->references('id')->on('users');        
+            // 
             $table->string('nom_proyecto_cot')->nullable();
             $table->date('fecha_estimada_cot')->nullable();
             $table->string('cotizacion_file')->nullable();

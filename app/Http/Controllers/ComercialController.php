@@ -61,47 +61,49 @@ class ComercialController extends Controller
         return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
     } 
 
-    public function update_proyecto(Request $request, $proyecto_id){ 
-        $request->validate([
-            'nom_cliente' => 'string|min:0',
-            'nom_proyecto' => 'string|min:0',
-            'cod_cc' => 'string|min:0',
-            'valor_proyecto' => 'numeric', 
-            'id_estado' => 'numeric',
-            'id_cuenta' => 'numeric' 
-        ]);  
 
-        $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
-        if ($request->nom_cliente){
-            $proyecto->nom_cliente = $request->nom_cliente;
-        }
+    /* DEPRECATED */
+    // public function update_proyecto(Request $request, $proyecto_id){ 
+    //     $request->validate([
+    //         'nom_cliente' => 'string|min:0',
+    //         'nom_proyecto' => 'string|min:0',
+    //         'cod_cc' => 'string|min:0',
+    //         'valor_proyecto' => 'numeric', 
+    //         'id_estado' => 'numeric',
+    //         'id_cuenta' => 'numeric' 
+    //     ]);  
 
-        if ($request->nom_proyecto){
-            $proyecto->nom_proyecto = $request->nom_proyecto;
-        }
+    //     $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
+    //     if ($request->nom_cliente){
+    //         $proyecto->nom_cliente = $request->nom_cliente;
+    //     }
 
-        if ($request->cod_cc){
-            $proyecto->cod_cc = $request->cod_cc;
-        }
+    //     if ($request->nom_proyecto){
+    //         $proyecto->nom_proyecto = $request->nom_proyecto;
+    //     }
 
-        if ($request->valor_proyecto){
-            $proyecto->valor_proyecto = $request->valor_proyecto;
-        }
+    //     if ($request->cod_cc){
+    //         $proyecto->cod_cc = $request->cod_cc;
+    //     }
+
+    //     if ($request->valor_proyecto){
+    //         $proyecto->valor_proyecto = $request->valor_proyecto;
+    //     }
         
-        if ($request->estado_id){
-            $proyecto->id_estado = $request->estado_id;
-        }
+    //     if ($request->estado_id){
+    //         $proyecto->id_estado = $request->estado_id;
+    //     }
 
-        if ($request->id_cuenta){
-            $proyecto->id_cuenta = $request->id_cuenta;
-        }
+    //     if ($request->id_cuenta){
+    //         $proyecto->id_cuenta = $request->id_cuenta;
+    //     }
         
-        $proyecto->id_asistente = Auth::user()->id;
+    //     $proyecto->id_asistente = Auth::user()->id;
 
-        $proyecto->update();
-        return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
-    } 
-
+    //     $proyecto->update();
+    //     return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
+    // } 
+ 
     public function update_helisa(Request $request, $proyecto_id){
         $request->validate([
             'fecha' => ['required'],

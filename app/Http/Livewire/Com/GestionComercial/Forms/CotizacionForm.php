@@ -18,7 +18,6 @@ class CotizacionForm extends Component
     public $nom_proyecto;
     public $fecha;
     public $cotizacionFile; 
-    public $porcentaje; 
     public $com_2;
 
     // porcentajes
@@ -28,7 +27,7 @@ class CotizacionForm extends Component
     public $comercial3;
 
     public $porcentaje0 = 100;
-    public $porcentaje1;
+    public $porcentaje1; 
     public $porcentaje2;
     public $porcentaje3;
 
@@ -45,8 +44,8 @@ class CotizacionForm extends Component
     public $participaciones = 1;
     public $testigoPorcentaje;
 
-    public function render() 
-    { 
+    public function render()  
+    {  
         $this->getComerciales();
         return view('livewire.com.gestion-comercial.forms.cotizacion-form');
     }
@@ -56,7 +55,7 @@ class CotizacionForm extends Component
     }
 
     public function getComerciales(){
-        $this->comerciales = User::select('id', 'name')->where('rol', 2)->where('id', '<>', Auth::id())->get();
+        $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
     }
 
     public function updatedPresupuesto (){
@@ -78,17 +77,11 @@ class CotizacionForm extends Component
         $this->validate([
             'com_2' => 'required|numeric'
         ]);
-    }
-
-    public function updatedPorcentaje (){
-        $this->validate([
-            'porcentaje' => 'required|numeric'
-        ]);
-    }
+    } 
 
     public function updatedCotizacionFile (){
         $this->validate([
-            'cotizacionFile' => 'required|max:1024',
+            'cotizacionFile' => 'required|max:2024',
         ]);
     }
 
@@ -234,7 +227,7 @@ class CotizacionForm extends Component
             $this->{'valor'.$i} = $this->presupuesto * ($this->{'porcentaje'.$i} / 100);
             $i++;
         }
-    }
+    } 
 
     public function getPorcentaje(){
         $i = 0;
@@ -250,14 +243,35 @@ class CotizacionForm extends Component
             'presupuesto' => 'required|numeric',
             'nom_proyecto' => 'required|string',
             'cotizacionFile' => 'required|max:1024',
-            'porcentaje' => 'required|numeric',
-            'fecha' => 'required|date'
+            'fecha' => 'required|date',
+
+            // PARTICIPACIONES 
+            'participaciones' => 'required|numeric|min:1|max:4',
+            'porcentaje0' => 'required|numeric|min: 1|max: 100',
+            'porcentaje1' => 'nullable|numeric|min: 1|max: 100',
+            'porcentaje2' => 'nullable|numeric|min: 1|max: 100',
+            'porcentaje3' => 'nullable|numeric|min: 1|max: 100',
+
+            'comercial0' => 'required|numeric',
+            'comercial1' => 'nullable|numeric',
+            'comercial2' => 'nullable|numeric',
+            'comercial3' => 'nullable|numeric',
         ]);
- 
+  
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->presto_cot = $this->presupuesto;
-        $lead->comercial_2 = $this->com_2;
-        $lead->porcentaje = $this->porcentaje;
+
+        $lead->participaciones = $this->participaciones;
+
+        $lead->comercial_2 = $this->comercial1;
+        $lead->comercial_3 = $this->comercial2;
+        $lead->comercial_4 = $this->comercial3;
+        
+        $lead->porcentaje = $this->porcentaje0;
+        $lead->porcentaje_2 = $this->porcentaje1;
+        $lead->porcentaje_3 = $this->porcentaje2;
+        $lead->porcentaje_4 = $this->porcentaje3;
+
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');

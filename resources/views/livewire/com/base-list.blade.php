@@ -68,75 +68,15 @@
                     </tr> 
                     <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
                         <div class="modal-dialog"> 
-                            <form action="{{ route('update-proyecto', $item->id) }}" method="POST">
-                                @csrf
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar proyecto</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="nom_cliente">Cliente</label>
-                                                    <input id="nom_cliente" name="nom_cliente" class="form-control" type="text" value="{{ $item->nom_cliente }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="nom_proyecto">Proyecto</label>
-                                                    <input id="nom_proyecto" name="nom_proyecto" class="form-control" type="text" value="{{ $item->nom_proyecto }}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="cod_cc">COD_CC</label>
-                                                    <input id="cod_cc" name="cod_cc" class="form-control" type="text" value="{{ $item->cod_cc }}">
-                                                </div>
-                                            </div> 
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="valor_proyecto">Valor</label>
-                                                    <input id="valor_proyecto" name="valor_proyecto" class="form-control" type="number" value="{{ $item->valor_proyecto }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="estado_id">Estado</label>
-                                                    <select id="estado_id" name="estado_id" class="form-control">
-                                                        @foreach ($estados as $estado)
-                                                            @if ($item->estado_cuenta->id == $estado->id)
-                                                                <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                                            @else 
-                                                                <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group"> 
-                                                    <label for="id_cuenta">Cuenta</label>
-                                                    <select id="id_cuenta" name="id_cuenta" class="form-control">
-                                                        @foreach ($cuentas as $cuenta)
-                                                            @if ($item->cuenta->id == $cuenta->id)
-                                                                <option selected value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
-                                                            @else 
-                                                                <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
-                                    </div>
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar proyecto</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                            </form>
+                                <div :wire:key="'item-'.$item->id"> 
+                                    @livewire('com.base.edit', ['proyecto_id' => $item->id, key('item-'.$item->id)])   
+                                </div>
+                            </div>
                         </div>
                     </div> 
 
