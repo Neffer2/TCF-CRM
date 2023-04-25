@@ -62,7 +62,11 @@ class Edit extends Component
         $this->valor = $stored->valor_original;
         $this->estado = $stored->id_estado;
         $this->cuenta = $stored->id_cuenta;
-        $this->participaciones = $stored->gestion->participaciones;    
+
+        // Necesario por si alguna base comercial no tiene gestion
+        if ($stored->gestion){
+            $this->participaciones = $stored->gestion->participaciones;    
+        }
 
         foreach ($Proyectos as $key => $proyecto) {
             $this->{'comercial'.$key} = $proyecto->id_user;
@@ -309,7 +313,7 @@ class Edit extends Component
             'valor3' => 'nullable|numeric',
         ]);
 
-        $i  = 0; 
+        $i  = 0;
         while($i < $this->participaciones){
             $proyecto = Base_comercial::where('id_gestion', $this->id_gestion)->where('id_user', $this->{'comercial'.$i})->first();
 
