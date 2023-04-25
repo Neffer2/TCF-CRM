@@ -34,7 +34,7 @@ class HelisaList extends Component
     public function getAños(){
         $this->años = Año::select('id','description')->get();
     }
-
+ 
     public function getMeses(){
         $this->meses = Mes::select('id','description')->where('id', '<', 13)->get();
     }

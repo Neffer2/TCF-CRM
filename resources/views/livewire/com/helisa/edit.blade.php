@@ -1,120 +1,116 @@
-<div class="col-lg-12 col-12 mx-auto"> 
-    <div class="card" x-data="new_project">  
-        <div class="card-body d-flex justify-content-center">
-            <div class="col-lg-2 col-md-2 col-sm-3 col-4 text-center">
-                <a x-on:click="show_form" href="javascript:;" class="avatar border-1 rounded-circle bg-gradient-warning"><i class="fas fa-plus text-white"></i></a>
-                <p class="mb-0 text-sm" style="margin-top:6px;">Nuevo registro</p>
+<div> 
+    <form wire:submit.prevent="update_helisa">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>  
-        <div class="card-body" x-show="form_project" x-transition x-cloak>
-            <form wire:submit.prevent="store">
-                <div class="row"> 
-                    <div class="col-md-3">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="fecha">Fecha:</label>
-                            <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
+                            <input wire:model.lazy="fecha" type="date" id="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" required>
                             @error('fecha')
                                 <div id="fecha" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group"> 
-                            <label for="tipo_doc">Tipo Doc:</label>
-                            <input wire:model.lazy="tipo_doc" id="tipo_doc" type="text" name="tipo_doc" class="form-control @error('tipo_doc') is-invalid @elseif(strlen($tipo_doc) > 0) is-valid @enderror" value="{{ old('tipo_doc') }}" placeholder="Tipo documento" required>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="tipo_doc">Tipo Documento:</label>
+                            <input wire:model.lazy="tipo_doc" type="text" id="tipo_doc" class="form-control @error('tipo_doc') is-invalid @elseif(strlen($tipo_doc) > 0) is-valid @enderror" required>
                             @error('tipo_doc')
                                 <div id="tipo_doc" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-grup">
+                    <div class="col-md-6">
+                        <div class="form-group">
                             <label for="num_doc">N&uacute;mero Documento:</label>
-                            <input wire:model.lazy="num_doc" id="num_doc" type="text" name="num_doc" class="form-control @error('num_doc') is-invalid @elseif(strlen($num_doc) > 0) is-valid @enderror" value="{{ old('num_doc') }}" placeholder="N&uacute;mero Documento" required>
+                            <input wire:model.lazy="num_doc" type="text" id="num_doc" class="form-control @error('num_doc') is-invalid @elseif(strlen($num_doc) > 0) is-valid @enderror" required>
                             @error('num_doc')
                                 <div id="num_doc" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
-                            @enderror 
+                            @enderror
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="identidad">Identidad:</label>
-                            <input wire:model.lazy="identidad" id="identidad" type="text" name="identidad" class="form-control @error('identidad') is-invalid @elseif(strlen($identidad) > 0) is-valid @enderror" value="{{ old('identidad') }}" placeholder="Identidad" required>
+                            <input wire:model.lazy="identidad" type="text" id="identidad" class="form-control @error('identidad') is-invalid @elseif(strlen($identidad) > 0) is-valid @enderror" required>
                             @error('identidad')
-                                <div id="identidad" class="invalid-feedback">
-                                    {{ $message }}
+                                <div id="num_doc" class="invalid-feedback">
+                                    {{ $message }} 
+                                </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="nom_tercero">Nombre Tercero</label>
-                            <input wire:model.lazy="nom_tercero" id="nom_tercero" type="text" name="nom_tercero" class="form-control @error('nom_tercero') is-invalid @elseif(strlen($nom_tercero) > 0) is-valid @enderror" value="{{ old('nom_tercero') }}" placeholder="Nombre Tercero">
+                            <label for="nom_tercero">Nombre Tercero:</label>
+                            <input wire:model.lazy="nom_tercero" type="text" id="nom_tercero" class="form-control @error('nom_tercero') is-invalid @elseif(strlen($nom_tercero) > 0) is-valid @enderror" required>
                             @error('nom_tercero')
                                 <div id="nom_tercero" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="centro">Centro de costos:</label>
-                            <input wire:model.lazy="centro" id="centro" type="text" name="centro" class="form-control @error('centro') is-invalid @elseif(strlen($centro) > 0) is-valid @enderror" value="{{ old('centro') }}" placeholder="Centro de costos">
+                            <input disabled wire:model.lazy="centro" type="text" id="centro" class="form-control @error('centro') is-invalid @elseif(strlen($centro) > 0) is-valid @enderror" required>
                             @error('centro')
                                 <div id="centro" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="nom_centro_costo">Nombre centro de costos: </label>
-                            <input wire:model.lazy="nom_centro_costo" id="nom_centro_costo" type="text" name="nom_centro_costo"
-                            class="form-control @error('nom_centro_costo') is-invalid @elseif(strlen($nom_centro_costo) > 0) is-valid @enderror" value="{{ old('nom_centro_costo') }}" placeholder="Nombre centro de costos">
+                            <label for="centro">Nombre centro de costos: </label>
+                            <input wire:model.lazy="nom_centro_costo" type="text" id="nom_centro_costo" class="form-control @error('nom_centro_costo') is-invalid @elseif(strlen($nom_centro_costo) > 0) is-valid @enderror" required>
                             @error('nom_centro_costo')
                                 <div id="nom_centro_costo" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="debito">D&eacute;bito:</label>
-                            <input wire:model.lazy="debito" id="debito" type="text" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
+                            <label for="debito">D&eacute;bito: </label>
+                            <input wire:model.lazy="debito" type="text" id="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" required>
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="credito">Cr&eacute;dito: </label>
-                            <input wire:model="credito" id="credito" type="text" name="credito"
-                            class="form-control @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror"
-                            value="{{ old('credito') }}" placeholder="Cr&eacute;dito">
+                            <input wire:model.lazy="credito" type="text" id="credito" class="form-control @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror" required>
                             @error('credito')
                                 <div id="credito" class="invalid-feedback">
-                                    {{ $message }}
+                                    {{ $message }} 
                                 </div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group mb-1">
                             <label for="participaciones">Participaciones:</label>
-                            <input type="number" id="participaciones" class="form-control @error('participaciones') is-invalid @elseif(strlen($participaciones) > 0) is-valid @enderror" value="{{ old('participaciones') }}" wire:model="participaciones" required>
+                            <input disabled type="number" id="participaciones" class="form-control @error('participaciones') is-invalid @elseif(strlen($participaciones) > 0) is-valid @enderror" value="{{ old('participaciones') }}" wire:model="participaciones" required>
                             @error('participaciones')
                                 <div id="participaciones" class="invalid-feedback">
                                     {{ $message }}
@@ -122,7 +118,7 @@
                             @enderror
                         </div> 
                     </div> 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="testigoPorcentaje">Total %: </label>
                         <input disabled type="text" id="testigoPorcentaje" class="form-control @error('testigoPorcentaje') is-invalid @enderror" value="{{ old('testigoPorcentaje') }}" wire:model="testigoPorcentaje" required>
                         @error('testigoPorcentaje')
@@ -138,13 +134,12 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
                                     <label for="comercial{{ $i }}">Comercial:</label>
-                                    <select type="text" id="comercial{{ $i }}" class="form-control @if ($errors->has("comercial".$i)) is-invalid @elseif(strlen(${'comercial'.$i}) > 0) is-valid @enderror" wire:model.lazy="comercial{{ $i }}" required>
+                                    <select disabled type="text" id="comercial{{ $i }}" class="form-control @if ($errors->has("comercial".$i)) is-invalid @elseif(strlen(${'comercial'.$i}) > 0) is-valid @enderror" wire:model.lazy="comercial{{ $i }}" required>
                                         <option value="">Seleccionar</option>
                                         @foreach ($comerciales as $comercial)
                                             <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
                                         @endforeach
                                     </select>                                    
-                                    {{-- {{ ${'comercial'.$i} }} --}}
                                     @if ($errors->has("comercial".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("comercial".$i) }}</small>
@@ -203,7 +198,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="año">Año: </label>
@@ -239,12 +234,13 @@
                                 </div>
                             @enderror 
                         </div>
-                    </div> 
-                    <div class="col-md-12">
-                        <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
                     </div>
                 </div>
-            </form>
-        </div> 
-    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn bg-gradient-warning">Guardar cambios</button>
+            </div>
+        </div>
+    </form>
 </div>

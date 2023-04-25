@@ -291,7 +291,7 @@ class NewProyecto extends Component
         }
     }
     /************/
- 
+  
     public function store (){
         $this->validate([
             'fecha' => ['required', 'date'],
@@ -319,7 +319,7 @@ class NewProyecto extends Component
 
             'valor0' => 'required|numeric',
             'valor1' => 'nullable|numeric',
-            'valor2' => 'nullable|numeric',
+            'valor2' => 'nullable|numeric', 
             'valor3' => 'nullable|numeric',
         ]);
 

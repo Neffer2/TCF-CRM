@@ -17,7 +17,7 @@ class ComercialController extends Controller
     public function index(){  
         return view('comercial.index');
     }
-
+ 
     public function gestionComercial(){
         return view('comercial.gestion');
     }
@@ -51,10 +51,16 @@ class ComercialController extends Controller
     }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable
-    public function delete_proyecto($user_id){
+    public function delete_proyecto($user_id){ 
         Base_comercial::destroy($user_id);
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
-    } 
+    }
+
+    // Delete Helisa
+    public function delete_registro($centro){
+        Helisa::where('centro', $centro)->delete();
+        return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
+    }
 
     public function delete_contacto($id){
         Contacto::destroy($id);
@@ -104,58 +110,58 @@ class ComercialController extends Controller
     //     return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
     // } 
  
-    public function update_helisa(Request $request, $proyecto_id){
-        $request->validate([
-            'fecha' => ['required'],
-            'tipo_doc' => ['required', 'string'],
-            'num_doc' => ['required', 'string'],
-            'concepto' => ['required', 'string'],
-            'identidad' => ['required', 'string'],
-            'nom_tercero' => ['required', 'string'],
-            'centro' => ['required', 'string'],
-            'nom_centro_costo' => ['required', 'string'],
-            'debito' => ['required', 'numeric'],
-            'credito' => ['required', 'numeric'], 
-            'porcentaje' => ['numeric'], 
-            'id_cuenta' => ['numeric'],
-            'base_factura' => ['required', 'numeric'],
-            'mes' => ['required', 'string'],
-            'año' => ['required', 'string'],
-            'comision' => ['required', 'numeric']
-        ]); 
+    // public function update_helisa(Request $request, $proyecto_id){
+    //     $request->validate([
+    //         'fecha' => ['required'],
+    //         'tipo_doc' => ['required', 'string'],
+    //         'num_doc' => ['required', 'string'],
+    //         'concepto' => ['required', 'string'],
+    //         'identidad' => ['required', 'string'],
+    //         'nom_tercero' => ['required', 'string'],
+    //         'centro' => ['required', 'string'],
+    //         'nom_centro_costo' => ['required', 'string'],
+    //         'debito' => ['required', 'numeric'],
+    //         'credito' => ['required', 'numeric'], 
+    //         'porcentaje' => ['numeric'], 
+    //         'id_cuenta' => ['numeric'],
+    //         'base_factura' => ['required', 'numeric'],
+    //         'mes' => ['required', 'string'],
+    //         'año' => ['required', 'string'],
+    //         'comision' => ['required', 'numeric']
+    //     ]); 
 
-        $helisa = Helisa::where('id', $proyecto_id)->first(); 
+    //     $helisa = Helisa::where('id', $proyecto_id)->first(); 
 
-        $helisa->fecha = $request->fecha;
-        $helisa->tipo_doc = $request->tipo_doc;
-        $helisa->num_doc = $request->num_doc;
-        $helisa->concepto = $request->concepto;
-        $helisa->identidad = $request->identidad;
-        $helisa->nom_tercero = $request->nom_tercero;
-        $helisa->centro = $request->centro;
-        $helisa->nom_centro_costo = $request->nom_centro_costo;
-        $helisa->debito = $request->debito;
-        $helisa->credito = $request->credito;
-        $helisa->base_factura = $request->base_factura; 
+    //     $helisa->fecha = $request->fecha;
+    //     $helisa->tipo_doc = $request->tipo_doc;
+    //     $helisa->num_doc = $request->num_doc;
+    //     $helisa->concepto = $request->concepto;
+    //     $helisa->identidad = $request->identidad;
+    //     $helisa->nom_tercero = $request->nom_tercero;
+    //     $helisa->centro = $request->centro;
+    //     $helisa->nom_centro_costo = $request->nom_centro_costo;
+    //     $helisa->debito = $request->debito;
+    //     $helisa->credito = $request->credito;
+    //     $helisa->base_factura = $request->base_factura; 
 
-        if ($request->id_cuenta){ 
-            $helisa->id_cuenta = $request->id_cuenta;
-        }
+    //     if ($request->id_cuenta){ 
+    //         $helisa->id_cuenta = $request->id_cuenta;
+    //     }
 
-        $helisa->participacion = 0;
-        $helisa->base_factura = $request->base_factura;
-        $helisa->mes = $request->mes;
-        $helisa->año = $request->año;
-        $helisa->comision = $request->comision;
-        $helisa->update();
+    //     $helisa->participacion = 0;
+    //     $helisa->base_factura = $request->base_factura;
+    //     $helisa->mes = $request->mes;
+    //     $helisa->año = $request->año;
+    //     $helisa->comision = $request->comision;
+    //     $helisa->update();
 
-        return redirect()->route('gestion-helisa')->with('success', '¡Datos guardados exitosamente!');
-    }
+    //     return redirect()->route('gestion-helisa')->with('success', '¡Datos guardados exitosamente!');
+    // }
     
     public function upload_base (Request $request){          
         $request->validate([
             'base_xls' => 'required|mimes:xlsx, csv, xls'
-        ]);   
+        ]);    
  
         Base_comercial::where('id_user', Auth::user()->id)->delete();  
         Excel::import(new BaseSheetHandler, $request->base_xls);   
