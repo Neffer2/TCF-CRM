@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Com\Helisa;
+namespace App\Http\Livewire\Asis\Helisa;
 
 use Livewire\Component;
 use App\Models\User;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 class NewRegistro extends Component
 {   
     // MODELS
-    public $fecha = ""; 
+    public $fecha = "";  
     public $tipo_doc = "";  
     public $num_doc = "";  
     public $concepto = null; 
@@ -24,7 +24,7 @@ class NewRegistro extends Component
     public $centro = ""; 
     public $nom_centro_costo = "";
     public $debito = null;
-    public $credito = null;
+    public $credito = null; 
     public $id_cuenta = "";
     public $mes = null;
     public $año = null;
@@ -58,18 +58,20 @@ class NewRegistro extends Component
     public $testigoPorcentaje;
     public $comerciales = [];
 
-    public function render()
-    {   
-        return view('livewire.com.helisa.new-registro');
-    }
+    public $asistente;
 
+    public function render()
+    {
+        return view('livewire.asis.helisa.new-registro');
+    }
     public function mount(){
         $this->getAños();
         $this->getMeses();
         $this->getCuentas();
         $this->getComerciales();
-
-        $this->comercial0 = Auth::id();
+        
+        $this->asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
+        $this->comercial0 = $this->asistente->comercial_id;
     }
  
     public function getAños(){
@@ -166,7 +168,7 @@ class NewRegistro extends Component
                 'comercial0' => 'required|numeric'
             ]);
 
-            $this->comercial0 = Auth::id();
+            $this->comercial0 = $this->asistente->comercial_id;
         }
     
         public function updatedComercial1(){
@@ -402,3 +404,4 @@ class NewRegistro extends Component
         return redirect()->route('gestion-helisa')->with('success', 'Registro creado exitosamente!');
     }
 }
+ 

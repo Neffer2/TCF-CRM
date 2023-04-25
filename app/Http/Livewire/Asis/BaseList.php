@@ -31,7 +31,7 @@ class BaseList extends Component
 
     public function mount ($user_id){
         $this->getEstados();
-        $this->getCuentas();
+        $this->getCuentas(); 
         $idComercialAsignado = Asistente::where('asistente_id', $user_id)->first();
         $this->list = Base_comercial::where('id_user', $idComercialAsignado->comercial_id)->get();
     }

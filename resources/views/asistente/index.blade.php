@@ -20,7 +20,7 @@
                 {{ Auth::user()->email }}
               </p>
               <p class="mb-0 font-weight-bold text-sm">
-                <b>Comercial asginado:</b> {{ $comercial }} 
+                <b>Comercial asignado:</b> {{ $comercial }} 
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@
 
       <div class="row mt-4" x-show="!toggle[0]" x-transition x-cloak>
         <div class="col-12 col-md-12 col-xl-12">
-          <div class="card card-body mt-4">
+          <div class="card card-body mt-4"> 
               <h5 class="mb-0">ASISTENT EActualiza tu base comercial</h5>
               <p class="text-sm mb-0">Para actualizar tu base comercial necesitas utilizar &eacute;ste <a href="{{ asset('formatos/comercial/Formato Base Comercial.xlsx') }}"><b>formato</b></a>.
                 <br><br>

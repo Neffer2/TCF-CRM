@@ -88,7 +88,7 @@ class NewProyecto extends Component
             'id_estado' => ['required', 'numeric'],
             'fecha_inicio' => ['present'],
             'dura_mes' => ['present']
-        ]);
+        ]);  
  
         $base_comercial = new Base_comercial;
         $base_comercial->fecha = $this->fecha;
