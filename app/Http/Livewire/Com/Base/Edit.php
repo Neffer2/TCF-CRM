@@ -309,7 +309,7 @@ class Edit extends Component
             'valor3' => 'nullable|numeric',
         ]);
 
-        $i  = 0;
+        $i  = 0; 
         while($i < $this->participaciones){
             $proyecto = Base_comercial::where('id_gestion', $this->id_gestion)->where('id_user', $this->{'comercial'.$i})->first();
 

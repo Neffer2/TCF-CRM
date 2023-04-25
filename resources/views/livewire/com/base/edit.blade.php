@@ -27,7 +27,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="CC">C&oacute;digo centro de costos:</label>
-                        <input type="text" id="CC" class="form-control @error('CC') is-invalid @elseif(strlen($CC) > 0) is-valid @enderror" value="{{ old('CC') }}" wire:model.lazy="CC" required>
+                        <input disabled type="text" id="CC" class="form-control @error('CC') is-invalid @elseif(strlen($CC) > 0) is-valid @enderror" value="{{ old('CC') }}" wire:model.lazy="CC" required>
                         @error('CC')
                             <div id="CC" class="invalid-feedback">
                                 {{ $message }} 

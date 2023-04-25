@@ -114,13 +114,23 @@
             </div>
             <div class="col-md-4">
                 <div class="card">
+                    <div class="card-header">
+                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
+                            VF + EXF
+                        </h6>
+                    </div>
                     <div class="card-body text-center">
                         <h3 class="text-gradient text-primary"><span countto="{{ $per_1 }}">{{ sprintf("%.1f", $per_1) }}</span> <span class="text-lg ms-n2">%</span></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4"> 
                 <div class="card">
+                    <div class="card-header">
+                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
+                            VF + EXF + VE
+                        </h6>
+                    </div>
                     <div class="card-body text-center">
                         <h3 class="text-gradient text-primary"><span countto="{{ $per_2 }}">{{ sprintf("%.1f", $per_2) }}</span> <span class="text-lg ms-n2">%</span></h3>
                     </div>
@@ -128,6 +138,11 @@
             </div>
             <div class="col-md-4">
                 <div class="card">
+                    <div class="card-header">
+                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
+                            VF + EXF +VE + V
+                        </h6>
+                    </div>
                     <div class="card-body text-center">
                         <h3 class="text-gradient text-primary"><span countto="{{ $per_3 }}">{{ sprintf("%.1f", $per_3) }}</span> <span class="text-lg ms-n2">%</span></h2>
                     </div>

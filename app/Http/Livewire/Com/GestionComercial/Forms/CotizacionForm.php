@@ -110,6 +110,7 @@ class CotizacionForm extends Component
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
+        $this->comercial0 = Auth::id();        
     }
 
     public function updatedComercial1(){
