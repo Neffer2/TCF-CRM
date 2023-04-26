@@ -47,7 +47,7 @@
             <div class="collapse  show " id="dashboardsExamples">
               <ul class="nav ms-4">
                 <li class="nav-item active">
-                  <a class="nav-link active" href="{{ route('asis-dashboard-asis') }}"> 
+                  <a class="nav-link active" href="{{ route('dashboard-asis') }}"> 
                     <span class="sidenav-mini-icon"> D </span>
                     <span class="sidenav-normal"> Dashboard </span> 
                   </a>
