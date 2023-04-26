@@ -44,6 +44,10 @@ class OportunidadForm extends Component
         $lead->id_estado = 2;
         $lead->update();
 
-        return redirect()->route('gestion-comercial')->with('success', '¡Oportunidad registrada exitosamente!');
+        if (Auth::user()->rol == 2){ 
+            return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');
+        }elseif (Auth::user()->rol == 5){
+            return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
+        }
     } 
 }

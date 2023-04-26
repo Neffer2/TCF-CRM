@@ -349,7 +349,7 @@ class NewProyecto extends Component
         }
         
         $this->storeVenta();
-        return redirect()->route('gestion-comercial')->with('success', '¡Proyecto creado exitosamente!');
+        return redirect()->route('asis-gestion-comercial')->with('success', '¡Proyecto creado exitosamente!');
     }
  
     public function limpiar(){

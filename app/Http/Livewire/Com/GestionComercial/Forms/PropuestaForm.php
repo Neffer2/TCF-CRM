@@ -50,7 +50,7 @@ class PropuestaForm extends Component
             'fecha' => 'required|date'
         ]);
     }
-
+ 
     public function store (){
         $this->validate([
             'presupuesto' => 'required|numeric',
@@ -67,6 +67,10 @@ class PropuestaForm extends Component
         $lead->id_estado = 4;
         $lead->update();
 
-        return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');
+        if (Auth::user()->rol == 2){ 
+            return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');
+        }elseif (Auth::user()->rol == 5){
+            return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
+        }
     }
 }

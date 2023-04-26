@@ -242,7 +242,7 @@ class CotizacionForm extends Component
         }
     }
     /************/
-
+ 
     public function store (){ 
         $this->validate([ 
             'presupuesto' => 'required|numeric',
@@ -269,7 +269,7 @@ class CotizacionForm extends Component
 
         $lead->participaciones = $this->participaciones;
 
-        $lead->comercial_2 = $this->comercial1;
+        $lead->comercial_2 = $this->comercial1; 
         $lead->comercial_3 = $this->comercial2;
         $lead->comercial_4 = $this->comercial3;
         
@@ -284,7 +284,7 @@ class CotizacionForm extends Component
         $lead->id_estado = 3;
         $lead->update();
 
-        return redirect()->route('gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
+        return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
     }
 } 
  
