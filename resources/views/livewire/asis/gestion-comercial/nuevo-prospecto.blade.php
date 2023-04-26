@@ -4,7 +4,7 @@
             <div class="col-md-12"> 
                 <p class="text-sm mb-0">  
                     Selecciona uno de tus contactos e inicia con &eacute;ste un <b>prospecto.</b>
-                    ¿A&uacute;n no tienes contactos? <a href="{{ route('contactos') }}" target="_blank"><b>Aqu&iacute;</b></a> puedes crear uno nuevo.
+                    ¿A&uacute;n no tienes contactos? <a href="{{ route('asis-contactos') }}" target="_blank"><b>Aqu&iacute;</b></a> puedes crear uno nuevo.
                 </p> 
             </div> 
             <div class="col-md-6">
