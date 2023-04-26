@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Com\Dashboard;
+namespace App\Http\Livewire\Asis\Dashboard;
 
 use Livewire\Component;
 use App\Models\Base_comercial;
@@ -9,6 +9,7 @@ use App\Models\Mes;
 use App\Models\Año;
 use App\Models\Cuenta;
 use App\Models\Presupuesto;
+use App\Models\Asistente;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -37,15 +38,18 @@ class Block2 extends Component
 
     /* % ESTADO POR FACTURAR + VENTA FACTURADA */
     public $per_1 = 0;
-    public $per_2 = 0;
+    public $per_2 = 0; 
     public $per_3 = 0;
+
+    public $comercial_id;
 
     public function render()
     {
-        return view('livewire.com.dashboard.block2');
+        return view('livewire.asis.dashboard.block2');
     }
 
     public function mount(){ 
+        $this->comercial_id = Asistente::where('asistente_id', Auth::user()->id)->first()->comercial_id;
         $this->default();
     }
 
@@ -54,7 +58,7 @@ class Block2 extends Component
         $latest_year = Año::select('id','description')->orderBy('created_at', 'DESC')->first();
         $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
         if ($latest_year){
-            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
+            $this->getData(['año' => $latest_year->description, 'mes' => null, 'comercial' => $this->comercial_id, 'cuenta' => $cuenta->id]);
         }
     }
 

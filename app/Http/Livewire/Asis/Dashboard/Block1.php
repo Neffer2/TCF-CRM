@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Livewire\Com\Dashboard;
+namespace App\Http\Livewire\Asis\Dashboard;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Asistente;
 use App\Models\Mes;
 use App\Models\Año;
 use App\Models\Helisa;
@@ -17,25 +18,27 @@ class Block1 extends Component
     protected $listeners = ['Block1' => 'getData'];
 
     // Models
-    public $venta_facturada = 0;
+    public $venta_facturada = 0; 
     public $venta_consolidada = 0;
     public $presto_mensual = 0; 
     public $presto_acumulado = 0;
 
     public $cumpli_venta_men = 0;
     public $cumpli_acum_venta_men = 0;
-    public $presto_x_cumplir = 0;
+    public $presto_x_cumplir = 0; 
 
     // Useful vars
     public $latest_year;
     public $latest_month;
+    public $comercial_id;
 
-    public function render() 
+    public function render()
     {
-        return view('livewire.com.dashboard.block1');
-    } 
- 
+        return view('livewire.asis.dashboard.block1');
+    }
+
     public function mount(){
+        $this->comercial_id = Asistente::where('asistente_id', Auth::user()->id)->first()->comercial_id;
         $this->default();
     } 
 
@@ -45,7 +48,7 @@ class Block1 extends Component
         $this->latest_month = $this->getCurrentMes($this->latest_year);
         $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
         if ($this->latest_year){
-            $this->getData(['año' => $this->latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
+            $this->getData(['año' => $this->latest_year->description, 'mes' => null, 'comercial' => $this->comercial_id, 'cuenta' => $cuenta->id]);
         } 
     }
 

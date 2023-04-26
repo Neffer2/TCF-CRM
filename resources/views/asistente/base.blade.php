@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-            <div class="nav-wrapper position-relative end-0">
+            {{-- <div class="nav-wrapper position-relative end-0">
               <ul x-data class="nav nav-pills nav-fill p-1" role="tablist">
                 <li class="nav-item" role="presentation">
                   <a @click="$dispatch('fire-toggle', 0)" class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
@@ -39,14 +39,14 @@
                     <span class="ms-2">Subir</span>
                   </a>
                 </li>
-                {{-- <li class="nav-item" role="presentation">
+                <li class="nav-item" role="presentation">
                   <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false" tabindex="-1">
                     <i class="ni ni-settings-gear-65"></i>
                     <span class="ms-2">Settings</span>
                   </a>
-                </li> --}}
+                </li>
               </ul>
-            </div>
+            </div> --}}
           </div>
         </div>
       </div>
@@ -57,8 +57,7 @@
 
   @section('content')    
     <div x-data="menu" @fire-toggle.window="Toggle"> 
-
-      <div class="row mt-4" x-show="!toggle[0]" x-transition x-cloak>
+      {{-- <div class="row mt-4" x-show="!toggle[0]" x-transition x-cloak>
         <div class="col-12 col-md-12 col-xl-12">
           <div class="card card-body mt-4">
               <h5 class="mb-0">Actualiza tu base comercial</h5>
@@ -86,7 +85,7 @@
               </form>
           </div>
         </div>
-      </div> 
+      </div>  --}}
  
       <div class="row mt-4" x-show="!toggle[1]" x-transition> 
         {{-- DEPRECATED --}}
