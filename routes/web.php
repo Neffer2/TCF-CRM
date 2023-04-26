@@ -82,7 +82,7 @@ Route::get('/', function () {
 /* --- */
  
 /* Asistenet */   
-    /* base - functions */   
+    /* base - functions */    
     Route::get('/asis-asis-dashboard', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('asis-asis-dashboard');  
     Route::get('/asis-dashboard-base', [AsistenteController::class, 'base'])->middleware(['auth'])->middleware(['asistente'])->name('asis-dashboard-base');   
     Route::get('/asis-gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-helisa');    

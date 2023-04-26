@@ -47,19 +47,19 @@
             <div class="collapse  show " id="dashboardsExamples">
               <ul class="nav ms-4">
                 <li class="nav-item active">
-                  <a class="nav-link active" href="{{ route('dashboard-asis') }}"> 
+                  <a class="nav-link active" href="{{ route('asis-dashboard-asis') }}"> 
                     <span class="sidenav-mini-icon"> D </span>
                     <span class="sidenav-normal"> Dashboard </span> 
                   </a>
                 </li>
                 <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('gestion-helisa') }}">  
+                  <a class="nav-link" href="{{ route('asis-gestion-helisa') }}">  
                     <span class="sidenav-mini-icon"> H </span>
                     <span class="sidenav-normal"> Helisa </span>
                   </a> 
                 </li>
                 <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('dashboard-base') }}"> 
+                  <a class="nav-link" href="{{ route('asis-dashboard-base') }}"> 
                     <span class="sidenav-mini-icon"> B </span>
                     <span class="sidenav-normal"> Base comercial </span>
                   </a> 
@@ -77,13 +77,13 @@
             <div class="collapse" id="dashboardsGestion">
               <ul class="nav ms-4">
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('contactos') }}">
+                  <a class="nav-link" href="{{ route('asis-contactos') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Contactos </span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('gestion-comercial') }}">
+                  <a class="nav-link" href="{{ route('asis-gestion-comercial') }}">
                     <span class="sidenav-mini-icon text-xs"> NP </span>
                     <span class="sidenav-normal"> Prospectos </span>
                   </a>
