@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Livewire\Com\GestionComercial\Forms;
+namespace App\Http\Livewire\Asis\GestionComercial\Forms;
 
 use Livewire\Component;
 use Illuminate\Validation\Rules; 
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial;
 use App\Models\User;
+use App\Models\Asistente;
 use Livewire\WithFileUploads;
 
-class CotizacionForm extends Component 
-{    
+class CotizacionForm extends Component
+{
     use WithFileUploads;
 
     // Models 
@@ -44,14 +45,17 @@ class CotizacionForm extends Component
     public $participaciones = 1;
     public $testigoPorcentaje;
 
-    public function render()  
-    {  
-        return view('livewire.com.gestion-comercial.forms.cotizacion-form');
+    public $comercial_id;
+
+    public function render()
+    {
+        return view('livewire.asis.gestion-comercial.forms.cotizacion-form');
     }
-    
+
     public function mount(){
-        $this->getComerciales();
-        $this->comercial0 = Auth::id();
+        $this->getComerciales(); 
+        $this->comercial_id = Asistente::where('asistente_id', Auth::user()->id)->first()->comercial_id;
+        $this->comercial0 = $this->comercial_id;
     }
 
     public function getComerciales(){
@@ -110,7 +114,7 @@ class CotizacionForm extends Component
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
-        $this->comercial0 = Auth::id();        
+        $this->comercial0 = $this->comercial_id;
     }
 
     public function updatedComercial1(){

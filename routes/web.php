@@ -63,29 +63,31 @@ Route::get('/', function () {
         Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->middleware(['comercial'])->name('update-gestion-comercial'); 
 
         // Delete registro Helisa 
-        Route::post('/delete-registro/{centro?}', [ComercialController::class, 'delete_registro'])->middleware(['auth'])->middleware(['comercial'])->name('delete-registro'); 
+        Route::post('/delete-registro/{centro?}', [ComercialController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */  
 
 /* contable */ 
-    /* base - functions */  
-        Route::get('/dashboard-con', [ContableController::class, 'index'])->middleware(['auth'])->middleware(['contable'])->name('dashboard-con');  
-        Route::get('/actualizar-perfil-con', [ContableController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['contable'])->name('actualizar-perfil-con');  
+    /* base - functions */   
+        // Route::get('/dashboard-con', [ContableController::class, 'index'])->middleware(['auth'])->middleware(['contable'])->name('dashboard-con');  
+        // Route::get('/actualizar-perfil-con', [ContableController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['contable'])->name('actualizar-perfil-con');  
 
-        Route::post('/helisa-upload', [ContableController::class, 'helisa_upload'])->middleware(['auth'])->middleware(['contable'])->name('helisa-upload');  
-        Route::post('/helisa-export/{id_user?}', [ContableController::class, 'export_helisa'])->middleware(['auth'])->name('helisa-export'); 
-        Route::post('/vaciar_helisa', [ContableController::class, 'helisa_truncate'])->middleware(['auth'])->middleware(['contable'])->name('vaciar_helisa'); 
-        Route::post('/update-helisa/{id_user?}', [ContableController::class, 'update_helisa'])->middleware(['auth'])->middleware(['contable'])->name('update-helisa'); 
-
+        // Route::post('/helisa-upload', [ContableController::class, 'helisa_upload'])->middleware(['auth'])->middleware(['contable'])->name('helisa-upload');  
+        // Route::post('/helisa-export/{id_user?}', [ContableController::class, 'export_helisa'])->middleware(['auth'])->name('helisa-export'); 
+        // Route::post('/vaciar_helisa', [ContableController::class, 'helisa_truncate'])->middleware(['auth'])->middleware(['contable'])->name('vaciar_helisa'); 
+        // Route::post('/update-helisa/{id_user?}', [ContableController::class, 'update_helisa'])->middleware(['auth'])->middleware(['contable'])->name('update-helisa'); 
         // Delete proyecto
         // Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */
  
-/* Asistenet */ 
-    /* base - functions */  
+/* Asistenet */   
+    /* base - functions */   
     Route::get('/dashboard-asis', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-asis');  
+    Route::get('/dashboard-base', [AsistenteController::class, 'base'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-base');   
     Route::get('/gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('gestion-helisa');    
+    Route::get('/gestion-comercial', [AsistenteController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['asistente'])->name('gestion-comercial');   
+    Route::get('/contactos', [AsistenteController::class, 'Contactos'])->middleware(['auth'])->middleware(['asistente'])->name('contactos');    
 /* --- */
 /* --- */  
 

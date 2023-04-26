@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Livewire\Com\GestionComercial\Forms;
- 
+namespace App\Http\Livewire\Asis\GestionComercial\Forms;
+
 use Livewire\Component;
 use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 use App\Models\Base_comercial;
 use App\Models\User;
+use App\Models\Asistente;
 use App\Models\GestionComercial;
 use Illuminate\Validation\Rules; 
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class NewProyecto extends Component
     public $com_2 = ""; 
     public $porcentaje;
     public $id_estado = "";
-    public $id_cuenta = "";
+    public $id_cuenta = ""; 
     public $fecha_inicio = null; 
     public $dura_mes = null;
 
@@ -51,20 +52,22 @@ class NewProyecto extends Component
     public $testigoPorcentaje;
 
     public $valorEjemplo;
+    public $comercial_id;
 
     // Useful vars
     // Se decide utilizar "lead" como referencia a los registros del la tabla Gestion Comercial
     public $lead_id = 0;
 
-    public function render() 
-    {   
-        return view('livewire.com.gestion-comercial.forms.new-proyecto');
+    public function render()
+    {
+        return view('livewire.asis.gestion-comercial.forms.new-proyecto');
     }
-
+    
     // Trae datos que ya éstan registrados en la gestión comericial (Nombre proyecto, valor, etc).
     public function mount(){
         $this->getEstados();
         $this->getCuentas();
+        $this->comercial_id = Asistente::where('asistente_id', Auth::user()->id)->first()->comercial_id;
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
         $this->nom_proyecto = $informacionGeneral->nom_proyecto_prop;
@@ -74,7 +77,7 @@ class NewProyecto extends Component
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
         
         $this->participaciones = $informacionGeneral->participaciones;
-        $this->comercial0 = Auth::id();
+        $this->comercial0 = $this->comercial_id;
         $this->comercial1 = $informacionGeneral->comercial_2;
         $this->comercial2 = $informacionGeneral->comercial_3;
         $this->comercial3 = $informacionGeneral->comercial_4;
@@ -164,7 +167,7 @@ class NewProyecto extends Component
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
-        $this->comercial0 = Auth::id();
+        $this->comercial0 = $this->comercial_id;
     }
 
     public function updatedComercial1(){
@@ -339,8 +342,8 @@ class NewProyecto extends Component
             $base_comercial->id_estado = $this->id_estado;
             $base_comercial->fecha_inicio = $this->fecha_inicio;
             $base_comercial->dura_mes = $this->dura_mes;
+
             $base_comercial->id_user = $this->{'comercial'.$i};
-            
             $base_comercial->save();
             $i++;
         }

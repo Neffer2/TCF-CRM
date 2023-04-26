@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\Asis\Helisa;
-
+ 
 use Livewire\Component;
 use App\Models\Helisa;
 use App\Models\User;
@@ -41,12 +41,12 @@ class HelisaList extends Component
     }
 
     public function mount(){
-        $this->getComerciales();
+        $this->getComerciales(); 
         $this->getAños();
         $this->getMeses();
         $this->getCuentas(); 
 
         $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
-        $this->list = Helisa::where('comercial', $asistente->comercial_id )->get();
+        $this->list = Helisa::where('comercial', $asistente->comercial_id)->get();
     }
 }

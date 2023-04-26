@@ -20,7 +20,7 @@ class ComercialController extends Controller
  
     public function gestionComercial(){
         return view('comercial.gestion');
-    }
+    } 
 
     public function gestionHelisa(){
         return view('comercial.helisa.index'); 
@@ -40,7 +40,7 @@ class ComercialController extends Controller
  
     public function comercialHelisa(){
         return view('comercial.helisa.index');
-    }
+    } 
 
     public function update_gestion($leadId){
         return view('comercial.gestion.edit', ['leadId' => $leadId]);
@@ -142,7 +142,7 @@ class ComercialController extends Controller
     //     $helisa->nom_centro_costo = $request->nom_centro_costo;
     //     $helisa->debito = $request->debito;
     //     $helisa->credito = $request->credito;
-    //     $helisa->base_factura = $request->base_factura; 
+    //     $helisa->base_factura = $request->base_factura;  
 
     //     if ($request->id_cuenta){ 
     //         $helisa->id_cuenta = $request->id_cuenta;

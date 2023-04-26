@@ -56,7 +56,7 @@
   @section('content')     
     <div class="row mt-4" x-show="!toggle[1]" x-transition> 
       @livewire('asis.helisa.new-registro')   
-      @livewire('asis.helisa.helisa-list') 
+      @livewire('asis.helisa.helisa-list')  
     </div>
   @endsection
  
