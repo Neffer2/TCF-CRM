@@ -1,4 +1,4 @@
-@extends('layouts.comercial.main')
+@extends('layouts.asistente.main')
   @section('content') 
     <div class="row mt-4">
         <div class="col-12 col-md-12 col-xl-12">

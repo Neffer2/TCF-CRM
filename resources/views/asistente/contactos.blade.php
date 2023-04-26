@@ -1,4 +1,4 @@
-@extends('layouts.comercial.main')
+@extends('layouts.asistente.main')
   @section('profile-card') 
     <div class="container">
       <div class="card shadow-lg">
