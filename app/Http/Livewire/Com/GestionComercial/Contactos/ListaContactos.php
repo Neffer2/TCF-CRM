@@ -18,7 +18,7 @@ class ListaContactos extends Component
 
     public function render()
     {
-        $contactos = Contacto::select('id','nombre','apellido','empresa','cargo','correo','celular','web')->where('id_user', Auth::id())->orderBy('id', 'desc')->paginate(5);
+        $contactos = Contacto::select('id','nombre','apellido','empresa','cargo','correo','celular','web', 'direccion', 'pbx')->where('id_user', Auth::id())->orderBy('id', 'desc')->paginate(5);
         return view('livewire.com.gestion-comercial.contactos.lista-contactos', ['contactos' => $contactos]);
     }
 }

@@ -7,6 +7,7 @@ use App\Exports\BaseExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
+use App\Models\GestionComercial;
 use App\Models\Helisa;
 use App\Models\Contacto;
 use Illuminate\Support\Facades\Storage;
@@ -60,105 +61,10 @@ class ComercialController extends Controller
     public function delete_registro($centro){
         Helisa::where('centro', $centro)->delete();
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
-    }
-
-    public function delete_contacto($id){
-        Contacto::destroy($id);
-        return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
     } 
-
-
-    /* DEPRECATED */
-    // public function update_proyecto(Request $request, $proyecto_id){ 
-    //     $request->validate([
-    //         'nom_cliente' => 'string|min:0',
-    //         'nom_proyecto' => 'string|min:0',
-    //         'cod_cc' => 'string|min:0',
-    //         'valor_proyecto' => 'numeric', 
-    //         'id_estado' => 'numeric',
-    //         'id_cuenta' => 'numeric' 
-    //     ]);  
-
-    //     $proyecto = Base_comercial::where('id',$proyecto_id)->first(); 
-    //     if ($request->nom_cliente){
-    //         $proyecto->nom_cliente = $request->nom_cliente;
-    //     }
-
-    //     if ($request->nom_proyecto){
-    //         $proyecto->nom_proyecto = $request->nom_proyecto;
-    //     }
-
-    //     if ($request->cod_cc){
-    //         $proyecto->cod_cc = $request->cod_cc;
-    //     }
-
-    //     if ($request->valor_proyecto){
-    //         $proyecto->valor_proyecto = $request->valor_proyecto;
-    //     }
-        
-    //     if ($request->estado_id){
-    //         $proyecto->id_estado = $request->estado_id;
-    //     }
-
-    //     if ($request->id_cuenta){
-    //         $proyecto->id_cuenta = $request->id_cuenta;
-    //     }
-        
-    //     $proyecto->id_asistente = Auth::user()->id;
-
-    //     $proyecto->update();
-    //     return redirect()->back()->with('success', 'Proyecto actualizado exitosamente.');
-    // } 
- 
-    // public function update_helisa(Request $request, $proyecto_id){
-    //     $request->validate([
-    //         'fecha' => ['required'],
-    //         'tipo_doc' => ['required', 'string'],
-    //         'num_doc' => ['required', 'string'],
-    //         'concepto' => ['required', 'string'],
-    //         'identidad' => ['required', 'string'],
-    //         'nom_tercero' => ['required', 'string'],
-    //         'centro' => ['required', 'string'],
-    //         'nom_centro_costo' => ['required', 'string'],
-    //         'debito' => ['required', 'numeric'],
-    //         'credito' => ['required', 'numeric'], 
-    //         'porcentaje' => ['numeric'], 
-    //         'id_cuenta' => ['numeric'],
-    //         'base_factura' => ['required', 'numeric'],
-    //         'mes' => ['required', 'string'],
-    //         'año' => ['required', 'string'],
-    //         'comision' => ['required', 'numeric']
-    //     ]); 
-
-    //     $helisa = Helisa::where('id', $proyecto_id)->first(); 
-
-    //     $helisa->fecha = $request->fecha;
-    //     $helisa->tipo_doc = $request->tipo_doc;
-    //     $helisa->num_doc = $request->num_doc;
-    //     $helisa->concepto = $request->concepto;
-    //     $helisa->identidad = $request->identidad;
-    //     $helisa->nom_tercero = $request->nom_tercero;
-    //     $helisa->centro = $request->centro;
-    //     $helisa->nom_centro_costo = $request->nom_centro_costo;
-    //     $helisa->debito = $request->debito;
-    //     $helisa->credito = $request->credito;
-    //     $helisa->base_factura = $request->base_factura;  
-
-    //     if ($request->id_cuenta){ 
-    //         $helisa->id_cuenta = $request->id_cuenta;
-    //     }
-
-    //     $helisa->participacion = 0;
-    //     $helisa->base_factura = $request->base_factura;
-    //     $helisa->mes = $request->mes;
-    //     $helisa->año = $request->año;
-    //     $helisa->comision = $request->comision;
-    //     $helisa->update();
-
-    //     return redirect()->route('gestion-helisa')->with('success', '¡Datos guardados exitosamente!');
-    // }
-    
+   
     public function upload_base (Request $request){          
+        return redirect()->route('dashboard-base')->with('error', '¡Ésta función fué descontinuada.!');
         $request->validate([
             'base_xls' => 'required|mimes:xlsx, csv, xls'
         ]);    
@@ -172,5 +78,38 @@ class ComercialController extends Controller
         $name = Auth::user()->name;
         return Excel::download(new BaseExport, $name." Base.xlsx");
     }
+
+    public function delete_contacto($id){
+        $gestionComercial = GestionComercial::where('id_contacto', $id)->first();
+        
+        if ($gestionComercial){
+            return redirect()->back()->withErrors(['Éste usuario esta enlazado con una de tus gestiones comerciales.']);
+        }
+        
+        Contacto::destroy($id);
+        return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
+    }
+
+    public function update_contacto($id, Request $request){
+        $request->validate([
+            "cargo_edit" => 'required|string',
+            "celular_edit" => 'required|numeric',
+            "correo_edit" => 'required|email',
+            "pbx_edit" => 'required|string',
+            "web_edit" => 'required|string',
+            "direccion_edit" => 'required|string'
+        ]);
+        
+        $contacto = Contacto::find($id); 
+        $contacto->cargo = $request->cargo_edit;
+        $contacto->celular = $request->celular_edit;
+        $contacto->correo = $request->correo_edit;
+        $contacto->web = $request->pbx_edit;
+        $contacto->pbx = $request->web_edit;
+        $contacto->direccion = $request->direccion_edit;
+        $contacto->update();
+
+        return redirect()->back()->with('success', 'Contacto actualizado exitosamente!');
+    }
 }
- 
+  

@@ -61,7 +61,8 @@ Route::get('/', function () {
         Route::post('/com-update-helisa/{id_user?}', [ComercialController::class, 'update_helisa'])->middleware(['auth'])->middleware(['comercial'])->name('com-update-helisa'); 
         // Update proyecto gestion comercial 
         Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->middleware(['comercial'])->name('update-gestion-comercial'); 
-
+        // Update contacto
+        Route::post('/update-contacto/{id?}', [ComercialController::class, 'update_contacto'])->middleware(['auth'])->name('update-contacto'); 
         // Delete registro Helisa 
         Route::post('/delete-registro/{centro?}', [ComercialController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
