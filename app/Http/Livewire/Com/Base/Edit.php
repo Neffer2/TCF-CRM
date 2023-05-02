@@ -8,16 +8,20 @@ use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\WithFileUploads;
   
 class Edit extends Component
 {   
+    use WithFileUploads;
+
     // Models
     public $nom_cliente;
     public $nom_proyecto;
     public $CC;
-    public $valor;
+    public $valor; 
     public $estado;
     public $cuenta;
+    public $cotizacion_file_actualizacion;
 
     // porcentajes
     public $comercial0;
@@ -33,7 +37,7 @@ class Edit extends Component
     public $valor0;
     public $valor1;
     public $valor2;
-    public $valor3;
+    public $valor3; 
 
     // Useful vars
     public $estados;
@@ -42,6 +46,7 @@ class Edit extends Component
     public $participaciones = 1;
     public $stored;
     public $id_gestion;
+    public $valor_guardado = 0;
 
     public $proyecto_id;
 
@@ -52,7 +57,7 @@ class Edit extends Component
     }
 
     public function mount($proyecto_id){
-        $stored = Base_comercial::select('nom_cliente', 'nom_proyecto', 'cod_cc', 'valor_original', 'valor_proyecto', 'id_estado', 'id_cuenta', 'id_gestion')->where('id', $proyecto_id)->first();
+        $stored = Base_comercial::select('nom_cliente', 'nom_proyecto', 'cod_cc', 'valor_original', 'valor_proyecto', 'id_estado', 'id_cuenta', 'id_gestion', 'cotizacion_file_actualizacion')->where('id', $proyecto_id)->first();
         $Proyectos = Base_comercial::select('nom_cliente', 'nom_proyecto', 'cod_cc', 'valor_original', 'valor_proyecto', 'id_estado', 'id_cuenta', 'id_gestion', 'porcentaje', 'id_user')->where('id_gestion', $stored->id_gestion)->get();
 
         $this->id_gestion = $stored->id_gestion;        
@@ -60,6 +65,7 @@ class Edit extends Component
         $this->nom_proyecto = $stored->nom_proyecto;
         $this->CC = $stored->cod_cc;
         $this->valor = $stored->valor_original;
+        $this->valor_guardado = $stored->valor_original;
         $this->estado = $stored->id_estado;
         $this->cuenta = $stored->id_cuenta;
 
@@ -120,6 +126,12 @@ class Edit extends Component
     public function updatedCuenta(){
         $this->validate([
             'cuenta' => 'numeric'            
+        ]); 
+    }
+
+    public function CotizacionFileActualizacion(){
+        $this->validate([
+            'cotizacion_file_actualizacion' => 'nullable|max:1024'         
         ]); 
     }
 
@@ -293,6 +305,7 @@ class Edit extends Component
             'valor' => 'numeric', 
             'estado' => 'numeric',
             'cuenta' => 'numeric',
+            'cotizacion_file_actualizacion' => 'nullable|max:1024',
 
             // PARTICIPACIONES 
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
@@ -343,6 +356,10 @@ class Edit extends Component
 
             if ($this->cuenta){
                 $proyecto->id_cuenta = $this->cuenta;
+            }
+
+            if ($this->cotizacion_file_actualizacion){
+                $proyecto->cotizacion_file_actualizacion = $this->cotizacion_file_actualizacion->store('cotizaciones');
             }
 
             $proyecto->valor_proyecto = $this->{'valor'.$i};

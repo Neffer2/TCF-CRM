@@ -17,8 +17,9 @@ class CotizacionForm extends Component
     public $presupuesto; 
     public $nom_proyecto;
     public $fecha;
-    public $cotizacionFile; 
+    public $cotizacionFile;  
     public $com_2;
+    public $cotizacionUrl;
 
     // porcentajes
     public $comercial0;
@@ -88,6 +89,12 @@ class CotizacionForm extends Component
     public function updatedFecha (){
         $this->validate([
             'fecha' => 'required|date'
+        ]);
+    }
+
+    public function updatedCotizacionUrl (){
+        $this->validate([
+            'cotizacionUrl' => 'nullable|string',
         ]);
     }
 
@@ -245,6 +252,7 @@ class CotizacionForm extends Component
             'nom_proyecto' => 'required|string',
             'cotizacionFile' => 'required|max:1024',
             'fecha' => 'required|date',
+            'cotizacionUrl' => 'nullable|string',
 
             // PARTICIPACIONES 
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
@@ -277,7 +285,9 @@ class CotizacionForm extends Component
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');
-        $lead->id_estado = 3;
+        $lead->propuesta_url = $this->cotizacionUrl;
+        // $lead->id_estado = 3;
+        $lead->id_estado = 4;
         $lead->update();
 
         if (Auth::user()->rol == 2){ 

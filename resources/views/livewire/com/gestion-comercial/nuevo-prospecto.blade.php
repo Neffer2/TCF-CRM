@@ -21,7 +21,7 @@
                             {{ $message }}
                         </div>
                     @enderror
-                </div>
+                </div> 
             </div>
             <div class="col-md-12">
                 <button class="btn bg-gradient-warning">Crear nuevo prospecto</button>

@@ -105,6 +105,15 @@
                 <input type="file" id="cotizacionFile" class="form-control @error('cotizacionFile') is-invalid @elseif(strlen($cotizacionFile) > 0) is-valid @enderror" value="{{ old('cotizacionFile') }}" wire:model.lazy="cotizacionFile" required>
                 @error('cotizacionFile')
                     <div id="cotizacionFile" class="invalid-feedback">
+                        {{ $message }} 
+                    </div>
+                @enderror
+            </div>
+            <div class="col-md-12">
+                <label for="cotizacionUrl">Enlace propuesta (opcional):</label>
+                <input type="text" id="cotizacionUrl" class="form-control @error('cotizacionUrl') is-invalid @elseif(strlen($cotizacionUrl) > 0) is-valid @enderror" value="{{ old('cotizacionUrl') }}" wire:model.lazy="cotizacionUrl">
+                @error('cotizacionUrl')
+                    <div id="cotizacionUrl" class="invalid-feedback">
                         {{ $message }}
                     </div>
                 @enderror

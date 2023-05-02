@@ -29,7 +29,7 @@
                             <p class="text-xs font-weight-bold mb-0">{{ $contacto->web }}</p>
                             <p class="text-xs text-secondary">{{ $contacto->celular }}</p>
                         </td>
-                        <td class="2">
+                        <td colspan="2"> 
                             <button class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $contacto->id }}">Editar</button>
                             <button class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $contacto->id }}">Eliminar</button>
                         </td>

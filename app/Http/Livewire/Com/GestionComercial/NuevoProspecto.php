@@ -34,15 +34,15 @@ class NuevoProspecto extends Component
         $this->validate([
             'contacto'  => ['required', 'numeric'],
         ]);
-
+ 
         $gestiones = new GestionComercial;
         $gestiones->id_contacto = $this->contacto;
         $gestiones->id_user = Auth::id();
         $gestiones->save();
 
         $this->limpiar();
-        $this->emit('list');
-        return redirect()->back()->with('success', 'Prospecto creado exitosamente')->withInput();
+        // $this->emit('list'); 
+        return redirect()->route('gestion-comercial')->with('success', 'Prospecto creado exitosamente');
     }
     
     public function limpiar(){

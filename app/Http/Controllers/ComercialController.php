@@ -90,7 +90,7 @@ class ComercialController extends Controller
         return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
     }
 
-    public function update_contacto($id, Request $request){
+    public function update_contacto($id, Request $request){ 
         $request->validate([
             "cargo_edit" => 'required|string',
             "celular_edit" => 'required|numeric',

@@ -67,8 +67,8 @@ class NewProyecto extends Component
         $this->getCuentas();
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
-        $this->nom_proyecto = $informacionGeneral->nom_proyecto_prop;
-        $this->valor_proyecto = $informacionGeneral->presto_prop;
+        $this->nom_proyecto = $informacionGeneral->nom_proyecto_cot;
+        $this->valor_proyecto = $informacionGeneral->presto_cot;
         $this->com_2 = $informacionGeneral->comercial_2;
         $this->porcentaje = $informacionGeneral->porcentaje;
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();

@@ -88,7 +88,7 @@
                                         <div :wire:key="'item-'.$dato->id"> 
                                             @livewire('com.gestion-comercial.forms.oportunidad-form', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
                                         </div>
-                                    </div>
+                                    </div> 
                                     <div class="modal-footer">
                                         <button type="button" class="btn bg-gradient-danger mb-0" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
@@ -109,7 +109,7 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- formulario Cotizacion --}} 
-                                        <div :wire:key="'item-'.$dato->id">
+                                        <div :wire:key="'item-'.$dato->id"> 
                                             @livewire('com.gestion-comercial.forms.cotizacion-form', ['lead_id' => $dato->id], key('item-'.$dato->id))   
                                         </div>
                                     </div>
@@ -119,7 +119,7 @@
                                 </div> 
                             </div>
                         </div>
-                    @elseif($dato->id_estado == 3)
+                    {{-- @elseif($dato->id_estado == 3)
                         <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div div class="modal-content">
@@ -132,7 +132,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        {{-- formulario propuesta --}} 
+                                        <!-- formulario propuesta -->
                                         <div :wire:key="'item-'.$dato->id">
                                             @livewire('com.gestion-comercial.forms.propuesta-form', ['lead_id' => $dato->id], key('item-'.$dato->id))   
                                         </div>
@@ -142,7 +142,7 @@
                                     </div>
                                 </div> 
                             </div> 
-                        </div>
+                        </div> --}}
                     @elseif($dato->id_estado == 4)
                         <div class="modal fade" id="ModalPerdido{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">

@@ -22,7 +22,7 @@
                                 {{ $message }} 
                             </div>
                         @enderror
-                    </div>
+                    </div> 
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
@@ -34,8 +34,8 @@
                             </div>
                         @enderror
                     </div>
-                </div> 
-                <div class="row">
+                </div>  
+                <div class="row d-flex">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="valor">Valor:</label>
@@ -46,7 +46,20 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>                    
+                    </div>
+                    @if ($valor_guardado != $valor)
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cotizacion_file_actualizacion">Archivo cotizaci&oacute;n:</label>
+                                <input type="file" id="cotizacion_file_actualizacion" class="form-control @error('cotizacion_file_actualizacion') is-invalid @elseif(strlen($cotizacion_file_actualizacion) > 0) is-valid @enderror" value="{{ old('cotizacion_file_actualizacion') }}" wire:model.lazy="cotizacion_file_actualizacion" required>
+                                @error('cotizacion_file_actualizacion')
+                                    <div id="cotizacion_file_actualizacion" class="invalid-feedback">
+                                        {{ $message }} 
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
                     <div class="col-md-6">
                         <div class="form-group mb-1">
                             <label for="participaciones">Participaciones:</label>

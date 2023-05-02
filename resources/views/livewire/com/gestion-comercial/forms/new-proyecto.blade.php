@@ -1,9 +1,11 @@
-<div> 
+<div>  
     <form wire:submit.prevent="store">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="form-group"> 
-                    <label for="fecha">Fecha:</label>
+                    <label for="fecha">
+                        Fecha Centro de Costos: 
+                    </label>
                     <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
                     @error('fecha')
                         <div id="fecha" class="invalid-feedback">
@@ -12,7 +14,7 @@
                     @enderror
                 </div> 
             </div> 
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="form-group"> 
                     <label for="nom_cliente">Nombre Cliente:</label>
                     <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Cliente" required>
@@ -170,7 +172,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="dura_mes">Dura Mes: </label>
+                    <label for="dura_mes">Fecha fin: </label>
                     <input wire:model="dura_mes" id="dura_mes" type="date" name="dura_mes" class="form-control @error('dura_mes') is-invalid @elseif(strlen($dura_mes) > 0) is-valid @enderror" value="{{ old('dura_mes') }}">
                     @error('dura_mes')
                         <div id="dura_mes" class="invalid-feedback">

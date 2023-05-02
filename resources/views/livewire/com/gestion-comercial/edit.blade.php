@@ -200,12 +200,15 @@
                 </div>
             </div>
             <div class="col-md-12 d-flex justify-content-end">
-                <button class="btn bg-gradient-warning">Guardar</button>
+                <button class="btn bg-gradient-warning">Guardar</button> 
             </div>
         </div>
     </form>
     <hr>
-    <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#modal">Eliminar</button>
+    <div class="col-md-6">
+        <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#modal">Eliminar</button>
+        <a href="{{ route('gestion-comercial') }}" class="btn bg-gradient-primary">Volver</a>
+    </div>
     
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
