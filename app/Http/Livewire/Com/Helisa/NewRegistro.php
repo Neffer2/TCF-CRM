@@ -127,6 +127,7 @@ class NewRegistro extends Component
     
     public function updatedCredito(){
         $this->debito = 0;
+        $this->credito = str_replace(",",'', $this->credito);
         $this->validate(['credito' => ['required', 'numeric', 'min:1']]); 
 
         $this->getValor();

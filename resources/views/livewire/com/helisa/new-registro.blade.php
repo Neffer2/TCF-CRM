@@ -1,4 +1,4 @@
-<div class="col-lg-12 col-12 mx-auto"> 
+<div class="col-lg-12 col-12 mx-auto">
     <div class="card" x-data="new_project">  
         <div class="card-body d-flex justify-content-center">
             <div class="col-lg-2 col-md-2 col-sm-3 col-4 text-center">
@@ -17,7 +17,7 @@
                                 <div id="fecha" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
+                            @enderror 
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -72,7 +72,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div>
+                        </div> 
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
@@ -84,12 +84,14 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div>
-                    </div>
+                        </div> 
+                    </div> 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="debito">D&eacute;bito:</label>
-                            <input wire:model.lazy="debito" id="debito" type="text" name="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}" placeholder="D&eacute;bito">
+                            <input wire:model.lazy="debito" id="debito" type="text" name="debito" class="form-control
+                            @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}"
+                            placeholder="D&eacute;bito">
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
                                     {{ $message }}
@@ -100,9 +102,9 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="credito">Cr&eacute;dito: </label>
-                            <input wire:model="credito" id="credito" type="text" name="credito"
+                            <input wire:model.lazy="credito" id="credito" type="text" name="credito"
                             class="form-control @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror"
-                            value="{{ old('credito') }}" placeholder="Cr&eacute;dito">
+                            value="{{ old('credito') }}" placeholder="Cr&eacute;dito" x-mask:dynamic="$money($input)">
                             @error('credito')
                                 <div id="credito" class="invalid-feedback">
                                     {{ $message }}
@@ -166,7 +168,9 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
                                     <label for="base_factura{{ $i }}">Base factura:</label>
-                                    <input type="text" disabled id="base_factura{{ $i }}" class="form-control @if ($errors->has("base_factura".$i)) is-invalid @elseif(strlen(${'base_factura'.$i}) > 0) is-valid @enderror" wire:model.lazy="base_factura{{ $i }}" required/>
+                                    <input type="text" disabled id="base_factura{{ $i }}" class="form-control
+                                    @if ($errors->has("base_factura".$i)) is-invalid @elseif(strlen(${'base_factura'.$i}) > 0) is-valid @enderror"
+                                    wire:model.lazy="base_factura{{ $i }}" required x-mask:dynamic="$money($input)">
                                     @if ($errors->has("base_factura".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("base_factura".$i) }}</small>
@@ -177,7 +181,9 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
                                     <label for="comision{{ $i }}">Comisi&oacute;n:</label>
-                                    <input type="text" disabled id="comision{{ $i }}" class="form-control @if ($errors->has("comision".$i)) is-invalid @elseif(strlen(${'comision'.$i}) > 0) is-valid @enderror" wire:model.lazy="comision{{ $i }}" required/>
+                                    <input type="text" disabled id="comision{{ $i }}" class="form-control
+                                    @if ($errors->has("comision".$i)) is-invalid @elseif(strlen(${'comision'.$i}) > 0) is-valid @enderror"
+                                    wire:model.lazy="comision{{ $i }}" required x-mask:dynamic="$money($input)">
                                     @if ($errors->has("comision".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("comision".$i) }}</small>
