@@ -110,7 +110,7 @@ class NewRegistro extends Component
 
     public function updatedCentro(){
         $this->validate(['centro' => ['required', 'string']]); 
-    }
+    } 
 
     public function updatedNomCentroCosto(){ 
         $this->validate(['nom_centro_costo' => ['required', 'string']]); 
@@ -118,6 +118,7 @@ class NewRegistro extends Component
 
     public function updatedDebito(){
         $this->credito = 0;
+        $this->debito = str_replace(",",'', $this->debito);
         $this->validate(['debito' => ['required', 'numeric', 'min:1']]); 
         $this->debito = ($this->debito * -1);
 
@@ -379,14 +380,14 @@ class NewRegistro extends Component
             $helisa->identidad = $this->identidad;
             // Concepto no va, pero no lo saco de la db por tiempo
             $helisa->concepto = $this->concepto;
-            $helisa->nom_tercero = $this->nom_tercero;  
+            $helisa->nom_tercero = $this->nom_tercero;   
             $helisa->centro = $this->centro;
             $helisa->nom_centro_costo = $this->nom_centro_costo;
-            $helisa->debito = $this->debito;
-            $helisa->credito = $this->credito;
+            $helisa->debito = str_replace(",",'', $this->debito);
+            $helisa->credito = str_replace(",",'', $this->credito);
             $helisa->comercial = $this->{'comercial'.$i};
             $helisa->porcentaje = $this->{'porcentaje'.$i};
-            $helisa->base_factura = $this->{'base_factura'.$i};
+            $helisa->base_factura = str_replace(",",'', $this->{'base_factura'.$i});
             $helisa->participacion = $this->participaciones;
 
             if ($this->id_cuenta){ 
@@ -395,7 +396,7 @@ class NewRegistro extends Component
 
             $helisa->mes = $this->mes;
             $helisa->año = $this->año;
-            $helisa->comision = $this->{'comision'.$i};
+            $helisa->comision = str_replace(",",'', $this->{'comision'.$i});
             $helisa->save(); 
             $i++;
         }

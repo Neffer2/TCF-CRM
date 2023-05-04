@@ -91,7 +91,7 @@
                             <label for="debito">D&eacute;bito:</label>
                             <input wire:model.lazy="debito" id="debito" type="text" name="debito" class="form-control
                             @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" value="{{ old('debito') }}"
-                            placeholder="D&eacute;bito">
+                            placeholder="D&eacute;bito" required x-mask:dynamic="$money($input)">
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
                                     {{ $message }}
@@ -175,7 +175,7 @@
                                         <div class="text-danger">
                                             <small>{{ $errors->first("base_factura".$i) }}</small>
                                         </div>
-                                    @endif
+                                    @endif 
                                 </div> 
                             </div>
                             <div class="col-md-3">

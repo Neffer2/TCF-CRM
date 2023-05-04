@@ -12,10 +12,10 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 
 class Edit extends Component
-{   
+{    
     // MODELS
     public $fecha; 
-    public $tipo_doc;  
+    public $tipo_doc;   
     public $num_doc;  
     public $identidad;  
     public $nom_tercero; 
@@ -43,7 +43,7 @@ class Edit extends Component
     public $base_factura2;
     public $base_factura3;
 
-    public $comision0;
+    public $comision0; 
     public $comision1;
     public $comision2;
     public $comision3;
@@ -148,6 +148,7 @@ class Edit extends Component
 
     public function updatedDebito(){
         $this->credito = 0;
+        $this->debito = str_replace(",",'', $this->debito);
         $this->validate(['debito' => ['required', 'numeric', 'min:1']]); 
         $this->debito = ($this->debito * -1);
 
@@ -157,6 +158,7 @@ class Edit extends Component
     
     public function updatedCredito(){
         $this->debito = 0;
+        $this->credito = str_replace(",",'', $this->credito);
         $this->validate(['credito' => ['required', 'numeric', 'min:1']]); 
 
         $this->getValor();
@@ -434,8 +436,8 @@ class Edit extends Component
                 $Registro_helisa->nom_centro_costo = $this->nom_centro_costo;
             }
 
-            $Registro_helisa->debito = $this->debito;
-            $Registro_helisa->credito = $this->credito;
+            $Registro_helisa->debito = str_replace(",",'', $this->debito);
+            $Registro_helisa->credito = str_replace(",",'', $this->credito);
 
             if ($this->id_cuenta){
                 $Registro_helisa->id_cuenta = $this->id_cuenta;
@@ -450,8 +452,8 @@ class Edit extends Component
             }
 
             $Registro_helisa->porcentaje = $this->{'porcentaje'.$i};
-            $Registro_helisa->base_factura = $this->{'base_factura'.$i};
-            $Registro_helisa->comision = $this->{'comision'.$i};
+            $Registro_helisa->base_factura = str_replace(",",'', $this->{'base_factura'.$i});
+            $Registro_helisa->comision = str_replace(",",'', $this->{'comision'.$i});
 
             $Registro_helisa->update();
             $i++;

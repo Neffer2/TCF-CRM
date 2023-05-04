@@ -1,6 +1,6 @@
 <div> 
-    <form wire:submit.prevent="update_helisa">
-        <div class="modal-content">
+    <form wire:submit.prevent="update_helisa"> 
+        <div class="modal-content" x-data="">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Editar</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -88,7 +88,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="debito">D&eacute;bito: </label>
-                            <input wire:model.lazy="debito" type="text" id="debito" class="form-control @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror" required>
+                            <input wire:model.lazy="debito" type="text" id="debito" class="form-control
+                            @error('debito') is-invalid @elseif(strlen($debito) > 0) is-valid @enderror"
+                            required x-mask:dynamic="$money($input)">
                             @error('debito')
                                 <div id="debito" class="invalid-feedback">
                                     {{ $message }} 
@@ -99,7 +101,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="credito">Cr&eacute;dito: </label>
-                            <input wire:model.lazy="credito" type="text" id="credito" class="form-control @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror" required>
+                            <input wire:model.lazy="credito" type="text" id="credito" class="form-control
+                            @error('credito') is-invalid @elseif(strlen($credito) > 0) is-valid @enderror"
+                            required x-mask:dynamic="$money($input)">
                             @error('credito')
                                 <div id="credito" class="invalid-feedback">
                                     {{ $message }} 
@@ -161,7 +165,9 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
                                     <label for="base_factura{{ $i }}">Base factura:</label>
-                                    <input type="text" disabled id="base_factura{{ $i }}" class="form-control @if ($errors->has("base_factura".$i)) is-invalid @elseif(strlen(${'base_factura'.$i}) > 0) is-valid @enderror" wire:model.lazy="base_factura{{ $i }}" required/>
+                                    <input type="text" disabled id="base_factura{{ $i }}" class="form-control
+                                    @if ($errors->has("base_factura".$i)) is-invalid @elseif(strlen(${'base_factura'.$i}) > 0) is-valid @enderror"
+                                    wire:model.lazy="base_factura{{ $i }}" required x-mask:dynamic="$money($input)">
                                     @if ($errors->has("base_factura".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("base_factura".$i) }}</small>
@@ -172,7 +178,9 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
                                     <label for="comision{{ $i }}">Comisi&oacute;n:</label>
-                                    <input type="text" disabled id="comision{{ $i }}" class="form-control @if ($errors->has("comision".$i)) is-invalid @elseif(strlen(${'comision'.$i}) > 0) is-valid @enderror" wire:model.lazy="comision{{ $i }}" required/>
+                                    <input type="text" disabled id="comision{{ $i }}" class="form-control
+                                    @if ($errors->has("comision".$i)) is-invalid @elseif(strlen(${'comision'.$i}) > 0) is-valid @enderror"
+                                    wire:model.lazy="comision{{ $i }}" required x-mask:dynamic="$money($input)">
                                     @if ($errors->has("comision".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("comision".$i) }}</small>
