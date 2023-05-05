@@ -110,5 +110,6 @@ class NuevoContacto extends Component
         $this->web = "";
         $this->pbx = "";
         $this->direccion = "";
+        $this->ciudad = "";
     }
 }

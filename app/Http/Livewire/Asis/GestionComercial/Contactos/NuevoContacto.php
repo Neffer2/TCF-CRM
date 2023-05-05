@@ -97,7 +97,7 @@ class NuevoContacto extends Component
         $gestiones->ciudad = $this->ciudad;
         $gestiones->id_user = $asistente->comercial_id;
         $gestiones->save();
-
+ 
         $this->limpiar();
         $this->emit('list'); 
         return redirect()->back()->with('success', 'Contacto creado exitosamente')->withInput();
@@ -113,5 +113,6 @@ class NuevoContacto extends Component
         $this->web = "";
         $this->pbx = "";
         $this->direccion = "";
+        $this->ciudad = "";
     }
 }
