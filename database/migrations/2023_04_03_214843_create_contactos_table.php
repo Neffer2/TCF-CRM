@@ -24,6 +24,7 @@ class CreateContactosTable extends Migration
             $table->string('web')->nullable();
             $table->string('pbx')->nullable();
             $table->string('direccion')->nullable();
+            $table->string('ciudad')->nullable();
             $table->foreignId('id_user');
             $table->foreign('id_user')->references('id')->on('users');  
             $table->timestamps();

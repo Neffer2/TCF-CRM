@@ -20,7 +20,9 @@ class NuevoContacto extends Component
     public $correo;
     public $web;
     public $pbx;
+    public $ciudad;
     public $direccion;
+     
     
     public function render()
     {
@@ -63,6 +65,10 @@ class NuevoContacto extends Component
         $this->validate(['direccion' => ['string']]);
     }
 
+    public function updatedCiudad(){
+        $this->validate(['ciudad' => ['string']]); 
+    }
+
     public function store(){
         $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
         $this->validate([
@@ -74,7 +80,8 @@ class NuevoContacto extends Component
             'correo' => ['string'],
             'pbx' => ['string'],
             'web' => ['string'],
-            'direccion' => ['string']
+            'direccion' => ['string'],
+            'ciudad' => ['string']
         ]);
 
         $gestiones = new Contacto;
@@ -87,6 +94,7 @@ class NuevoContacto extends Component
         $gestiones->pbx = $this->pbx;
         $gestiones->web = $this->web;
         $gestiones->direccion = $this->direccion;
+        $gestiones->ciudad = $this->ciudad;
         $gestiones->id_user = $asistente->comercial_id;
         $gestiones->save();
 
