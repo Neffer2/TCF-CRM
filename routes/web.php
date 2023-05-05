@@ -38,8 +38,8 @@ Route::get('/', function () {
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 
  
-/* commercial */  
-    /* base - functions */  
+/* commercial */   
+    /* base - functions */   
         Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');  
         Route::get('/dashboard-base', [ComercialController::class, 'base'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-base');  
         Route::get('/actualizar-perfil-com', [ComercialController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['comercial'])->name('actualizar-perfil-com');  
@@ -60,7 +60,7 @@ Route::get('/', function () {
         // Update proyecto Helisa 
         Route::post('/com-update-helisa/{id_user?}', [ComercialController::class, 'update_helisa'])->middleware(['auth'])->middleware(['comercial'])->name('com-update-helisa'); 
         // Update proyecto gestion comercial 
-        Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->middleware(['comercial'])->name('update-gestion-comercial'); 
+        Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->name('update-gestion-comercial'); 
         // Update contacto
         Route::post('/update-contacto/{id?}', [ComercialController::class, 'update_contacto'])->middleware(['auth'])->name('update-contacto'); 
         // Delete registro Helisa 

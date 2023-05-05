@@ -79,7 +79,7 @@ class ComercialController extends Controller
         return Excel::download(new BaseExport, $name." Base.xlsx");
     }
 
-    public function delete_contacto($id){
+    public function delete_contacto($id){ 
         $gestionComercial = GestionComercial::where('id_contacto', $id)->first();
         
         if ($gestionComercial){

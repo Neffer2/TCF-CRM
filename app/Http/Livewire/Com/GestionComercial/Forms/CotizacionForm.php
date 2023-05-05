@@ -11,9 +11,9 @@ use Livewire\WithFileUploads;
 
 class CotizacionForm extends Component 
 {    
-    use WithFileUploads;
+    use WithFileUploads;  
 
-    // Models 
+    // Models  
     public $presupuesto; 
     public $nom_proyecto;
     public $fecha;
@@ -60,6 +60,7 @@ class CotizacionForm extends Component
     }
 
     public function updatedPresupuesto (){
+        $this->presupuesto = str_replace(",",'', $this->presupuesto);
         $this->validate([
             'presupuesto' => 'required|numeric'
         ]);
@@ -191,24 +192,28 @@ class CotizacionForm extends Component
     }
 
     public function updatedValor0(){
+        $this->valor0 = str_replace(",",'', $this->valor0);
         $this->validate([
             'valor0' => 'required|numeric'
         ]);
     }
 
     public function updatedValor1(){
+        $this->valor1 = str_replace(",",'', $this->valor1);
         $this->validate([
             'valor1' => 'required|numeric'
         ]);
     }
 
     public function updatedValor2(){
+        $this->valor2 = str_replace(",",'', $this->valor2);
         $this->validate([
             'valor2' => 'required|numeric'
         ]); 
     }
 
     public function updatedValor3(){
+        $this->valor3 = str_replace(",",'', $this->valor3);
         $this->validate([
             'valor3' => 'required|numeric'
         ]);
@@ -225,7 +230,7 @@ class CotizacionForm extends Component
         $this->testigoPorcentaje = 0;
         while($i < $this->participaciones){            
             $this->testigoPorcentaje += $this->{'porcentaje'.$i}; 
-            $i++;
+            $i++; 
         }
     }
 
@@ -272,7 +277,7 @@ class CotizacionForm extends Component
         $lead->presto_cot = $this->presupuesto;
 
         $lead->participaciones = $this->participaciones;
-
+ 
         $lead->comercial_2 = $this->comercial1;
         $lead->comercial_3 = $this->comercial2;
         $lead->comercial_4 = $this->comercial3;

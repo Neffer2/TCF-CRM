@@ -1,7 +1,7 @@
 <div>
     <form wire:submit.prevent="store"> 
         <div class="row"> 
-            <div class="col-md-12">
+            <div class="col-md-12"> 
                 <div class="form-group mb-1">
                     <label for="contacto">Contacto:</label>
                     <select id="contacto" class="form-control @error('contacto') is-invalid @elseif(strlen($contacto) > 0) is-valid @enderror" value="{{ old('contacto') }}" wire:model.lazy="contacto" required>
@@ -25,7 +25,7 @@
                         <div id="descOportunidad" class="invalid-feedback">
                             {{ $message }}
                         </div>
-                    @enderror
+                    @enderror 
                 </div>
             </div>
             <div class="col-md-12">

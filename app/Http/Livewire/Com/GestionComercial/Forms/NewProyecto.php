@@ -6,13 +6,14 @@ use Livewire\Component;
 use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 use App\Models\Base_comercial;
-use App\Models\User;
+use App\Models\User; 
 use App\Models\GestionComercial;
 use Illuminate\Validation\Rules; 
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {   
+    // str_replace(",",'', $this->debito);
     // MODELS 
     public $fecha = ""; 
     public $nom_cliente = "";  
@@ -105,6 +106,7 @@ class NewProyecto extends Component
     }
 
     public function updatedValorProyecto(){ 
+        $this->valor_proyecto = str_replace(",",'', $this->valor_proyecto);
         $this->validate(['valor_proyecto' => ['required', 'numeric']]); 
         $this->getValor();
         $this->getTotalPorcentaje();
@@ -154,7 +156,7 @@ class NewProyecto extends Component
             'participaciones' => 'required|numeric|min:1|max:4'
         ]);
 
-        $this->getPorcentaje();
+        $this->getPorcentaje(); 
         $this->getValor();
         $this->getTotalPorcentaje();
         $this->updatedTestigoPorcentaje();
@@ -265,7 +267,7 @@ class NewProyecto extends Component
         $this->validate([
             'testigoPorcentaje' => 'required|numeric|min:100|max:100'
         ]);
-    }
+    } 
 
     public function getTotalPorcentaje(){
         $i = 0;

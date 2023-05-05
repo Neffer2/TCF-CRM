@@ -7,8 +7,8 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial;
 
-class OportunidadForm extends Component
-{   
+class OportunidadForm extends Component 
+{    
     // Models
     public $contacto; 
     public $descOportunidad;  
@@ -42,7 +42,7 @@ class OportunidadForm extends Component
         $lead->tipo_contacto = $this->contacto;
         $lead->desc_contacto = $this->descOportunidad;
         $lead->id_estado = 2;
-        $lead->update();
+        $lead->update(); 
 
         if (Auth::user()->rol == 2){ 
             return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');

@@ -20,6 +20,7 @@ class CotizacionForm extends Component
     public $fecha;
     public $cotizacionFile; 
     public $com_2;
+    public $cotizacionUrl;
 
     // porcentajes
     public $comercial0;
@@ -63,6 +64,7 @@ class CotizacionForm extends Component
     }
 
     public function updatedPresupuesto (){
+        $this->presupuesto = str_replace(",",'', $this->presupuesto);
         $this->validate([
             'presupuesto' => 'required|numeric'
         ]);
@@ -217,6 +219,12 @@ class CotizacionForm extends Component
         ]);
     }
 
+    public function updatedCotizacionUrl (){
+        $this->validate([
+            'cotizacionUrl' => 'nullable|string',
+        ]);
+    }
+
     public function getTotalPorcentaje(){
         $i = 0;
         $this->testigoPorcentaje = 0;
@@ -266,7 +274,7 @@ class CotizacionForm extends Component
   
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->presto_cot = $this->presupuesto;
-
+ 
         $lead->participaciones = $this->participaciones;
 
         $lead->comercial_2 = $this->comercial1; 
@@ -281,7 +289,7 @@ class CotizacionForm extends Component
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');
-        $lead->id_estado = 3;
+        $lead->id_estado = 4; 
         $lead->update();
 
         return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');

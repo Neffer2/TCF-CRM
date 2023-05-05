@@ -1,18 +1,20 @@
-<div> 
+<div x-data>  
     <form wire:submit.prevent="store">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="form-group"> 
-                    <label for="fecha">Fecha:</label>
+                    <label for="fecha">
+                        Fecha Centro de Costos: 
+                    </label>
                     <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
                     @error('fecha')
                         <div id="fecha" class="invalid-feedback">
                             {{ $message }} 
                         </div>
                     @enderror
-                </div> 
+                </div>  
             </div> 
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="form-group"> 
                     <label for="nom_cliente">Nombre Cliente:</label>
                     <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Cliente" required>
@@ -49,7 +51,9 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="valor_proyecto">Valor Proyecto:</label>
-                        <input wire:model.lazy="valor_proyecto" id="valor_proyecto" type="number" name="valor_proyecto" class="form-control @error('valor_proyecto') is-invalid @elseif(strlen($valor_proyecto) > 0) is-valid @enderror" value="{{ old('valor_proyecto') }}" placeholder="Valor proyecto" required>
+                        <input wire:model.lazy="valor_proyecto" id="valor_proyecto" name="valor_proyecto"
+                        class="form-control @error('valor_proyecto') is-invalid @elseif(strlen($valor_proyecto) > 0) is-valid @enderror"
+                        value="{{ old('valor_proyecto') }}" placeholder="Valor proyecto" required x-mask:dynamic="$money($input)">
                         @error('valor_proyecto')
                             <div id="valor_proyecto" class="invalid-feedback">
                                 {{ $message }}
@@ -113,7 +117,9 @@
                     <div class="col-md-4">
                         <div class="form-group mb-1">
                             <label for="valor{{ $i }}">Valor:</label>
-                            <input type="text" disabled id="valor{{ $i }}" class="form-control @if ($errors->has("valor".$i)) is-invalid @elseif(strlen(${'valor'.$i}) > 0) is-valid @enderror" wire:model.lazy="valor{{ $i }}" required/>
+                            <input type="text" disabled id="valor{{ $i }}" class="form-control
+                            @if ($errors->has("valor".$i)) is-invalid @elseif(strlen(${'valor'.$i}) > 0) is-valid @enderror"
+                            wire:model.lazy="valor{{ $i }}" required x-mask:dynamic="$money($input)">
                             @if ($errors->has("valor".$i))
                                 <div class="text-danger">
                                     <small>{{ $errors->first("valor".$i) }}</small>
@@ -151,12 +157,11 @@
                     </select>
                     @error('id_cuenta')
                         <div id="id_cuenta" class="invalid-feedback">
-                            {{ $message }} 
+                            {{ $message }}
                         </div>
                     @enderror
                 </div>
-            </div>
-             
+            </div>               
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fecha_inicio">Fecha inicio:</label>
@@ -170,7 +175,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="dura_mes">Dura Mes: </label>
+                    <label for="dura_mes">Fecha fin: </label>
                     <input wire:model="dura_mes" id="dura_mes" type="date" name="dura_mes" class="form-control @error('dura_mes') is-invalid @elseif(strlen($dura_mes) > 0) is-valid @enderror" value="{{ old('dura_mes') }}">
                     @error('dura_mes')
                         <div id="dura_mes" class="invalid-feedback">

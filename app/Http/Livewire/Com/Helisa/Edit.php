@@ -459,6 +459,10 @@ class Edit extends Component
             $i++;
         }
 
-        return redirect()->route('gestion-helisa')->with('success', 'Proyecto actualizado exitosamente.');
+        if (Auth::user()->rol == 2){  
+            return redirect()->route('gestion-helisa')->with('success', 'Proyecto actualizado exitosamente.');
+        }elseif (Auth::user()->rol == 5){
+            return redirect()->route('asis-gestion-helisa')->with('success', 'Proyecto actualizado exitosamente.');
+        }
     }   
 }

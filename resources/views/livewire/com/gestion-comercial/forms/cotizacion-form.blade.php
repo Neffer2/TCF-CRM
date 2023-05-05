@@ -1,4 +1,4 @@
-<div>
+<div x-data="">
     <form wire:submit.prevent="store"> 
         <div class="row">  
             <div class="col-md-12">
@@ -9,13 +9,15 @@
                         <div id="nom_proyecto" class="invalid-feedback">
                             {{ $message }} 
                         </div>
-                    @enderror
+                    @enderror 
                 </div>
             </div> 
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="presupuesto">Presupuesto:</label>
-                    <input type="text" id="presupuesto" class="form-control @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror" value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required>
+                    <input type="text" id="presupuesto" class="form-control
+                    @error('presupuesto') is-invalid @elseif(strlen($presupuesto) > 0) is-valid @enderror"
+                    value="{{ old('presupuesto') }}" wire:model.lazy="presupuesto" required x-mask:dynamic="$money($input)">
                     @error('presupuesto')
                         <div id="presupuesto" class="invalid-feedback">
                             {{ $message }}
@@ -58,7 +60,6 @@
                                     <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
                                 @endforeach
                             </select>                                    
-                            {{-- {{ ${'comercial'.$i} }} --}}
                             @if ($errors->has("comercial".$i))
                                 <div class="text-danger">
                                     <small>{{ $errors->first("comercial".$i) }}</small>
@@ -75,12 +76,14 @@
                                     <small>{{ $errors->first("porcentaje".$i) }}</small>
                                 </div>
                             @endif
-                        </div>
+                        </div> 
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
                             <label for="valor{{ $i }}">Valor:</label>
-                            <input type="text" disabled id="valor{{ $i }}" class="form-control @if ($errors->has("valor".$i)) is-invalid @elseif(strlen(${'valor'.$i}) > 0) is-valid @enderror" wire:model.lazy="valor{{ $i }}" required/>
+                            <input type="text" disabled id="valor{{ $i }}" class="form-control
+                            @if ($errors->has("valor".$i)) is-invalid @elseif(strlen(${'valor'.$i}) > 0) is-valid @enderror"
+                            wire:model.lazy="valor{{ $i }}" required x-mask:dynamic="$money($input)">
                             @if ($errors->has("valor".$i))
                                 <div class="text-danger">
                                     <small>{{ $errors->first("valor".$i) }}</small>

@@ -91,6 +91,7 @@ class Edit extends Component
     }
 
     public function updatedValor(){
+        $this->valor = str_replace(",",'', $this->valor);
         $this->validate([
             'valor' => 'numeric'
         ]); 
@@ -160,7 +161,7 @@ class Edit extends Component
             $this->validate([
                 'comercial1' => 'required|numeric'
             ]);
-        }
+        } 
     
         public function updatedComercial2(){
             $this->validate([
@@ -185,9 +186,9 @@ class Edit extends Component
             $this->getValor();
             $this->getTotalPorcentaje();
             $this->updatedTestigoPorcentaje();
-        }
+        } 
     
-        public function updatedPorcentaje1(){
+        public function updatedPorcentaje1(){ 
             if ($this->porcentaje1 >= 100){$this->porcentaje1 = 100;}
             if ($this->porcentaje1 <= 0){$this->porcentaje1 = 1;}
     
@@ -368,8 +369,12 @@ class Edit extends Component
             $proyecto->id_asistente = Auth::user()->id;
             $proyecto->update();
             $i++;
-        }
+        } 
 
-        return redirect()->route('dashboard-base')->with('success', 'Proyecto actualizado exitosamente.');
+        if (Auth::user()->rol == 2){ 
+            return redirect()->route('dashboard-base')->with('success', 'Proyecto actualizado exitosamente.');
+        }elseif (Auth::user()->rol == 5){
+            return redirect()->route('asis-dashboard-base')->with('success', 'Proyecto actualizado exitosamente.');
+        }
     }   
 }

@@ -28,7 +28,7 @@
                     <th>Acciones</th> 
                 </tr>  
                 </thead> 
-                <tbody>  
+                <tbody>   
                     @foreach ($list as $key => $item)  
                         <tr>
                             <td class="text-sm font-weight-normal">{{ $key+=1 }}</td>
@@ -39,12 +39,12 @@
                             <td class="text-sm font-weight-normal">{{ $item->nom_tercero }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->centro }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->nom_centro_costo }}</td>
-                            <td class="text-sm font-weight-normal">{{ $item->debito }}</td>
-                            <td class="text-sm font-weight-normal">{{ $item->credito }}</td> 
+                            <td class="text-sm font-weight-normal">{{ number_format($item->debito) }}</td>
+                            <td class="text-sm font-weight-normal">{{ number_format($item->credito) }}</td> 
                             <td class="text-sm font-weight-normal">{{ $item->comercial_user->name }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->participacion }}</td>
-                            <td class="text-sm font-weight-normal">{{ $item->base_factura }}</td>
+                            <td class="text-sm font-weight-normal">{{ number_format($item->base_factura) }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->mes }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->año }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->comision }}</td>

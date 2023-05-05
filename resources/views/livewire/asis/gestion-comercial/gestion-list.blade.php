@@ -70,7 +70,7 @@
                                 </a>
                             @endif
                         </td>
-                    </tr>
+                    </tr> 
                     @if($dato->id_estado == 1)
                         <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">

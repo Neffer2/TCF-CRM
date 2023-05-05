@@ -6,7 +6,7 @@
             </div>        
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="id_contacto">Tipo de contacto:</label>
+                    <label for="id_contacto">Contacto:</label>
                     <select id="id_contacto" wire:model.lazy="id_contacto" class="form-control @error('id_contacto') is-invalid @elseif(strlen($id_contacto) > 0) is-valid @enderror" value="{{ old('id_contacto') }}">
                         <option value="">Seleccionar</option>
                         @foreach ($contactos as $contacto)
@@ -201,13 +201,18 @@
             </div>
             <div class="col-md-12 d-flex justify-content-end">
                 <button class="btn bg-gradient-warning">Guardar</button> 
-            </div>
+            </div> 
         </div>
     </form>
     <hr>
     <div class="col-md-6">
         <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#modal">Eliminar</button>
-        <a href="{{ route('gestion-comercial') }}" class="btn bg-gradient-primary">Volver</a>
+        
+        @if(auth()->user()->rol == 2)
+            <a href="{{ route('gestion-comercial') }}" class="btn bg-gradient-primary">Volver</a>
+        @elseif(auth()->user()->rol == 5)
+            <a href="{{ route('asis-gestion-comercial') }}" class="btn bg-gradient-primary">Volver</a>
+        @endif
     </div>
     
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {   
-    // MODELS 
+    // MODELS  
     public $fecha = ""; 
     public $nom_cliente = "";  
     public $nom_proyecto = ""; 
@@ -70,8 +70,8 @@ class NewProyecto extends Component
         $this->comercial_id = Asistente::where('asistente_id', Auth::user()->id)->first()->comercial_id;
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
-        $this->nom_proyecto = $informacionGeneral->nom_proyecto_prop;
-        $this->valor_proyecto = $informacionGeneral->presto_prop;
+        $this->nom_proyecto = $informacionGeneral->nom_proyecto_cot;
+        $this->valor_proyecto = $informacionGeneral->presto_cot;
         $this->com_2 = $informacionGeneral->comercial_2;
         $this->porcentaje = $informacionGeneral->porcentaje;
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
@@ -107,7 +107,8 @@ class NewProyecto extends Component
         $this->validate(['cod_cc' => ['required', 'string']]);
     }
 
-    public function updatedValorProyecto(){ 
+    public function updatedValorProyecto(){
+        $this->valor_proyecto = str_replace(",",'', $this->valor_proyecto);
         $this->validate(['valor_proyecto' => ['required', 'numeric']]); 
         $this->getValor();
         $this->getTotalPorcentaje();
