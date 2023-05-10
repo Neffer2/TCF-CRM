@@ -28,7 +28,7 @@
                             <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->empresa }}</p>
                             <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
                         </td>
-                        <td> 
+                        <td>
                             <select name="" id="" class="form-control" disabled>
                                 @foreach ($estados as $estado)
                                     @if ($estado->id == $dato->id_estado)
@@ -48,6 +48,8 @@
                                 <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
                                     Perdido
                                 </button>
+                            @elseif ($dato->id_estado == 7)
+                                <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $dato->id) }}" target="_blank">Presupuesto</a>
                             @else 
                                 @if($dato->id_estado != 4)
                                     <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
@@ -142,7 +144,7 @@
                                     </div>
                                 </div> 
                             </div> 
-                        </div> --}}
+                        </div> --}} 
                     @elseif($dato->id_estado == 4)
                         <div class="modal fade" id="ModalPerdido{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">

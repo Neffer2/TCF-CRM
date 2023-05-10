@@ -292,8 +292,10 @@ class CotizacionForm extends Component
         $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');
         $lead->propuesta_url = $this->cotizacionUrl;
         // $lead->id_estado = 3;
-        $lead->id_estado = 4;
-        $lead->update();
+        $lead->id_estado = 7;
+        $lead->update(); 
+
+
 
         if (Auth::user()->rol == 2){ 
             return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');

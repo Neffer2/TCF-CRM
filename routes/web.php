@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ComercialController; 
+use App\Http\Controllers\ComercialController;  
 use App\Http\Controllers\ContableController; 
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\HomeController;  
@@ -65,6 +65,9 @@ Route::get('/', function () {
         Route::post('/update-contacto/{id?}', [ComercialController::class, 'update_contacto'])->middleware(['auth'])->name('update-contacto'); 
         // Delete registro Helisa 
         Route::post('/delete-registro/{centro?}', [ComercialController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
+
+        // Presupuesto
+        Route::get('/presupuesto/{centro?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
     /* --- */
 /* --- */  
 
@@ -90,6 +93,8 @@ Route::get('/', function () {
     Route::get('/asis-gestion-comercial', [AsistenteController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-comercial');   
     Route::get('/asis-contactos', [AsistenteController::class, 'Contactos'])->middleware(['auth'])->middleware(['asistente'])->name('asis-contactos');    
 /* --- */
+
+
 /* --- */  
 
 require __DIR__.'/auth.php';   

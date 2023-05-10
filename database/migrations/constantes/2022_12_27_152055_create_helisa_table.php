@@ -33,7 +33,7 @@ class CreateHelisaTable extends Migration
             $table->string('participacion');
             $table->decimal('base_factura', 12, 2); 
             $table->string('mes');
-            $table->string('año'); 
+            $table->string('año');
             $table->decimal('comision', 12, 2); 
             $table->timestamps();
         });

@@ -50,6 +50,10 @@ class ComercialController extends Controller
     public function Contactos(){
         return view('comercial.contactos'); 
     }
+    
+    public function presupuesto(){
+        return view('comercial.presupuesto.index'); 
+    }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable
     public function delete_proyecto($user_id){ 
