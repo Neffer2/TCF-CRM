@@ -32,7 +32,7 @@ class CotizacionForm extends Component
     public $porcentaje2;
     public $porcentaje3;
 
-    public $valor0;
+    public $valor0; 
     public $valor1;
     public $valor2;
     public $valor3;
@@ -302,6 +302,10 @@ class CotizacionForm extends Component
         }elseif (Auth::user()->rol == 5){ 
             return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
         }
+    }
+
+    public function createPresupuesto(){
+
     }
 } 
  

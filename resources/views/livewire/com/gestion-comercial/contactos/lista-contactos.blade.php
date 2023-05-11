@@ -133,7 +133,7 @@
                     <!-- Delete Modal --> 
                     <div class="modal fade" id="deleteModal{{ $contacto->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <form action="{{ route('delete-contacto', $contacto->id) }}" method="POST">
+                            <form action="{{ route('delete-contacto', $contacto->id) }}" method="POST"> 
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">

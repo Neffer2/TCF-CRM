@@ -15,7 +15,11 @@ class ItemsPresupuestoTable extends Migration
     {
         Schema::create('items_presupuesto', function (Blueprint $table) {
             $table->id();
-            $table->string('envento')->default(0);
+            $table->string('presupuesto_id');
+            $table->integer('cod');
+            $table->string('revisar');
+            $table->string('concepto');
+            $table->string('evento')->default(0);
             $table->integer('cantidad');
             $table->integer('dia');
             $table->integer('otros');

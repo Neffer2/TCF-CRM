@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Models\Base_comercial;
 use App\Models\GestionComercial;
 use App\Models\Helisa;
-use App\Models\Contacto;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +26,7 @@ class ComercialController extends Controller
         return view('comercial.helisa.index'); 
     }
     
-    public function base(){ 
+    public function base(){  
         return view('comercial.base');
     } 
 
@@ -41,7 +40,7 @@ class ComercialController extends Controller
  
     public function comercialHelisa(){
         return view('comercial.helisa.index');
-    } 
+    }  
 
     public function update_gestion($leadId){
         return view('comercial.gestion.edit', ['leadId' => $leadId]);
@@ -51,8 +50,8 @@ class ComercialController extends Controller
         return view('comercial.contactos'); 
     }
     
-    public function presupuesto(){
-        return view('comercial.presupuesto.index'); 
+    public function presupuesto($id_gestion){ 
+        return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]); 
     }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable

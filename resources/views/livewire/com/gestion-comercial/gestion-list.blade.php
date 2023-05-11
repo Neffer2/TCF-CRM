@@ -37,7 +37,7 @@
                                         <option value="{{ $estado->id }}">{{ $estado->description }}</option>   
                                     @endif
                                 @endforeach
-                            </select>
+                            </select> 
                         </td>
                         <td class="align-middle" style="width: 10%">
                             @if($dato->id_estado == 5)

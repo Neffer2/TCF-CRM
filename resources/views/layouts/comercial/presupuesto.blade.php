@@ -46,9 +46,7 @@
   </style>
 </head>
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
-    <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}'); background-position-y: 50%;">
-      <span class="mask bg-gradient-warning opacity-6"></span>
-    </div>
+    @yield('hero-style')
     <!-- Barra lateral -->
     <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
       <div class="sidenav-header d-flex align-items-center justify-content-center">
