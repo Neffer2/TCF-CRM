@@ -1,78 +1,149 @@
-<div>
+<div x-data>
+    <div class="card card-frame">
+        <div class="row justify-content-md-center">
+            <div class="col-md-3 m-2">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <td class="font-weight-bold font-table">MARGEN GENERAL</td>
+                                <td class="font-table">{{ $margenGeneral }}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">VENTA PROYECTO</td>
+                                <td class="font-table">0</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">COSTOS DEL PROYECTO</td>
+                                <td class="font-table">{{ $ventaProyecto }}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">MARGEN DEL PROYECTO</td>
+                                <td class="font-table">0</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">MARGEN BRUTO (PESOS)</td>
+                                <td class="font-table">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 m-2">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <td class="font-weight-bold font-table">CONTACTO</td>
+                                <td class="font-table">
+                                    {{ $this->nombre }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">CLIENTE</td>
+                                <td class="font-table">
+                                    {{ $this->cliente }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">PROYECTO</td>
+                                <td class="font-table">
+                                    {{ $this->nomProyecto }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold font-table">CIUDAD</td>
+                                <td class="font-table">
+                                    {{ $this->ciudadContacto }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="table-responsive mt-2 rounded bg-white">
         <table class="table">
             <thead>
                 <tr>
-                    <th class="font-weight-bold font-table bg-gradient-info text-white small" >COD</th>
-                    <th class="font-weight-bold font-table bg-gradient-info text-white small">REVISAR</th>
-                    <th class="font-weight-bold font-table bg-gradient-info text-white small">CONCEPTO</th>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white">REVISAR</th>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white">CONCEPTO</th>
 
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white small">ITEM</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white small">CANTIDAD</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white small">DIA</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white small">OTROS</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
 
-                    <th class="font-weight-bold font-table bg-gradient-success text-white small">MES</th>
-                    <th class="font-weight-bold font-table bg-gradient-success text-white small">DIAS</th>
-                    <th class="font-weight-bold font-table bg-gradient-success text-white small">CIUDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
+
+                    <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($items as $key => $item)
                     <tr> 
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->cod }}"> 
+                            {{ $item->cod }}
                         </td>
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->revisar }}"> 
+                            {{ $item->revisar }}
                         </td>
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->concepto }}">
-                        </td>
-
-                        <td class="font-weight-bold font-table">
-                            <input type="text" class="small" disabled value="{{ $key+=1 }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->cantidad }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->dia }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->otros }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <textarea name="" id="" cols="30" rows="1">
-                                {!! $item->descripcion !!}
-                            </textarea>
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" value="{{ $item->v_unitario }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" value="{{ $item->v_total }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" value="{{ $item->proveedor }}">
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <input type="text" value="{{ $item->margen_utilidad }}">
+                            {{ $item->concepto }}
                         </td>
 
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->mes }}">
+                            {{ $key+=1 }}
                         </td>
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->dias }}">
+                            {{ $item->cantidad }}
                         </td>
                         <td class="font-weight-bold font-table">
-                            <input type="text" class="small" value="{{ $item->ciudad }}">
+                            {{ $item->dia }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ $item->otros }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ number_format($item->v_unitario) }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ number_format($item->v_total) }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ $item->proveedor }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ $item->margen_utilidad }}
+                        </td>
+
+                        <td class="font-weight-bold font-table">
+                            {{ $item->mes }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ $item->dias }}
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            {{ $item->dias }}
+                        </td>
+
+                        <td class="font-weight-bold font-table">
+                            <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                        </td>
+                        <td class="font-weight-bold font-table">
+                            <button>📝</button>
                         </td>
                     </tr>                    
                 @endforeach
@@ -86,7 +157,7 @@
                 <i class="fas fa-plus text-white" aria-hidden="true"></i>
             </a>
         </div>
-        <div class="col-md-11 p-0">
+        <div class="col-md-11 p-0"> 
             <div class="row gy-0">
                 <div class="col-md-1">
                     <div class="form-group mb-0">
@@ -176,7 +247,7 @@
                     <div class="form-group mb-0">
                         <label for="valor_unitario">V. UNITARIO</label>
                         <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
-                        placeholder="Valor unitario" required wire:model.lazy="valor_unitario">
+                        placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
                         @error('valor_unitario')
                             <div id="valor_unitario" class="invalid-feedback">
                                 {{ $message }}
@@ -188,7 +259,7 @@
                     <div class="form-group mb-0">
                         <label for="valor_total">V. TOTAL</label>
                         <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
-                        placeholder="Valor total" required wire:model.lazy="valor_total">
+                        placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
                         @error('valor_total')
                             <div id="valor_total" class="invalid-feedback">
                                 {{ $message }}
@@ -212,7 +283,7 @@
                     <div class="form-group mb-0">
                         <label for="utilidad">UTILIDAD</label>
                         <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
-                        placeholder="Utilidad" required wire:model.lazy="utilidad">
+                        placeholder="Utilidad" required wire:model.lazy="utilidad" x-mask:dynamic="$money($input)">
                         @error('utilidad')
                             <div id="utilidad" class="invalid-feedback">
                                 {{ $message }}
@@ -244,11 +315,16 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2"> 
                     <div class="form-group mb-0">
                         <label for="ciudad">CIUDAD</label>
-                        <input type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
+                        <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                         placeholder="Ciudad" required wire:model.lazy="ciudad">
+                            <option selected value="">Seleccionar</option>
+                            @foreach ($ciudades as $ciudad)
+                                <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                            @endforeach
+                        </select>
                         @error('ciudad')
                             <div id="ciudad" class="invalid-feedback">
                                 {{ $message }}
