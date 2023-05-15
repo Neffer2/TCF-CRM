@@ -90,74 +90,83 @@
             </thead>
             <tbody>
                 @foreach ($items as $key => $item)
-                    <tr> 
-                        <td class="font-weight-bold font-table">
-                            {{ $item->cod }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->revisar }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->concepto }}
-                        </td>
+                    @if ($item->evento)
+                        <tr>
+                            <td colspan="15" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                                {{ $item->descripcion }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                <button wire:click="getDataEdit({{ $item->id }})">📝</button>
+                            </td>
+                        </tr>
+                    @else
+                        <tr> 
+                            <td class="font-weight-bold font-table">
+                                {{ $item->cod }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->revisar }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->concepto }}
+                            </td>
 
-                        <td class="font-weight-bold font-table">
-                            {{ $key+=1 }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->cantidad }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->dia }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->otros }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ number_format($item->v_unitario) }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ number_format($item->v_total) }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->proveedor }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->margen_utilidad }}
-                        </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $key+=1 }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->cantidad }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->dia }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->otros }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ number_format($item->v_unitario) }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ number_format($item->v_total) }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->proveedor }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->margen_utilidad }}
+                            </td>
 
-                        <td class="font-weight-bold font-table">
-                            {{ $item->mes }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->dias }}
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            {{ $item->dias }}
-                        </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->mes }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->dias }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->ciudad }}
+                            </td>
 
-                        <td class="font-weight-bold font-table">
-                            <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                        </td>
-                        <td class="font-weight-bold font-table">
-                            <button>📝</button>
-                        </td>
-                    </tr>                    
+                            <td class="font-weight-bold font-table">
+                                <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                <button wire:click="getDataEdit({{ $item->id }})">📝</button>
+                            </td>
+                        </tr>
+                    @endif           
                 @endforeach
             </tbody>
         </table>
     </div>          
 
     <div class="row mt-2">
-        <div class="col-md-1 d-flex justify-content-center align-items-center">
-            <a wire:click="new_item" href="javascript:;" class="avatar border-1 rounded-circle bg-gradient-warning">
-                <i class="fas fa-plus text-white" aria-hidden="true"></i>
-            </a>
-        </div>
-        <div class="col-md-11 p-0"> 
+        <div class="col-md-12 p-2"> 
             <div class="row gy-0">
                 <div class="col-md-1">
                     <div class="form-group mb-0">
@@ -294,8 +303,13 @@
                 <div class="col-md-1">
                     <div class="form-group mb-0">
                         <label for="mes">MES</label>
-                        <input type="number" class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
+                        <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
                         placeholder="Mes" required wire:model.lazy="mes">
+                            <option value="">Seleccionar</option>
+                            @foreach ($meses as $mes)
+                                <option value="{{ $mes->id }}">{{ $mes->description }}</option>
+                            @endforeach
+                        </select>
                         @error('mes')
                             <div id="mes" class="invalid-feedback">
                                 {{ $message }}
@@ -333,6 +347,22 @@
                     </div>
                 </div>
             </div>                
+        </div>
+        <div class="col-md-12 d-flex justify-content-left align-items-center p-2">
+            <button wire:click="new_event" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
+                <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+              <span class="btn-inner--text">Evento</span>
+            </button>
+
+            <button wire:click="new_item" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
+                <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+              <span class="btn-inner--text">Item</span>
+            </button>       
+
+            <button wire:click="actionEdit()" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-primary mb-0" type="button">
+                <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
+              <span class="btn-inner--text">Editar</span>
+            </button>       
         </div>
     </div>
 </div>

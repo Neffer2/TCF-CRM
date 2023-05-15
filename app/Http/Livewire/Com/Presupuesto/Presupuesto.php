@@ -6,6 +6,8 @@ use Livewire\Component;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial;
+use App\Models\Mes;
+use App\Models\Año;
 use App\Models\ItemPresupuesto;
 use App\Models\PresupuestoProyecto;
 
@@ -13,15 +15,15 @@ class Presupuesto extends Component
 {
     // Models
     public $cod;
-    public $revisar;
-    public $concepto;  
+    public $revisar; 
+    public $concepto; 
 
     public $cantidad;
     public $dia;
     public $otros; 
     public $descripcion;
-    public $valor_unitario;
-    public $valor_total;
+    public $valor_unitario = 0;
+    public $valor_total = 0;
     public $proveedor;
     public $utilidad;
 
@@ -33,6 +35,8 @@ class Presupuesto extends Component
     public $items = [];
     public $presupuesto_id;
     public $ciudades = [];
+    public $meses = [];
+    public $selected_item;
 
     // metricas
     public $margenGeneral = 0;
@@ -65,7 +69,8 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->getContacto();
-        $this->getCiudades(); 
+        $this->getCiudades();
+        $this->getMeses();
     }
 
     public function new_item(){      
@@ -108,17 +113,50 @@ class Presupuesto extends Component
         $this->limpiar();
     }
 
+    public function new_event(){
+        $this->validate([
+            'descripcion' => ['required']
+        ]);
+
+        $item = new ItemPresupuesto;
+        $item->cod = 0;
+        $item->presupuesto_id = $this->presupuesto_id;
+        $item->evento = 1;
+        $item->revisar = 0;
+        $item->concepto = 0;
+        $item->cantidad = 0;
+        $item->dia = 0;
+        $item->otros = 0;
+        $item->descripcion = $this->descripcion;
+        $item->v_unitario = 0;
+        $item->v_total = 0;
+        $item->proveedor = 0;
+        $item->margen_utilidad = 0;
+        $item->mes = 0;
+        $item->dias = 0;
+        $item->ciudad = 0;
+        $item->save();
+
+        $this->refresh();
+        $this->limpiar(); 
+    }
+
     public function getItems(){
         $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
     }
 
     public function getMetricas(){
-        (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->avg('margen_utilidad')) && $this->margenGeneral = 0;
-        $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->sum('v_total');
+        (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
+        $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
     }
 
     public function getCiudades(){
         $this->ciudades = app('ciudades');
+    }
+
+    public function getMeses(){
+        $año = Año::select('id', 'description')->where('description', date('Y'))->first();
+        $this->meses = Mes::select('id', 'description')->where('ano_id', $año->id)->get();
     }
 
     public function deleteItem($id){
@@ -137,6 +175,99 @@ class Presupuesto extends Component
         $this->cliente = $contacto->contacto->empresa;
         $this->nomProyecto = $contacto->nom_proyecto_cot;
         $this->ciudadContacto = $contacto->contacto->ciudad;
+    }
+
+    public function getDataEdit($id){
+        $this->selected_item = [];
+        foreach ($this->items as $key => $item) {
+            if ($item->id == $id){ $this->selected_item = $item; } 
+        }
+
+        $this->cod = $this->selected_item->cod;
+        $this->presupuesto_id = $this->selected_item->presupuesto_id;
+        $this->revisar = $this->selected_item->revisar;
+        $this->concepto = $this->selected_item->concepto; 
+        $this->cantidad = $this->selected_item->cantidad;
+        $this->dia = $this->selected_item->dia;
+        $this->otros = $this->selected_item->otros;
+        $this->descripcion = $this->selected_item->descripcion;
+        $this->valor_unitario = $this->selected_item->v_unitario;
+        $this->valor_total = $this->selected_item->v_total;
+        $this->proveedor = $this->selected_item->proveedor;
+        $this->utilidad = $this->selected_item->margen_utilidad;
+        $this->mes = $this->selected_item->mes;
+        $this->dias = $this->selected_item->dias;
+        $this->ciudad = $this->selected_item->ciudad;
+    }
+
+    public function actionEdit(){
+        if (is_null($this->selected_item)){
+            return redirect()->back()->withErrors('Ningún elemento seleccionado')->withInput();
+        }
+
+        if ($this->selected_item->evento){
+            $this->validate([
+                'descripcion' => ['required'],
+            ]);
+    
+            $item = ItemPresupuesto::find($this->selected_item->id);
+            $item->cod = 0;
+            $item->presupuesto_id = $this->presupuesto_id;
+            $item->evento = 1;
+            $item->revisar = 0;
+            $item->concepto = 0;
+            $item->cantidad = 0;
+            $item->dia = 0;
+            $item->otros = 0;
+            $item->descripcion = $this->descripcion;
+            $item->v_unitario = 0;
+            $item->v_total = 0;
+            $item->proveedor = 0;
+            $item->margen_utilidad = 0;
+            $item->mes = 0;
+            $item->dias = 0;
+            $item->ciudad = 0;
+            $item->update();
+        }else{
+            $this->validate([
+                'cod' => ['required'], 
+                'revisar' => ['required'],
+                'concepto' => ['required'],
+                'cantidad' => ['required'],
+                'dia' => ['required'],
+                'otros' => ['required'],
+                'descripcion' => ['required'],
+                'valor_unitario' => ['required'],
+                'valor_total' => ['required'],
+                'proveedor' => ['required'],
+                'utilidad' => ['required'],
+                'mes' => ['required'],
+                'dias' => ['required'],
+                'ciudad' => ['required'] 
+            ]);
+    
+            $item = ItemPresupuesto::find($this->selected_item->id);
+            $item->cod = $this->cod;
+            $item->presupuesto_id = $this->presupuesto_id;
+            $item->revisar = $this->revisar;
+            $item->concepto = $this->concepto;
+            $item->cantidad = $this->cantidad;
+            $item->dia = $this->dia;
+            $item->otros = $this->otros;
+            $item->descripcion = $this->descripcion;
+            $item->v_unitario = $this->valor_unitario;
+            $item->v_total = $this->valor_total;
+            $item->proveedor = $this->proveedor;
+            $item->margen_utilidad = $this->utilidad;
+            $item->mes = $this->mes;
+            $item->dias = $this->dias;
+            $item->ciudad = $this->ciudad;
+            $item->update();
+        }
+
+
+        $this->refresh();
+        $this->limpiar();
     }
 
     // VALIDATIONS
@@ -259,18 +390,20 @@ class Presupuesto extends Component
         $this->revisar = "";
         $this->concepto = "";
 
-        $this->cantidad = "";
-        $this->dia = "";
-        $this->otros = "";
+        $this->cantidad = null;
+        $this->dia = null;
+        $this->otros = null;
         $this->descripcion = "";
-        $this->valor_unitario = "";
-        $this->valor_total = "";
+        $this->valor_unitario = 0;
+        $this->valor_total = 0;
         $this->proveedor = "";
         $this->utilidad = "";
 
         $this->mes = "";
         $this->dias = "";
         $this->ciudad = "";
+
+        $this->selected_item = null;
     }
     // ----------- 
 }
