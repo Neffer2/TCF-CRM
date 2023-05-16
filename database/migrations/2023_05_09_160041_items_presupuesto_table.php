@@ -17,20 +17,22 @@ class ItemsPresupuestoTable extends Migration
             $table->id();
             $table->string('presupuesto_id');
             $table->integer('cod');
-            $table->string('revisar');
-            $table->string('concepto');
             $table->string('evento')->default(0);
             $table->integer('cantidad');
             $table->integer('dia');
             $table->integer('otros');
             $table->string('descripcion');
             $table->decimal('v_unitario', 15, 2)->default(0);            
-            $table->decimal('v_total', 15, 2)->default(0);            
+            $table->decimal('v_total', 15, 2)->default(0);          
             $table->string('proveedor');
-            $table->decimal('margen_utilidad', 15, 2)->default(0);
+            $table->double('margen_utilidad', 15, 8)->default(0.0);
             $table->string('mes');
             $table->integer('dias');
             $table->string('ciudad');
+
+            $table->decimal('v_unitario_cot', 15, 2)->default(0);            
+            $table->decimal('v_total_cot', 15, 2)->default(0);
+            $table->decimal('rentabilidad', 15, 2)->default(0);
             $table->timestamps();
         });
     }
@@ -42,6 +44,6 @@ class ItemsPresupuestoTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('items_presupuesto');
     }
 }

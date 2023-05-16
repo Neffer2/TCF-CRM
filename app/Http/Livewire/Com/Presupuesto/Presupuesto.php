@@ -9,13 +9,13 @@ use App\Models\GestionComercial;
 use App\Models\Mes;
 use App\Models\Año;
 use App\Models\ItemPresupuesto;
-use App\Models\PresupuestoProyecto;
+use App\Models\Tarifario;  
+use App\Models\PresupuestoProyecto; 
 
 class Presupuesto extends Component 
 {
     // Models
     public $cod;
-    public $revisar; 
     public $concepto; 
 
     public $cantidad;
@@ -36,11 +36,16 @@ class Presupuesto extends Component
     public $presupuesto_id;
     public $ciudades = [];
     public $meses = [];
+    public $tarifario = [];
     public $selected_item;
+    public $rentabilidadView = false;
 
     // metricas
     public $margenGeneral = 0;
+    public $costosProyecto = 0;
     public $ventaProyecto = 0;
+    public $margenProyecto = 0;
+    public $margenBruto = 0;
 
     // Contacto
     public $nombre;
@@ -71,13 +76,12 @@ class Presupuesto extends Component
         $this->getContacto();
         $this->getCiudades();
         $this->getMeses();
+        $this->getTarifario();
     }
 
     public function new_item(){      
         $this->validate([
             'cod' => ['required'],
-            'revisar' => ['required'],
-            'concepto' => ['required'],
             'cantidad' => ['required'],
             'dia' => ['required'],
             'otros' => ['required'],
@@ -94,19 +98,23 @@ class Presupuesto extends Component
         $item = new ItemPresupuesto;
         $item->cod = $this->cod;
         $item->presupuesto_id = $this->presupuesto_id;
-        $item->revisar = $this->revisar;
-        $item->concepto = $this->concepto;
         $item->cantidad = $this->cantidad;
         $item->dia = $this->dia;
         $item->otros = $this->otros;
+
         $item->descripcion = $this->descripcion;
         $item->v_unitario = $this->valor_unitario;
         $item->v_total = $this->valor_total;
         $item->proveedor = $this->proveedor;
         $item->margen_utilidad = $this->utilidad;
+
         $item->mes = $this->mes;
         $item->dias = $this->dias;
-        $item->ciudad = $this->ciudad;
+        $item->ciudad = $this->ciudad; 
+
+        $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
+        $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
+        $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
         $item->save();
 
         $this->refresh();
@@ -122,22 +130,25 @@ class Presupuesto extends Component
         $item->cod = 0;
         $item->presupuesto_id = $this->presupuesto_id;
         $item->evento = 1;
-        $item->revisar = 0;
-        $item->concepto = 0;
         $item->cantidad = 0;
         $item->dia = 0;
         $item->otros = 0;
         $item->descripcion = $this->descripcion;
         $item->v_unitario = 0;
-        $item->v_total = 0;
+        $item->v_total = 0; 
         $item->proveedor = 0;
-        $item->margen_utilidad = 0;
+        $item->margen_utilidad = 0; 
         $item->mes = 0;
         $item->dias = 0;
         $item->ciudad = 0;
+        
+        $item->v_unitario_cot = 0;
+        $item->v_total_cot = 0;
+        $item->rentabilidad = 0;
+
         $item->save();
 
-        $this->refresh();
+        $this->refresh(); 
         $this->limpiar(); 
     }
 
@@ -147,7 +158,10 @@ class Presupuesto extends Component
 
     public function getMetricas(){
         (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
-        $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
+        $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
+        $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
+        $this->margenProyecto = ($this->ventaProyecto - $this->costosProyecto)/$this->ventaProyecto;
+        $this->margenBruto = $this->ventaProyecto - $this->costosProyecto;
     }
 
     public function getCiudades(){
@@ -157,6 +171,10 @@ class Presupuesto extends Component
     public function getMeses(){
         $año = Año::select('id', 'description')->where('description', date('Y'))->first();
         $this->meses = Mes::select('id', 'description')->where('ano_id', $año->id)->get();
+    }
+
+    public function getTarifario(){
+        $this->tarifario = Tarifario::select('id', 'concepto', 'caso', 'v_unidad')->get();
     }
 
     public function deleteItem($id){
@@ -185,8 +203,6 @@ class Presupuesto extends Component
 
         $this->cod = $this->selected_item->cod;
         $this->presupuesto_id = $this->selected_item->presupuesto_id;
-        $this->revisar = $this->selected_item->revisar;
-        $this->concepto = $this->selected_item->concepto; 
         $this->cantidad = $this->selected_item->cantidad;
         $this->dia = $this->selected_item->dia;
         $this->otros = $this->selected_item->otros;
@@ -214,8 +230,6 @@ class Presupuesto extends Component
             $item->cod = 0;
             $item->presupuesto_id = $this->presupuesto_id;
             $item->evento = 1;
-            $item->revisar = 0;
-            $item->concepto = 0;
             $item->cantidad = 0;
             $item->dia = 0;
             $item->otros = 0;
@@ -231,9 +245,6 @@ class Presupuesto extends Component
         }else{
             $this->validate([
                 'cod' => ['required'], 
-                'revisar' => ['required'],
-                'concepto' => ['required'],
-                'cantidad' => ['required'],
                 'dia' => ['required'],
                 'otros' => ['required'],
                 'descripcion' => ['required'],
@@ -249,8 +260,6 @@ class Presupuesto extends Component
             $item = ItemPresupuesto::find($this->selected_item->id);
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
-            $item->revisar = $this->revisar;
-            $item->concepto = $this->concepto;
             $item->cantidad = $this->cantidad;
             $item->dia = $this->dia;
             $item->otros = $this->otros;
@@ -262,9 +271,12 @@ class Presupuesto extends Component
             $item->mes = $this->mes;
             $item->dias = $this->dias;
             $item->ciudad = $this->ciudad;
+            
+            $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
+            $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
+            $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
             $item->update();
         }
-
 
         $this->refresh();
         $this->limpiar();
@@ -276,20 +288,8 @@ class Presupuesto extends Component
         $this->validate([
             'cod' => ['required']
         ]);
-    }
 
-    public function updatedRevisar(){
-        $this->revisar = trim($this->revisar);
-        $this->validate([
-            'revisar' => ['required']
-        ]);
-    }
-
-    public function updatedConcepto(){
-        $this->concepto = trim($this->concepto);
-        $this->validate([
-            'concepto' => ['required']
-        ]);
+        $this->setDescripcion($this->cod);
     }
 
     public function updatedCantidad(){
@@ -385,10 +385,22 @@ class Presupuesto extends Component
         }
     }
 
+    public function setDescripcion($cod_tarifario){       
+        if ($cod_tarifario == 0){
+            $this->descripcion = "";
+            return redirect()->back();
+        }
+        
+        foreach ($this->tarifario as $key => $item) {
+            if ($item->id == $cod_tarifario){
+                $this->descripcion = $item->concepto." ".$item->caso;
+                break;
+            }
+        }
+    }
+
     public function limpiar(){
         $this->cod = "";
-        $this->revisar = "";
-        $this->concepto = "";
 
         $this->cantidad = null;
         $this->dia = null;
@@ -404,6 +416,10 @@ class Presupuesto extends Component
         $this->ciudad = "";
 
         $this->selected_item = null;
+    }
+
+    public function toggelRentabilidad(){
+        $this->rentabilidadView = !$this->rentabilidadView;
     }
     // ----------- 
 }

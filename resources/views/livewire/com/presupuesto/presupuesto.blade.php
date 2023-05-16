@@ -11,19 +11,19 @@
                             </tr>
                             <tr>
                                 <td class="font-weight-bold font-table">VENTA PROYECTO</td>
-                                <td class="font-table">0</td>
+                                <td class="font-table">{{ number_format($ventaProyecto) }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold font-table">COSTOS DEL PROYECTO</td>
-                                <td class="font-table">{{ $ventaProyecto }}</td>
+                                <td class="font-table">{{ number_format($costosProyecto) }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold font-table">MARGEN DEL PROYECTO</td>
-                                <td class="font-table">0</td>
+                                <td class="font-table">{{ number_format($margenProyecto, 2) }} %</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold font-table">MARGEN BRUTO (PESOS)</td>
-                                <td class="font-table">0</td>
+                                <td class="font-table">{{ number_format($margenBruto) }}</td>
                             </tr>
                         </table>
                     </div>
@@ -68,8 +68,6 @@
             <thead>
                 <tr>
                     <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
-                    <th class="font-weight-bold font-table bg-gradient-info text-white">REVISAR</th>
-                    <th class="font-weight-bold font-table bg-gradient-info text-white">CONCEPTO</th>
 
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
@@ -85,6 +83,12 @@
                     <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
 
+                    @if ($rentabilidadView)
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO</th>
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL</th>
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th> 
+                    @endif
+
                     <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
                 </tr>
             </thead>
@@ -92,7 +96,7 @@
                 @foreach ($items as $key => $item)
                     @if ($item->evento)
                         <tr>
-                            <td colspan="15" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                            <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="font-weight-bold font-table text-center bg-gradient-info text-white">
                                 {{ $item->descripcion }}
                             </td>
                             <td class="font-weight-bold font-table">
@@ -106,12 +110,6 @@
                         <tr> 
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->revisar }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->concepto }}
                             </td>
 
                             <td class="font-weight-bold font-table">
@@ -152,6 +150,18 @@
                                 {{ $item->ciudad }}
                             </td>
 
+                            @if ($rentabilidadView)
+                                <td class="font-weight-bold font-table">
+                                    {{ number_format($item->v_unitario_cot) }}
+                                </td>
+                                <td class="font-weight-bold font-table">
+                                    {{ number_format($item->v_total_cot) }}
+                                </td>
+                                <td class="font-weight-bold font-table">
+                                    {{ number_format($item->rentabilidad) }}
+                                </td>
+                            @endif
+
                             <td class="font-weight-bold font-table">
                                 <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                             </td>
@@ -171,34 +181,16 @@
                 <div class="col-md-1">
                     <div class="form-group mb-0">
                         <label for="cod">COD</label>
-                        <input type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
-                        placeholder="Cod" required wire:model.lazy="cod"> 
+                        <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
+                        placeholder="Cod" required wire:model.lazy="cod">
+                            <option value="">Seleccionar</option>
+                            <option value="0">---- Sin tarifario ----</option>
+                            @foreach ($tarifario as $item)
+                                <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
+                            @endforeach
+                        </select>
                         @error('cod')
                             <div id="cod" class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group mb-0">
-                        <label for="revisar">REVISAR</label>
-                        <input type="number" class="form-control @error('revisar') is-invalid @elseif(strlen($revisar) > 0) is-valid @enderror"
-                        placeholder="Revisar" required wire:model.lazy="revisar"> 
-                        @error('revisar')
-                            <div id="revisar" class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group mb-0">
-                        <label for="concepto">CONCEPTO</label>
-                        <input type="text" class="form-control @error('concepto') is-invalid @elseif(strlen($concepto) > 0) is-valid @enderror"
-                        placeholder="Concepto" required wire:model.lazy="concepto"> 
-                        @error('concepto')
-                            <div id="concepto" class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -292,7 +284,7 @@
                     <div class="form-group mb-0">
                         <label for="utilidad">UTILIDAD</label>
                         <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
-                        placeholder="Utilidad" required wire:model.lazy="utilidad" x-mask:dynamic="$money($input)">
+                        placeholder="Utilidad" required wire:model.lazy="utilidad">
                         @error('utilidad')
                             <div id="utilidad" class="invalid-feedback">
                                 {{ $message }}
@@ -319,7 +311,7 @@
                 </div>
                 <div class="col-md-1">
                     <div class="form-group mb-0">
-                        <label for="dias">DIAS</label>
+                        <label for="dias">D&Iacute;AS</label>
                         <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
                         placeholder="Dias" required wire:model.lazy="dias">
                         @error('dias')
@@ -343,26 +335,35 @@
                             <div id="ciudad" class="invalid-feedback">
                                 {{ $message }}
                             </div>
-                        @enderror
+                        @enderror 
                     </div>
                 </div>
             </div>                
         </div>
         <div class="col-md-12 d-flex justify-content-left align-items-center p-2">
-            <button wire:click="new_event" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
-                <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
-              <span class="btn-inner--text">Evento</span>
-            </button>
-
             <button wire:click="new_item" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
               <span class="btn-inner--text">Item</span>
-            </button>       
+            </button>   
+            
+            <button wire:click="new_event" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
+                <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+              <span class="btn-inner--text">Evento</span>
+            </button>    
 
-            <button wire:click="actionEdit()" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-primary mb-0" type="button">
+            <button wire:click="actionEdit()" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
               <span class="btn-inner--text">Editar</span>
-            </button>       
+            </button> 
+            
+            {{-- <button wire:click="" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-success mb-0" type="button">
+                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+              <span class="btn-inner--text">Cotizaci&oacute;n</span>
+            </button> --}}
+            <div class="form-check form-switch">
+                <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+            </div>
         </div>
     </div>
 </div>
