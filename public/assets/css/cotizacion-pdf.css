@@ -1,0 +1,21 @@
+ body {
+    font-size: 12px;
+    color: black !important;
+ }
+
+ .border-dark {
+    border-color: black !important;
+ }
+
+ table {
+    color: black !important;
+ }
+
+ tr {
+   border: 1px solid black; 
+ }
+
+ td {
+   border: 1px solid black !important; 
+ }
+ 

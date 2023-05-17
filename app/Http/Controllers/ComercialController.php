@@ -11,6 +11,7 @@ use App\Models\GestionComercial;
 use App\Models\Helisa;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf;
 
 class ComercialController extends Controller 
 {
@@ -52,6 +53,17 @@ class ComercialController extends Controller
     
     public function presupuesto($id_gestion){ 
         return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]); 
+    }
+
+    public function pdf(){ 
+        // instantiate and use the dompdf class
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('pdf.index'));
+
+        // Render the HTML as PDF
+        $dompdf->render();
+        // Output the generated PDF to Browser
+        $dompdf->stream();
     }
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable

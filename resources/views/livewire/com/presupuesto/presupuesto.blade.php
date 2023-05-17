@@ -7,7 +7,7 @@
                         <table class="table">
                             <tr>
                                 <td class="font-weight-bold font-table">MARGEN GENERAL</td>
-                                <td class="font-table">{{ $margenGeneral }}</td>
+                                <td class="font-table">{{ number_format($margenGeneral, 4) }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold font-table">VENTA PROYECTO</td>
@@ -134,14 +134,14 @@
                                 {{ number_format($item->v_total) }}
                             </td>
                             <td class="font-weight-bold font-table">
-                                {{ $item->proveedor }}
+                                {{ $item->proveedor }} 
                             </td>
                             <td class="font-weight-bold font-table">
                                 {{ $item->margen_utilidad }}
                             </td>
 
                             <td class="font-weight-bold font-table">
-                                {{ $item->mes }}
+                                {{ $item->mesDescription->description }}
                             </td>
                             <td class="font-weight-bold font-table">
                                 {{ $item->dias }}
@@ -355,11 +355,12 @@
                 <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
               <span class="btn-inner--text">Editar</span>
             </button> 
-            
-            {{-- <button wire:click="" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-success mb-0" type="button">
+
+            <button wire:click="" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
               <span class="btn-inner--text">Cotizaci&oacute;n</span>
-            </button> --}}
+            </button>
+            
             <div class="form-check form-switch">
                 <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                 <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 

@@ -84,6 +84,10 @@ Route::get('/', function () {
         // Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */
+    Route::get('/pdf', [ComercialController::class, 'pdf']);
+    Route::get('/pdf-vista', function(){
+        return view('pdf.index');
+    });
  
 /* Asistenet */    
     /* base - functions */    

@@ -25,7 +25,7 @@ class ItemsPresupuestoTable extends Migration
             $table->decimal('v_unitario', 15, 2)->default(0);            
             $table->decimal('v_total', 15, 2)->default(0);          
             $table->string('proveedor');
-            $table->double('margen_utilidad', 15, 8)->default(0.0);
+            $table->double('margen_utilidad', 15, 10)->default(0.0);
             $table->string('mes');
             $table->integer('dias');
             $table->string('ciudad');
