@@ -8,10 +8,13 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
 use App\Models\GestionComercial;
+use App\Models\PresupuestoProyecto;
+use App\Models\ItemPresupuesto;
 use App\Models\Helisa;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class ComercialController extends Controller 
 {
@@ -39,7 +42,7 @@ class ComercialController extends Controller
         return view('comercial.ajustes.perfil.actualizar');
     }  
  
-    public function comercialHelisa(){
+    public function comercialHelisa(){ 
         return view('comercial.helisa.index');
     }  
 
@@ -48,17 +51,29 @@ class ComercialController extends Controller
     }
 
     public function Contactos(){
-        return view('comercial.contactos'); 
-    }
+        return view('comercial.contactos');  
+    } 
     
     public function presupuesto($id_gestion){ 
         return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]); 
     }
 
+    public function cotizacionPdf($prespuesto){
+        $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
+        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+        $dompdf = new Dompdf(array('enable_remote' => true));
+        $html = View::make('pdf.index', ['presto' => $presto, 'items' => $items])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        $dompdf->stream();
+    }
+
     public function pdf(){ 
         // instantiate and use the dompdf class
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml(view('pdf.index'));
+        $dompdf = new Dompdf(array('enable_remote' => true));
+
+        $html = View::make('pdf.index')->render();
+        $dompdf->loadHtml($html);
 
         // Render the HTML as PDF
         $dompdf->render();

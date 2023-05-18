@@ -21,11 +21,11 @@ class CreatePresupuestoProyectoTable extends Migration
             $table->foreignId('estado_id')->default(3);
             $table->foreign('estado_id')->references('id')->on('estados_presupuesto');
 
-            $table->decimal('margen_general', 15, 2)->default(0);            
+            $table->double('margen_general', 15, 10)->default(0.0);
             $table->decimal('venta_proy', 15, 2)->default(0);            
             $table->decimal('costos_proy', 15, 2)->default(0);            
             $table->decimal('margen_proy', 15, 2)->default(0);            
-            $table->decimal('margen_bruto', 15, 2)->default(0);            
+            $table->decimal('margen_bruto', 15, 2)->default(0);             
             $table->timestamps();
         });
     }

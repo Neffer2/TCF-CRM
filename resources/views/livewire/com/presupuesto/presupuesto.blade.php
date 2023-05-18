@@ -344,7 +344,7 @@
             <button wire:click="new_item" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
               <span class="btn-inner--text">Item</span>
-            </button>   
+            </button>    
             
             <button wire:click="new_event" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
@@ -356,7 +356,7 @@
               <span class="btn-inner--text">Editar</span>
             </button> 
 
-            <button wire:click="" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
+            <button wire:click="cotizacionPdf" href="javascript:;" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
               <span class="btn-inner--text">Cotizaci&oacute;n</span>
             </button>

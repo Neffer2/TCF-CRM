@@ -15,7 +15,7 @@ use App\Models\PresupuestoProyecto;
 class Presupuesto extends Component 
 {
     // Models
-    public $cod;
+    public $cod; 
     public $concepto; 
 
     public $cantidad;
@@ -90,13 +90,13 @@ class Presupuesto extends Component
             'valor_total' => ['required'],
             'proveedor' => ['required'],
             'utilidad' => ['required'],
-            'mes' => ['required'],
+            'mes' => ['required'], 
             'dias' => ['required'],
             'ciudad' => ['required']  
         ]);
          
         $item = new ItemPresupuesto;
-        $item->cod = $this->cod;
+        $item->cod = $this->cod; 
         $item->presupuesto_id = $this->presupuesto_id;
         $item->cantidad = $this->cantidad;
         $item->dia = $this->dia;
@@ -163,6 +163,14 @@ class Presupuesto extends Component
         $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
         if ($this->ventaProyecto > 0){ $this->margenProyecto =  (($this->ventaProyecto - $this->costosProyecto)/$this->ventaProyecto)*100;}
         $this->margenBruto = $this->ventaProyecto - $this->costosProyecto;
+
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presto->margen_general = $this->margenGeneral;
+        $presto->venta_proy = $this->ventaProyecto;
+        $presto->costos_proy = $this->costosProyecto;
+        $presto->margen_proy = $this->margenProyecto;
+        $presto->margen_bruto = $this->margenBruto;
+        $presto->update();
     }
 
     public function getCiudades(){
@@ -281,6 +289,10 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->limpiar();
+    }
+
+    public function cotizacionPdf(){
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion]);
     }
 
     // VALIDATIONS
