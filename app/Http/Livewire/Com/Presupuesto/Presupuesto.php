@@ -39,6 +39,7 @@ class Presupuesto extends Component
     public $tarifario = [];
     public $selected_item;
     public $rentabilidadView = false;
+    public $estadoValidator;
 
     // metricas
     public $margenGeneral = 0;
@@ -68,8 +69,10 @@ class Presupuesto extends Component
             $presupuesto->id_gestion = $this->id_gestion;
             $presupuesto->save();
             $this->presupuesto_id = $presupuesto->id;
+            $this->estadoValidator = $presupuesto->estado_id;
         }else {
             $this->presupuesto_id = $validator->id;
+            $this->estadoValidator = $validator->estado_id;
         }
 
         $this->refresh();
@@ -277,7 +280,7 @@ class Presupuesto extends Component
             $item->v_total = $this->valor_total;
             $item->proveedor = $this->proveedor;
             $item->margen_utilidad = $this->utilidad;
-            $item->mes = $this->mes;
+            $item->mes = $this->mes; 
             $item->dias = $this->dias;
             $item->ciudad = $this->ciudad;
             
@@ -294,6 +297,15 @@ class Presupuesto extends Component
     public function cotizacionPdf(){
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion]);
     }
+
+    public function aprobacion(){
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presto->estado_id = 2;
+        $presto->update();
+
+        $this->estadoValidator = $presto->estado_id;
+        return redirect()->route('presupuesto', $this->id_gestion); 
+    }   
 
     // VALIDATIONS
     public function updatedCod(){

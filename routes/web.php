@@ -18,7 +18,7 @@ use App\Http\Controllers\AsistenteController;
 |
 */
 
-Route::get('/', function () { 
+Route::get('/', function () {  
     return redirect()->route('login'); 
 });
 
@@ -33,6 +33,7 @@ Route::get('/', function () {
     Route::get('/actualizar-perfil-adm', [AdminController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['admin'])->name('actualizar-perfil-adm');   
     Route::get('/base-comercial-general', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');   
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');   
+    Route::get('/presupuesto-proyecto', [AdminController::class, 'showPresupuestosProyecto'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto-proyecto');   
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
 
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
@@ -48,7 +49,7 @@ Route::get('/', function () {
         Route::get('/contactos', [ComercialController::class, 'Contactos'])->middleware(['auth'])->middleware(['comercial'])->name('contactos');    
         // Route::get('/base-upload', [ComercialController::class, 'show_upload'])->middleware(['auth'])->name('base-upload');  
 
-
+ 
         Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload'); 
         Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export');         
         // Delete proyecto
@@ -57,7 +58,7 @@ Route::get('/', function () {
         Route::post('/delete-contacto/{id?}', [ComercialController::class, 'delete_contacto'])->middleware(['auth'])->name('delete-contacto'); 
         // Update proyecto
         Route::post('/update-proyecto/{id_user?}', [ComercialController::class, 'update_proyecto'])->middleware(['auth'])->name('update-proyecto');
-        // Update proyecto Helisa 
+        // Update proyecto Helisa  
         Route::post('/com-update-helisa/{id_user?}', [ComercialController::class, 'update_helisa'])->middleware(['auth'])->middleware(['comercial'])->name('com-update-helisa'); 
         // Update proyecto gestion comercial 
         Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth'])->name('update-gestion-comercial'); 
@@ -86,10 +87,10 @@ Route::get('/', function () {
 /* --- */ 
 
     Route::get('cotizacion/{prespuesto?}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
-    Route::get('/pdf', [ComercialController::class, 'pdf']);
-    Route::get('/pdf-vista', function(){
-        return view('pdf.index');
-    });
+    // Route::get('/pdf', [ComercialController::class, 'pdf']);
+    // Route::get('/pdf-vista', function(){
+    //     return view('pdf.index');
+    // });
  
 /* Asistenet */    
     /* base - functions */    

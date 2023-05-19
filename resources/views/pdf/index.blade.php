@@ -121,7 +121,7 @@
                     <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="80"><br>
                     Nit: 900.298.176-1 <br>
                     IVA REGIMEN COMUN
-                </td>
+                </td> 
                 <td class="text-end" style="border-left: none">
                     <p style="line-height: 22px;">
                         <span class="bold" style="color: green;">Integramos servicios especializados en mercadeo </span><br>
@@ -153,8 +153,8 @@
                             <td style="border-right: none; border-top: none;">Fecha Vencimiento</td>
                         </tr>
                         <tr>
-                            <td style="border-left: none; border-top: none; background-color: rgb(228, 228, 228);">1/03/2023</td>
-                            <td style="border-right: none; border-top: none; background-color: rgb(228, 228, 228);">31/03/2023</td>
+                            <td style="border-left: none; border-top: none; background-color: rgb(228, 228, 228);">{{ date('d/m/Y') }}</td>
+                            <td style="border-right: none; border-top: none; background-color: rgb(228, 228, 228);">{{ date('d/m/Y', strtotime("+30 days")) }}</td>
                         </tr>
                         <tr>                            
                             <td class="bold" style="border-left: none; border-bottom: none;">Condiciones De Pago</td>
@@ -177,24 +177,23 @@
                 </tr>
             </thead>
             <tbody>
+                @php $totalCot = 0; @endphp
                 @foreach ($items as $item)
                     @if (!$item->evento == 1)
                         <tr>
                             <td>{{ $item->descripcion }}</td>
-                            <td class="text-center">{{ $item->cantidada }}</td>
+                            <td class="text-center">{{ $item->cantidad }}</td>
                             <td class="text-center">{{ $item->dia }}</td>
                             <td class="text-center">{{ $item->otros }}</td>
-                            <td class="text-center">$ {{ $item->v_unitario_cot }}</td>
-                            <td class="text-center">$ {{ $item->v_total_cot }}</td>               
-                        </tr>   
+                            <td class="text-center">$ {{ number_format($item->v_unitario_cot) }}</td>
+                            <td class="text-center">$ {{ number_format($item->v_total_cot) }}</td>               
+                        </tr>
                     @else 
                         <tr>
-                            <td class="text-center bold" style="border-right: none" colspan="3">{{ $item->descripcion }}</td>
-                            <td style="border: none"></td>
-                            <td style="border: none"></td>
-                            <td style="border: none"></td>
+                            <td class="bold" style="border-right: none" colspan="6">{{ $item->descripcion }}</td>
                         </tr>
                     @endif
+                    @php $totalCot += $item->v_total_cot; @endphp
                 @endforeach             
 
                 <tr class="space">
@@ -206,14 +205,13 @@
                     <td class="space"></td>
                 </tr>
                 
-
                 <tr>
                     <td class="text-center">IMPREVISTOS</td>
                     <td></td>
                     <td></td>
                     <td class="text-center" style="background-color: rgb(228, 228, 228);">1%</td>
                     <td></td>
-                    <td class="text-center"> $ 3.335.582</td>
+                    <td class="text-center"> $ {{ number_format($totalCot * 0.01) }}</td>
                 </tr>
                 <tr>
                     <td class="text-center">ADMINISTRACION</td>
@@ -229,14 +227,14 @@
                     <td></td>
                     <td class="text-center" style="background-color: rgb(228, 228, 228);">10%</td>
                     <td></td>
-                    <td class="text-center"> $ 32.688.703 </td>
+                    <td class="text-center"> $ {{ number_format($totalCot * 0.098) }} </td>
                 </tr>
 
                 <tr>
                     <td class="text-center" colspan="4">Valores No incluyen IVA</td>                    
                     <td class="bold text-center bg-orange">TOTAL</td>
                     <td class="text-center bold">
-                        $ {{ $presto->venta_proy }}
+                        $ {{ number_format($presto->venta_proy) }}
                     </td>
                 </tr>
             </tbody>

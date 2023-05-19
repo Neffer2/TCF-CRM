@@ -12,5 +12,9 @@ class GestionComercial extends Model
 
     public function contacto (){
         return $this->hasOne(Contacto::class, 'id', 'id_contacto');
-    } 
+    }
+
+    public function comercial (){
+        return $this->hasOne(User::class, 'id', 'id_user');
+    }
 }

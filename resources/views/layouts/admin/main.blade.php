@@ -45,18 +45,6 @@
           </a>
           <div class="collapse  show " id="dashboardsExamples">
             <ul class="nav ms-4"> 
-              {{-- <li class="nav-item ">
-                <a class="nav-link " href="../../pages/dashboards/landing.html">
-                  <span class="sidenav-mini-icon"> L </span>
-                  <span class="sidenav-normal"> Landing </span>
-                </a>
-              </li> --}}
-              {{-- <li class="nav-item ">
-                <a class="nav-link " href="../../pages/dashboards/default.html">
-                  <span class="sidenav-mini-icon"> D </span>
-                  <span class="sidenav-normal"> Default </span>
-                </a> 
-              </li> --}} 
               <li class="nav-item active">
                 <a class="nav-link active" href="{{ route('dashboard-admin') }}">
                   <span class="sidenav-mini-icon"> D </span>
@@ -75,37 +63,27 @@
                   <span class="sidenav-normal"> Base comercial general </span>
                 </a>
               </li>
-              {{-- <li class="nav-item ">
-                <a class="nav-link " data-bs-toggle="collapse" aria-expanded="false" href="#vrExamples">
-                  <span class="sidenav-mini-icon"> V </span>
-                  <span class="sidenav-normal"> Virtual Reality <b class="caret"></b></span>
-                </a>
-                <div class="collapse " id="vrExamples">
-                  <ul class="nav nav-sm flex-column">
-                    <li class="nav-item">
-                      <a class="nav-link " href="../../pages/dashboards/vr/vr-default.html">
-                        <span class="sidenav-mini-icon text-xs"> V </span>
-                        <span class="sidenav-normal"> VR Default </span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link " href="../../pages/dashboards/vr/vr-info.html">
-                        <span class="sidenav-mini-icon text-xs"> V </span>
-                        <span class="sidenav-normal"> VR Info </span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li> --}}
-              {{-- <li class="nav-item ">
-                <a class="nav-link " href="../../pages/dashboards/crm.html">
-                  <span class="sidenav-mini-icon"> C </span>
-                  <span class="sidenav-normal"> CRM </span>
-                </a>
-              </li> --}}
             </ul>
           </div>
         </li>
+        <li class="nav-item"> 
+          <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link" aria-controls="dashboardsGestion" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-badge text-primary text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
+          </a>
+          <div class="collapse" id="dashboardsGestion">
+            <ul class="nav ms-4">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('presupuesto-proyecto') }}">
+                  <span class="sidenav-mini-icon text-xs"> P </span>
+                  <span class="sidenav-normal"> Presupuestos </span>
+                </a>
+              </li>            
+            </ul>
+          </div>
+        </li> 
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -150,18 +128,6 @@
         </li>
       </ul>
     </div>
-    <!-- <div class="sidenav-footer mx-3 my-3">
-      <div class="card card-plain shadow-none" id="sidenavCard">
-        <img class="w-60 mx-auto" src="../../assets/img/illustrations/icon-documentation.svg" alt="sidebar_illustration">
-        <div class="card-body text-center p-3 w-100 pt-0">
-          <div class="docs-info">
-            <h6 class="mb-0">Need help?</h6>
-            <p class="text-xs font-weight-bold mb-0">Please check our docs</p>
-          </div>
-        </div>
-      </div>
-      <a href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard" target="_blank" class="btn btn-dark btn-sm w-100 mb-3">Documentation</a>
-    </div> -->
   </aside>
   <!-- End Barra lateral -->
   

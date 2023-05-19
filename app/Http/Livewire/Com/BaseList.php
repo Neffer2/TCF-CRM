@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\Com;
 
-use Livewire\Component;
+use Livewire\Component; 
 use App\Models\Base_comercial;
 use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 
 
 class BaseList extends Component 
-{
+{ 
     public $list;   
     public $estados = [];
     public $cuentas = [];
