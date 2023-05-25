@@ -83,7 +83,7 @@
               </li>            
             </ul>
           </div>
-        </li> 
+        </li>  
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -111,7 +111,7 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
+              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>              
             </div>
             <span class="nav-link-text ms-1">Ajustes</span>
           </a>
