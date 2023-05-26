@@ -1,19 +1,32 @@
 <div>
     <div class="card">
-        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
-            <select class="form-control" wire:model="filter">
-                <option selected value="0">Todos</option>                    
-                @foreach ($estados as $estado)
-                    <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
-                @endforeach
-            </select>
+        <div class="row px-3">
+            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
+                <label for="estados">Estados:</label>
+                <select id="estados" class="form-control" wire:model="filter">
+                    <option selected value="0">Todos</option>                    
+                    @foreach ($estados as $estado)
+                        <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
+                    @endforeach
+                </select>
+            </div>
+            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
+                <div class="form-group">
+                    <label for="comercial">Fecha:</label>
+                    <select id="comercial" class="form-control" wire:model="fecha">
+                        <option value="">Seleccionar</option>
+                        <option value="asc">M&aacute;s reciente</option>
+                        <option value="desc">M&aacute;s antiguos</option>
+                    </select>
+                </div>
+            </div> 
         </div>
         <div class="table-responsive">
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
                         <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="3" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
@@ -35,6 +48,10 @@
                                         <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->contacto->empresa }}</p>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Fecha</p>
+                                <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
@@ -62,13 +79,15 @@
                                         @else
                                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                                         @endif
-                                    @endforeach
+                                        @endforeach
+                                        <option value="3">Rechazar</option>
                                 </select>
                             </td>
                         </tr> 
                     @endforeach
                     <tr>
-                        <td colspan="6" class="d-flex">{{ $presupuestos->links() }}</td>
+                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Cantidad de items: {{ $registros }}</td>
+                        <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
                     </tr>
                 </tbody>
             </table>

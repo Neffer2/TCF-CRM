@@ -28,7 +28,7 @@
                             <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->empresa }}</p>
                             <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
                         </td>
-                        <td>
+                        <td> 
                             <select name="" id="" class="form-control" disabled>
                                 @foreach ($estados as $estado)
                                     @if ($estado->id == $dato->id_estado)
