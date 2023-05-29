@@ -26,6 +26,7 @@ class CreatePresupuestoProyectoTable extends Migration
             $table->decimal('costos_proy', 15, 2)->default(0);            
             $table->decimal('margen_proy', 15, 2)->default(0);            
             $table->decimal('margen_bruto', 15, 2)->default(0);             
+            $table->string('cod_cc')->nullable();                        
             $table->timestamps();
         });
     }

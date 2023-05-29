@@ -139,7 +139,7 @@
                 <td class="bold" style="width: 68%;">
                     Señor (es) {{ $presto->gestion->contacto->nombre }} {{ $presto->gestion->contacto->apellido }}<br>
                     Empresa: {{ $presto->gestion->contacto->empresa }} <br> 	 			
-                    Proyecto: C{{ $presto->gestion->nom_proyecto_cot }} <br>
+                    Proyecto: {{ $presto->gestion->nom_proyecto_cot }} <br>
                     Ciudad: {{ $presto->gestion->contacto->ciudad }}
                 </td>
                 <td style="padding: 0;">

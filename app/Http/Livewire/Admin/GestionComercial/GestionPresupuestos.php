@@ -18,29 +18,44 @@ class GestionPresupuestos extends Component
     public $filter = 0;
     // public $comercial = 0;
     public $fecha = 'asc';
+    public $margen = 'asc';
 
     // Useful vars
     public $estados = []; 
+    public $margenOperator;
     // public $comerciales = [];  
+
+    public $rol;
 
     public function render()
     {   
-        $filtroEstado = [];
-
+        $filtros = [];
+ 
         if ($this->filter != 0){
-            array_push($filtroEstado, ['estado_id', $this->filter]);
+            array_push($filtros, ['estado_id', $this->filter]);
+        }
+
+        if ($this->margen == '<'){
+            array_push($filtros, ['margen_proy', '<=', 35]);
+        }elseif ($this->margen == '>'){
+            array_push($filtros, ['margen_proy', '>=', 35]);
         }
 
         $registros = 0;
-        $presupuestos = PresupuestoProyecto::where('estado_id', '<>', 3)->where('margen_proy', '<', 35)->where($filtroEstado)->orderBy('id', $this->fecha)->paginate(10);
-        $registros = PresupuestoProyecto::where('estado_id', '<>', 3)->where('margen_proy', '<', 35)->where($filtroEstado)->orderBy('id', $this->fecha)->count();
+        $presupuestos = PresupuestoProyecto::where('estado_id', $this->margenOperator, 3)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
+        $registros = PresupuestoProyecto::where('estado_id', $this->margenOperator, 3)->where($filtros)->orderBy('id', $this->fecha)->count();
 
         return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['presupuestos' => $presupuestos, 'registros' => $registros]);
     }
  
     public function mount(){
         $this->getEstados();
-        // $this->getComerciales();
+        if ($this->rol == 1){
+            $this->margenOperator = '<';
+        }else {
+            $this->margenOperator = '>';
+        }
+        // $this->getComerciales(); 
     }
 
     public function getEstados(){
@@ -60,7 +75,7 @@ class GestionPresupuestos extends Component
         $presupuesto->update();
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
-    }
+    } 
 
     // public function getComerciales(){
     //     $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();

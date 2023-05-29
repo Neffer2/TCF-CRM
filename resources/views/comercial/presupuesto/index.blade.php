@@ -16,4 +16,4 @@
     <script>
         
     </script>
-@endsection   
+@endsection    

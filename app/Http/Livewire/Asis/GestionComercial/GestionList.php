@@ -22,7 +22,7 @@ class GestionList extends Component
     { 
         $this->getData(); 
         $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
-        $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot')->where('id_user', $asistente->comercial_id)->orWhere('comercial_2', $asistente->comercial_id)->orWhere('comercial_3', $asistente->comercial_id)->orWhere('comercial_4', $asistente->comercial_id)->orderBy('id', 'asc')->paginate(5);
+        $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot')->where('id_user', $asistente->comercial_id)->orWhere('comercial_2', $asistente->comercial_id)->orWhere('comercial_3', $asistente->comercial_id)->orWhere('comercial_4', $asistente->comercial_id)->orderBy('id', 'asc')->paginate(10);
         return view('livewire.asis.gestion-comercial.gestion-list' , ['datos' => $datos]);
     }
 

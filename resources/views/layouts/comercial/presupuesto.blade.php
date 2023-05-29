@@ -53,7 +53,7 @@
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
     @yield('hero-style')
     <!-- Barra lateral -->
-    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
+    {{-- <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
       <div class="sidenav-header d-flex align-items-center justify-content-center">
         <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0 d-flex flex-column" href="{{ route('dashboard') }}">
@@ -137,7 +137,7 @@
           </li>
         </ul>
       </div>
-    </aside>
+    </aside> --}}
     <!-- -->
     <div class="main-content position-relative max-height-vh-100 h-100">
       <!-- Navbar -->

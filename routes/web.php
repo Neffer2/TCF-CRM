@@ -18,11 +18,11 @@ use App\Http\Controllers\AsistenteController;
 |
 */
 
-Route::get('/', function () {  
+Route::get('/', function () {   
     return redirect()->route('login'); 
-});
+}); 
 
-/* Home */
+/* Home */ 
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');    
 /* --- */
  
@@ -38,7 +38,7 @@ Route::get('/', function () {
 
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 
- 
+  
 /* commercial */   
     /* base - functions */   
         Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');  
@@ -85,8 +85,8 @@ Route::get('/', function () {
         // Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
     /* --- */
 /* --- */ 
-
-    Route::get('cotizacion/{prespuesto?}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
+ 
+    Route::get('cotizacion/{prespuesto?}/{nom_proyecto?}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
     // Route::get('/pdf', [ComercialController::class, 'pdf']);
     // Route::get('/pdf-vista', function(){
     //     return view('pdf.index');

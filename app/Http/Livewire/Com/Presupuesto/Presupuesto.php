@@ -31,6 +31,8 @@ class Presupuesto extends Component
     public $dias;
     public $ciudad;
 
+    public $centroCostos;
+
     // Useful vars
     public $items = [];
     public $presupuesto_id;
@@ -174,6 +176,8 @@ class Presupuesto extends Component
         $presto->margen_proy = $this->margenProyecto;
         $presto->margen_bruto = $this->margenBruto;
         $presto->update();
+
+        $this->centroCostos = $presto->cod_cc;
     }
 
     public function getCiudades(){
@@ -292,10 +296,10 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->limpiar();
-    }
+    } 
 
-    public function cotizacionPdf(){
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion]);
+    public function cotizacionPdf(){ 
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto]);
     }
 
     public function aprobacion(){
@@ -305,7 +309,18 @@ class Presupuesto extends Component
 
         $this->estadoValidator = $presto->estado_id;
         return redirect()->route('presupuesto', $this->id_gestion); 
-    }   
+    }
+ 
+    public function updateCentro(){
+        $this->validate([
+            'centroCostos' => ['required', 'string']
+        ]);
+
+        $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $item->cod_cc = $this->centroCostos; 
+        $item->update();
+        return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
+    }  
 
     // VALIDATIONS
     public function updatedCod(){
@@ -446,5 +461,13 @@ class Presupuesto extends Component
     public function toggelRentabilidad(){
         $this->rentabilidadView = !$this->rentabilidadView;
     }
+
+    public function updatedCentroCostos(){    
+        if (Auth::user()->rol == 1){
+            $this->validate([
+                'centroCostos' => ['required', 'string']
+            ]);
+        }
+    } 
     // ----------- 
-}
+} 

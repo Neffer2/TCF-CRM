@@ -64,7 +64,7 @@
                 </div>
             </div>
         </div>
-        
+         
         <div class="table-responsive mt-2 rounded bg-white">
             <table class="table">
                 <thead>
@@ -116,7 +116,7 @@
 
                                 <td class="font-weight-bold font-table">
                                     {{ $key+=1 }}
-                                </td>
+                                </td> 
                                 <td class="font-weight-bold font-table">
                                     {{ $item->cantidad }}
                                 </td>
@@ -143,7 +143,7 @@
                                 </td>
 
                                 <td class="font-weight-bold font-table">
-                                    {{ $item->mesDescription->description }}
+                                    {{ $item->mesDescription->description }} 
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->dias }}
@@ -178,171 +178,172 @@
         </div>          
 
         <div class="row mt-2">
-            <div class="col-md-12 p-2"> 
-                <div class="row gy-0">
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="cod">COD</label>
-                            <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
-                            placeholder="Cod" required wire:model.lazy="cod">
-                                <option value="">Seleccionar</option>
-                                <option value="0">---- Sin tarifario ----</option>
-                                @foreach ($tarifario as $item)
-                                    <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
-                                @endforeach
-                            </select>
-                            @error('cod')
-                                <div id="cod" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="cantidad">CANTIDAD</label>
-                            <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
-                            placeholder="Cantidad" required wire:model.lazy="cantidad"> 
-                            @error('cantidad')
-                                <div id="cantidad" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="dia">D&Iacute;A</label>
-                            <input type="number" class="form-control @error('dia') is-invalid @elseif(strlen($dia) > 0) is-valid @enderror"
-                            placeholder="D&iacute;a" required wire:model.lazy="dia"> 
-                            @error('dia')
-                                <div id="dia" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="otros">OTROS</label>
-                            <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
-                            placeholder="Otros" required wire:model.lazy="otros">
-                            @error('otros')
-                                <div id="otros" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="descripcion">DESCRIPCI&Oacute;N</label>
-                            <textarea id="descripcion" cols="30" rows="1" class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
-                                placeholder="Descripci&oacute;n" required wire:model.lazy="descripcion"></textarea>
-                            @error('descripcion')
-                                <div id="descripcion" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="valor_unitario">V. UNITARIO</label>
-                            <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
-                            placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
-                            @error('valor_unitario')
-                                <div id="valor_unitario" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="valor_total">V. TOTAL</label>
-                            <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
-                            placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
-                            @error('valor_total')
-                                <div id="valor_total" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="proveedor">PROVEEDOR</label>
-                            <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                            placeholder="Proveedor" required wire:model.lazy="proveedor">
-                            @error('proveedor')
-                                <div id="proveedor" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="utilidad">UTILIDAD</label>
-                            <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
-                            placeholder="Utilidad" required wire:model.lazy="utilidad">
-                            @error('utilidad')
-                                <div id="utilidad" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="mes">MES</label>
-                            <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
-                            placeholder="Mes" required wire:model.lazy="mes">
-                                <option value="">Seleccionar</option>
-                                @foreach ($meses as $mes)
-                                    <option value="{{ $mes->id }}">{{ $mes->description }}</option>
-                                @endforeach
-                            </select>
-                            @error('mes')
-                                <div id="mes" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group mb-0">
-                            <label for="dias">D&Iacute;AS</label>
-                            <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
-                            placeholder="Dias" required wire:model.lazy="dias">
-                            @error('dias')
-                                <div id="dias" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2"> 
-                        <div class="form-group mb-0">
-                            <label for="ciudad">CIUDAD</label>
-                            <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
-                            placeholder="Ciudad" required wire:model.lazy="ciudad">
-                                <option selected value="">Seleccionar</option>
-                                @foreach ($ciudades as $ciudad)
-                                    <option value="{{ $ciudad }}">{{ $ciudad }}</option>
-                                @endforeach
-                            </select>
-                            @error('ciudad')
-                                <div id="ciudad" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror 
-                        </div>
-                    </div>
-                </div>                
-            </div>
             @if (Auth::user()->rol == 2)
+                <div class="col-md-12 p-2"> 
+                    <div class="row gy-0">
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="cod">COD</label>
+                                <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
+                                placeholder="Cod" required wire:model.lazy="cod">
+                                    <option value="">Seleccionar</option>
+                                    <option value="0">---- Sin tarifario ----</option>
+                                    @foreach ($tarifario as $item)
+                                        <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
+                                    @endforeach
+                                </select>
+                                @error('cod')
+                                    <div id="cod" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="cantidad">CANTIDAD</label>
+                                <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
+                                placeholder="Cantidad" required wire:model.lazy="cantidad"> 
+                                @error('cantidad')
+                                    <div id="cantidad" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="dia">D&Iacute;A</label>
+                                <input type="number" class="form-control @error('dia') is-invalid @elseif(strlen($dia) > 0) is-valid @enderror"
+                                placeholder="D&iacute;a" required wire:model.lazy="dia"> 
+                                @error('dia')
+                                    <div id="dia" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="otros">OTROS</label>
+                                <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
+                                placeholder="Otros" required wire:model.lazy="otros">
+                                @error('otros')
+                                    <div id="otros" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="descripcion">DESCRIPCI&Oacute;N</label>
+                                <textarea id="descripcion" cols="30" rows="1" class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
+                                    placeholder="Descripci&oacute;n" required wire:model.lazy="descripcion"></textarea>
+                                @error('descripcion')
+                                    <div id="descripcion" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="valor_unitario">V. UNITARIO</label>
+                                <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
+                                placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
+                                @error('valor_unitario')
+                                    <div id="valor_unitario" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="valor_total">V. TOTAL</label>
+                                <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
+                                placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
+                                @error('valor_total')
+                                    <div id="valor_total" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="proveedor">PROVEEDOR</label>
+                                <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                                placeholder="Proveedor" required wire:model.lazy="proveedor">
+                                @error('proveedor')
+                                    <div id="proveedor" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="utilidad">UTILIDAD</label>
+                                <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
+                                placeholder="Utilidad" required wire:model.lazy="utilidad">
+                                @error('utilidad')
+                                    <div id="utilidad" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="mes">MES</label>
+                                <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
+                                placeholder="Mes" required wire:model.lazy="mes">
+                                    <option value="">Seleccionar</option>
+                                    @foreach ($meses as $mes)
+                                        <option value="{{ $mes->id }}">{{ $mes->description }}</option>
+                                    @endforeach
+                                </select>
+                                @error('mes')
+                                    <div id="mes" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group mb-0">
+                                <label for="dias">D&Iacute;AS</label>
+                                <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
+                                placeholder="Dias" required wire:model.lazy="dias">
+                                @error('dias')
+                                    <div id="dias" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-2"> 
+                            <div class="form-group mb-0">
+                                <label for="ciudad">CIUDAD</label>
+                                <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
+                                placeholder="Ciudad" required wire:model.lazy="ciudad">
+                                    <option selected value="">Seleccionar</option>
+                                    @foreach ($ciudades as $ciudad)
+                                        <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                                    @endforeach
+                                </select>
+                                @error('ciudad')
+                                    <div id="ciudad" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror 
+                            </div>
+                        </div>
+                    </div>                
+                </div>
+
                 <div class="col-md-8 d-flex p-2">
                     <button wire:click="new_item" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
                         <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
@@ -367,8 +368,13 @@
                     <div class="form-check form-switch me-1">
                         <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                         <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
-                    </div>
+                    </div> 
+
+                    <a href="{{ route('gestion-comercial') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
+                        <span class="btn-inner--text">Volver</span>
+                    </a>
                 </div>
+
                 <div class="col-md-4 d-flex justify-content-end p-2">
                     <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
@@ -395,19 +401,41 @@
                             </div>
                         </div>
                     </div>
-                </div>            
+                </div>             
             @elseif (Auth::user()->rol == 1)
-            <div class="col-md-8 d-flex p-2">
-                <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
-                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                <span class="btn-inner--text">Cotizaci&oacute;n</span>
-                </button>
-                
-                <div class="form-check form-switch me-1">
-                    <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                <div class="col-md-12 p-2"> 
+                    <div class="row gy-0">
+                        <div class="col-md-3">
+                            <div class="form-group mb-0">
+                                <label for="centroCostos">CENTRO DE COSTOS</label>
+                                <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
+                                placeholder="Centro de costos" required wire:model.lazy="centroCostos">
+                                @error('centroCostos')
+                                    <div id="centroCostos" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                <button wire:click="updateCentro" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
+                                    <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
+                                    <span class="btn-inner--text">Guardar</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 py-1">
+                            <div class="form-check form-switch me-1">
+                                <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                            </div>
+                            <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n</span>
+                            </button>
+                            <a href="{{ route('presupuesto-proyecto') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
+                                <span class="btn-inner--text">Volver</span>
+                            </a>
+                        </div>
+                    </div>                
                 </div>
-            </div>
             @endif
         </div>
     @elseif($estadoValidator == 2)

@@ -8,6 +8,7 @@ use App\Models\Cuenta;
 use App\Models\Base_comercial;
 use App\Models\User; 
 use App\Models\GestionComercial;
+use App\Models\PresupuestoProyecto;
 use Illuminate\Validation\Rules; 
 use Illuminate\Support\Facades\Auth;
 
@@ -83,7 +84,10 @@ class NewProyecto extends Component
         $this->porcentaje0 = $informacionGeneral->porcentaje;
         $this->porcentaje1 = $informacionGeneral->porcentaje_2;
         $this->porcentaje2 = $informacionGeneral->porcentaje_3;
-        $this->porcentaje3 = $informacionGeneral->porcentaje_4;    
+        $this->porcentaje3 = $informacionGeneral->porcentaje_4;
+
+        $this->cod_cc = PresupuestoProyecto::select('cod_cc')->where('id_gestion', $this->lead_id)->first()->cod_cc; 
+
 
         $this->getValor();
         $this->getTotalPorcentaje();
