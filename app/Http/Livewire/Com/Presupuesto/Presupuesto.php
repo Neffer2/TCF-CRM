@@ -64,15 +64,16 @@ class Presupuesto extends Component
         return view('livewire.com.presupuesto.presupuesto');
     }
 
-    public function mount(){        
+    public function mount(){ 
         $validator = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         if (is_null($validator)){
             $presupuesto = new PresupuestoProyecto;
-            $presupuesto->id_gestion = $this->id_gestion;
+            $presupuesto->id_gestion = $this->id_gestion; 
+            $presupuesto->cod_cot = $this->getLatestCodCot() + 1; 
             $presupuesto->save();
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
-        }else {
+        }else { 
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
         }
@@ -82,6 +83,14 @@ class Presupuesto extends Component
         $this->getCiudades();
         $this->getMeses();
         $this->getTarifario();
+    }
+
+    public function getLatestCodCot(){
+        $results = PresupuestoProyecto::select('cod_cot')->orderBy('id', 'desc')->limit(1)->first();
+        if (is_null($results)){
+            return 10000;
+        }
+        return $results->cod_cot;
     }
 
     public function new_item(){      
@@ -212,7 +221,7 @@ class Presupuesto extends Component
     }
 
     public function getDataEdit($id){
-        $this->selected_item = [];
+        $this->selected_item = []; 
         foreach ($this->items as $key => $item) {
             if ($item->id == $id){ $this->selected_item = $item; } 
         }
@@ -295,13 +304,14 @@ class Presupuesto extends Component
         }
 
         $this->refresh();
-        $this->limpiar();
+        $this->limpiar(); 
     } 
 
     public function cotizacionPdf(){ 
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto]);
     }
 
+    // Envía a probacion
     public function aprobacion(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 2;
@@ -310,14 +320,20 @@ class Presupuesto extends Component
         $this->estadoValidator = $presto->estado_id;
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
- 
+    
+
     public function updateCentro(){
         $this->validate([
             'centroCostos' => ['required', 'string']
         ]);
 
+        $gestion = GestionComercial::find($this->id_gestion);
+        $gestion->id_estado = 4;
+        $gestion->update();
+
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $item->cod_cc = $this->centroCostos; 
+        $item->cod_cc = $this->centroCostos;
+        $item->estado_id = 1;
         $item->update();
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
     }  

@@ -138,7 +138,7 @@
             <tr>
                 <td class="bold" style="width: 68%;">
                     Señor (es) {{ $presto->gestion->contacto->nombre }} {{ $presto->gestion->contacto->apellido }}<br>
-                    Empresa: {{ $presto->gestion->contacto->empresa }} <br> 	 			
+                    Empresa: {{ $presto->gestion->contacto->empresa }} <br> 	 			 
                     Proyecto: {{ $presto->gestion->nom_proyecto_cot }} <br>
                     Ciudad: {{ $presto->gestion->contacto->ciudad }}
                 </td>
@@ -146,7 +146,7 @@
                     <table class="info-inner table text-center">
                         <tr>
                             <td class="bold" style="border-left: none; border-top: none;">COTIZACION</td>
-                            <td class="bold" style="border-right: none; border-top: none; color: red; background-color: rgb(228, 228, 228);">10005</td>
+                            <td class="bold" style="border-right: none; border-top: none; color: red; background-color: rgb(228, 228, 228);">{{ $presto->cod_cot }}</td>
                         </tr>
                         <tr>
                             <td style="border-left: none; border-top: none;">Fecha Emisión</td>

@@ -380,7 +380,7 @@
                         <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
                     <span class="btn-inner--text">Enviar a aprobaci&oacute;n</span>
                     </button>
-
+ 
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">

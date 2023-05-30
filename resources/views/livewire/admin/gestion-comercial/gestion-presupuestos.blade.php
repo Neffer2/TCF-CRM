@@ -89,7 +89,7 @@
                                             @if ($estado->id == 1 && !is_null($presupuesto->cod_cc))                                        
                                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                                             @endif
-                                        @endif
+                                        @endif 
                                     @endforeach
                                     <option value="3">Rechazar</option>
                                 </select>
