@@ -103,7 +103,7 @@ class Presupuesto extends Component
             'valor_unitario' => ['required'],
             'valor_total' => ['required'],
             'proveedor' => ['required'],
-            'utilidad' => ['required'],
+            'utilidad' => ['required', 'numeric', 'max:2'],
             'mes' => ['required'], 
             'dias' => ['required'],
             'ciudad' => ['required']  
@@ -186,7 +186,7 @@ class Presupuesto extends Component
         $presto->margen_bruto = $this->margenBruto;
         $presto->update();
 
-        $this->centroCostos = $presto->cod_cc;
+        $this->centroCostos = $presto->cod_cc;  
     }
 
     public function getCiudades(){
@@ -333,6 +333,7 @@ class Presupuesto extends Component
 
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $item->cod_cc = $this->centroCostos;
+        $item->fecha_cc = date("Y-m-d");
         $item->estado_id = 1;
         $item->update();
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  

@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="form-group"> 
-                    <label for="fecha">
+                    <label for="fecha"> 
                         Fecha Centro de Costos: 
                     </label>
                     <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
@@ -139,7 +139,7 @@
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                         @endforeach
                     </select>
-                    @error('id_estado')
+                    @error('id_estado') 
                         <div id="id_estado" class="invalid-feedback">
                             {{ $message }}
                         </div>

@@ -229,7 +229,7 @@
                     <td></td>
                     <td class="text-center"> $ {{ number_format($totalCot * 0.098) }} </td>
                 </tr>
-
+ 
                 <tr>
                     <td class="text-center" colspan="4">Valores No incluyen IVA</td>                    
                     <td class="bold text-center bg-orange">TOTAL</td>

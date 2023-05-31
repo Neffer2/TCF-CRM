@@ -76,17 +76,19 @@ class NewProyecto extends Component
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
         
         $this->participaciones = $informacionGeneral->participaciones;
-        $this->comercial0 = Auth::id();
+        $this->comercial0 = Auth::id(); 
         $this->comercial1 = $informacionGeneral->comercial_2;
         $this->comercial2 = $informacionGeneral->comercial_3;
         $this->comercial3 = $informacionGeneral->comercial_4;
 
         $this->porcentaje0 = $informacionGeneral->porcentaje;
-        $this->porcentaje1 = $informacionGeneral->porcentaje_2;
+        $this->porcentaje1 = $informacionGeneral->porcentaje_2; 
         $this->porcentaje2 = $informacionGeneral->porcentaje_3;
         $this->porcentaje3 = $informacionGeneral->porcentaje_4;
 
-        $this->cod_cc = PresupuestoProyecto::select('cod_cc')->where('id_gestion', $this->lead_id)->first()->cod_cc; 
+        $prestoInfo = PresupuestoProyecto::select('cod_cc', 'fecha_cc')->where('id_gestion', $this->lead_id)->first();
+        $this->cod_cc = $prestoInfo->cod_cc;
+        $this->fecha = $prestoInfo->fecha_cc;
 
 
         $this->getValor();

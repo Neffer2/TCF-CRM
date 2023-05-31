@@ -91,7 +91,9 @@
                             <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th> 
                         @endif
 
-                        <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
+                        @if (Auth::user()->rol != 1)
+                            <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -101,13 +103,17 @@
                                 <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="font-weight-bold font-table text-center bg-gradient-info text-white">
                                     {{ $item->descripcion }}
                                 </td>
-                                <td class="font-weight-bold font-table">
-                                    <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    <button wire:click="getDataEdit({{ $item->id }})">📝</button>
-                                </td>
-                            </tr>
+                                @if (Auth::user()->rol != 1)
+                                    <td class="font-weight-bold font-table">
+                                        <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                                    </td>
+                                @endif
+                                @if (Auth::user()->rol != 1)
+                                    <td class="font-weight-bold font-table">
+                                        <button wire:click="getDataEdit({{ $item->id }})">📝</button>
+                                    </td>
+                                @endif
+                                </tr>
                         @else
                             <tr> 
                                 <td class="font-weight-bold font-table">
@@ -164,12 +170,16 @@
                                     </td>
                                 @endif
 
-                                <td class="font-weight-bold font-table">
-                                    <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    <button wire:click="getDataEdit({{ $item->id }})">📝</button>
-                                </td>
+                                @if (Auth::user()->rol != 1)
+                                    <td class="font-weight-bold font-table">
+                                        <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                                    </td>
+                                @endif
+                                @if (Auth::user()->rol != 1)
+                                    <td class="font-weight-bold font-table">
+                                        <button wire:click="getDataEdit({{ $item->id }})">📝</button>
+                                    </td>
+                                @endif
                             </tr>
                         @endif           
                     @endforeach
