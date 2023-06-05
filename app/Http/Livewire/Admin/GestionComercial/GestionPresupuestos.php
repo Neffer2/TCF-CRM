@@ -7,7 +7,7 @@ use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
 use App\Models\GestionComercial;
 use App\Models\User; 
-use Livewire\WithPagination;
+use Livewire\WithPagination; 
 
 class GestionPresupuestos extends Component
 {
@@ -23,6 +23,7 @@ class GestionPresupuestos extends Component
     // Useful vars
     public $estados = []; 
     public $margenOperator;
+    public $estadoProyecto;
     // public $comerciales = [];  
 
     public $rol;
@@ -42,8 +43,8 @@ class GestionPresupuestos extends Component
         }
 
         $registros = 0;
-        $presupuestos = PresupuestoProyecto::where('estado_id', $this->margenOperator, 3)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
-        $registros = PresupuestoProyecto::where('estado_id', $this->margenOperator, 3)->where($filtros)->orderBy('id', $this->fecha)->count();
+        $presupuestos = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
+        $registros = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->count();
 
         return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['presupuestos' => $presupuestos, 'registros' => $registros]);
     }
@@ -51,9 +52,7 @@ class GestionPresupuestos extends Component
     public function mount(){
         $this->getEstados();
         if ($this->rol == 1){
-            $this->margenOperator = '<';
-        }else {
-            $this->margenOperator = '>';
+            $this->estadoProyecto = 2;
         }
         // $this->getComerciales(); 
     }

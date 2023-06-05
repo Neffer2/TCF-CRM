@@ -1,5 +1,5 @@
 <div x-data>
-    @if ($estadoValidator == 3 || Auth::user()->rol == 1)
+    @if ($estadoValidator != 2 || Auth::user()->rol == 1)
         <div class="card card-frame">
             <div class="row justify-content-md-center">
                 <div class="col-md-3 m-2">

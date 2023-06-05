@@ -69,10 +69,11 @@ Route::get('/', function () {
 
         // Presupuesto
         Route::get('/presupuesto/{centro?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
+        Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos'); 
     /* --- */
 /* --- */  
 
-/* contable */ 
+/* contable */  
     /* base - functions */   
         // Route::get('/dashboard-con', [ContableController::class, 'index'])->middleware(['auth'])->middleware(['contable'])->name('dashboard-con');  
         // Route::get('/actualizar-perfil-con', [ContableController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['contable'])->name('actualizar-perfil-con');  

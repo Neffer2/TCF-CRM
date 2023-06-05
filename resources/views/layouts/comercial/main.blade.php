@@ -81,12 +81,18 @@
                   <a class="nav-link" href="{{ route('contactos') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Contactos </span>
-                  </a>
+                  </a> 
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('gestion-comercial') }}">
                     <span class="sidenav-mini-icon text-xs"> NP </span>
                     <span class="sidenav-normal"> Prospectos </span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('presupuestos') }}">
+                    <span class="sidenav-mini-icon text-xs"> NP </span>
+                    <span class="sidenav-normal"> Presupuestos </span>
                   </a>
                 </li>            
               </ul>

@@ -58,6 +58,10 @@ class ComercialController extends Controller
         return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]); 
     }
 
+    public function presupuestos(){ 
+        return view('comercial.presupuesto.list');  
+    }
+
     public function cotizacionPdf($prespuesto, $nom_proyecto){
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();

@@ -9,7 +9,7 @@
         </div>
     @endsection
 @section('content')      
-    @livewire("com.presupuesto.presupuesto", ['id_gestion' => $id_gestion]) 
+    @livewire("com.presupuesto.presupuesto", ['id_gestion' => $id_gestion])
 @endsection 
 
 @section('scripts')  
