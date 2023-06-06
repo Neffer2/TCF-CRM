@@ -36,4 +36,8 @@ class AdminController extends Controller
     public function showPresupuestosProyecto(){ 
         return view('admin.gestion.presupuestos');
     }
+
+    public function presupuestos(){ 
+        return view('admin.gestion.list');  
+    }
 }

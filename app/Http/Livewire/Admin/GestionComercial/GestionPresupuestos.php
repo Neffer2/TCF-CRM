@@ -9,7 +9,7 @@ use App\Models\GestionComercial;
 use App\Models\User; 
 use Livewire\WithPagination; 
 
-class GestionPresupuestos extends Component
+class GestionPresupuestos extends Component 
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
@@ -27,21 +27,22 @@ class GestionPresupuestos extends Component
     // public $comerciales = [];  
 
     public $rol;
-
-    public function render()
+ 
+    public function render() 
     {   
         $filtros = [];
  
         if ($this->filter != 0){
             array_push($filtros, ['estado_id', $this->filter]);
         }
-
+        
         if ($this->margen == '<'){
             array_push($filtros, ['margen_proy', '<=', 35]);
         }elseif ($this->margen == '>'){
             array_push($filtros, ['margen_proy', '>=', 35]);
         }
-
+        array_push($filtros, ['cod_cc', null]);
+        
         $registros = 0;
         $presupuestos = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
         $registros = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->count();

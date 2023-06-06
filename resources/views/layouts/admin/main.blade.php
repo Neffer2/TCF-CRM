@@ -23,7 +23,7 @@
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
 </head>
-<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">  
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">   
   @yield('hero-style')
   <!-- Barra lateral --> 
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
@@ -79,6 +79,12 @@
                 <a class="nav-link" href="{{ route('presupuesto-proyecto') }}">
                   <span class="sidenav-mini-icon text-xs"> P </span>
                   <span class="sidenav-normal"> Presupuestos </span>
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('presupuestos-admin') }}">
+                  <span class="sidenav-mini-icon text-xs"> A </span>
+                  <span class="sidenav-normal"> Actualizaciones </span>
                 </a>
               </li>            
             </ul>

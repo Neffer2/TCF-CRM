@@ -133,7 +133,6 @@
                 </td>
             </tr>
         </table>
-    
         <table class="header table">
             <tr>
                 <td class="bold" style="width: 68%;">
@@ -206,28 +205,28 @@
                 </tr>
                 
                 <tr>
-                    <td class="text-center">IMPREVISTOS</td>
+                    <td class="text-center">IMPREVISTOS</td> 
                     <td></td>
                     <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">1%</td>
+                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->imprevistos) }} %</td>
                     <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * 0.01) }}</td>
+                    <td class="text-center"> $ {{ number_format($totalCot * $presto->imprevistos) }}</td>
                 </tr>
                 <tr>
                     <td class="text-center">ADMINISTRACION</td>
                     <td></td>
                     <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">0%</td>
+                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->administracion) }} %</td>
                     <td></td>
-                    <td class="text-center">0</td>
+                    <td class="text-center">$ {{ number_format($totalCot * $presto->administracion) }} </td>
                 </tr>
                 <tr>
                     <td class="text-center">FEE AGENCIA</td>
                     <td></td>
                     <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">10%</td>
+                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->fee) }} %</td>
                     <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * 0.098) }} </td>
+                    <td class="text-center"> $ {{ number_format($totalCot * $presto->fee) }} </td>
                 </tr>
  
                 <tr>

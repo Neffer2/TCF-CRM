@@ -62,6 +62,32 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3 m-2">
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <td class="font-weight-bold font-table">IMPREVISTOS</td>
+                                    <td class="font-table">
+                                        <input type="text" wire:model.lazy="imprevistos">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold font-table">ADMINISTRACI&Oacute;N</td>
+                                    <td class="font-table">
+                                        <input type="text" wire:model.lazy="administracion">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold font-table">FEE AGENCIA</td>
+                                    <td class="font-table">
+                                        <input type="text" wire:model.lazy="fee">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
          
@@ -188,7 +214,7 @@
         </div>          
 
         <div class="row mt-2">
-            @if (Auth::user()->rol == 2)
+            @if (Auth::user()->rol == 2)            
                 <div class="col-md-12 p-2"> 
                     <div class="row gy-0">
                         <div class="col-md-1">
@@ -307,9 +333,9 @@
                         </div>
                         <div class="col-md-1">
                             <div class="form-group mb-0">
-                                <label for="mes">MES</label>
+                                <label for="mes">MES</label> 
                                 <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
-                                placeholder="Mes" required wire:model.lazy="mes">
+                                placeholder="Mes" required wire:model.lazy="mes" required>
                                     <option value="">Seleccionar</option>
                                     @foreach ($meses as $mes)
                                         <option value="{{ $mes->id }}">{{ $mes->description }}</option>
@@ -411,7 +437,8 @@
                             </div>
                         </div>
                     </div>
-                </div>             
+                </div>
+
             @elseif (Auth::user()->rol == 1)
                 <div class="col-md-12 p-2"> 
                     <div class="row gy-0">
@@ -424,7 +451,7 @@
                                     <div id="centroCostos" class="invalid-feedback">
                                         {{ $message }}
                                     </div>
-                                @enderror
+                                @enderror 
                                 <button wire:click="updateCentro" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
                                     <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                                     <span class="btn-inner--text">Guardar</span>
@@ -440,9 +467,6 @@
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Cotizaci&oacute;n</span>
                             </button>
-                            <a href="{{ route('presupuesto-proyecto') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
-                                <span class="btn-inner--text">Volver</span>
-                            </a>
                         </div>
                     </div>                
                 </div>

@@ -2,15 +2,6 @@
     <div class="card">
         <div class="row px-3">
             <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
-                <label for="estados">Estados:</label>
-                <select id="estados" class="form-control" wire:model="filter" disabled>
-                    <option selected value="0">Todos</option>                    
-                    @foreach ($estados as $estado)
-                        <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
-                    @endforeach
-                </select>
-            </div> 
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
                 <div class="form-group">
                     <label for="comercial">Fecha:</label>
                     <select id="comercial" class="form-control" wire:model="fecha">
@@ -18,17 +9,7 @@
                         <option value="asc">M&aacute;s reciente</option>
                         <option value="desc">M&aacute;s antiguos</option>
                     </select>
-                </div>
-            </div>
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
-                <div class="form-group">
-                    <label for="comercial">Margen:</label>
-                    <select id="comercial" class="form-control" wire:model="margen">
-                        <option value="">Seleccionar</option>
-                        <option value=">">Mayor a 35</option>
-                        <option value="<">Menor a 35</option>
-                    </select>
-                </div>
+                </div> 
             </div>
         </div>
         <div class="table-responsive">
@@ -68,17 +49,17 @@
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->comercial->name }}</p>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">Venta Proyecto</p>
-                                <p class="text-xs text-secondary mb-0">$ {{ number_format($presupuesto->venta_proy) }}</p>
+                                <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
+                                <p class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</p>
                             </td>
-                            <td> 
-                                <p class="text-xs font-weight-bold mb-0">Costos Proyecto</p>
-                                <p class="text-xs text-secondary mb-0">$ {{ number_format($presupuesto->costos_proy) }}</p>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                <p class="text-xs text-secondary mb-0">{{ $presupuesto->estado->description }}</p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                 <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
-                            </td>
+                            </td> 
                             @if (Auth::user()->rol == 1)
                                 <td class="d-flex align-items-start">
                                     <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
@@ -97,7 +78,7 @@
                                 </td>
                             @else
                                 <td class="d-flex align-items-start"> 
-                                    <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $presupuesto->id) }}" target="_blank">Presupuesto</a>
+                                    <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $presupuesto->id_gestion) }}" target="_blank">Presupuesto</a>
                                 </td>
                             @endif
                         </tr> 

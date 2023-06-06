@@ -19,7 +19,7 @@
                         <option value="desc">M&aacute;s antiguos</option>
                     </select>
                 </div>
-            </div>
+            </div> 
             <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-1">
                 <div class="form-group">
                     <label for="comercial">Margen:</label>

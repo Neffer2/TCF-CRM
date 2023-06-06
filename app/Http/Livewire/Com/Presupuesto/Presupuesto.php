@@ -31,6 +31,10 @@ class Presupuesto extends Component
     public $dias;
     public $ciudad;
 
+    public $imprevistos = 0;
+    public $administracion = 0;
+    public $fee = 0;
+
     public $centroCostos;
 
     // Useful vars
@@ -57,7 +61,7 @@ class Presupuesto extends Component
     public $ciudadContacto;
 
     // globals
-    public $id_gestion; 
+    public $id_gestion;  
 
     public function render()
     {
@@ -170,7 +174,8 @@ class Presupuesto extends Component
         $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
     }
 
-    public function getMetricas(){
+    // corregir fees
+    public function getMetricas(){ 
         (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
         $this->ventaProyecto += ($this->ventaProyecto * 0.01) + ($this->ventaProyecto * 0.098);
@@ -187,6 +192,19 @@ class Presupuesto extends Component
         $presto->update();
 
         $this->centroCostos = $presto->cod_cc;  
+        $this->imprevistos = $presto->imprevistos;  
+        $this->administracion = $presto->administracion;  
+        $this->fee = $presto->fee;  
+    }
+
+    public function updateTarifas(){
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presto->imprevistos = $this->imprevistos;
+        $presto->administracion = $this->administracion;
+        $presto->fee = $this->fee;
+        $presto->update();
+
+        $this->getMetricas();
     }
 
     public function getCiudades(){
@@ -320,24 +338,26 @@ class Presupuesto extends Component
         $this->estadoValidator = $presto->estado_id;
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
-    
+     
 
     public function updateCentro(){
         $this->validate([
             'centroCostos' => ['required', 'string']
         ]);
-
-        $gestion = GestionComercial::find($this->id_gestion);
-        $gestion->id_estado = 4;
-        $gestion->update();
-
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+
+        if (is_null($item->cod_cc)){
+            $gestion = GestionComercial::find($this->id_gestion);
+            $gestion->id_estado = 4;
+            $gestion->update();
+        }
+
         $item->cod_cc = $this->centroCostos;
         $item->fecha_cc = date("Y-m-d");
         $item->estado_id = 1;
         $item->update();
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
-    }  
+    }
 
     // VALIDATIONS
     public function updatedCod(){
@@ -485,6 +505,27 @@ class Presupuesto extends Component
                 'centroCostos' => ['required', 'string']
             ]);
         }
-    } 
+    }
+    
+    public function updatedImprevistos(){    
+        $this->validate([
+            'imprevistos' => ['required', 'numeric']
+        ]);
+        $this->updateTarifas();
+    }
+
+    public function updatedAdministracion(){    
+        $this->validate([
+            'administracion' => ['required', 'numeric']
+        ]);
+        $this->updateTarifas();
+    }
+
+    public function updatedFee(){    
+        $this->validate([
+            'fee' => ['required', 'numeric']
+        ]);
+        $this->updateTarifas();
+    }
     // ----------- 
 } 

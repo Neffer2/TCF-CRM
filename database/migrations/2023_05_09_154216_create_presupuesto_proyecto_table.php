@@ -29,7 +29,12 @@ class CreatePresupuestoProyectoTable extends Migration
 
             $table->integer('cod_cot');             
             $table->string('cod_cc')->nullable();                        
-            $table->date('fecha_cc')->nullable();                        
+            $table->date('fecha_cc')->nullable();               
+            
+            $table->decimal('imprevistos', 15, 2)->default(0);             
+            $table->decimal('administracion', 15, 2)->default(0);             
+            $table->decimal('fee', 15, 2)->default(0);             
+            
             $table->timestamps();
         });
     }
