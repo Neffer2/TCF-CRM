@@ -210,7 +210,7 @@
                     <td></td>
                     <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->imprevistos) }} %</td>
                     <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * $presto->imprevistos) }}</td>
+                    <td class="text-center"> $ {{ number_format($totalCot * ($presto->imprevistos/100)) }}</td>
                 </tr>
                 <tr>
                     <td class="text-center">ADMINISTRACION</td>
@@ -218,7 +218,7 @@
                     <td></td>
                     <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->administracion) }} %</td>
                     <td></td>
-                    <td class="text-center">$ {{ number_format($totalCot * $presto->administracion) }} </td>
+                    <td class="text-center">$ {{ number_format($totalCot * ($presto->administracion/100)) }} </td>
                 </tr>
                 <tr>
                     <td class="text-center">FEE AGENCIA</td>
@@ -226,7 +226,7 @@
                     <td></td>
                     <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->fee) }} %</td>
                     <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * $presto->fee) }} </td>
+                    <td class="text-center"> $ {{ number_format($totalCot * ($presto->fee/100)) }} </td>
                 </tr>
  
                 <tr>

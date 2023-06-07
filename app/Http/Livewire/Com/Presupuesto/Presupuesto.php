@@ -175,10 +175,10 @@ class Presupuesto extends Component
     }
 
     // corregir fees
-    public function getMetricas(){ 
+    public function getMetricas(){   
         (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
-        $this->ventaProyecto += ($this->ventaProyecto * 0.01) + ($this->ventaProyecto * 0.098);
+        $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos/100)) + ($this->ventaProyecto * ($this->administracion/100)) + ($this->ventaProyecto * ($this->fee/100));
         $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
         if ($this->ventaProyecto > 0){ $this->margenProyecto =  (($this->ventaProyecto - $this->costosProyecto)/$this->ventaProyecto)*100;}
         $this->margenBruto = $this->ventaProyecto - $this->costosProyecto;
@@ -204,7 +204,7 @@ class Presupuesto extends Component
         $presto->fee = $this->fee;
         $presto->update();
 
-        $this->getMetricas();
+        $this->refresh();
     }
 
     public function getCiudades(){

@@ -29,7 +29,7 @@
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> 
                 <div class="col-md-3 m-2">
                     <div class="card">
                         <div class="table-responsive">
@@ -69,19 +69,19 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">IMPREVISTOS</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="imprevistos">
+                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">ADMINISTRACI&Oacute;N</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="administracion">
+                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">FEE AGENCIA</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="fee">
+                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
                                     </td>
                                 </tr>
                             </table>
