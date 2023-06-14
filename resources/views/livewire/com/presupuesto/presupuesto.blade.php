@@ -1,8 +1,8 @@
 <div x-data>
     @if ($estadoValidator != 2 || Auth::user()->rol == 1)
-        <div class="card card-frame">
+        <div class="card card-frame p-2">
             <div class="row justify-content-md-center">
-                <div class="col-md-3 m-2">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table">
@@ -30,7 +30,7 @@
                         </div>
                     </div>
                 </div> 
-                <div class="col-md-3 m-2">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table">
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 m-2">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table">
@@ -82,6 +82,26 @@
                                     <td class="font-weight-bold font-table">FEE AGENCIA</td>
                                     <td class="font-table">
                                         <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold font-table">TIEMPO</td>
+                                    <td class="font-table">
+                                        <input type="text" wire:model.lazy="" placeholder="" @if (Auth::user()->rol == 1) disabled @endif>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <td class="font-weight-bold font-table">NOTAS</td>
+                                    <td class="font-table">
+                                        <textarea name="" id="" cols="60" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
                                     </td>
                                 </tr>
                             </table>
