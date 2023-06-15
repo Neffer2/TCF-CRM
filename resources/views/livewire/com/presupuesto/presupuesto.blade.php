@@ -69,26 +69,30 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">IMPREVISTOS</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
+                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        class="@error('imprevistos') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">ADMINISTRACI&Oacute;N</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
+                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        class="@error('administracion') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">FEE AGENCIA</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif>
+                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        class="@error('fee') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">TIEMPO</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="" placeholder="" @if (Auth::user()->rol == 1) disabled @endif>
-                                    </td>
+                                        <input type="text" wire:model.lazy="tiempoFactura" placeholder="" @if (Auth::user()->rol == 1) disabled @endif
+                                        class="@error('tiempoFactura') invalid-input @enderror">
+                                    </td> 
                                 </tr>
                             </table>
                         </div>
@@ -101,7 +105,7 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">NOTAS</td>
                                     <td class="font-table">
-                                        <textarea name="" id="" cols="60" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
+                                        <textarea wire:model.lazy="notas" cols="60" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -241,7 +245,7 @@
                             <div class="form-group mb-0">
                                 <label for="cod">COD</label>
                                 <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
-                                placeholder="Cod" required wire:model.lazy="cod">
+                                placeholder="Cod" required wire:model.lazy="cod"> 
                                     <option value="">Seleccionar</option>
                                     <option value="0">---- Sin tarifario ----</option>
                                     @foreach ($tarifario as $item)
@@ -396,7 +400,7 @@
                                     </div>
                                 @enderror 
                             </div>
-                        </div>
+                        </div> 
                     </div>                
                 </div>
 
@@ -414,12 +418,44 @@
                     <button wire:click="actionEdit()" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" type="button">
                         <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                     <span class="btn-inner--text">Editar</span>
-                    </button> 
-
-                    <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
-                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                    <span class="btn-inner--text">Cotizaci&oacute;n</span>
                     </button>
+
+                    <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
+                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                        <span class="btn-inner--text">Exportar</span>
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-body">
+                                        <h2 class="fs-5">Documentos Cliente</h2>
+                                            <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
+                                            </button>
+                                        <hr class="horizontal dark">                        
+                                        <h2 class="fs-5">Documentos Interno</h2>
+                                        @if ($cod_cc)
+                                            <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                <span class="btn-inner--text">Interno PDF</span>
+                                            </button>                                            
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="form-check form-switch me-1">
                         <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">

@@ -59,20 +59,20 @@ class ComercialController extends Controller
     }
 
     public function presupuestos(){ 
-        return view('comercial.presupuesto.list');  
+        return view('comercial.presupuesto.list');   
     }
 
-    public function cotizacionPdf($prespuesto, $nom_proyecto){
+    public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('pdf.index', ['presto' => $presto, 'items' => $items])->render(); 
+        $html = View::make('pdf.index', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render(); 
         $dompdf->loadHtml($html);
         $dompdf->render();
         $dompdf->stream($nom_proyecto); 
     }
-
+ 
     public function pdf(){
         // instantiate and use the dompdf class
         $dompdf = new Dompdf(array('enable_remote' => true));

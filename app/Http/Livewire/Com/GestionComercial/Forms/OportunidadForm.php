@@ -29,13 +29,13 @@ class OportunidadForm extends Component
     } 
 
     public function updatedDescoportunidad(){
-        $this->validate(['descOportunidad' => ['required', 'string']]);
+        $this->validate(['descOportunidad' => ['required', 'string', 'max:254']]);
     }
 
     public function store(){
         $this->validate([
             'contacto' => ['required', 'string'],
-            'descOportunidad' => ['required', 'string']
+            'descOportunidad' => ['required', 'string', 'max:254']
         ]);
 
         $lead = GestionComercial::where('id', $this->lead_id)->first();

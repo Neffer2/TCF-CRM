@@ -34,6 +34,8 @@ class CreatePresupuestoProyectoTable extends Migration
             $table->decimal('imprevistos', 15, 2)->default(0);             
             $table->decimal('administracion', 15, 2)->default(0);             
             $table->decimal('fee', 15, 2)->default(0);             
+            $table->integer('tiempo_factura')->default(30);
+            $table->string('notas')->nullable();
             
             $table->timestamps();
         });

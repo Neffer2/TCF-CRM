@@ -85,10 +85,10 @@ Route::get('/', function () {
         // Route::post('/update-helisa/{id_user?}', [ContableController::class, 'update_helisa'])->middleware(['auth'])->middleware(['contable'])->name('update-helisa'); 
         // Delete proyecto
         // Route::post('/delete-registro/{id_user?}', [ContableController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
-    /* --- */
+    /* --- */ 
 /* --- */ 
  
-    Route::get('cotizacion/{prespuesto?}/{nom_proyecto?}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
+    Route::get('cotizacion/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
     // Route::get('/pdf', [ComercialController::class, 'pdf']);
     // Route::get('/pdf-vista', function(){
     //     return view('pdf.index');

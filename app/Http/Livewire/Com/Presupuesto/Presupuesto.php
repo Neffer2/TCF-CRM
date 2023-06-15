@@ -26,6 +26,8 @@ class Presupuesto extends Component
     public $valor_total = 0;
     public $proveedor;
     public $utilidad;
+    public $tiempoFactura;
+    public $notas;
 
     public $mes;
     public $dias;
@@ -46,6 +48,7 @@ class Presupuesto extends Component
     public $selected_item;
     public $rentabilidadView = false;
     public $estadoValidator;
+    public $cod_cc;
 
     // metricas
     public $margenGeneral = 0;
@@ -77,9 +80,11 @@ class Presupuesto extends Component
             $presupuesto->save();
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
+            $this->cod_cc = $presupuesto->cod_cc;
         }else { 
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
+            $this->cod_cc = $validator->cod_cc;
         }
 
         $this->refresh();
@@ -110,7 +115,11 @@ class Presupuesto extends Component
             'utilidad' => ['required', 'numeric', 'max:2'],
             'mes' => ['required'], 
             'dias' => ['required'],
-            'ciudad' => ['required']  
+            'ciudad' => ['required'],
+            
+            'imprevistos' => ['required', 'numeric'],
+            'administracion' => ['required', 'numeric'],
+            'fee' => ['required', 'numeric'],
         ]);
          
         $item = new ItemPresupuesto;
@@ -174,8 +183,8 @@ class Presupuesto extends Component
         $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
     }
 
-    // corregir fees
-    public function getMetricas(){   
+    public function getMetricas(){
+        $this->getInfoFacturas();   
         (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
         $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos/100)) + ($this->ventaProyecto * ($this->administracion/100)) + ($this->ventaProyecto * ($this->fee/100));
@@ -193,20 +202,33 @@ class Presupuesto extends Component
 
         $this->centroCostos = $presto->cod_cc;  
         $this->imprevistos = $presto->imprevistos;  
-        $this->administracion = $presto->administracion;  
+        $this->administracion = $presto->administracion;   
         $this->fee = $presto->fee;  
+        $this->tiempoFactura = $presto->tiempo_factura;
+        $this->notas = $presto->notas;
     }
 
-    public function updateTarifas(){
+    public function getInfoFacturas(){
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $this->imprevistos = $presto->imprevistos;
+        $this->administracion = $presto->administracion;
+        $this->fee = $presto->fee;
+        $this->tiempoFactura = $presto->tiempo_factura;
+        $this->notas = $presto->notas;
+    }
+
+    public function updateInfoFactura(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->imprevistos = $this->imprevistos;
         $presto->administracion = $this->administracion;
         $presto->fee = $this->fee;
+        $presto->tiempo_factura = $this->tiempoFactura;
+        $presto->notas = $this->notas;
         $presto->update();
 
         $this->refresh();
     }
-
+ 
     public function getCiudades(){
         $this->ciudades = app('ciudades');
     }
@@ -304,7 +326,7 @@ class Presupuesto extends Component
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
             $item->cantidad = $this->cantidad;
-            $item->dia = $this->dia;
+            $item->dia = $this->dia; 
             $item->otros = $this->otros;
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
@@ -323,10 +345,14 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->limpiar(); 
-    } 
+    }  
 
-    public function cotizacionPdf(){ 
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto]);
+    public function cotizacionPdf(){  
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
+    }
+
+    public function internoPdf(){  
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
     }
 
     // Envía a probacion
@@ -366,7 +392,7 @@ class Presupuesto extends Component
             'cod' => ['required']
         ]);
 
-        $this->setDescripcion($this->cod);
+        $this->setDataTarifario($this->cod);
     }
 
     public function updatedCantidad(){
@@ -456,24 +482,64 @@ class Presupuesto extends Component
         ]);
     }
 
+    public function updatedCentroCostos(){    
+        if (Auth::user()->rol == 1){
+            $this->validate([
+                'centroCostos' => ['required', 'string']
+            ]);
+        }
+    }
+    
+    public function updatedImprevistos(){    
+        $this->validate([
+            'imprevistos' => ['required', 'numeric']
+        ]);
+        $this->updateInfoFactura();
+    }
+
+    public function updatedAdministracion(){    
+        $this->validate([
+            'administracion' => ['required', 'numeric']
+        ]);
+        $this->updateInfoFactura();
+    }
+
+    public function updatedFee(){    
+        $this->validate([
+            'fee' => ['required', 'numeric']
+        ]);
+        $this->updateInfoFactura();
+    }
+
+    public function updatedTiempoFactura(){    
+        $this->validate([
+            'tiempoFactura' => ['required', 'numeric']
+        ]);
+        $this->updateInfoFactura();
+    }
+
+    public function updatedNotas(){    
+        $this->validate([
+            'notas' => ['required', 'string', 'max:254']
+        ]); 
+        $this->updateInfoFactura();
+    }
+
     public function getValorTotal(){
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->otros) && !is_null($this->valor_unitario)){
             $this->valor_total = $this->cantidad * $this->dia * $this->otros * $this->valor_unitario;
         }
     }
 
-    public function setDescripcion($cod_tarifario){       
+    public function setDataTarifario($cod_tarifario){       
         if ($cod_tarifario == 0){
             $this->descripcion = "";
+            $this->valor_unitario = 0;
             return redirect()->back();
         }
-        
-        foreach ($this->tarifario as $key => $item) {
-            if ($item->id == $cod_tarifario){
-                $this->descripcion = $item->concepto." ".$item->caso;
-                break;
-            }
-        }
+        $tarifario = $this->tarifario->firstWhere('id', $cod_tarifario);
+        $this->descripcion = $tarifario->concepto." ".$tarifario->caso;
+        $this->valor_unitario = $tarifario->v_unidad;
     }
 
     public function limpiar(){
@@ -497,35 +563,6 @@ class Presupuesto extends Component
 
     public function toggelRentabilidad(){
         $this->rentabilidadView = !$this->rentabilidadView;
-    }
-
-    public function updatedCentroCostos(){    
-        if (Auth::user()->rol == 1){
-            $this->validate([
-                'centroCostos' => ['required', 'string']
-            ]);
-        }
-    }
-    
-    public function updatedImprevistos(){    
-        $this->validate([
-            'imprevistos' => ['required', 'numeric']
-        ]);
-        $this->updateTarifas();
-    }
-
-    public function updatedAdministracion(){    
-        $this->validate([
-            'administracion' => ['required', 'numeric']
-        ]);
-        $this->updateTarifas();
-    }
-
-    public function updatedFee(){    
-        $this->validate([
-            'fee' => ['required', 'numeric']
-        ]);
-        $this->updateTarifas();
-    }
+    }   
     // ----------- 
 } 

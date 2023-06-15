@@ -59,21 +59,6 @@
             border: 2px solid black;
         }
 
-        /* 
-        tr {
-            border: 1px solid black;
-        }
-
-        td {
-            border: 1px solid black;
-        }
-
-        th {
-            color: white;
-            background-color: orange;
-            border-right: 2px solid black;
-        } */
-
         .bg-orange {
             background-color: #F05A22;
             color: white;
@@ -96,7 +81,7 @@
         }
 
         .border {
-            border: 2px solid black;
+            border: 2px solid black; 
             border-top: none;
         }
 
@@ -139,7 +124,7 @@
                     Señor (es) {{ $presto->gestion->contacto->nombre }} {{ $presto->gestion->contacto->apellido }}<br>
                     Empresa: {{ $presto->gestion->contacto->empresa }} <br> 	 			 
                     Proyecto: {{ $presto->gestion->nom_proyecto_cot }} <br>
-                    Ciudad: {{ $presto->gestion->contacto->ciudad }}
+                    @if (!$tipo) Centro de costos: {{ $presto->cod_cc }} @else Ciudad: {{ $presto->gestion->contacto->ciudad }} @endif
                 </td>
                 <td style="padding: 0;">
                     <table class="info-inner table text-center">
@@ -153,20 +138,21 @@
                         </tr>
                         <tr>
                             <td style="border-left: none; border-top: none; background-color: rgb(228, 228, 228);">{{ date('d/m/Y') }}</td>
-                            <td style="border-right: none; border-top: none; background-color: rgb(228, 228, 228);">{{ date('d/m/Y', strtotime("+30 days")) }}</td>
+                            <td style="border-right: none; border-top: none; background-color: rgb(228, 228, 228);">{{ date('d/m/Y', strtotime("+ $presto->tiempo_factura days")) }}</td>
                         </tr>
                         <tr>                            
                             <td class="bold" style="border-left: none; border-bottom: none;">Condiciones De Pago</td>
-                            <td class="bold" style="border-right: none; border-bottom: none; background-color: rgb(228, 228, 228);">30 días</td>
+                            <td class="bold" style="border-right: none; border-bottom: none; background-color: rgb(228, 228, 228);">{{ $presto->tiempo_factura }} días</td>
                         </tr>
                     </table>
-                </td>
+                </td> 
             </tr>
         </table>
 
         <table class="presupuesto table">
             <thead>
                 <tr>
+                    @if (!$tipo) <th class="bg-orange">ITEM</th> @endif
                     <th class="bg-orange" style="width: 45%;">DESCRIPCION</th>
                     <th class="bg-orange">CANTIDAD</th>
                     <th class="bg-orange">DIAS</th>                    
@@ -176,23 +162,43 @@
                 </tr>
             </thead>
             <tbody>
-                @php $totalCot = 0; @endphp
-                @foreach ($items as $item)
+                {{-- Acumula total cotizacion (para sacar las métricas) --}}
+                {{-- Acumula total interno --}}
+                @php    
+                    $totalCot = 0;
+                    $totalInter = 0;
+                @endphp
+                @foreach ($items as $key => $item)
                     @if (!$item->evento == 1)
-                        <tr>
+                        <tr>                                
+                            @if (!$tipo) <td class="text-center">{{ $key+=1 }}</td> @endif
+
                             <td>{{ $item->descripcion }}</td>
                             <td class="text-center">{{ $item->cantidad }}</td>
                             <td class="text-center">{{ $item->dia }}</td>
                             <td class="text-center">{{ $item->otros }}</td>
-                            <td class="text-center">$ {{ number_format($item->v_unitario_cot) }}</td>
-                            <td class="text-center">$ {{ number_format($item->v_total_cot) }}</td>               
+
+                            @if (!$tipo)
+                                <td class="text-center">$ {{ number_format($item->v_unitario) }}</td> 
+                            @else 
+                                <td class="text-center">$ {{ number_format($item->v_unitario_cot) }}</td>
+                            @endif
+
+                            @if (!$tipo)
+                                <td class="text-center">$ {{ number_format($item->v_total) }}</td>
+                            @else 
+                                <td class="text-center">$ {{ number_format($item->v_total_cot) }}</td>
+                            @endif 
                         </tr>
                     @else 
                         <tr>
-                            <td class="bold" style="border-right: none" colspan="6">{{ $item->descripcion }}</td>
+                            <td class="bold" style="border-right: none" colspan="@if ($tipo) 6 @else 7 @endif">{{ $item->descripcion }}</td>
                         </tr>
                     @endif
-                    @php $totalCot += $item->v_total_cot; @endphp
+                    @php 
+                        $totalCot += $item->v_total_cot; 
+                        $totalInter += $item->v_total; 
+                    @endphp
                 @endforeach             
 
                 <tr class="space">
@@ -202,45 +208,55 @@
                     <td class="space"></td>
                     <td class="space"></td>
                     <td class="space"></td>
-                </tr>
-                
-                <tr>
-                    <td class="text-center">IMPREVISTOS</td> 
-                    <td></td>
-                    <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->imprevistos) }} %</td>
-                    <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * ($presto->imprevistos/100)) }}</td>
-                </tr>
-                <tr>
-                    <td class="text-center">ADMINISTRACION</td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->administracion) }} %</td>
-                    <td></td>
-                    <td class="text-center">$ {{ number_format($totalCot * ($presto->administracion/100)) }} </td>
-                </tr>
-                <tr>
-                    <td class="text-center">FEE AGENCIA</td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->fee) }} %</td>
-                    <td></td>
-                    <td class="text-center"> $ {{ number_format($totalCot * ($presto->fee/100)) }} </td>
-                </tr>
- 
-                <tr>
-                    <td class="text-center" colspan="4">Valores No incluyen IVA</td>                    
-                    <td class="bold text-center bg-orange">TOTAL</td>
-                    <td class="text-center bold">
-                        $ {{ number_format($presto->venta_proy) }}
-                    </td>
-                </tr>
+                    @if (!$tipo) <td class="space"></td> @endif
+                </tr>                
+
+                @if ($tipo)
+                    <tr>
+                        <td class="text-center">IMPREVISTOS</td>  
+                        <td></td> 
+                        <td></td>
+                        <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->imprevistos) }} %</td>
+                        <td></td>
+                        <td class="text-center"> $ {{ number_format($totalCot * ($presto->imprevistos/100)) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">ADMINISTRACION</td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->administracion) }} %</td>
+                        <td></td>
+                        <td class="text-center">$ {{ number_format($totalCot * ($presto->administracion/100)) }} </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">FEE AGENCIA</td>
+                        <td></td>
+                        <td></td> 
+                        <td class="text-center" style="background-color: rgb(228, 228, 228);">{{ number_format($presto->fee) }} %</td>
+                        <td></td>
+                        <td class="text-center"> $ {{ number_format($totalCot * ($presto->fee/100)) }} </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" colspan="4">Valores No incluyen IVA</td>                    
+                        <td class="bold text-center bg-orange">TOTAL</td>
+                        <td class="text-center bold">
+                            $ {{ number_format($presto->venta_proy) }}
+                        </td>
+                    </tr>
+                @else 
+                    <tr>
+                        <td class="text-center" colspan="5"></td>                    
+                        <td class="bold text-center bg-orange">TOTAL</td>
+                        <td class="text-center bold">
+                            $ {{ number_format($totalInter) }}
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
 
-        <div class="border bold">
-            <p><b>NOTA:</b></p>
+        <div class="border">
+            <p><b>NOTA:</b> {{ $presto->notas }} </p>
         </div>
 
         <div class="border text-center">
