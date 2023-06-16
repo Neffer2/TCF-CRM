@@ -440,6 +440,11 @@
                                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                 <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
                                             </button>
+
+                                            <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                            </button>
                                         <hr class="horizontal dark">                        
                                         <h2 class="fs-5">Documentos Interno</h2>
                                         @if ($cod_cc)

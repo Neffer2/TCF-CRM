@@ -89,6 +89,7 @@ Route::get('/', function () {
 /* --- */ 
  
     Route::get('cotizacion/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');     
+    Route::get('cotizacionExcel/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionExcel'])->middleware(['auth'])->name('cotizacionExcel');
     // Route::get('/pdf', [ComercialController::class, 'pdf']);
     // Route::get('/pdf-vista', function(){
     //     return view('pdf.index');

@@ -342,7 +342,7 @@ class Presupuesto extends Component
             $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
             $item->update();
         }
-
+ 
         $this->refresh();
         $this->limpiar(); 
     }  
@@ -353,6 +353,10 @@ class Presupuesto extends Component
 
     public function internoPdf(){  
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
+    }
+
+    public function cotizacionExcel(){  
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }
 
     // Envía a probacion

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\BaseSheetHandler;
-use App\Exports\BaseExport;
+use App\Exports\CotExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
@@ -67,10 +67,14 @@ class ComercialController extends Controller
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('pdf.index', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render(); 
+        $html = View::make('exports.pdf', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render(); 
         $dompdf->loadHtml($html);
         $dompdf->render();
         $dompdf->stream($nom_proyecto); 
+    }
+
+    public function cotizacionExcel() {
+        return Excel::download(new CotExport, 'invoicesjiji.xlsx');
     }
  
     public function pdf(){
