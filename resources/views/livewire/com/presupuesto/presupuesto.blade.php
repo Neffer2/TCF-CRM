@@ -451,7 +451,12 @@
                                             <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                 <span class="btn-inner--text">Interno PDF</span>
-                                            </button>                                            
+                                            </button>
+                                            
+                                            <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                            </button>
                                         @endif
                                     </div>
                                 </div>

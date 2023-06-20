@@ -62,6 +62,7 @@ class ComercialController extends Controller
         return view('comercial.presupuesto.list');   
     }
 
+    /* Tipo: Interno, cliente */
     public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
@@ -73,8 +74,11 @@ class ComercialController extends Controller
         $dompdf->stream($nom_proyecto); 
     }
 
-    public function cotizacionExcel() {
-        return Excel::download(new CotExport, 'invoicesjiji.xlsx');
+    public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {                
+        $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
+        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();        
+
+        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo]), $nom_proyecto.".xlsx");
     }
  
     public function pdf(){

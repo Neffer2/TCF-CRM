@@ -359,6 +359,10 @@ class Presupuesto extends Component
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }
 
+    public function internoExcel(){  
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
+    }
+
     // Envía a probacion
     public function aprobacion(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();

@@ -9,15 +9,29 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-class CotExport implements FromView, WithDrawings
-{
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithMapping;
+
+class CotExport implements FromView, WithDrawings, WithColumnFormatting
+{   
+
+    protected $info = [];
+
+    function __construct($info) {
+        $this->info = $info;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function view(): View
-    {
+    {   
         return view('exports.excel', [
-            'users' => User::all()
+            'items' => $this->info['items'],
+            'presto' => $this->info['presto'],
+            'tipo' => $this->info['tipo']
         ]);
     }
 
@@ -31,5 +45,16 @@ class CotExport implements FromView, WithDrawings
         $drawing->setCoordinates('A1');
 
         return $drawing;
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            // 'I' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+            'K' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+            'L' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+            'M' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+            'N' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+        ];
     }
 }
