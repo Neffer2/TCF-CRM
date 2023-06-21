@@ -87,8 +87,10 @@ class NewProyecto extends Component
         $this->porcentaje3 = $informacionGeneral->porcentaje_4;
 
         $prestoInfo = PresupuestoProyecto::select('cod_cc', 'fecha_cc')->where('id_gestion', $this->lead_id)->first();
-        $this->cod_cc = $prestoInfo->cod_cc;
-        $this->fecha = $prestoInfo->fecha_cc;
+        if ($prestoInfo){
+            $this->cod_cc = $prestoInfo->cod_cc;
+            $this->fecha = $prestoInfo->fecha_cc;
+        }
 
 
         $this->getValor();
