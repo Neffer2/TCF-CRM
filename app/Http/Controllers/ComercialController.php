@@ -101,8 +101,8 @@ class ComercialController extends Controller
     }
 
     // Delete Helisa
-    public function delete_registro($centro){
-        Helisa::where('centro', $centro)->delete();
+    public function delete_registro($centro, $num_doc){
+        Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete(); 
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
     } 
    

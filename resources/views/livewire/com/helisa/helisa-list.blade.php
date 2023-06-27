@@ -59,10 +59,10 @@
                                 @livewire('com.helisa.edit', ['id_helisa' => $item->id ])  
                             </div>
                         </div>
-                        {{-- delete modal --}}
+                        {{-- delete modal --}} 
                         <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                                <form action="{{ route('delete-registro', $item->centro) }}" method="POST">
+                                <form action="{{ route('delete-registro', [$item->centro, $item->num_doc]) }}" method="POST">
                                 @csrf 
                                 <div class="modal-content">
                                     <div class="modal-header">
