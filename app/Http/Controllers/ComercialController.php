@@ -141,8 +141,8 @@ class ComercialController extends Controller
             "pbx_edit" => 'required|string',
             "web_edit" => 'required|string',
             "direccion_edit" => 'required|string'
-        ]);
-        
+        ]);        
+
         $contacto = Contacto::find($id); 
         $contacto->cargo = $request->cargo_edit;
         $contacto->celular = $request->celular_edit;

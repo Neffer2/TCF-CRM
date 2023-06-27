@@ -32,7 +32,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="num_doc">N&uacute;mero Documento:</label>
-                            <input wire:model.lazy="num_doc" type="text" id="num_doc" class="form-control @error('num_doc') is-invalid @elseif(strlen($num_doc) > 0) is-valid @enderror" required>
+                            <input disabled wire:model.lazy="num_doc" type="text" id="num_doc" class="form-control @error('num_doc') is-invalid @elseif(strlen($num_doc) > 0) is-valid @enderror" required>
                             @error('num_doc')
                                 <div id="num_doc" class="invalid-feedback">
                                     {{ $message }} 

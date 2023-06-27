@@ -134,19 +134,19 @@
             @if ($tipo)
                 <tr>
                     <td class="text-center" colspan="8">IMPREVISTOS</td>  
-                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ $presto->imprevistos }} %</td>
+                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ number_format($presto->imprevistos) }} %</td>
                     <td colspan="2"></td>
                     <td class="text-center" colspan="2" style="text-align: center;">{{ $totalCot * ($presto->imprevistos/100) }}</td>
                 </tr>
                 <tr>
                     <td class="text-center" colspan="8">ADMINISTRACION</td>
-                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ $presto->administracion }} %</td>
+                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ number_format($presto->administracion) }} %</td>
                     <td colspan="2"></td>
                     <td class="text-center" colspan="2" style="text-align: center;">{{ $totalCot * ($presto->administracion/100) }} </td>
                 </tr>
                 <tr>
                     <td class="text-center" colspan="8">FEE AGENCIA</td>
-                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ $presto->fee }} %</td>
+                    <td class="text-center" colspan="2" style="text-align: center; background-color: #e4e4e4;">{{ number_format($presto->fee) }} %</td>
                     <td colspan="2"></td>
                     <td class="text-center" colspan="2" style="text-align: center;">{{ $totalCot * ($presto->fee/100) }} </td>
                 </tr>

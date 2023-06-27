@@ -47,14 +47,14 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         return $drawing;
     }
 
-    public function columnFormats(): array
+    public function columnFormats(): array 
     {
         return [
             // 'I' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
-            'K' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
-            'L' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
-            'M' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
-            'N' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
+            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 }

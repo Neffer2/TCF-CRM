@@ -20,7 +20,7 @@ class GestionList extends Component
     public function render()
     {   
         $this->getData();
-        $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot')->where('id_user', Auth::id())->orWhere('comercial_2', Auth::id())->orWhere('comercial_3', Auth::id())->orWhere('comercial_4', Auth::id())->orderBy('id', 'desc')->paginate(10);
+        $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot')->where('id_user', Auth::id())->orWhere('comercial_2', Auth::id())->orWhere('comercial_3', Auth::id())->orWhere('comercial_4', Auth::id())->orderBy('id', 'desc')->paginate(15);
         return view('livewire.com.gestion-comercial.gestion-list', ['datos' => $datos]);
     }
 

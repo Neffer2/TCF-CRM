@@ -164,7 +164,7 @@ class Edit extends Component
         $this->getValor();
         $this->getTotalPorcentaje();
     }
-
+ 
     public function updatedMes(){
         $this->validate(['mes' => ['required', 'string']]); 
     }
@@ -403,10 +403,10 @@ class Edit extends Component
             'base_factura2' => 'nullable|numeric',
             'base_factura3' => 'nullable|numeric',
         ]);
-
+ 
         $i  = 0;
         while($i < $this->participaciones){
-            $Registro_helisa = Helisa::where('centro', $this->centro)->where('comercial', $this->{'comercial'.$i})->first();
+            $Registro_helisa = Helisa::where('centro', $this->centro)->where('num_doc', $this->num_doc)->where('comercial', $this->{'comercial'.$i})->first();
 
             if ($this->fecha){
                 $Registro_helisa->fecha = $this->fecha;
@@ -417,7 +417,7 @@ class Edit extends Component
             }
 
             if ($this->num_doc){
-                $Registro_helisa->num_doc = $this->num_doc;
+                // $Registro_helisa->num_doc = $this->num_doc;
             }
 
             if ($this->identidad){
