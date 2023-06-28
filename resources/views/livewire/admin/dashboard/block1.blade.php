@@ -109,13 +109,13 @@
         <div class="col-md-4"></div>
         <div class="col-md-4 mt-md-0 mt-4"></div>
         <div class="col-md-4 mt-md-0 mt-4">
-            <div class="card bg-gradient-danger">
+            <div class="card @if($presto_x_cumplir > 1) bg-gradient-success @endif">
                 <div class="card-body p-3">
                     <div class="row">
                         <div class="col-8"> 
                             <div class="numbers">
-                                <p class="text-white text-uppercase text-sm mb-0 opacity-7">PRESUPUESTO POR CUMPLIR</p>
-                                <h5 class="text-white font-weight-bolder mb-0">
+                                <p class="@if($presto_x_cumplir > 1) text-white @endif text-uppercase text-sm mb-0 opacity-7">PRESUPUESTO POR CUMPLIR</p>
+                                <h5 class="@if($presto_x_cumplir > 1) text-white @endif font-weight-bolder mb-0">
                                     {{ sprintf("%.1f", $presto_x_cumplir) }} %
                                 </h5>
                             </div>
