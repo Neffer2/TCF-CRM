@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
+use App\Exports\BaseExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request; 
 use App\Models\Base_comercial;
@@ -33,7 +34,7 @@ class ComercialController extends Controller
     public function base(){  
         return view('comercial.base');
     } 
-
+ 
     public function show_upload(){
         return view('comercial.base.upload');
     } 

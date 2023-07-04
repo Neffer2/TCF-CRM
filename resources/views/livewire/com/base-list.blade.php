@@ -13,6 +13,7 @@
                     <th>Cliente</th>
                     <th>Proyecto</th> 
                     <th>COD_CC</th>
+                    <th>Valor Original</th>
                     <th>Valor</th> 
                     <th>Estado</th>
                     <th>Cuenta</th>
@@ -35,11 +36,14 @@
                         </td>
                         <td class="text-sm font-weight-normal">
                             {{ $item->cod_cc }}
+                        </td> 
+                        <td class="text-sm font-weight-normal">
+                            {{ number_format($item->valor_original) }}
                         </td>
                         <td class="text-sm font-weight-normal">
                             {{ number_format($item->valor_proyecto) }}
                         </td>
-                        <td>
+                        <td class="text-sm font-weight-normal">
                             {{ $item->estado_cuenta->description }}
                         </td>
                         <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
