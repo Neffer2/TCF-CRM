@@ -60,7 +60,7 @@ class ComercialController extends Controller
     }
 
     public function presupuestos(){ 
-        return view('comercial.presupuesto.list');   
+        return view('comercial.presupuesto.list');    
     }
 
     /* Tipo: Interno, cliente */

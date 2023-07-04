@@ -44,7 +44,7 @@
                 <i class="ni ni-shop text-primary text-sm opacity-10"></i>
               </div>
               <span class="nav-link-text ms-1">Inicio</span>
-            </a>
+            </a> 
             <div class="collapse  show " id="dashboardsExamples">
               <ul class="nav ms-4">
                 <li class="nav-item active">
@@ -88,7 +88,13 @@
                     <span class="sidenav-mini-icon text-xs"> NP </span>
                     <span class="sidenav-normal"> Prospectos </span>
                   </a>
-                </li>            
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('presupuestos') }}"> 
+                    <span class="sidenav-mini-icon text-xs"> NP </span>
+                    <span class="sidenav-normal"> Presupuestos </span>
+                  </a>
+                </li>       
               </ul>
             </div>
           </li>   

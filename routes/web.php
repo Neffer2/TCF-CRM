@@ -70,7 +70,7 @@ Route::get('/', function () {
 
         // Presupuesto
         Route::get('/presupuesto/{centro?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
-        Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos'); 
+        Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos');  
     /* --- */
 /* --- */  
 
