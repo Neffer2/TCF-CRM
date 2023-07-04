@@ -40,7 +40,7 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         $drawing = new Drawing();
         $drawing->setName('Logo');
         $drawing->setDescription('This is my logo');
-        $drawing->setPath(public_path('assets\img\bull-logo.png'));
+        $drawing->setPath(public_path('assets/img/bull-logo.png'));
         $drawing->setHeight(80);
         $drawing->setCoordinates('A1');
 
