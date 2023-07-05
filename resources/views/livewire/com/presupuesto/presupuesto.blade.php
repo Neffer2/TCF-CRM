@@ -113,7 +113,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> 
          
         <div class="table-responsive mt-2 rounded bg-white">
             <table class="table">
@@ -238,7 +238,7 @@
         </div>          
 
         <div class="row mt-2">
-            @if (Auth::user()->rol == 2)            
+            @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
                 <div class="col-md-12 p-2"> 
                     <div class="row gy-0">
                         <div class="col-md-1">

@@ -40,7 +40,7 @@ class CotizacionForm extends Component
 
     // Useful vars
     // Se decide utilizar "lead" como referencia a los registros del la tabla Gestion Comercial
-    public $lead_id = 0;
+    public $lead_id = 0; 
     public $porcentajes = ['100', '50'];
     public $comerciales = [];
     public $participaciones = 1;
@@ -48,7 +48,7 @@ class CotizacionForm extends Component
 
     public $comercial_id;
 
-    public function render()
+    public function render() 
     {
         return view('livewire.asis.gestion-comercial.forms.cotizacion-form');
     }
@@ -289,8 +289,9 @@ class CotizacionForm extends Component
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');
-        $lead->id_estado = 4; 
-        $lead->update();
+        // $lead->id_estado = 4; 
+        $lead->id_estado = 7; 
+        $lead->update(); 
 
         return redirect()->route('asis-gestion-comercial')->with('success', '¡Cotización registrada exitosamente!');
     }

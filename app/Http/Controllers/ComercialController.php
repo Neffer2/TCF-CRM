@@ -72,7 +72,7 @@ class ComercialController extends Controller
         $html = View::make('exports.pdf', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render(); 
         $dompdf->loadHtml($html);
         $dompdf->render();
-        $dompdf->stream($nom_proyecto); 
+        $dompdf->stream($nom_proyecto);  
     }
 
     public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {                

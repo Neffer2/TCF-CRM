@@ -58,7 +58,7 @@
                             <div class="modal-dialog"> 
                                 @livewire('com.helisa.edit', ['id_helisa' => $item->id ])  
                             </div>
-                        </div>
+                        </div> 
                         {{-- delete modal --}} 
                         <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">

@@ -43,7 +43,7 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
-                            </td>
+                            </td> 
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->comercial->name }}</p>

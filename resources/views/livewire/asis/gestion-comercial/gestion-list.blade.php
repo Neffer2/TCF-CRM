@@ -8,7 +8,7 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estado</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Siguiente estado</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Acciones</th>
-                </tr> 
+                </tr>  
             </thead>
             <tbody>  
                 @foreach ($datos as $dato)
@@ -26,7 +26,9 @@
                         </td>
                         <td>
                             <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->empresa }}</p>
-                            <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
+                            <p class="text-xs text-secondary mb-0">
+                                {{ substr($dato->nom_proyecto_cot, 0, 60) }}
+                            </p>
                         </td>
                         <td> 
                             <select name="" id="" class="form-control" disabled>
@@ -36,8 +38,8 @@
                                     @else
                                         <option value="{{ $estado->id }}">{{ $estado->description }}</option>   
                                     @endif
-                                @endforeach
-                            </select>
+                                @endforeach 
+                            </select> 
                         </td>
                         <td class="align-middle" style="width: 10%">
                             @if($dato->id_estado == 5)
@@ -48,6 +50,8 @@
                                 <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
                                     Perdido
                                 </button>
+                            @elseif ($dato->id_estado == 7)
+                                <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $dato->id) }}" target="_blank">Presupuesto</a>
                             @else 
                                 @if($dato->id_estado != 4)
                                     <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">
@@ -70,7 +74,7 @@
                                 </a>
                             @endif
                         </td>
-                    </tr> 
+                    </tr>
                     @if($dato->id_estado == 1)
                         <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -88,7 +92,7 @@
                                         <div :wire:key="'item-'.$dato->id"> 
                                             @livewire('com.gestion-comercial.forms.oportunidad-form', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
                                         </div>
-                                    </div>
+                                    </div> 
                                     <div class="modal-footer">
                                         <button type="button" class="btn bg-gradient-danger mb-0" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
@@ -109,7 +113,7 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- formulario Cotizacion --}} 
-                                        <div :wire:key="'item-'.$dato->id">
+                                        <div :wire:key="'item-'.$dato->id"> 
                                             @livewire('asis.gestion-comercial.forms.cotizacion-form', ['lead_id' => $dato->id], key('item-'.$dato->id))   
                                         </div>
                                     </div>
@@ -119,7 +123,7 @@
                                 </div> 
                             </div>
                         </div>
-                    @elseif($dato->id_estado == 3)
+                    {{-- @elseif($dato->id_estado == 3)
                         <div class="modal fade" id="Modal{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div div class="modal-content">
@@ -132,7 +136,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        {{-- formulario propuesta --}} 
+                                        <!-- formulario propuesta -->
                                         <div :wire:key="'item-'.$dato->id">
                                             @livewire('com.gestion-comercial.forms.propuesta-form', ['lead_id' => $dato->id], key('item-'.$dato->id))   
                                         </div>
@@ -142,7 +146,7 @@
                                     </div>
                                 </div> 
                             </div> 
-                        </div>
+                        </div> --}} 
                     @elseif($dato->id_estado == 4)
                         <div class="modal fade" id="ModalPerdido{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -165,7 +169,7 @@
                                         <button type="button" class="btn bg-gradient-danger mb-0" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
                                 </div> 
-                            </div> 
+                            </div>
                         </div>
 
                         <div class="modal fade" id="Modalventa{{ $dato->id }}" tabindex="-1" role="dialog" aria-labelledby="Modal{{ $dato->id }}" aria-hidden="true">
@@ -181,10 +185,10 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- formulario venta --}} 
-                                        <div :wire:key="'item-'.$dato->id"> 
+                                        <div :wire:key="'item-'.$dato->id">
                                             @livewire('asis.gestion-comercial.forms.new-proyecto', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="modal-footer"> 
                                         <button type="button" class="btn bg-gradient-danger mb-0" data-bs-dismiss="modal">Cancelar</button>
                                     </div>

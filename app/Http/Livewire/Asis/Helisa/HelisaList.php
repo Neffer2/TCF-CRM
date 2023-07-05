@@ -11,7 +11,7 @@ use App\Models\Cuenta;
 use App\Models\Asistente;
 use Illuminate\Support\Facades\Auth;
 
-class HelisaList extends Component
+class HelisaList extends Component 
 {
     //USEFUL VARS
     public $comerciales = [];

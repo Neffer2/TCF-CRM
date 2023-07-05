@@ -50,7 +50,7 @@ Route::get('/', function () {
         Route::get('/contactos', [ComercialController::class, 'Contactos'])->middleware(['auth'])->middleware(['comercial'])->name('contactos');    
         // Route::get('/base-upload', [ComercialController::class, 'show_upload'])->middleware(['auth'])->name('base-upload');  
 
- 
+  
         Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload'); 
         Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export');         
         // Delete proyecto
@@ -69,10 +69,10 @@ Route::get('/', function () {
         Route::post('/delete-registro/{centro?}/{num_doc}', [ComercialController::class, 'delete_registro'])->middleware(['auth'])->name('delete-registro'); 
 
         // Presupuesto
-        Route::get('/presupuesto/{centro?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
-        Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos');  
+        Route::get('/presupuesto/{gestion?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
+        Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos');   
     /* --- */
-/* --- */  
+/* --- */   
 
 /* contable */  
     /* base - functions */   

@@ -1,4 +1,5 @@
-<div class="col-lg-12 col-12 mx-auto"> 
+{{-- DEPRECATED --}}
+{{-- <div class="col-lg-12 col-12 mx-auto"> 
     <div class="card" x-data="new_project"> 
         <div class="card-body d-flex justify-content-center">
             <div class="col-lg-2 col-md-2 col-sm-3 col-4 text-center">
@@ -131,4 +132,4 @@
             </form>
         </div> 
     </div>
-</div>
+</div> --}}

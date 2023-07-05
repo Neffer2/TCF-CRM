@@ -15,7 +15,7 @@ class HelisaList extends Component
     //USEFUL VARS
     public $comerciales = [];
     public $cuentas = []; 
-    public $años = []; 
+    public $años = [];  
     public $meses = []; 
      
     public function render() 

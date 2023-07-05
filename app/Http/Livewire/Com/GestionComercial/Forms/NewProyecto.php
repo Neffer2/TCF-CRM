@@ -62,7 +62,7 @@ class NewProyecto extends Component
     {   
         return view('livewire.com.gestion-comercial.forms.new-proyecto');
     }
-
+ 
     // Trae datos que ya éstan registrados en la gestión comericial (Nombre proyecto, valor, etc).
     public function mount(){
         $this->getEstados();

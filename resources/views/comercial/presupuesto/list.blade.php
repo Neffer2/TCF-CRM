@@ -3,4 +3,4 @@
     @livewire('admin.gestion-comercial.actualizaciones-presto', ['rol' => Auth::user()->rol])
   @endsection
   @section('scripts')  
-  @endsection    
+  @endsection     
