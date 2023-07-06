@@ -339,9 +339,9 @@ class Edit extends Component
                 $proyecto->nom_proyecto = $this->nom_proyecto;
             }
     
-            if ($this->CC){
-                $proyecto->cod_cc = $this->CC;
-            }
+            // if ($this->CC){
+            //     $proyecto->cod_cc = $this->CC;
+            // }
     
             if ($this->valor){
                 $proyecto->valor_original = $this->valor;
