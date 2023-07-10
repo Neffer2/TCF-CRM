@@ -474,7 +474,7 @@
 
                     <a href="{{ route('gestion-comercial') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
                         <span class="btn-inner--text">Volver</span>
-                    </a>
+                    </a> 
                 </div>
 
                 <div class="col-md-4 d-flex justify-content-end p-2">

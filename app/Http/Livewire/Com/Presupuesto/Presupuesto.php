@@ -11,9 +11,12 @@ use App\Models\Año;
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;  
 use App\Models\PresupuestoProyecto; 
+use App\Traits\Hablame;
 
 class Presupuesto extends Component 
 {
+    use Hablame;
+
     // Models
     public $cod; 
     public $concepto; 
@@ -176,7 +179,7 @@ class Presupuesto extends Component
         $item->save();
 
         $this->refresh(); 
-        $this->limpiar(); 
+        $this->limpiar();  
     }
 
     public function getItems(){
@@ -366,10 +369,10 @@ class Presupuesto extends Component
     // Envía a probacion
     public function aprobacion(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presto->estado_id = 2;
-        $presto->update();
-
-        $this->estadoValidator = $presto->estado_id;
+        // $presto->estado_id = 2;
+        // $presto->update();
+        // $this->estadoValidator = $presto->estado_id;
+        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name);
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
      

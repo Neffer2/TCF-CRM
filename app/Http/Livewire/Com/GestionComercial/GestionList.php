@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GestionList extends Component 
 { 
-    use WithPagination;  
+    use WithPagination;
     protected $paginationTheme = 'bootstrap'; 
     
     // Useful vars
