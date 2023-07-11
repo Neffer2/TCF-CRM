@@ -11,10 +11,11 @@ use App\Models\User;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth; 
+use App\Traits\Hablame;
 
 class ActualizacionesPresto extends Component
 {   
-    use WithPagination;
+    use WithPagination, Hablame;
     protected $paginationTheme = 'bootstrap';
 
     //Models 
@@ -74,10 +75,14 @@ class ActualizacionesPresto extends Component
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id);
         $presupuesto->estado_id = $estado;
-
-        // Aprobado
         $presupuesto->update();
 
+        if ($presupuesto->estado_id == 1){
+            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+        }elseif ($presupuesto->estado_id == 3){
+            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
+        }
+        
         return redirect()->route('presupuestos-admin')->with('success', 'Cambios guardados exitosamente');
     } 
 }

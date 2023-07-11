@@ -6,17 +6,24 @@ use App\models\User;
 trait SMS  
 {
     public function presupuestoAprobacion($rentabilidad, $name){    
-        
-        if ($rentabilidad > 35){
-            $admin_id = "2";
-        }else{
-            $admin_id = '26';
-        }
-        
-        $admin = User::select('telefono')->find($admin_id);
-        $tel = $admin->telefono;
+        // Adri - Alejo
+        $admin_id = ($rentabilidad > 35) ? "30" : "26";        
+        $tel = User::select('telefono')->find($admin_id)->telefono;
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": Tienes un presupuesto de ".$name." por revisar.";
+        $this->sendAction($tel,$body);
+    }
 
+    public function presupuestoAprobado($user, $gestion, $cod_cc){  
+        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido APROBADO con el siguiente centro de costos: ".$cod_cc.".";
+        $this->sendAction($user->telefono, $body);
+    }
+
+    public function presupuestoRechazado($user, $gestion, $cod_cc){  
+        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido RECHAZADO.";
+        $this->sendAction($user->telefono, $body);
+    }
+
+    public function sendAction($tel, $body){
         $curl = curl_init();
         curl_setopt_array($curl, [
         CURLOPT_URL => "https://api103.hablame.co/api/sms/v3/send/priority",

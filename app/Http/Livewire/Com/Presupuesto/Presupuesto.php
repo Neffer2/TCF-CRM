@@ -360,29 +360,29 @@ class Presupuesto extends Component
 
     public function cotizacionExcel(){  
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
-    }
+    } 
 
     public function internoExcel(){  
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
     }
-
+  
     // Envía a probacion
     public function aprobacion(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        // $presto->estado_id = 2;
-        // $presto->update();
-        // $this->estadoValidator = $presto->estado_id;
+        $presto->estado_id = 2;
+        $presto->update();
+        $this->estadoValidator = $presto->estado_id;
+
         $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name);
         return redirect()->route('presupuesto', $this->id_gestion); 
-    }
-     
+    }     
 
     public function updateCentro(){
         $this->validate([
             'centroCostos' => ['required', 'string']
         ]);
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-
+        
         if (is_null($item->cod_cc)){
             $gestion = GestionComercial::find($this->id_gestion);
             $gestion->id_estado = 4;
@@ -391,8 +391,10 @@ class Presupuesto extends Component
 
         $item->cod_cc = $this->centroCostos;
         $item->fecha_cc = date("Y-m-d");
-        $item->estado_id = 1;
+        $item->estado_id = 1;    
         $item->update();
+        
+        $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, $item->cod_cc);
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
     }
 

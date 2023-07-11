@@ -7,11 +7,12 @@ use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
 use App\Models\GestionComercial;
 use App\Models\User; 
+use App\Traits\Hablame;
 use Livewire\WithPagination; 
 
 class GestionPresupuestos extends Component 
 {
-    use WithPagination;
+    use WithPagination, Hablame;
     protected $paginationTheme = 'bootstrap';
 
     //Models 
@@ -74,10 +75,12 @@ class GestionPresupuestos extends Component
         }
         $presupuesto->update();
 
+        if ($presupuesto->estado_id == 1){
+            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+        }elseif ($presupuesto->estado_id == 3){
+            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
+        }
+
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
     } 
-
-    // public function getComerciales(){
-    //     $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
-    // }
 } 
