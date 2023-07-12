@@ -58,6 +58,7 @@ class Kernel extends HttpKernel
         'comercial' => \App\Http\Middleware\comercial::class, 
         'contable' => \App\Http\Middleware\contable::class, 
         'asistente' => \App\Http\Middleware\asistente::class, 
+        'lproduccion' => \App\Http\Middleware\lproduccion::class, 
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,

@@ -6,6 +6,7 @@ use App\Http\Controllers\ContableController;
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\HomeController;  
 use App\Http\Controllers\AsistenteController;  
+use App\Http\Controllers\LiderProduccionController;  
  
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +103,11 @@ Route::get('/', function () {
     Route::get('/asis-gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-helisa');    
     Route::get('/asis-gestion-comercial', [AsistenteController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-comercial');   
     Route::get('/asis-contactos', [AsistenteController::class, 'Contactos'])->middleware(['auth'])->middleware(['asistente'])->name('asis-contactos');    
+/* --- */ 
+
+/* Líder produccion */
+    Route::get('/dashboard-lider-produccion', [LiderProduccionController::class, 'index'])->middleware(['auth'])->middleware(['lproduccion'])->name('dashboard-lider-produccion');
+
 /* --- */
 
 
