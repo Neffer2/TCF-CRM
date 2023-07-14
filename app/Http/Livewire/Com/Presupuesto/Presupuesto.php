@@ -106,6 +106,8 @@ class Presupuesto extends Component
     }
 
     public function new_item(){      
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        
         $this->validate([
             'cod' => ['required'],
             'cantidad' => ['required'],
@@ -140,7 +142,12 @@ class Presupuesto extends Component
 
         $item->mes = $this->mes;
         $item->dias = $this->dias;
-        $item->ciudad = $this->ciudad; 
+        $item->ciudad = $this->ciudad;
+
+        // Indica actualiazcion
+        if ($presto->cod_cc){
+            $item->actualizado = true;
+        }
 
         $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
         $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
@@ -260,7 +267,7 @@ class Presupuesto extends Component
         $this->nombre = $contacto->contacto->nombre." ".$contacto->apellido;
         $this->cliente = $contacto->contacto->empresa;
         $this->nomProyecto = $contacto->nom_proyecto_cot;
-        $this->ciudadContacto = $contacto->contacto->ciudad;
+        $this->ciudadContacto = $contacto->contacto->ciudad; 
     }
 
     public function getDataEdit($id){
@@ -285,6 +292,8 @@ class Presupuesto extends Component
     }
 
     public function actionEdit(){
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+
         if (is_null($this->selected_item)){
             return redirect()->back()->withErrors('Ningún elemento seleccionado')->withInput();
         }
@@ -339,6 +348,11 @@ class Presupuesto extends Component
             $item->mes = $this->mes; 
             $item->dias = $this->dias;
             $item->ciudad = $this->ciudad;
+
+            // Indica actualiazcion
+            if ($presto->cod_cc){
+                $item->actualizado = true;
+            }
             
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
             $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
@@ -388,13 +402,21 @@ class Presupuesto extends Component
             $gestion->id_estado = 4;
             $gestion->update();
         }
+        
+        // Default indicacion actualiazcion
+        $itemsPresupuesot = ItemPresupuesto::where('presupuesto_id', $item->id)->get()->map(function ($item){
+            $item->actualizado = false;
+            $item->update();
+        });
 
         $item->cod_cc = $this->centroCostos;
         $item->fecha_cc = date("Y-m-d");
         $item->estado_id = 1;    
         $item->update();
         
+        // SMS
         $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, $item->cod_cc);
+
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
     }
 

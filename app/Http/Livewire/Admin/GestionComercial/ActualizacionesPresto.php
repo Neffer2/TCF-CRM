@@ -8,6 +8,7 @@ use App\Models\EstadosPresupuesto;
 use App\Models\GestionComercial; 
 use App\Models\Asistente;
 use App\Models\User;  
+use App\Models\ItemPresupuesto;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth; 
@@ -29,7 +30,7 @@ class ActualizacionesPresto extends Component
 
     public $rol; 
 
-    public function render()     
+    public function render()      
     {   
         $filtros = [];
         array_push($filtros, ['cod_cc', '<>', null]);
@@ -70,7 +71,7 @@ class ActualizacionesPresto extends Component
 
     public function getEstados(){
         $this->estados = EstadosPresupuesto::select('id', 'description')->where('id', '<>', 3)->get();
-    }
+    } 
 
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id);
@@ -79,6 +80,12 @@ class ActualizacionesPresto extends Component
 
         if ($presupuesto->estado_id == 1){
             $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+
+            // Default indicacion actualiazcion
+            ItemPresupuesto::where('presupuesto_id', $id)->get()->map(function ($item){
+                $item->actualizado = false;
+                $item->update();
+            });
         }elseif ($presupuesto->estado_id == 3){
             $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
         }

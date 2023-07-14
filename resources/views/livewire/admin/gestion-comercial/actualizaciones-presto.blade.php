@@ -47,7 +47,7 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->comercial->name }}</p>
-                            </td>
+                            </td>  
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</p>

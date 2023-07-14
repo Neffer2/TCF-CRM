@@ -165,11 +165,10 @@
                                 @endif
                                 </tr>
                         @else
-                            <tr> 
+                            <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif> 
                                 <td class="font-weight-bold font-table">
                                     {{ $item->cod }}
                                 </td>
-
                                 <td class="font-weight-bold font-table">
                                     {{ $key+=1 }}
                                 </td> 
@@ -529,14 +528,56 @@
                                 <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                                 <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
                             </div>
-                            <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
+                            <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Cotizaci&oacute;n</span>
+                                <span class="btn-inner--text">Exportar</span>
                             </button>
+        
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="modal-body">
+                                                <h2 class="fs-5">Documentos Cliente</h2>
+                                                    <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                        <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
+                                                    </button>
+        
+                                                    <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                    </button>
+                                                <hr class="horizontal dark">                        
+                                                <h2 class="fs-5">Documentos Interno</h2>
+                                                @if ($cod_cc)
+                                                    <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                        <span class="btn-inner--text">Interno PDF</span>
+                                                    </button>
+                                                    
+                                                    <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>                
                 </div>
-            @endif
+            @endif 
         </div>
     @elseif($estadoValidator == 2)
         <div class="card card-frame p-5">

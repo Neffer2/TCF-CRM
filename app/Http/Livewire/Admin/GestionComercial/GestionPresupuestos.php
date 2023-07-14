@@ -58,7 +58,7 @@ class GestionPresupuestos extends Component
         }
         // $this->getComerciales(); 
     }
-
+ 
     public function getEstados(){
         $this->estados = EstadosPresupuesto::select('id', 'description')->where('id', '<>', 3)->get();
     }

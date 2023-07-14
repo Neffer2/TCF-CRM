@@ -23,7 +23,7 @@ class ItemsPresupuestoTable extends Migration
             $table->integer('otros');
             $table->string('descripcion');
             $table->decimal('v_unitario', 15, 2)->default(0);            
-            $table->decimal('v_total', 15, 2)->default(0);          
+            $table->decimal('v_total', 15, 2)->default(0);           
             $table->string('proveedor');
             $table->double('margen_utilidad', 15, 10)->default(0.0);
 
@@ -34,6 +34,8 @@ class ItemsPresupuestoTable extends Migration
             $table->decimal('v_unitario_cot', 15, 2)->default(0);            
             $table->decimal('v_total_cot', 15, 2)->default(0);
             $table->decimal('rentabilidad', 15, 2)->default(0);
+
+            $table->boolean('actualizado')->default(false);
             $table->timestamps();
         });
     }
