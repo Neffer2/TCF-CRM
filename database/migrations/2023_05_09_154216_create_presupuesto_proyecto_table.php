@@ -37,6 +37,8 @@ class CreatePresupuestoProyectoTable extends Migration
             $table->integer('tiempo_factura')->default(30);
             $table->string('notas')->nullable();
             
+            $table->foreignId('productor')->nullable();
+            $table->foreign('productor')->references('id')->on('users'); 
             $table->timestamps();
         });
     }

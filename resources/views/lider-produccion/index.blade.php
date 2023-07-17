@@ -10,4 +10,22 @@
     @endsection
     @section('content')
         @livewire('lider-produccion.asignar-proyecto') 
+    @endsection 
+    @section('scripts')
+        <script>
+            function asignarProyecto (){
+                return {
+                    open: true,
+                    isOpen(){
+                        this.open = !this.open
+                    },
+                    Close(){
+                        this.open = false
+                    },
+                    construct(){
+                        this.open = false;
+                    }
+                }
+            }
+        </script>
     @endsection
