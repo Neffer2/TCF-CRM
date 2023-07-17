@@ -92,13 +92,13 @@
                                 </div> 
                             </div>
                         </form>
-                    </div>
+                    </div> 
                     @endforeach
                 </tbody>
             </table>
         </div>
 
-        <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
+        <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center"> 
             @csrf
             <button type="submit" class="btn bg-gradient-warning mt-3">
                 <span class="btn-inner--icon"><i class="ni ni-cloud-download-95 me-1"></i></span>

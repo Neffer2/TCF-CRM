@@ -12,6 +12,7 @@ use App\Models\GestionComercial;
 use App\Models\PresupuestoProyecto;
 use App\Models\ItemPresupuesto;
 use App\Models\Helisa;
+use App\Models\Asistente;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
@@ -119,6 +120,11 @@ class ComercialController extends Controller
     }
 
     public function export_base($user_id){
+        if (Auth::user()->rol == 5){
+            $name = Asistente::where('asistente_id', Auth::user()->id)->first();  
+            return Excel::download(new BaseExport, $name->comercial->name." Base.xlsx");    
+        } 
+                
         $name = Auth::user()->name;
         return Excel::download(new BaseExport, $name." Base.xlsx");
     }

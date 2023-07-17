@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Base_comercial;
+use App\Models\Asistente;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -15,9 +16,17 @@ class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMappin
 {
     /** 
     * @return \Illuminate\Support\Collection
-    */
+    */ 
     public function collection()
     {
+        if (Auth::user()->rol == 5){
+            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();  
+
+            return Base_comercial::select('fecha', 'nom_cliente', 'nom_proyecto', 'cod_cc',
+            'valor_original', 'valor_proyecto', 'com_1', 'com_2', 'id_estado', 'id_cuenta', 'fecha_inicio', 'dura_mes')
+            ->where('id_user', $asistente->comercial_id)->get();
+        } 
+
         return Base_comercial::select('fecha', 'nom_cliente', 'nom_proyecto', 'cod_cc',
         'valor_original', 'valor_proyecto', 'com_1', 'com_2', 'id_estado', 'id_cuenta', 'fecha_inicio', 'dura_mes')
         ->where('id_user', Auth::user()->id)->get();
