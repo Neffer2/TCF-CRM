@@ -6,7 +6,7 @@
     {{-- <div class="min-height-300 bg-primary position-absolute w-100"></div>  --}}
 @endsection 
   
-@section('content')
+@section('content') 
     <div x-data="menu" class="row">
         <div class="col-lg-3 col-md-12">
             <div class="nav-wrapper position-relative end-0">

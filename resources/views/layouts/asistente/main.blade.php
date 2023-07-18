@@ -108,7 +108,7 @@
             <div class="collapse" id="applicationsExamples" style="">
               <ul class="nav ms-4"> 
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('actualizar-perfil-com') }}"> 
+                  <a class="nav-link" href="{{ route('actualizar-perfil-asis') }}">  
                     <span class="sidenav-mini-icon"> A </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>

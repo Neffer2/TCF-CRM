@@ -81,11 +81,12 @@ class CotizacionForm extends Component
         ]);
     } 
 
-    public function updatedCotizacionFile (){
-        $this->validate([
-            'cotizacionFile' => 'required|max:2024',
-        ]);
-    }
+    /* DEPRECATED */
+    // public function updatedCotizacionFile (){
+    //     $this->validate([
+    //         'cotizacionFile' => 'required|max:2024',
+    //     ]);
+    // }
 
     public function updatedFecha (){
         $this->validate([
@@ -255,7 +256,7 @@ class CotizacionForm extends Component
         $this->validate([ 
             'presupuesto' => 'required|numeric',
             'nom_proyecto' => 'required|string',
-            'cotizacionFile' => 'required|max:1024',
+            // 'cotizacionFile' => 'required|max:1024',
             'fecha' => 'required|date',
             'cotizacionUrl' => 'nullable|string',
 
@@ -289,7 +290,7 @@ class CotizacionForm extends Component
 
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
-        $lead->cotizacion_file = $this->cotizacionFile->store('cotizaciones');
+        $lead->cotizacion_file = null;
         $lead->propuesta_url = $this->cotizacionUrl;
         // $lead->id_estado = 3;
         $lead->id_estado = 7;

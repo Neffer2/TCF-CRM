@@ -62,7 +62,7 @@
                     @error('rol')  
                         <div class="text-danger font-weight-bold" style="font-size: 12px;">{{ $message }}</div>
                     @enderror
-                </div>
+                </div> 
             </div>
             <div class="col-md-3">
                 <div class="form-group">

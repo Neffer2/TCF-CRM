@@ -42,7 +42,7 @@ class ComercialController extends Controller
  
     public function showActualizarPerfil(){
         return view('comercial.ajustes.perfil.actualizar');
-    }  
+    } 
  
     public function comercialHelisa(){ 
         return view('comercial.helisa.index');

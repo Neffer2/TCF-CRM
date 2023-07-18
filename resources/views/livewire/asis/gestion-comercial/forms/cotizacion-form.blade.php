@@ -47,7 +47,7 @@
                     @enderror
                 </div>
                 <div class="col-md-4"></div>
-            </div>
+            </div> 
             <hr class="horizontal dark mb-3">
             <div class="row">
                 @for ($i = 0; $i < $participaciones; $i++)
@@ -103,7 +103,7 @@
                     </div>
                 @enderror
             </div>
-            <div class="col-md-12">
+            {{-- <div class="col-md-12">
                 <label for="cotizacionFile">Archivo cotizaci&oacute;n:</label>
                 <input type="file" id="cotizacionFile" class="form-control @error('cotizacionFile') is-invalid @elseif(strlen($cotizacionFile) > 0) is-valid @enderror" value="{{ old('cotizacionFile') }}" wire:model.lazy="cotizacionFile" required>
                 @error('cotizacionFile')
@@ -111,7 +111,7 @@
                         {{ $message }} 
                     </div>
                 @enderror
-            </div>
+            </div> --}}
             <div class="col-md-12">
                 <label for="cotizacionUrl">Enlace propuesta (opcional):</label>
                 <input type="text" id="cotizacionUrl" class="form-control @error('cotizacionUrl') is-invalid @elseif(strlen($cotizacionUrl) > 0) is-valid @enderror" value="{{ old('cotizacionUrl') }}" wire:model.lazy="cotizacionUrl">

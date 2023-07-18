@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class AsistenteController extends Controller
 {   
+    public function showActualizarPerfil(){
+        return view('asistente.ajustes.perfil.actualizar');
+    }
+     
     public function index (){ 
         $comercialAsignado = Asistente::where('asistente_id', Auth::user()->id)->first();
         return view('asistente.index', ['comercial' => $comercialAsignado->comercial->name]);

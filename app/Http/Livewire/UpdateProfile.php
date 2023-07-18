@@ -99,6 +99,8 @@ class UpdateProfile extends Component
             return redirect()->route('actualizar-perfil-com')->with('success', '¡Datos actualizados axitosamente!');
         }elseif (Auth::user()->rol == 3) {
             return redirect()->route('actualizar-perfil-con')->with('success', '¡Datos actualizados axitosamente!');
+        }elseif (Auth::user()->rol == 5) {
+            return redirect()->route('actualizar-perfil-asis')->with('success', '¡Datos actualizados axitosamente!');
         }
     }
 }
