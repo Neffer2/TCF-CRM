@@ -82,7 +82,7 @@
                 </a>
               </li> 
               <li class="nav-item">
-                <a class="nav-link" href="{{ route('presupuestos-admin') }}">
+                <a class="nav-link" href="{{ route('actualizaciones') }}">
                   <span class="sidenav-mini-icon text-xs"> A </span>
                   <span class="sidenav-normal"> Actualizaciones </span>
                 </a>

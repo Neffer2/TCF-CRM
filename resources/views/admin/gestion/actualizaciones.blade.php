@@ -8,4 +8,4 @@
 
     @section('content')     
         @livewire('admin.gestion-comercial.actualizaciones-presto', ['rol' => Auth::user()->rol])
-    @endsection 
+    @endsection  

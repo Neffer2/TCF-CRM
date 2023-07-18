@@ -19,7 +19,7 @@ class AdminController extends Controller
 
     public function showActualizarPerfil (){ 
         return view('admin.ajustes.perfil.actualizar');
-    }
+    } 
 
     public function showBaseComercialGeneral (){
         return view('admin.data.base-comercial');
@@ -37,7 +37,7 @@ class AdminController extends Controller
         return view('admin.gestion.presupuestos');
     }
 
-    public function presupuestos(){ 
-        return view('admin.gestion.list');  
+    public function actualizaciones(){ 
+        return view('admin.gestion.actualizaciones');  
     }
 }

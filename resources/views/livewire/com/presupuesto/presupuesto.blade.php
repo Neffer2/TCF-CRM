@@ -113,6 +113,25 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Actualizacion --}}
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header p-0 mt-3 col-md-12"> 
+                            <div class="row px-3">
+                                <div class="col-md-12">
+                                    <h3 class="mb-0">Justificaci&oacute;n</h3>
+                                    <p class="text-sm mb-0">Explica las causas de tu actualizaci&oacute;n.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <textarea name="" id="" cols="10" rows="2" class="form-control"></textarea>
+                        </div>
+                    </div>        
+                </div>
+            </div>
         </div> 
          
         <div class="table-responsive mt-2 rounded bg-white">
@@ -234,7 +253,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>          
+        </div>    
 
         <div class="row mt-2">
             @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
@@ -579,7 +598,7 @@
                 </div>
             @endif 
         </div>
-    @elseif($estadoValidator == 2)
+    @elseif($estadoValidator == 2) 
         <div class="card card-frame p-5">
             <h3 class="text-center">Tu presupuesto est&aacute; siendo validado.</h3>
             <div class="d-flex justify-content-center">

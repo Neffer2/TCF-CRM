@@ -1,22 +1,14 @@
 <div>
     <div class="card">
-        <div class="row px-3">
+        <div class="row px-3">            
             <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-3">
                 <div class="col-md-12">
-                    <h3 class="mb-0">Actualizaciones</h3>
-                    <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="comercial">Fecha:</label>
-                            <select id="comercial" class="form-control" wire:model="fecha">
-                                <option value="asc">Seleccionar</option>
-                                <option value="asc">M&aacute;s reciente</option>
-                                <option value="desc">M&aacute;s antiguos</option>
-                            </select>
-                        </div> 
-                    </div>
+                    <h3 class="mb-0">Presupuestos</h3>
+                    <p class="text-sm mb-0">Lista completa de presupuestos.</p>
+                </div> 
+                <div class="form-group col-md-12">
+                    <label for="comercial">Buscar:</label>
+                    <input type="text" wire:model="cod_cc" class="form-control">
                 </div>
             </div>
         </div>
@@ -24,8 +16,8 @@
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
-                        <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="4" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
@@ -68,27 +60,9 @@
                                 <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                 <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                             </td> 
-                            @if (Auth::user()->rol == 1)
-                                <td class="d-flex align-items-start">
-                                    <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
-                                    <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)">
-                                        @foreach ($estados as $estado) 
-                                            @if ($presupuesto->estado_id == $estado->id)
-                                                <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                            @else                                        
-                                                @if ($estado->id == 1 && !is_null($presupuesto->cod_cc))                                        
-                                                    <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                                                @endif
-                                            @endif 
-                                        @endforeach
-                                        <option value="3">Rechazar</option>
-                                    </select>
-                                </td>
-                            @else
-                                <td class="d-flex align-items-start"> 
-                                    <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $presupuesto->id_gestion) }}" target="_blank">Presupuesto</a>
-                                </td>
-                            @endif
+                            <td class="d-flex align-items-center justify-content-center">
+                                <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
+                            </td>
                         </tr> 
                     @endforeach
                     <tr>
