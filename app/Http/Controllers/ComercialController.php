@@ -31,7 +31,7 @@ class ComercialController extends Controller
     public function gestionHelisa(){
         return view('comercial.helisa.index'); 
     }
-    
+     
     public function base(){  
         return view('comercial.base');
     } 

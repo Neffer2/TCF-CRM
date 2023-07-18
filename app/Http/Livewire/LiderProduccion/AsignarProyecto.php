@@ -6,18 +6,20 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\PresupuestoProyecto;
 
-class AsignarProyecto extends Component
+class AsignarProyecto extends Component 
 {
     // Models
     public $proyecto;
     public $productor;
-    public $asignado;
+    public $asignado; 
 
     // Useful vars
     public $productores = [];
     public $proyectos = [];
     public $comerciales = [];
     public $asignados = [];
+
+    public $id_productor;
 
     public function render()
     {
@@ -27,33 +29,35 @@ class AsignarProyecto extends Component
     public function mount(){
         $this->getUsers();
         $this->getProyectos();
-    } 
+
+        $this->getAsigandos();
+        $this->getProductor();
+    }  
  
     public function getUsers(){
-        $this->productores = User::select('id', 'name')->where('rol', 7)->get(); 
+        $this->productores = User::select('id', 'name')->where('rol', 7)->get();  
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get(); 
-    }
+    } 
 
     public function getProyectos(){
         $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get(); 
     }
 
-    public function getAsigandos(){
-        $this->validate([
-            'productor' => ['required', 'string']
-        ]);      
- 
-        $this->asignados = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', $this->productor)->get();
+    public function getAsigandos(){    
+        $this->asignados = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', $this->id_productor)->get();
+    }
+
+    public function getProductor(){
+        $this->productor = User::select('name', 'avatar')->find($this->id_productor);
     }
 
     public function asignar(){
         $this->validate([
-            'proyecto' => ['required', 'string'],
-            'productor' => ['required', 'string']
+            'proyecto' => ['required', 'string']
         ]);      
  
         $presupuesto = PresupuestoProyecto::find($this->proyecto);
-        $presupuesto->productor = $this->productor;
+        $presupuesto->productor = $this->id_productor;
         $presupuesto->update(); 
 
         $this->ResetView();
@@ -63,7 +67,6 @@ class AsignarProyecto extends Component
     public function liberar(){
         $this->validate([
             'asignado' => ['required', 'string'],
-            'productor' => ['required', 'string']
         ]);      
  
         $presupuesto = PresupuestoProyecto::find($this->asignado);
@@ -77,11 +80,6 @@ class AsignarProyecto extends Component
     // Updates
     public function updatedProyecto(){
         $this->validate(['proyecto' => ['required', 'string']]); 
-    }
-
-    public function updatedProductor(){
-        $this->validate(['productor' => ['required', 'string']]);
-        $this->getAsigandos();
     }
 
     public function updatedAsignado(){

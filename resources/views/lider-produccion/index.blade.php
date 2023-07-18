@@ -8,22 +8,49 @@
         </div>
         <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
     @endsection
-    @section('content')
-        @livewire('lider-produccion.asignar-proyecto') 
+    @section('content')        
+        <div x-data="asignarProyecto">
+            <div class="card"> 
+                <div class="card-body">
+                    <h3 class="mb-4">Asignar proyecto</h3>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <div class="list-group">
+                                <select x-on:change="Open" x-model="productor" id="productor" class="form-control" size="10">
+                                    @foreach ($productores as $productor)
+                                        <option value="{{ $productor->id }}">{{ $productor->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            @foreach ($productores as $productor)
+                                <div id="show{{ $productor->id }}" x-show="false" x-cloak>
+                                    @livewire('lider-produccion.asignar-proyecto', ['id_productor' => $productor->id])                             
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
     @endsection 
     @section('scripts')
         <script>
             function asignarProyecto (){
                 return {
-                    open: true,
-                    isOpen(){
-                        this.open = !this.open
+                    productor,
+                    prevComponente: null,
+                    Open(){
+                        this.Close(this.prevComponente);
+                        let componente = document.getElementById('show'+productor.value);
+                        this.prevComponente = (componente != this.prevComponente) ? componente : this.prevComponente;
+                        componente.style.display = 'block';                        
                     },
-                    Close(){
-                        this.open = false
-                    },
-                    construct(){
-                        this.open = false;
+                    Close(compoente){
+                        if (compoente){
+                            compoente.style.display = 'none';
+                        }
                     }
                 }
             }
