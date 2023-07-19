@@ -1,22 +1,18 @@
 <div>
     <div class="card">
-        <div class="row px-3">
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-3">
+        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-3">
+            <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Actualizaciones</h3>
                     <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="comercial">Fecha:</label>
-                            <select id="comercial" class="form-control" wire:model="fecha">
-                                <option value="asc">Seleccionar</option>
-                                <option value="asc">M&aacute;s reciente</option>
-                                <option value="desc">M&aacute;s antiguos</option>
-                            </select>
-                        </div> 
-                    </div>
+                <div class="form-groupcol-md-3">
+                    <label for="comercial">Fecha:</label>
+                    <select id="comercial" class="form-control" wire:model="fecha">
+                        <option value="asc">Seleccionar</option>
+                        <option value="asc">M&aacute;s reciente</option>
+                        <option value="desc">M&aacute;s antiguos</option>
+                    </select>
                 </div>
             </div>
         </div>

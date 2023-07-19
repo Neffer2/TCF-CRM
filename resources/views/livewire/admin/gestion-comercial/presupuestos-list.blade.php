@@ -1,12 +1,12 @@
 <div>
     <div class="card">
-        <div class="row px-3">            
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-3">
+        <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
+            <div class="row">            
                 <div class="col-md-12">
                     <h3 class="mb-0">Presupuestos</h3>
                     <p class="text-sm mb-0">Lista completa de presupuestos.</p>
                 </div> 
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-3">
                     <label for="comercial">Buscar:</label>
                     <input type="text" wire:model="cod_cc" class="form-control">
                 </div>

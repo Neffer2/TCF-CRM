@@ -57,7 +57,7 @@ class ActualizacionesPresto extends Component
                         where($filtros)->orderBy('id', $this->fecha)->paginate(10);
          }
         
-        $registros = 0;  
+        $registros = 0;   
         $registros = PresupuestoProyecto::where($filtros)->orderBy('id', $this->fecha)->whereHas('gestion', function (Builder $query){
             $query->where('id_user', Auth::id());
         })->count();
@@ -74,7 +74,7 @@ class ActualizacionesPresto extends Component
     } 
 
     public function cambioEstado($id = null, $estado = null){
-        $presupuesto = PresupuestoProyecto::find($id);
+        $presupuesto = PresupuestoProyecto::find($id); 
         $presupuesto->estado_id = $estado;
         $presupuesto->update();
 
@@ -90,7 +90,7 @@ class ActualizacionesPresto extends Component
             $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
         }
         
-        return redirect()->route('presupuestos-admin')->with('success', 'Cambios guardados exitosamente');
+        return redirect()->route('actualizaciones')->with('success', 'Cambios guardados exitosamente');
     } 
 }
  

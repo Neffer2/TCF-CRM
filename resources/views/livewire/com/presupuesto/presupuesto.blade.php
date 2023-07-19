@@ -5,7 +5,7 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">MARGEN GENERAL</td>
                                     <td class="font-table">{{ number_format($margenGeneral, 4) }}</td>
@@ -33,7 +33,7 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">CONTACTO</td>
                                     <td class="font-table">
@@ -65,7 +65,7 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">IMPREVISTOS</td>
                                     <td class="font-table">
@@ -101,11 +101,11 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">NOTAS</td>
                                     <td class="font-table">
-                                        <textarea wire:model.lazy="notas" cols="60" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
+                                        <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -115,25 +115,34 @@
             </div>
 
             {{-- Actualizacion --}}
-            <div class="row mt-2">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header p-0 mt-3 col-md-12"> 
-                            <div class="row px-3">
-                                <div class="col-md-12">
-                                    <h3 class="mb-0">Justificaci&oacute;n</h3>
-                                    <p class="text-sm mb-0">Explica las causas de tu actualizaci&oacute;n.</p>
+            @if ($showJustificacion && Auth::user()->rol == 1)
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12"> 
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Justificaci&oacute;n</h3>
+                                        <p class="text-sm mb-0">Causas por las cuales se actualiz&oacute; este presupuesto.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body p-2">
-                            <textarea name="" id="" cols="10" rows="2" class="form-control"></textarea>
-                        </div>
-                    </div>        
-                </div>
-            </div>
-        </div> 
-         
+                            <div class="card-body p-2">
+                                <div class="form-group">
+                                    <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion')
+                                        <small id="justificacion" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>        
+                    </div>
+                </div>           
+            @endif
+        </div>             
+        
         <div class="table-responsive mt-2 rounded bg-white">
             <table class="table">
                 <thead>
@@ -166,7 +175,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($items as $key => $item)
+                    @foreach ($items as $key => $item)                
                         @if ($item->evento)
                             <tr>
                                 <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="font-weight-bold font-table text-center bg-gradient-info text-white">
@@ -182,7 +191,7 @@
                                         <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                     </td>
                                 @endif
-                                </tr>
+                            </tr>
                         @else
                             <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif> 
                                 <td class="font-weight-bold font-table">
@@ -255,349 +264,360 @@
             </table>
         </div>    
 
-        <div class="row mt-2">
-            @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
-                <div class="col-md-12 p-2"> 
-                    <div class="row gy-0">
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="cod">COD</label>
-                                <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
-                                placeholder="Cod" required wire:model.lazy="cod"> 
-                                    <option value="">Seleccionar</option>
-                                    <option value="0">---- Sin tarifario ----</option>
-                                    @foreach ($tarifario as $item)
-                                        <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('cod')
-                                    <div id="cod" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="cantidad">CANTIDAD</label>
-                                <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
-                                placeholder="Cantidad" required wire:model.lazy="cantidad"> 
-                                @error('cantidad')
-                                    <div id="cantidad" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="dia">D&Iacute;A</label>
-                                <input type="number" class="form-control @error('dia') is-invalid @elseif(strlen($dia) > 0) is-valid @enderror"
-                                placeholder="D&iacute;a" required wire:model.lazy="dia"> 
-                                @error('dia')
-                                    <div id="dia" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="otros">OTROS</label>
-                                <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
-                                placeholder="Otros" required wire:model.lazy="otros">
-                                @error('otros')
-                                    <div id="otros" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group mb-0">
-                                <label for="descripcion">DESCRIPCI&Oacute;N</label>
-                                <textarea id="descripcion" cols="30" rows="1" class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
-                                    placeholder="Descripci&oacute;n" required wire:model.lazy="descripcion"></textarea>
-                                @error('descripcion')
-                                    <div id="descripcion" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group mb-0">
-                                <label for="valor_unitario">V. UNITARIO</label>
-                                <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
-                                placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
-                                @error('valor_unitario')
-                                    <div id="valor_unitario" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group mb-0">
-                                <label for="valor_total">V. TOTAL</label>
-                                <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
-                                placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
-                                @error('valor_total')
-                                    <div id="valor_total" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group mb-0">
-                                <label for="proveedor">PROVEEDOR</label>
-                                <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                                placeholder="Proveedor" required wire:model.lazy="proveedor">
-                                @error('proveedor')
-                                    <div id="proveedor" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group mb-0">
-                                <label for="utilidad">UTILIDAD</label>
-                                <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
-                                placeholder="Utilidad" required wire:model.lazy="utilidad">
-                                @error('utilidad')
-                                    <div id="utilidad" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="mes">MES</label> 
-                                <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
-                                placeholder="Mes" required wire:model.lazy="mes" required>
-                                    <option value="">Seleccionar</option>
-                                    @foreach ($meses as $mes)
-                                        <option value="{{ $mes->id }}">{{ $mes->description }}</option>
-                                    @endforeach
-                                </select>
-                                @error('mes')
-                                    <div id="mes" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="form-group mb-0">
-                                <label for="dias">D&Iacute;AS</label>
-                                <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
-                                placeholder="Dias" required wire:model.lazy="dias">
-                                @error('dias')
-                                    <div id="dias" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-2"> 
-                            <div class="form-group mb-0">
-                                <label for="ciudad">CIUDAD</label>
-                                <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
-                                placeholder="Ciudad" required wire:model.lazy="ciudad">
-                                    <option selected value="">Seleccionar</option>
-                                    @foreach ($ciudades as $ciudad)
-                                        <option value="{{ $ciudad }}">{{ $ciudad }}</option>
-                                    @endforeach
-                                </select>
-                                @error('ciudad')
-                                    <div id="ciudad" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror 
-                            </div>
-                        </div> 
-                    </div>                
-                </div>
-
-                <div class="col-md-8 d-flex p-2">
-                    <button wire:click="new_item" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
-                        <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
-                    <span class="btn-inner--text">Item</span>
-                    </button>    
-                    
-                    <button wire:click="new_event" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
-                        <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
-                    <span class="btn-inner--text">Evento</span>
-                    </button>    
-
-                    <button wire:click="actionEdit()" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" type="button">
-                        <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
-                    <span class="btn-inner--text">Editar</span>
-                    </button>
-
-                    <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
-                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                        <span class="btn-inner--text">Exportar</span>
-                    </button>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="row mt-2">
+        @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
+            <div class="col-md-12 p-2"> 
+                <div class="row gy-0">
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="cod">COD</label>
+                            <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
+                            placeholder="Cod" required wire:model.lazy="cod"> 
+                                <option value="">Seleccionar</option>
+                                <option value="0">---- Sin tarifario ----</option>
+                                @foreach ($tarifario as $item)
+                                    <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
+                                @endforeach
+                            </select>
+                            @error('cod')
+                                <div id="cod" class="invalid-feedback">
+                                    {{ $message }}
                                 </div>
-                                <div class="modal-body">
-                                    <div class="modal-body">
-                                        <h2 class="fs-5">Documentos Cliente</h2>
-                                            <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
-                                            </button>
-
-                                            <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
-                                            </button>
-                                        <hr class="horizontal dark">                        
-                                        <h2 class="fs-5">Documentos Interno</h2>
-                                        @if ($cod_cc)
-                                            <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                <span class="btn-inner--text">Interno PDF</span>
-                                            </button>
-                                            
-                                            <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                            </div>
+                            @enderror
                         </div>
                     </div>
-                    
-                    <div class="form-check form-switch me-1">
-                        <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
-                    </div> 
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="cantidad">CANTIDAD</label>
+                            <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
+                            placeholder="Cantidad" required wire:model.lazy="cantidad"> 
+                            @error('cantidad')
+                                <div id="cantidad" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="dia">D&Iacute;A</label>
+                            <input type="number" class="form-control @error('dia') is-invalid @elseif(strlen($dia) > 0) is-valid @enderror"
+                            placeholder="D&iacute;a" required wire:model.lazy="dia"> 
+                            @error('dia')
+                                <div id="dia" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="otros">OTROS</label>
+                            <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
+                            placeholder="Otros" required wire:model.lazy="otros">
+                            @error('otros')
+                                <div id="otros" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
+                            <label for="descripcion">DESCRIPCI&Oacute;N</label>
+                            <textarea id="descripcion" cols="30" rows="1" class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
+                                placeholder="Descripci&oacute;n" required wire:model.lazy="descripcion"></textarea>
+                            @error('descripcion')
+                                <div id="descripcion" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
+                            <label for="valor_unitario">V. UNITARIO</label>
+                            <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
+                            placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
+                            @error('valor_unitario')
+                                <div id="valor_unitario" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
+                            <label for="valor_total">V. TOTAL</label>
+                            <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
+                            placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
+                            @error('valor_total')
+                                <div id="valor_total" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
+                            <label for="proveedor">PROVEEDOR</label>
+                            <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            placeholder="Proveedor" required wire:model.lazy="proveedor">
+                            @error('proveedor')
+                                <div id="proveedor" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
+                            <label for="utilidad">UTILIDAD</label>
+                            <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
+                            placeholder="Utilidad" required wire:model.lazy="utilidad">
+                            @error('utilidad')
+                                <div id="utilidad" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="mes">MES</label> 
+                            <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
+                            placeholder="Mes" required wire:model.lazy="mes" required>
+                                <option value="">Seleccionar</option>
+                                @foreach ($meses as $mes)
+                                    <option value="{{ $mes->id }}">{{ $mes->description }}</option>
+                                @endforeach
+                            </select>
+                            @error('mes')
+                                <div id="mes" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group mb-0">
+                            <label for="dias">D&Iacute;AS</label>
+                            <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
+                            placeholder="Dias" required wire:model.lazy="dias">
+                            @error('dias')
+                                <div id="dias" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2"> 
+                        <div class="form-group mb-0">
+                            <label for="ciudad">CIUDAD</label>
+                            <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
+                            placeholder="Ciudad" required wire:model.lazy="ciudad">
+                                <option selected value="">Seleccionar</option>
+                                @foreach ($ciudades as $ciudad)
+                                    <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                                @endforeach
+                            </select>
+                            @error('ciudad')
+                                <div id="ciudad" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror 
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        @if ($showJustificacion)
+                            <div class="form-group">
+                                <label for="justificacion">JUSTIFICACI&Oacute;N</label>
+                                <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="1" class="form-control" wire:model.lazy="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror" placeholder="Explica por qué realizaste esta actualización."></textarea>
+                                @error('justificacion')
+                                    <small id="justificacion" class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+                        @endif
+                    </div>
+                </div>                
+            </div>
 
-                    <a href="{{ route('gestion-comercial') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
-                        <span class="btn-inner--text">Volver</span>
-                    </a> 
-                </div>
+            <div class="col-md-8 d-flex p-2">
+                <button wire:click="new_item" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
+                    <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                <span class="btn-inner--text">Item</span>
+                </button>    
+                
+                <button wire:click="new_event" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
+                    <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                <span class="btn-inner--text">Evento</span>
+                </button>    
 
-                <div class="col-md-4 d-flex justify-content-end p-2">
-                    <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
-                    <span class="btn-inner--text">Enviar a aprobaci&oacute;n</span>
-                    </button>
- 
-                    <!-- Modal -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">¿Estas seguro?</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                <button wire:click="actionEdit()" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" type="button">
+                    <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
+                <span class="btn-inner--text">Editar</span>
+                </button>
+
+                <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
+                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                    <span class="btn-inner--text">Exportar</span>
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h2 class="fs-5">Documentos Cliente</h2>
+                                    <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
                                     </button>
-                                </div>
-                                <div class="modal-body">
-                                    Verifica que tu presupuesto est&eacute; completo antes de enviarlo.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning">Enviar</button>
-                                </div>
+
+                                    <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                    </button>
+                                <hr class="horizontal dark">                        
+                                <h2 class="fs-5">Documentos Interno</h2>
+                                @if ($cod_cc)
+                                    <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Interno PDF</span>
+                                    </button>
+                                    
+                                    <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                    </button>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <div class="form-check form-switch me-1">
+                    <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                </div> 
 
-            @elseif (Auth::user()->rol == 1)
-                <div class="col-md-12 p-2"> 
-                    <div class="row gy-0">
-                        <div class="col-md-3">
-                            <div class="form-group mb-0">
-                                <label for="centroCostos">CENTRO DE COSTOS</label>
-                                <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
-                                placeholder="Centro de costos" required wire:model.lazy="centroCostos">
-                                @error('centroCostos')
-                                    <div id="centroCostos" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror 
-                                <button wire:click="updateCentro" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
-                                    <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
-                                    <span class="btn-inner--text">Guardar</span>
+                <a href="{{ route('gestion-comercial') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
+                    <span class="btn-inner--text">Volver</span>
+                </a> 
+            </div>
+
+            <div class="col-md-4 d-flex justify-content-end p-2">
+                <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
+                <span class="btn-inner--text">Enviar a aprobaci&oacute;n</span>
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="exampleModalLabel">¿Estas seguro?</h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                        </div>
-                        <div class="col-md-6 py-1">
-                            <div class="form-check form-switch me-1">
-                                <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                            <div class="modal-body">
+                                Verifica que tu presupuesto est&eacute; completo antes de enviarlo.
                             </div>
-                            <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
-                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Exportar</span>
+                            <div class="modal-footer">
+                                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning" data-bs-dismiss="modal">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @elseif (Auth::user()->rol == 1)
+            <div class="col-md-12 p-2"> 
+                <div class="row gy-0">
+                    <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label for="centroCostos">CENTRO DE COSTOS</label>
+                            <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
+                            placeholder="Centro de costos" required wire:model.lazy="centroCostos">
+                            @error('centroCostos')
+                                <div id="centroCostos" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror 
+                            <button wire:click="updateCentro" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
+                                <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
+                                <span class="btn-inner--text">Guardar</span>
                             </button>
-        
-                            <!-- Modal -->
-                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 py-1">
+                        <div class="form-check form-switch me-1">
+                            <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                        </div>
+                        <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
+                            <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                            <span class="btn-inner--text">Exportar</span>
+                        </button>
+    
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
                                         <div class="modal-body">
-                                            <div class="modal-body">
-                                                <h2 class="fs-5">Documentos Cliente</h2>
-                                                    <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                        <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
-                                                    </button>
-        
-                                                    <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
-                                                    </button>
-                                                <hr class="horizontal dark">                        
-                                                <h2 class="fs-5">Documentos Interno</h2>
-                                                @if ($cod_cc)
-                                                    <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                        <span class="btn-inner--text">Interno PDF</span>
-                                                    </button>
-                                                    
-                                                    <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
-                                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                                        <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
-                                                    </button>
-                                                @endif
-                                            </div>
+                                            <h2 class="fs-5">Documentos Cliente</h2>
+                                                <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                    <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
+                                                </button>
+    
+                                                <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                    <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                </button>
+                                            <hr class="horizontal dark">                        
+                                            <h2 class="fs-5">Documentos Interno</h2>
+                                            @if ($cod_cc)
+                                                <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                    <span class="btn-inner--text">Interno PDF</span>
+                                                </button>
+                                                
+                                                <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                    <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                </button>
+                                            @endif
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>                
-                </div>
-            @endif 
-        </div>
+                    </div>
+                </div>                
+            </div>
+        @endif 
+    </div>
+
     @elseif($estadoValidator == 2) 
         <div class="card card-frame p-5">
             <h3 class="text-center">Tu presupuesto est&aacute; siendo validado.</h3>

@@ -41,6 +41,7 @@ class Presupuesto extends Component
     public $fee = 0;
 
     public $centroCostos;
+    public $justificacion;
 
     // Useful vars
     public $items = [];
@@ -67,7 +68,10 @@ class Presupuesto extends Component
     public $ciudadContacto;
 
     // globals
-    public $id_gestion;  
+    public $id_gestion; 
+
+    // Justificacion
+    public $showJustificacion = false;
 
     public function render()
     {
@@ -81,6 +85,7 @@ class Presupuesto extends Component
             $presupuesto->id_gestion = $this->id_gestion; 
             $presupuesto->cod_cot = $this->getLatestCodCot() + 1; 
             $presupuesto->save();
+
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
             $this->cod_cc = $presupuesto->cod_cc;
@@ -88,6 +93,12 @@ class Presupuesto extends Component
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
             $this->cod_cc = $validator->cod_cc;
+            $this->justificacion = $validator->justificacion;
+        }
+
+        // Valida si es actualización
+        if ($this->cod_cc){
+            $this->showJustificacion = true;
         }
 
         $this->refresh();
@@ -376,14 +387,22 @@ class Presupuesto extends Component
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }  
 
-    public function internoExcel(){  
+    public function internoExcel(){   
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
     }
   
     // Envía a probacion 
     public function aprobacion(){
+        // Valída si es actualización
+        if ($this->cod_cc){
+            $this->validate([
+                'justificacion' => ['required', 'string', 'max:254']
+            ]);
+        }
+
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 2;
+        $presto->justificacion = $this->justificacion;
         $presto->update();
         $this->estadoValidator = $presto->estado_id;
 
@@ -598,6 +617,6 @@ class Presupuesto extends Component
 
     public function toggelRentabilidad(){
         $this->rentabilidadView = !$this->rentabilidadView;
-    }   
+    }
     // ----------- 
 } 

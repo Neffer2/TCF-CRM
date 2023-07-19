@@ -8,13 +8,13 @@ class CreatePresupuestoProyectoTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     *  
      * @return void
      */
     public function up()  
     {
         Schema::create('presupuesto_proyecto', function (Blueprint $table) {
-            $table->id();
+            $table->id(); 
             $table->foreignId('id_gestion'); 
             $table->foreign('id_gestion')->references('id')->on('gestion_comercial');
 
@@ -36,6 +36,9 @@ class CreatePresupuestoProyectoTable extends Migration
             $table->decimal('fee', 15, 2)->default(0);             
             $table->integer('tiempo_factura')->default(30);
             $table->string('notas')->nullable();
+
+            // Justificacion actualizacion
+            $table->string('justificacion')->nullable();
             
             $table->foreignId('productor')->nullable();
             $table->foreign('productor')->references('id')->on('users'); 
