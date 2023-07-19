@@ -21,7 +21,7 @@ class ItemsPresupuestoTable extends Migration
             $table->integer('cantidad');
             $table->integer('dia');
             $table->integer('otros');
-            $table->string('descripcion');
+            $table->string('descripcion', 2000);
             $table->decimal('v_unitario', 15, 2)->default(0);            
             $table->decimal('v_total', 15, 2)->default(0);           
             $table->string('proveedor');

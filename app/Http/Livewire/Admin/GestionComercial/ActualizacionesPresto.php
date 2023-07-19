@@ -55,7 +55,7 @@ class ActualizacionesPresto extends Component
         if ($this->rol == 1){ 
             $presupuestos = PresupuestoProyecto::
                         where($filtros)->orderBy('id', $this->fecha)->paginate(10);
-         }
+        }
         
         $registros = 0;   
         $registros = PresupuestoProyecto::where($filtros)->orderBy('id', $this->fecha)->whereHas('gestion', function (Builder $query){
