@@ -51,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
                 "NEIVA",
                 "PALMIRA",
                 "RIOHACHA",
+                "RIONEGRO",
                 "SINCELEJO",
                 "POPAYAN",
                 "ITAGÜI",
@@ -70,6 +71,9 @@ class AppServiceProvider extends ServiceProvider
                 "MAICAO",
                 "PIEDECUESTA",
                 "YOPAL",
+                "YUMBO",
+                "MONTERIA",
+                "BUGA"
             ]
         ]);
     }
