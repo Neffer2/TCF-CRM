@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         config(['ciudades' =>
             [
+                "NACIONAL",
                 "BOGOTA D.C",
                 "MEDELLIN",
                 "CALI",
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 "SOLEDAD",
                 "CUCUTA",
                 "IBAGUE",
+                "ARMENIA",
                 "SOACHA",
                 "VILLAVICENCIO",
                 "BUCARAMANGA",

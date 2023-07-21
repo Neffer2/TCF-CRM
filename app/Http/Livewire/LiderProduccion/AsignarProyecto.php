@@ -14,7 +14,6 @@ class AsignarProyecto extends Component
     public $asignado; 
 
     // Useful vars
-    public $productores = [];
     public $proyectos = [];
     public $comerciales = [];
     public $asignados = [];
@@ -23,32 +22,28 @@ class AsignarProyecto extends Component
 
     public function render()
     {
+        $this->getUsers();
         return view('livewire.lider-produccion.asignar-proyecto');
     }
 
     public function mount(){
-        $this->getUsers();
         $this->getProyectos();
-
         $this->getAsigandos();
-        $this->getProductor();
     }  
  
     public function getUsers(){
-        $this->productores = User::select('id', 'name')->where('rol', 7)->get();  
+        $this->productor = User::select('name', 'avatar')->find($this->id_productor);
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get(); 
-    } 
+    }  
 
     public function getProyectos(){
+        $this->proyectos = [];
         $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get(); 
     }
 
-    public function getAsigandos(){    
+    public function getAsigandos(){   
+        $this->asignados = []; 
         $this->asignados = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', $this->id_productor)->get();
-    }
-
-    public function getProductor(){
-        $this->productor = User::select('name', 'avatar')->find($this->id_productor);
     }
 
     public function asignar(){
@@ -67,7 +62,7 @@ class AsignarProyecto extends Component
     public function liberar(){
         $this->validate([
             'asignado' => ['required', 'string'],
-        ]);      
+        ]);        
  
         $presupuesto = PresupuestoProyecto::find($this->asignado);
         $presupuesto->productor = null;
@@ -79,7 +74,7 @@ class AsignarProyecto extends Component
 
     // Updates
     public function updatedProyecto(){
-        $this->validate(['proyecto' => ['required', 'string']]); 
+        $this->validate(['proyecto' => ['required', 'string']]);
     }
 
     public function updatedAsignado(){
@@ -87,11 +82,8 @@ class AsignarProyecto extends Component
     }
 
     public function ResetView(){
-        $this->proyecto = null;
-        $this->proyectos = [];
-
-        $this->asignado = null;
-        $this->asignados = [];
+        $this->proyecto = NULL;
+        $this->asignado = NULL;
 
         $this->getProyectos();
         $this->getAsigandos();

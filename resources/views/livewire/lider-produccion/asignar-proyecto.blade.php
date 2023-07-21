@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-center">
             <img src="{{ asset("storage/$aux") }}" alt="Foto de perfil" class="avatar shadow" style="height: 100px; width: 100px; border-radius: 3rem;">
         </div>
-    </div>        
+    </div>         
     <div class="row p-3 pt-0">
         <div class="col-md-5">
             <div class="form-group">
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <div class="d-flex gap-3 align-items-baseline mb-1">
                     <label for="exampleFormControlSelect2">Proyectos</label>
-                    <select class="form-control" name="" id="">
+                    <select wire:model.lazy="" class="form-control" name="" id="">
                         <option value="">Comercial</option>
                         @foreach ($comerciales as $comercial)
                             <option value="">{{ $comercial->name }}</option>

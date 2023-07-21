@@ -8,7 +8,6 @@
     @section('content') 
         @livewire('admin.gestion-comercial.gestion-presupuestos', ['rol' => Auth::user()->rol])
         <hr> 
-        <hr> 
         @livewire('admin.gestion-comercial.presupuestos-list', ['rol' => Auth::user()->rol])
     @endsection
  
