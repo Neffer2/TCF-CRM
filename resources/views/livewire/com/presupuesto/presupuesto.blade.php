@@ -427,7 +427,7 @@
                                 </div>
                             @enderror 
                         </div>
-                    </div>
+                    </div>  
                     <div class="col-md-4">
                         @if ($showJustificacion)
                             <div class="form-group">

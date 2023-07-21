@@ -29,7 +29,7 @@ class Presupuesto extends Component
     public $valor_total = 0;
     public $proveedor;
     public $utilidad;
-    public $tiempoFactura;
+    public $tiempoFactura; 
     public $notas;
 
     public $mes;
@@ -447,6 +447,7 @@ class Presupuesto extends Component
         ]);
 
         $this->setDataTarifario($this->cod);
+        $this->getValorTotal();
     }
 
     public function updatedCantidad(){
