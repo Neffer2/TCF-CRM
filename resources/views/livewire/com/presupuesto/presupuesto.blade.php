@@ -112,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
 
             {{-- Actualizacion --}}
             @if ($showJustificacion && Auth::user()->rol == 1)
@@ -465,7 +465,7 @@
                     <span class="btn-inner--text">Exportar</span>
                 </button>
 
-                <!-- Modal -->
+                <!-- Modal --> 
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">

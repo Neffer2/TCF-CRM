@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es"> 
+<html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,8 +7,8 @@
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
-    L&iacute;der producci&oacute;n - {{ Auth::user()->name}}
-  </title> 
+    Productor - {{ Auth::user()->name}}
+  </title>
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -22,9 +22,44 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
-</head>
+  <style>
+    .invalid-input {
+      border: 2px solid red;
+    }
+
+    .valid-input {
+      border: 2px solid green;
+    }
+
+    .font-table { 
+      font-size: 9px;
+    } 
+    
+    .item-table-background-tarifario {
+      background-image: linear-gradient(310deg, rgba(17, 113, 239, .1) 0%, rgba(17, 205, 239, .5) 100%)
+
+    }
+
+    .item-table-background-interno {
+      background-image: linear-gradient(310deg, rgba(251, 99, 64, .1) 0%, rgba(251, 177, 64, .5) 100%)
+    }
+
+    .item-table-background-control {
+      background-image: linear-gradient(310deg, rgba(45, 206, 137, .1) 0%, rgba(45, 206, 204, .5) 100%);
+    }
+
+    .small {
+      width: 90%;
+    }
+
+    .bg-rentabilidad {
+      border-color: #fbb140;
+      background-color: #fbb140 !important;
+    }
+  </style>
+</head> 
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">   
-  @yield('hero-style')
+  @yield('hero-style') 
   <!-- Barra lateral --> 
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
@@ -45,8 +80,8 @@
           </a>
           <div class="collapse  show " id="dashboardsExamples">
             <ul class="nav ms-4"> 
-              <li class="nav-item active">
-                <a class="nav-link active" href="{{ route('dashboard-lider-produccion') }}">
+              <li class="nav-item active"> 
+                <a class="nav-link active" href="{{ route('dashboard-admin') }}"> 
                   <span class="sidenav-mini-icon"> D </span>
                   <span class="sidenav-normal"> Dashboard </span>
                 </a>

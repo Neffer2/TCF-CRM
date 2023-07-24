@@ -92,7 +92,7 @@ class Presupuesto extends Component
         }else { 
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
-            $this->cod_cc = $validator->cod_cc;
+            $this->cod_cc = $validator->cod_cc; 
             $this->justificacion = $validator->justificacion;
         }
 
@@ -374,7 +374,7 @@ class Presupuesto extends Component
         $this->refresh(); 
         $this->limpiar(); 
     }  
-
+ 
     public function cotizacionPdf(){  
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }

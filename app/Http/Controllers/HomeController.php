@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
-{
+{ 
     public function dashboard (){
         if (Auth::user()->rol == 1) {
             return redirect()->route('dashboard-admin');
@@ -18,6 +18,8 @@ class HomeController extends Controller
             return redirect()->route('dashboard-asis');  
         }elseif (Auth::user()->rol == 6){
             return redirect()->route('dashboard-lider-produccion');  
+        }elseif (Auth::user()->rol == 7){
+            return redirect()->route('dashboard-productor');  
         } 
     }
 }  

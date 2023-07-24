@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;  
 use App\Http\Controllers\AsistenteController;  
 use App\Http\Controllers\LiderProduccionController;  
+use App\Http\Controllers\ProductorController;  
  
 /*
 |--------------------------------------------------------------------------
@@ -111,8 +112,11 @@ Route::get('/', function () {
 
 /* --- */
 
+/* Productor */
+    Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
 
-/* --- */  
+/* --- */
+  
 
 require __DIR__.'/auth.php';   
  

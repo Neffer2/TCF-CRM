@@ -37,7 +37,7 @@
     @endsection 
     @section('scripts')
         <script>
-            function asignarProyecto (){
+            function asignarProyecto (){ 
                 return {
                     productor,
                     prevComponente: null,

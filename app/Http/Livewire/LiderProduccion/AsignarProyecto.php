@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\LiderProduccion;
-
+ 
 use Livewire\Component;
 use App\Models\User;
 use App\Models\PresupuestoProyecto;
@@ -12,10 +12,11 @@ class AsignarProyecto extends Component
     public $proyecto;
     public $productor;
     public $asignado; 
+    public $comercial; 
 
     // Useful vars
     public $proyectos = [];
-    public $comerciales = [];
+    public $comerciales = []; 
     public $asignados = [];
 
     public $id_productor;
@@ -23,22 +24,31 @@ class AsignarProyecto extends Component
     public function render()
     {
         $this->getUsers();
+        $this->getProyectos();
         return view('livewire.lider-produccion.asignar-proyecto');
     }
 
     public function mount(){
-        $this->getProyectos();
         $this->getAsigandos();
     }  
  
     public function getUsers(){
         $this->productor = User::select('name', 'avatar')->find($this->id_productor);
-        $this->comerciales = User::select('id', 'name')->where('rol', 2)->get(); 
+        $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
     }  
-
+ 
     public function getProyectos(){
-        $this->proyectos = [];
-        $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get(); 
+        $this->proyectos = [];        
+        // Filter
+        if ($this->comercial){
+            PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get()->map(function ($item){
+                if ($item->gestion->id_user == $this->comercial){
+                    array_push($this->proyectos, $item);
+                }
+            });
+        }else {
+            $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get(); 
+        }
     }
 
     public function getAsigandos(){   
@@ -79,6 +89,11 @@ class AsignarProyecto extends Component
 
     public function updatedAsignado(){
         $this->validate(['asignado' => ['required', 'string']]); 
+    }
+
+    public function updatedComercial(){
+        $this->validate(['comercial' => ['numeric']]);
+        $this->getProyectos();
     }
 
     public function ResetView(){

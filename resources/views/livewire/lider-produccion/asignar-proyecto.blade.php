@@ -32,10 +32,10 @@
             <div class="form-group">
                 <div class="d-flex gap-3 align-items-baseline mb-1">
                     <label for="exampleFormControlSelect2">Proyectos</label>
-                    <select wire:model.lazy="" class="form-control" name="" id="">
+                    <select wire:model.lazy="comercial" class="form-control" name="comerial" id="comerial">
                         <option value="">Comercial</option>
-                        @foreach ($comerciales as $comercial)
-                            <option value="">{{ $comercial->name }}</option>
+                        @foreach ($comerciales as $comercialUser)
+                            <option value="{{ $comercialUser->id }}">{{ $comercialUser->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,7 +56,7 @@
                         @foreach($errors->all() as $error) 
                         <li>{{ $error }}<li>
                         @endforeach
-                    </ul>`, 
+                    </ul>`,  
                     'error'
                     );
                 </script>
