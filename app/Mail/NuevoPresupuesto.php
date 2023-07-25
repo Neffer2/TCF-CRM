@@ -18,7 +18,7 @@ class NuevoPresupuesto extends Mailable
      */
     public function __construct()
     { 
-        //
+        // Este modulo se descartó y se usaron mensajes SMS
     }
 
     /**
