@@ -56,7 +56,7 @@ class Presupuesto extends Component
 
     // metricas
     public $margenGeneral = 0;
-    public $costosProyecto = 0;
+    public $costosProyecto = 0; 
     public $ventaProyecto = 0;
     public $margenProyecto = 0;
     public $margenBruto = 0;
@@ -158,6 +158,7 @@ class Presupuesto extends Component
         // Indica actualiazcion
         if ($presto->cod_cc){
             $item->actualizado = true;
+            $this->setEnEdicion($presto);
         }
 
         $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
@@ -300,7 +301,7 @@ class Presupuesto extends Component
         $this->mes = $this->selected_item->mes;
         $this->dias = $this->selected_item->dias;
         $this->ciudad = $this->selected_item->ciudad;
-    }
+    } 
 
     public function actionEdit(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
@@ -356,13 +357,14 @@ class Presupuesto extends Component
             $item->v_total = $this->valor_total;
             $item->proveedor = $this->proveedor;
             $item->margen_utilidad = $this->utilidad;
-            $item->mes = $this->mes; 
+            $item->mes = $this->mes;  
             $item->dias = $this->dias;
             $item->ciudad = $this->ciudad;
 
             // Indica actualiazcion
             if ($presto->cod_cc){
                 $item->actualizado = true;
+                $this->setEnEdicion($presto);
             }
             
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
@@ -390,7 +392,7 @@ class Presupuesto extends Component
     public function internoExcel(){   
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
     }
-  
+   
     // Envía a probacion 
     public function aprobacion(){
         // Valída si es actualización
@@ -408,7 +410,15 @@ class Presupuesto extends Component
 
         $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name);
         return redirect()->route('presupuesto', $this->id_gestion); 
-    }     
+    }
+    
+    // Convierte en editable
+    public function setEnEdicion($presto){
+        if ($presto->estado_id != 3){
+            $presto->estado_id = 3;
+            $presto->update();
+        } 
+    }
 
     public function updateCentro(){
         $this->validate([

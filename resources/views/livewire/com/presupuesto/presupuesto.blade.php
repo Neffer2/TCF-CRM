@@ -381,7 +381,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-md-1">
                         <div class="form-group mb-0">
                             <label for="mes">MES</label> 
@@ -408,7 +408,7 @@
                                 <div id="dias" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
+                            @enderror 
                         </div>
                     </div>
                     <div class="col-md-2"> 

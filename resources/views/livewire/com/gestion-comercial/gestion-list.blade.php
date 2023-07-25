@@ -49,7 +49,9 @@
                                     Perdido
                                 </button>
                             @elseif ($dato->id_estado == 7)
-                                <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $dato->id) }}" target="_blank">Presupuesto</a>
+                                <a class="btn bg-gradient-warning" href="{{ route('presupuesto', $dato->id) }}" target="_blank">
+                                    Presupuesto @if ($dato->presupuesto) - {{ $dato->presupuesto->estado->description }} @endif
+                                </a>
                             @else 
                                 @if($dato->id_estado != 4)
                                     <button class="btn bg-gradient-warning" data-bs-toggle="modal" data-bs-target="#Modal{{ $dato->id }}">

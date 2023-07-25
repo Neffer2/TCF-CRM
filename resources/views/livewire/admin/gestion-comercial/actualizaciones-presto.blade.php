@@ -10,8 +10,8 @@
                     <label for="comercial">Fecha:</label>
                     <select id="comercial" class="form-control" wire:model="fecha">
                         <option value="asc">Seleccionar</option>
-                        <option value="asc">M&aacute;s reciente</option>
-                        <option value="desc">M&aacute;s antiguos</option>
+                        <option value="asc">M&aacute;s antiguos</option>
+                        <option value="desc">M&aacute;s recientes</option>
                     </select>
                 </div>
             </div>

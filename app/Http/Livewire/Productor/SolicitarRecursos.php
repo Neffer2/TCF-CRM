@@ -13,12 +13,14 @@ class SolicitarRecursos extends Component
     // Useful vars 
     public $presupuesto;
     public $presupuestoItems; 
+    public $verifyPresupuesto = false; 
 
     public $id_presupuesto;
     
 
-    public function render()
+    public function render() 
     {
+        $this->verifyStatus();
         return view('livewire.productor.solicitar-recursos');
     }
 
@@ -33,5 +35,12 @@ class SolicitarRecursos extends Component
 
     public function internoExcel(){   
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->presupuesto->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
+    }
+
+    // Verifica que el presupuesto está aprobado
+    public function verifyStatus(){
+        if ($this->presupuesto->estado_id == 1){
+            $this->verifyPresupuesto = true;
+        }
     }
 }

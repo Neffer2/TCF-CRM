@@ -21,11 +21,10 @@ class ActualizacionesPresto extends Component
 
     //Models 
     // public $comercial = 0;
-    public $fecha = 'asc';
-    public $margen = 'asc';
+    public $fecha = 'desc';
 
     // Useful vars
-    public $estados = []; 
+    public $estados = [];  
     // public $comerciales = [];   
 
     public $rol; 
