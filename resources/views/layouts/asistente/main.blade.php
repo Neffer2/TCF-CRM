@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
     Ejecutiv@ de cuenta - {{ Auth::user()->name}}
-  </title> 
+  </title>  
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -23,7 +23,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
-<body class="g-sidenav-show bg-gray-100">
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
     <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}'); background-position-y: 50%;">
       <span class="mask bg-gradient-warning opacity-6"></span>
     </div>

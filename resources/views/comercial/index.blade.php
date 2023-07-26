@@ -1,4 +1,13 @@
 @extends('layouts.comercial.main')
+  @section('nav-hidden')
+      g-sidenav-hidden
+  @endsection
+  @section('hero-style')
+      <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}'); background-position-y: 50%;">
+          <span class="mask bg-gradient-warning opacity-6"></span>
+      </div>
+      <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
+  @endsection 
   @section('profile-card')
     <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
       <div class="card-body p-3">
@@ -20,7 +29,7 @@
                 {{ Auth::user()->email }}
                 </p>
             </div>
-          </div>
+          </div> 
         </div>
       </div>
     </div>

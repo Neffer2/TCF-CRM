@@ -23,7 +23,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
-<body class="g-sidenav-show bg-gray-100">
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
     <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}'); background-position-y: 50%;">
       <span class="mask bg-gradient-warning opacity-6"></span>
     </div>
@@ -85,13 +85,13 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('gestion-comercial') }}">
-                    <span class="sidenav-mini-icon text-xs"> NP </span>
+                    <span class="sidenav-mini-icon text-xs"> Pro </span>
                     <span class="sidenav-normal"> Prospectos </span>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('presupuestos') }}">
-                    <span class="sidenav-mini-icon text-xs"> NP </span>
+                    <span class="sidenav-mini-icon text-xs"> Pre </span>
                     <span class="sidenav-normal"> Presupuestos </span>
                   </a>
                 </li>            

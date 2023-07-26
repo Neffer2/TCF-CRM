@@ -1,4 +1,7 @@
 @extends('layouts.asistente.main')
+    @section('nav-hidden')
+      g-sidenav-hidden
+    @endsection
     @section('profile-card')
     <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
         <div class="card-body p-3">
