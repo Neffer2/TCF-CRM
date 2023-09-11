@@ -1,32 +1,64 @@
 <div class="card">
-    <div class="table-responsive"> 
+    <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
+        <div class="row">            
+            <div class="col-md-12">
+                <h3 class="mb-0">Gesti&oacute;n comercial</h3>
+                <p class="text-sm mb-0">Lista completa de gestiones comerciales.</p>
+            </div> 
+            <div class="form-group col-md-2">
+                <label for="comercial">Buscar (nombre proyecto):</label> 
+                <input type="text" wire:model="filtro_nom_proyecto" class="form-control">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="comercial">Contacto:</label> 
+                <select wire:model="filtro_contacto" class="form-control">
+                    <option value="">Seleccionar</option>
+                </select>
+            </div>
+            <div class="form-group col-md-2">
+                <label for="comercial">Estado:</label> 
+                <select wire:model="filtro_contacto" class="form-control">
+                    <option value="">Seleccionar</option>
+                </select>
+            </div>
+        </div> 
+    </div>  
+    <div class="table-responsive">  
         <table class="table">
             <thead> 
                 <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Datos de contacto</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Proyecto</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" colspan="2">Proyecto</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estado</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Siguiente estado</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Acciones</th>
                 </tr> 
             </thead>
-            <tbody>  
+            <tbody>    
                 @foreach ($datos as $dato)
-                    <tr>
+                    <tr> 
                         <td>
                             <div class="d-flex px-2 py-1">
                                 <div>
                                     <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
-                                    <h6 class="mb-0 text-xs">{{ $dato->contacto->nombre }} {{ $dato->contacto->apellido }}</h6>
-                                    <p class="text-xs text-secondary mb-0">{{ $dato->contacto->correo }}</p>
+                                    <h6 class="mb-0 text-xs">{{ $dato->contacto->empresa }}</h6>
+                                    <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->empresa }}</p>
-                            <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
+                            <p class="text-xs font-weight-bold mb-0">Valor proyecto</p>
+                            @if ($dato->presupuesto)
+                                <p class="text-xs text-secondary mb-0">{{ number_format($dato->presupuesto->venta_proy) }} $</p>                                
+                            @else 
+                                <p class="text-xs text-secondary mb-0">{{ number_format($dato->presto_cot) }} $</p>
+                            @endif
+                        </td>
+                        <td>
+                            <p class="text-xs font-weight-bold mb-0">{{ $dato->contacto->nombre }} {{ $dato->contacto->apellido }}</p>
+                            <p class="text-xs text-secondary mb-0">{{ $dato->contacto->correo }}</p>
                         </td>
                         <td> 
                             <select name="" id="" class="form-control" disabled>
@@ -89,8 +121,8 @@
                                     </div> 
                                     <div class="modal-body">
                                         {{-- formulario oportunidad --}} 
-                                        <div :wire:key="'item-'.$dato->id"> 
-                                            @livewire('com.gestion-comercial.forms.oportunidad-form', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
+                                        <div :wire:key="'item-1'.$dato->id"> 
+                                            @livewire('com.gestion-comercial.forms.oportunidad-form', ['lead_id' => $dato->id, key('item-1'.$dato->id)])   
                                         </div>
                                     </div> 
                                     <div class="modal-footer">
@@ -113,8 +145,8 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- formulario Cotizacion --}} 
-                                        <div :wire:key="'item-'.$dato->id"> 
-                                            @livewire('com.gestion-comercial.forms.cotizacion-form', ['lead_id' => $dato->id], key('item-'.$dato->id))   
+                                        <div :wire:key="'item-2'.$dato->id"> 
+                                            @livewire('com.gestion-comercial.forms.cotizacion-form', ['lead_id' => $dato->id], key('item-2'.$dato->id))   
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -161,8 +193,8 @@
                                     </div>
                                     <div class="modal-body">
                                     {{-- formulario perdido --}} 
-                                        <div :wire:key="'item-'.$dato->id">
-                                            @livewire('com.gestion-comercial.forms.descicion-form', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
+                                        <div :wire:key="'item-3'.$dato->id">
+                                            @livewire('com.gestion-comercial.forms.descicion-form', ['lead_id' => $dato->id, key('item-3'.$dato->id)])   
                                         </div>
                                     </div>
                                     <div class="modal-footer"> 
@@ -185,8 +217,8 @@
                                     </div>
                                     <div class="modal-body">
                                         {{-- formulario venta --}} 
-                                        <div :wire:key="'item-'.$dato->id">
-                                            @livewire('com.gestion-comercial.forms.new-proyecto', ['lead_id' => $dato->id, key('item-'.$dato->id)])   
+                                        <div :wire:key="'item-4'.$dato->id">
+                                            @livewire('com.gestion-comercial.forms.new-proyecto', ['lead_id' => $dato->id, key('item-4'.$dato->id)])   
                                         </div>
                                     </div>
                                     <div class="modal-footer"> 

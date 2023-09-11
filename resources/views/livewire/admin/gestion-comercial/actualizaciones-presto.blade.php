@@ -6,16 +6,20 @@
                     <h3 class="mb-0">Actualizaciones</h3>
                     <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
                 </div>
-                <div class="form-groupcol-md-3">
+                <div class="col-md-6">  
+                    <label for="comercial">Buscar:</label>
+                    <input type="text" wire:model="cod_cc" class="form-control">
+                </div>
+                <div class="col-md-6">
                     <label for="comercial">Fecha:</label>
                     <select id="comercial" class="form-control" wire:model="fecha">
                         <option value="asc">Seleccionar</option>
                         <option value="asc">M&aacute;s antiguos</option>
                         <option value="desc">M&aacute;s recientes</option>
-                    </select>
+                    </select> 
                 </div>
             </div>
-        </div>
+        </div> 
         <div class="table-responsive">
             <table class="table align-items-center mb-0">
                 <thead> 
@@ -33,9 +37,8 @@
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        
-                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30)
+                                    <div class="d-flex flex-column justify-content-center">                                        
+                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30) 
                                             <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, -23) }}...</h6>
                                         @else
                                             <h6 class="mb-0 text-xs" >{{ $presupuesto->gestion->nom_proyecto_cot }}</h6>
@@ -54,7 +57,7 @@
                             </td>  
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
-                                <p class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</p>
+                                <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</textarea>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -87,8 +90,13 @@
                             @endif
                         </tr> 
                     @endforeach
-                    <tr>
-                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Cantidad de items: {{ $registros }}</td>
+                    <tr> 
+                        @php
+                            $presupuestosArray = $presupuestos->toArray();
+                            $registros_page = sizeof($presupuestosArray['data']);
+                            $total = $presupuestosArray['total'];
+                        @endphp
+                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                         <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
                     </tr>
                 </tbody>

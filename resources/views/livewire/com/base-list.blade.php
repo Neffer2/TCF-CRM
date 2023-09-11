@@ -3,7 +3,7 @@
         <!-- Card header --> 
         <div class="card-header">
             <h5 class="mb-0">Base comercial</h5>            
-        </div>
+        </div> 
         <div class="table-responsive">
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">

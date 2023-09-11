@@ -35,7 +35,7 @@ class GestionPresupuestos extends Component
  
         if ($this->filter != 0){
             array_push($filtros, ['estado_id', $this->filter]);
-        }
+        } 
         
         if ($this->margen == '<'){
             array_push($filtros, ['margen_proy', '<=', 35]);
@@ -44,11 +44,9 @@ class GestionPresupuestos extends Component
         }
         array_push($filtros, ['cod_cc', null]);
         
-        $registros = 0;
         $presupuestos = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
-        $registros = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->count();
 
-        return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['presupuestos' => $presupuestos, 'registros' => $registros]);
+        return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['presupuestos' => $presupuestos]);
     }
  
     public function mount(){

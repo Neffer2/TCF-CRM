@@ -7,7 +7,7 @@ use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
 use App\Models\GestionComercial; 
 use App\Models\Asistente;
-use App\Models\User;  
+use App\Models\User;   
 use App\Models\ItemPresupuesto;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,17 +22,24 @@ class ActualizacionesPresto extends Component
     //Models 
     // public $comercial = 0;
     public $fecha = 'desc';
+    public $cod_cc;
 
     // Useful vars
     public $estados = [];  
     // public $comerciales = [];   
 
     public $rol; 
-
+ 
     public function render()      
     {   
         $filtros = [];
+
         array_push($filtros, ['cod_cc', '<>', null]);
+
+        if ($this->cod_cc){
+            array_push($filtros, ['cod_cc', 'like', "%$this->cod_cc%"]);   
+        }
+
         if ($this->rol == 1){ array_push($filtros, ['estado_id', 2]); }
 
         // Trae solo los presupuestos del usuario
@@ -41,27 +48,22 @@ class ActualizacionesPresto extends Component
                 where($filtros)->orderBy('id', $this->fecha)->
                 whereHas('gestion', function (Builder $query){
                     $query->where('id_user', Auth::id());
-                })->paginate(10);
+                })->paginate(15);
         }elseif ($this->rol == 5){
             $presupuestos = PresupuestoProyecto::
                 where($filtros)->orderBy('id', $this->fecha)->
                 whereHas('gestion', function (Builder $query){
                     $query->where('id_user', Asistente::select('comercial_id')->where('asistente_id', Auth::id())->first()->comercial_id);
-                })->paginate(10);
+                })->paginate(15);
         }
 
         // Trae todos los presupustos que tengan actualizaciones
         if ($this->rol == 1){ 
             $presupuestos = PresupuestoProyecto::
-                        where($filtros)->orderBy('id', $this->fecha)->paginate(10);
+                where($filtros)->orderBy('id', $this->fecha)->paginate(15);
         }
-        
-        $registros = 0;   
-        $registros = PresupuestoProyecto::where($filtros)->orderBy('id', $this->fecha)->whereHas('gestion', function (Builder $query){
-            $query->where('id_user', Auth::id());
-        })->count();
 
-        return view('livewire.admin.gestion-comercial.actualizaciones-presto', ['presupuestos' => $presupuestos, 'registros' => $registros]);
+        return view('livewire.admin.gestion-comercial.actualizaciones-presto', ['presupuestos' => $presupuestos]);
     }
     
     public function mount(){

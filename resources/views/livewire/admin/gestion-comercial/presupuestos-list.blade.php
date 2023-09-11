@@ -7,21 +7,21 @@
                     <p class="text-sm mb-0">Lista completa de presupuestos.</p>
                 </div> 
                 <div class="form-group col-md-3">
-                    <label for="comercial">Buscar:</label>
+                    <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="cod_cc" class="form-control">
                 </div>
-            </div>
-        </div>
-        <div class="table-responsive">
+            </div> 
+        </div>  
+        <div class="table-responsive"> 
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
-                        <th colspan="4" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody> 
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
                             <td>
@@ -29,8 +29,7 @@
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        
+                                    <div class="d-flex flex-column justify-content-center">                                        
                                         @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30)
                                             <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, -23) }}...</h6>
                                         @else
@@ -39,7 +38,7 @@
                                         <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->contacto->empresa }}</p>
                                     </div>
                                 </div>
-                            </td>
+                            </td>                            
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
@@ -50,7 +49,7 @@
                             </td>  
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
-                                <p class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</p>
+                                <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</textarea>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -66,7 +65,13 @@
                         </tr> 
                     @endforeach
                     <tr>
-                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Cantidad de items: {{ $registros }}</td>
+                        @php
+                            $presupuestosArray = $presupuestos->toArray();
+                            $registros_page = sizeof($presupuestosArray['data']);
+                            $total = $presupuestosArray['total'];
+                        @endphp
+
+                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                         <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
                     </tr>
                 </tbody>

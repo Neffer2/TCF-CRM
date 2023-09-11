@@ -18,7 +18,7 @@ class CreateAsistentesTable extends Migration
             $table->foreignId('asistente_id');
             $table->foreign('asistente_id')->references('id')->on('users');
             $table->foreignId('comercial_id');
-            $table->foreign('comercial_id')->references('id')->on('cuenta');
+            $table->foreign('comercial_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

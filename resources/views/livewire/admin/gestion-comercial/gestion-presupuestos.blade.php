@@ -100,10 +100,15 @@
                                     <option value="3">Rechazar</option>
                                 </select>
                             </td>
-                        </tr> 
+                        </tr>  
                     @endforeach
-                    <tr>
-                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Cantidad de items: {{ $registros }}</td>
+                    <tr>                        
+                        @php
+                            $presupuestosArray = $presupuestos->toArray();
+                            $registros_page = sizeof($presupuestosArray['data']);
+                            $total = $presupuestosArray['total'];
+                        @endphp
+                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                         <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
                     </tr>
                 </tbody>
