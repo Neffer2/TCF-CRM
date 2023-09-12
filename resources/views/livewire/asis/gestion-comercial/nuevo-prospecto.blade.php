@@ -15,7 +15,7 @@
                         @foreach ($contactos as $contacto)
                             <option value="{{ $contacto->id }}">{{ $contacto->nombre }} {{ $contacto->apellido }} - {{ $contacto->empresa }}</option>
                         @endforeach
-                    </select>
+                    </select> 
                     @error('contacto')
                         <div id="contacto" class="invalid-feedback">
                             {{ $message }}

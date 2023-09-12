@@ -5,22 +5,36 @@
                 <h3 class="mb-0">Gesti&oacute;n comercial</h3>
                 <p class="text-sm mb-0">Lista completa de gestiones comerciales.</p>
             </div> 
-            <div class="form-group col-md-2">
-                <label for="comercial">Buscar (nombre proyecto):</label> 
-                <input type="text" wire:model="filtro_nom_proyecto" class="form-control">
+            <div class="form-group col-md-2"> 
+                <label for="filtro_buscar">Buscar:</label> 
+                <input id="filtro_buscar" type="text" wire:model="filtro_nom_proyecto" class="form-control" placeholder="Nombre proyecto">
             </div>
             <div class="form-group col-md-2">
-                <label for="comercial">Contacto:</label> 
-                <select wire:model="filtro_contacto" class="form-control">
+                <label for="filtro_contacto">Contacto:</label> 
+                <select id="filtro_contacto" wire:model="filtro_contacto" class="form-control">
                     <option value="">Seleccionar</option>
+                    @foreach ($contactos as $contacto)
+                        <option value="{{ $contacto->id }}">{{ $contacto->nombre }} {{ $contacto->apellido }} - {{ $contacto->empresa }}</option>   
+                    @endforeach
+                </select>
+            </div>   
+            <div class="form-group col-md-2">
+                <label for="filtro_estado">Estado:</label> 
+                <select id="filtro_estado" wire:model="filtro_estado" class="form-control">
+                    <option value="">Seleccionar</option>
+                    @foreach ($estados as $estado)
+                        <option value="{{ $estado->id }}">{{ $estado->description }}</option>   
+                    @endforeach
                 </select>
             </div>
             <div class="form-group col-md-2">
-                <label for="comercial">Estado:</label> 
-                <select wire:model="filtro_contacto" class="form-control">
-                    <option value="">Seleccionar</option>
-                </select>
-            </div>
+                <label for="filtro_fecha">Fecha:</label> 
+                <select id="filtro_fecha" class="form-control" wire:model="filtro_fecha">
+                    <option value="asc">Seleccionar</option>
+                    <option value="asc">M&aacute;s antiguos</option>
+                    <option value="desc">M&aacute;s recientes</option>
+                </select> 
+            </div> 
         </div> 
     </div>  
     <div class="table-responsive">  
@@ -38,13 +52,17 @@
                 @foreach ($datos as $dato)
                     <tr> 
                         <td>
-                            <div class="d-flex px-2 py-1">
+                            <div class="d-flex px-2 py-1" title="{{ $dato->nom_proyecto_cot }}">
                                 <div>
                                     <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
-                                    <h6 class="mb-0 text-xs">{{ $dato->contacto->empresa }}</h6>
-                                    <p class="text-xs text-secondary mb-0">{{ $dato->nom_proyecto_cot }}</p>
+                                    @if (strlen($dato->nom_proyecto_cot) > 80)
+                                        <h6 class="mb-0 text-xs">{{ substr($dato->nom_proyecto_cot, 0, 80) }}...</h6>
+                                    @else 
+                                        <h6 class="mb-0 text-xs">{{ substr($dato->nom_proyecto_cot, 0, 80) }}</h6>
+                                    @endif
+                                    <p class="text-xs text-secondary mb-0">{{ $dato->contacto->empresa }}</p>
                                 </div>
                             </div>
                         </td>
@@ -230,6 +248,12 @@
                     @endif 
                 @endforeach
                 <tr>
+                    @php
+                        $gestionesArray = $datos->toArray();
+                        $registros_page = sizeof($gestionesArray['data']);
+                        $total = $gestionesArray['total'];
+                    @endphp
+                    <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                     <td colspan="6" class="d-flex">{{ $datos->links() }}</td>
                 </tr>
             </tbody>

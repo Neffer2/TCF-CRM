@@ -1,7 +1,7 @@
 <div class="card">
     <div class="table-responsive"> 
         <table class="table">
-            <thead> 
+            <thead>  
                 <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Datos de contacto</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Proyecto</th>
@@ -12,7 +12,7 @@
             </thead>
             <tbody>  
                 @foreach ($datos as $dato)
-                    <tr>
+                    <tr> 
                         <td>
                             <div class="d-flex px-2 py-1">
                                 <div>

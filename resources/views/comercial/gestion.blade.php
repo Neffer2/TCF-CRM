@@ -49,7 +49,7 @@
         </div>
         @livewire('com.gestion-comercial.gestion-list')
       </div>
-    </div>
+    </div> 
   @endsection
  
   @section('scripts')  

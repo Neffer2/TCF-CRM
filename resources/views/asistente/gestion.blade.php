@@ -5,7 +5,7 @@
   @section('profile-card') 
     <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
       <div class="card-body p-3">
-        <div class="row gx-4">
+        <div class="row gx-4"> 
           <div class="col-auto"> 
             <div class="avatar avatar-xl position-relative">
               @php
@@ -25,7 +25,7 @@
             </div> 
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   @endsection 
 
@@ -44,12 +44,12 @@
         <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
         <div class="collapse" id="collapseExample">
           <div class="card card-body mb-3">
-            @livewire('asis.gestion-comercial.nuevo-prospecto')       
+            @livewire('com.gestion-comercial.nuevo-prospecto')       
           </div>          
         </div>
-        @livewire('asis.gestion-comercial.gestion-list')
-      </div>
-    </div> 
+        @livewire('com.gestion-comercial.gestion-list')
+      </div> 
+    </div>  
   @endsection
  
   @section('scripts')  

@@ -7,6 +7,7 @@ use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 use App\Models\Base_comercial;
 use App\Models\User; 
+use App\Models\Asistente; 
 use App\Models\GestionComercial;
 use App\Models\PresupuestoProyecto;
 use Illuminate\Validation\Rules; 
@@ -14,10 +15,9 @@ use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {   
-    // str_replace(",",'', $this->debito);
     // MODELS 
     public $fecha = ""; 
-    public $nom_cliente = "";  
+    public $nom_cliente = "";   
     public $nom_proyecto = ""; 
     public $cod_cc; 
     public $valor_proyecto = ""; 
@@ -70,18 +70,32 @@ class NewProyecto extends Component
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
         $this->nom_proyecto = $informacionGeneral->nom_proyecto_cot;
-        $this->valor_proyecto = $informacionGeneral->presto_cot;
+
+        // Valor proyecto actualizado, else para los antiguos (sin presupuesto)
+        if ($informacionGeneral->presupuesto){
+            $this->valor_proyecto = $informacionGeneral->presupuesto->venta_proy;
+        }else{ 
+            $this->valor_proyecto = $informacionGeneral->presto_cot;
+        }
+        
         $this->com_2 = $informacionGeneral->comercial_2;
         $this->porcentaje = $informacionGeneral->porcentaje;
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
         
         $this->participaciones = $informacionGeneral->participaciones;
-        $this->comercial0 = Auth::id(); 
+        
+        if (Auth::user()->rol == 2){
+            $this->comercial0 = Auth::id();            
+        }else if(Auth::user()->rol == 5){
+            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
+            $this->comercial0 = $asistente->comercial_id;            
+        }
+
         $this->comercial1 = $informacionGeneral->comercial_2;
         $this->comercial2 = $informacionGeneral->comercial_3;
         $this->comercial3 = $informacionGeneral->comercial_4;
 
-        $this->porcentaje0 = $informacionGeneral->porcentaje;
+        $this->porcentaje0 = $informacionGeneral->porcentaje; 
         $this->porcentaje1 = $informacionGeneral->porcentaje_2; 
         $this->porcentaje2 = $informacionGeneral->porcentaje_3;
         $this->porcentaje3 = $informacionGeneral->porcentaje_4;
@@ -174,7 +188,12 @@ class NewProyecto extends Component
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
-        $this->comercial0 = Auth::id();
+        if (Auth::user()->rol == 2){
+            $this->comercial0 = Auth::id();            
+        }else if(Auth::user()->rol == 5){
+            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
+            $this->comercial0 = $asistente->comercial_id;            
+        }
     }
 
     public function updatedComercial1(){
@@ -355,8 +374,12 @@ class NewProyecto extends Component
             $i++;
         }
         
-        $this->storeVenta();
-        return redirect()->route('gestion-comercial')->with('success', '¡Proyecto creado exitosamente!');
+        $this->storeVenta(); 
+        if (Auth::user()->rol == 2){  
+            return redirect()->route('gestion-comercial')->with('success', '¡Proyecto creado exitosamente!');
+        }else if(Auth::user()->rol == 5){
+            return redirect()->route('asis-gestion-comercial')->with('success', '¡Proyecto creado exitosamente!');
+        }
     }
  
     public function limpiar(){

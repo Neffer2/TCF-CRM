@@ -8,7 +8,7 @@
                 </div> 
                 <div class="form-group col-md-3">
                     <label for="comercial">Buscar:</label> 
-                    <input type="text" wire:model="cod_cc" class="form-control">
+                    <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div>
             </div> 
         </div>  
@@ -25,13 +25,13 @@
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
                             <td>
-                                <div class="d-flex px-2 py-1">
+                                <div class="d-flex px-2 py-1" title="{{ $presupuesto->gestion->nom_proyecto_cot }}">
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">                                        
-                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30)
-                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, -23) }}...</h6>
+                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 80)
+                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
                                         @else
                                             <h6 class="mb-0 text-xs" >{{ $presupuesto->gestion->nom_proyecto_cot }}</h6>
                                         @endif

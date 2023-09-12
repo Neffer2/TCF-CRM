@@ -49,15 +49,14 @@
                 <tbody>
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
-                            <td>
+                            <td> 
                                 <div class="d-flex px-2 py-1">
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        
-                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30)
-                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, -23) }}...</h6>
+                                    <div class="d-flex flex-column justify-content-center">                                        
+                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 80)
+                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
                                         @else
                                             <h6 class="mb-0 text-xs" >{{ $presupuesto->gestion->nom_proyecto_cot }}</h6>
                                         @endif

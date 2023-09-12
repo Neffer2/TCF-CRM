@@ -14,7 +14,7 @@ class GestionList extends Component
     use WithPagination;  
     protected $paginationTheme = 'bootstrap'; 
     
-    // Useful vars
+    // Useful vars 
     public $estados = [];
     protected $listeners = ['list' => 'getData'];
 

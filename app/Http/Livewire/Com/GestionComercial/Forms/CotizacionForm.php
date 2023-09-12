@@ -7,6 +7,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial;
 use App\Models\User;
+use App\Models\Asistente;
 use Livewire\WithFileUploads;
 
 class CotizacionForm extends Component 
@@ -52,7 +53,12 @@ class CotizacionForm extends Component
     
     public function mount(){
         $this->getComerciales();
-        $this->comercial0 = Auth::id();
+        if (Auth::user()->rol == 2){
+            $this->comercial0 = Auth::id();            
+        }else if(Auth::user()->rol == 5){
+            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
+            $this->comercial0 = $asistente->comercial_id;            
+        }
     }
 
     public function getComerciales(){
@@ -85,7 +91,7 @@ class CotizacionForm extends Component
     // public function updatedCotizacionFile (){
     //     $this->validate([
     //         'cotizacionFile' => 'required|max:2024',
-    //     ]);
+    //     ]); 
     // }
 
     public function updatedFecha (){
@@ -119,7 +125,12 @@ class CotizacionForm extends Component
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
-        $this->comercial0 = Auth::id();        
+        if (Auth::user()->rol == 2){
+            $this->comercial0 = Auth::id();            
+        }else if(Auth::user()->rol == 5){
+            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
+            $this->comercial0 = $asistente->comercial_id;            
+        }
     }
 
     public function updatedComercial1(){
@@ -297,9 +308,10 @@ class CotizacionForm extends Component
         $lead->update(); 
 
 
-
-        if (Auth::user()->rol == 2){ 
+        if (Auth::user()->rol == 2){  
             return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');
+        }else if(Auth::user()->rol == 5){
+            return redirect()->route('asis-gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');
         }
     }
 } 

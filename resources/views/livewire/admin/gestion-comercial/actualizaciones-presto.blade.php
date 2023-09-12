@@ -8,11 +8,11 @@
                 </div>
                 <div class="col-md-6">  
                     <label for="comercial">Buscar:</label>
-                    <input type="text" wire:model="cod_cc" class="form-control">
+                    <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div>
                 <div class="col-md-6">
-                    <label for="comercial">Fecha:</label>
-                    <select id="comercial" class="form-control" wire:model="fecha">
+                    <label for="filtro_fecha">Fecha:</label>
+                    <select id="filtro_fecha" class="form-control" wire:model="fecha">
                         <option value="asc">Seleccionar</option>
                         <option value="asc">M&aacute;s antiguos</option>
                         <option value="desc">M&aacute;s recientes</option>
@@ -24,24 +24,24 @@
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
-                        <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
-                        <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                        <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
                             <td>
-                                <div class="d-flex px-2 py-1">
+                                <div class="d-flex px-2 py-1" title="{{ $presupuesto->gestion->nom_proyecto_cot }}">
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center">                                        
-                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 30) 
-                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, -23) }}...</h6>
-                                        @else
-                                            <h6 class="mb-0 text-xs" >{{ $presupuesto->gestion->nom_proyecto_cot }}</h6>
+                                    <div class="d-flex flex-column justify-content-center">                            
+                                        @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 80)
+                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
+                                        @else 
+                                            <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}</h6>
                                         @endif
                                         <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->contacto->empresa }}</p>
                                     </div>
@@ -50,6 +50,10 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Valor proyecto</p>
+                                <p class="text-xs text-secondary mb-0">{{ number_format($presupuesto->venta_proy) }} $</p>                                
                             </td> 
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
