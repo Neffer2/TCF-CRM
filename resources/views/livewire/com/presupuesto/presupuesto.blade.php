@@ -116,30 +116,30 @@
 
             {{-- Actualizacion --}}
             @if ($showJustificacion && Auth::user()->rol == 1)
-                <div class="row mt-2">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12"> 
-                                <div class="row px-3">
-                                    <div class="col-md-12">
-                                        <h3 class="mb-0">Justificaci&oacute;n</h3>
-                                        <p class="text-sm mb-0">Causas por las cuales se actualiz&oacute; este presupuesto.</p>
-                                    </div>
+            <div class="row mt-2">
+                <div class="col-md-6"> 
+                    <div class="card">
+                        <div class="card-header p-0 mt-3 col-md-12"> 
+                            <div class="row px-3">
+                                <div class="col-md-12">
+                                    <h3 class="mb-0">Justificaci&oacute;n interna</h3>
+                                    <p class="text-sm mb-0">Revisa la justificaci&oacute;n que el comercial escribi&oacute; para t&iacute;.</p>
                                 </div>
                             </div>
-                            <div class="card-body p-2">
-                                <div class="form-group">
-                                    <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
-                                    @error('justificacion')
-                                        <small id="justificacion" class="text-danger bold">
-                                            {{ $message }}
-                                        </small>
-                                    @enderror
-                                </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="form-group">
+                                <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
+                                @error('justificacion')
+                                    <small id="justificacion" class="text-danger bold">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
                             </div>
-                        </div>        
-                    </div>
-                </div>           
+                        </div>
+                    </div>        
+                </div>
+            </div>            
             @endif
         </div>             
         

@@ -71,7 +71,7 @@ class Presupuesto extends Component
     public $id_gestion; 
 
     // Justificacion
-    public $showJustificacion = false;
+    public $showJustificacion = true;
 
     public function render()
     {
@@ -96,7 +96,7 @@ class Presupuesto extends Component
             $this->justificacion = $validator->justificacion;
         }
 
-        // Valida si es actualización
+        // Valida si es actualización. 
         if ($this->cod_cc){
             $this->showJustificacion = true;
         }
@@ -146,7 +146,7 @@ class Presupuesto extends Component
         $item->otros = $this->otros;
 
         $item->descripcion = $this->descripcion;
-        $item->v_unitario = $this->valor_unitario;
+        $item->v_unitario = $this->valor_unitario; 
         $item->v_total = $this->valor_total;
         $item->proveedor = $this->proveedor;
         $item->margen_utilidad = $this->utilidad;
@@ -155,8 +155,8 @@ class Presupuesto extends Component
         $item->dias = $this->dias;
         $item->ciudad = $this->ciudad;
 
-        // Indica actualiazcion
-        if ($presto->cod_cc){
+        // Indica actualiazcion.
+        if ($presto->cod_cc){ 
             $item->actualizado = true;
             $this->setEnEdicion($presto);
         }
@@ -405,7 +405,7 @@ class Presupuesto extends Component
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 2;
         $presto->justificacion = $this->justificacion;
-        $presto->update();
+        $presto->update(); 
         $this->estadoValidator = $presto->estado_id;
 
         $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name);
