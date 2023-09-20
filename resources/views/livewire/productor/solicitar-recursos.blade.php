@@ -11,22 +11,38 @@
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
-                        {{-- <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th> --}}
+                        <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody> 
                     @foreach ($presupuestoItems as $key => $presupuestoItem)
-                        <tr>
-                            <td class="font-weight-bold font-table">{{ $key+=1 }}</td>
-                            <td class="font-weight-bold font-table">
-                                <textarea cols="30" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
-                            </td>
-                            <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
-                            <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
-                            <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
-                            <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
-                            <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
-                        </tr>
+                        <div x-data="{ open{{ $key+1 }}: false }">                                                    
+                            <tr>
+                                <td class="font-weight-bold font-table">{{ $key+1 }}</td>
+                                <td class="font-weight-bold font-table">
+                                    <textarea cols="30" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
+                                </td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
+                                <td class="font-weight-bold font-table">
+                                    <button class="btn btn-primary mb-0" x-on:click="{ open{{ $key+1 }} = !open{{ $key+1 }} }">Generar OC</button>
+                                </td>
+
+                                <div x-show="open{{ $key+1 }}"> 
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="card">
+                                                <div class="card-header">Sopy una orden de comptra</div>
+                                                <div class="card-body"> EEASDCAEDASD S</div>
+                                            </div>
+                                        </td>
+                                    </tr>            
+                                </div>
+                            </tr>
+                        </div>
                     @endforeach
                 </tbody>
                 <tfoot class="border-0">

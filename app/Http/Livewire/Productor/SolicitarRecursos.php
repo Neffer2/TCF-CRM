@@ -10,7 +10,7 @@ class SolicitarRecursos extends Component
 { 
     // Models
 
-    // Useful vars 
+    // Useful vars   
     public $presupuesto;
     public $presupuestoItems; 
     public $verifyPresupuesto = false; 
@@ -24,7 +24,7 @@ class SolicitarRecursos extends Component
         return view('livewire.productor.solicitar-recursos');
     }
 
-    public function mount(){
+    public function mount(){ 
         $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto);   
         $this->presupuestoItems = ItemPresupuesto::where('presupuesto_id', $this->id_presupuesto)->get();
     }

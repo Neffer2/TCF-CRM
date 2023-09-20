@@ -13,7 +13,7 @@
             <div class="card"> 
                 <div class="card-body">
                     <h3 class="mb-4">Proyectos</h3>
-                    <div class="row">
+                    <div class="row"> 
                         <div class="col-md-2 mb-3">
                             <div class="list-group">
                                 <select x-on:change="Open" x-model="proyecto" id="proyecto" class="form-control" size="10">
@@ -21,7 +21,7 @@
                                         <option value="{{ $proyecto->id }}">{{ $proyecto->cod_cc }} - {{ $proyecto->gestion->nom_proyecto_cot }}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> 
                         </div>
                         <div class="col-md-10">
                             @foreach ($proyectos as $proyecto) 

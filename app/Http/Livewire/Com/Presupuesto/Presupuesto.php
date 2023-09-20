@@ -13,8 +13,8 @@ use App\Models\Tarifario;
 use App\Models\PresupuestoProyecto; 
 use App\Traits\Hablame;
 
-class Presupuesto extends Component 
-{
+class Presupuesto extends Component  
+{ 
     use Hablame;
 
     // Models
@@ -42,11 +42,12 @@ class Presupuesto extends Component
 
     public $centroCostos;
     public $justificacion;
+    public $justificacion_compras;
 
     // Useful vars
     public $items = [];
     public $presupuesto_id;
-    public $ciudades = [];
+    public $ciudades = []; 
     public $meses = [];
     public $tarifario = [];
     public $selected_item;
@@ -70,9 +71,6 @@ class Presupuesto extends Component
     // globals
     public $id_gestion; 
 
-    // Justificacion
-    public $showJustificacion = true;
-
     public function render()
     {
         return view('livewire.com.presupuesto.presupuesto');
@@ -94,6 +92,7 @@ class Presupuesto extends Component
             $this->estadoValidator = $validator->estado_id;
             $this->cod_cc = $validator->cod_cc; 
             $this->justificacion = $validator->justificacion;
+            $this->justificacion_compras = $validator->justificacion_compras;
         }
 
         // Valida si es actualización. 
@@ -424,6 +423,7 @@ class Presupuesto extends Component
         $this->validate([
             'centroCostos' => ['required', 'string']
         ]);
+
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         
         if (is_null($item->cod_cc)){
@@ -441,12 +441,30 @@ class Presupuesto extends Component
         $item->cod_cc = $this->centroCostos;
         $item->fecha_cc = date("Y-m-d");
         $item->estado_id = 1;    
+        $item->justificacion_compras = null;
+        $item->justificacion = null;
         $item->update();
         
         // SMS
         $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, $item->cod_cc);
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
+    }
+
+    public function rechazar(){
+        $this->validate([
+            'justificacion_compras' => ['required', 'string']
+        ]);
+        
+        $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presupuesto->justificacion_compras = $this->justificacion_compras;
+        $presupuesto->estado_id = 3;
+        $presupuesto->update(); 
+        
+        // SMS
+        $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+
+        return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');  
     }
 
     // VALIDATIONS

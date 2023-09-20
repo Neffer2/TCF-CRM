@@ -6,7 +6,7 @@
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table mb-0">
-                                <tr>
+                                <tr> 
                                     <td class="font-weight-bold font-table">MARGEN GENERAL</td>
                                     <td class="font-table">{{ number_format($margenGeneral, 4) }}</td>
                                 </tr>
@@ -115,31 +115,80 @@
             </div> 
 
             {{-- Actualizacion --}}
-            @if ($showJustificacion && Auth::user()->rol == 1)
-            <div class="row mt-2">
-                <div class="col-md-6"> 
-                    <div class="card">
-                        <div class="card-header p-0 mt-3 col-md-12"> 
-                            <div class="row px-3">
-                                <div class="col-md-12">
-                                    <h3 class="mb-0">Justificaci&oacute;n interna</h3>
-                                    <p class="text-sm mb-0">Revisa la justificaci&oacute;n que el comercial escribi&oacute; para t&iacute;.</p>
+            @if (Auth::user()->rol == 1)
+                <div class="row mt-2">
+                    <div class="col-md-4"> 
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12"> 
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Justificaci&oacute;n comercial</h3>
+                                        <p class="text-sm mb-0">Revisa la justificaci&oacute;n que el comercial escribi&oacute; para t&iacute;.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body p-2">
-                            <div class="form-group">
-                                <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
-                                @error('justificacion')
-                                    <small id="justificacion" class="text-danger bold">
-                                        {{ $message }}
-                                    </small>
-                                @enderror
+                            <div class="card-body p-2">
+                                <div class="form-group">
+                                    <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion')
+                                        <small id="justificacion" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                            </div> 
+                        </div>        
+                    </div>
+                    <div class="col-md-4">  
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12"> 
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Justificaci&oacute;n compras</h3>
+                                        <p class="text-sm mb-0">Expl&iacute;cale al comercial porqu&eacute; ha sido rechazado el presupuesto.</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>        
+                            <div class="card-body p-2">
+                                <div class="form-group">
+                                    <textarea name="justificacion_compras" @if(Auth::user()->rol != 1) disabled @endif id="justificacion_compras" cols="10" rows="2" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion_compras')
+                                        <small id="justificacion_compras" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                                <button class="btn bg-gradient-warning m-0" wire:click="rechazar">Rechazar</button>
+                            </div>
+                        </div>        
+                    </div>
+                </div>            
+            @endif
+            @if ($justificacion_compras && Auth::user()->rol != 1)
+                <div class="row mt-2">
+                    <div class="col-md-6">  
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12"> 
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Justificaci&oacute;n compras</h3>
+                                        <p class="text-sm mb-0">Revisa el poqu&eacute; fu&eacute; rechazado tu presupuesto.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-2">
+                                <div class="form-group">
+                                    <textarea name="justificacion_compras" @if(Auth::user()->rol != 1) disabled @endif id="justificacion_compras" cols="10" rows="1" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion_compras')
+                                        <small id="justificacion_compras" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>        
+                    </div>
                 </div>
-            </div>            
             @endif
         </div>             
         
@@ -429,17 +478,17 @@
                         </div>
                     </div>  
                     <div class="col-md-4">
-                        @if ($showJustificacion)
-                            <div class="form-group">
-                                <label for="justificacion">JUSTIFICACI&Oacute;N</label>
-                                <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="1" class="form-control" wire:model.lazy="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror" placeholder="Explica por qué realizaste esta actualización."></textarea>
-                                @error('justificacion')
-                                    <small id="justificacion" class="text-danger">
-                                        {{ $message }}
-                                    </small>
-                                @enderror
-                            </div>
-                        @endif
+                        <div class="form-group">
+                            <label for="justificacion">JUSTIFICACI&Oacute;N</label>
+                            <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="1" class="form-control"
+                                wire:model.lazy="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
+                                @if($cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
+                            @error('justificacion')
+                                <small id="justificacion" class="text-danger">
+                                    {{ $message }}
+                                </small>
+                            @enderror
+                        </div>
                     </div>
                 </div>                
             </div>

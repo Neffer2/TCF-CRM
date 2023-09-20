@@ -70,6 +70,8 @@ class GestionPresupuestos extends Component
             $gestion = GestionComercial::find($presupuesto->id_gestion);
             $gestion->id_estado = 4;
             $gestion->update();
+            $presupuesto->justificacion_compras = null;
+            $presupuesto->justificacion = null;
         }
         $presupuesto->update();
 

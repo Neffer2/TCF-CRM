@@ -77,9 +77,10 @@ class ActualizacionesPresto extends Component
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id); 
         $presupuesto->estado_id = $estado;
-        $presupuesto->update();
 
         if ($presupuesto->estado_id == 1){
+            $presupuesto->justificacion_compras = null;
+            $presupuesto->justificacion = null;
             $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
 
             // Default indicacion actualiazcion
@@ -91,6 +92,7 @@ class ActualizacionesPresto extends Component
             $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
         }
         
+        $presupuesto->update();
         return redirect()->route('actualizaciones')->with('success', 'Cambios guardados exitosamente');
     } 
 }

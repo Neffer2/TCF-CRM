@@ -39,6 +39,7 @@ class CreatePresupuestoProyectoTable extends Migration
 
             // Justificacion actualizacion
             $table->string('justificacion')->nullable();
+            $table->string('justificacion_compras')->nullable();
             
             $table->foreignId('productor')->nullable();
             $table->foreign('productor')->references('id')->on('users'); 

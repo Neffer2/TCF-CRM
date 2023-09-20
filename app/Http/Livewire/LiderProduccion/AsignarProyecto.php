@@ -41,7 +41,7 @@ class AsignarProyecto extends Component
         $this->proyectos = [];        
         // Filter
         if ($this->comercial){
-            PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get()->map(function ($item){
+            PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->orderBy('created_at', 'desc')->get()->map(function ($item){
                 if ($item->gestion->id_user == $this->comercial){
                     array_push($this->proyectos, $item);
                 }
