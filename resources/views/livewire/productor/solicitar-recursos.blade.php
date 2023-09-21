@@ -1,9 +1,9 @@
-<div>    
+<div>     
     @if ($verifyPresupuesto)
-        <div class="table-responsive mt-2 rounded bg-whitem mb-2">
+        <div class="table-responsive mt-2 rounded bg-whitem mb-2" x-data="showOC">
             <table class="table mb-0">
                 <thead> 
-                    <tr>
+                    <tr> 
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
@@ -16,7 +16,7 @@
                 </thead>
                 <tbody> 
                     @foreach ($presupuestoItems as $key => $presupuestoItem)
-                        <div x-data="{ open{{ $key+1 }}: false }">                                                    
+                        <div>                                                    
                             <tr>
                                 <td class="font-weight-bold font-table">{{ $key+1 }}</td>
                                 <td class="font-weight-bold font-table">
@@ -27,20 +27,131 @@
                                 <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
-                                <td class="font-weight-bold font-table">
-                                    <button class="btn btn-primary mb-0" x-on:click="{ open{{ $key+1 }} = !open{{ $key+1 }} }">Generar OC</button>
+                                <td class="font-weight-bold font-table text-center">
+                                    <button x-on:click="Open({{ $presupuestoItem->id }}, event)" class="btn btn-primary 4mb-0 px-3 py-1">
+                                        🔽
+                                    </button>
                                 </td>
 
-                                <div x-show="open{{ $key+1 }}"> 
-                                    <tr>
-                                        <td colspan="9">
-                                            <div class="card">
-                                                <div class="card-header">Sopy una orden de comptra</div>
-                                                <div class="card-body"> EEASDCAEDASD S</div>
+                                <tr id="{{ $presupuestoItem->id }}" x-show="false">
+                                    <td colspan="9">
+                                        <div class="">
+                                            <div class="card-body">
+                                                <select class="form-control">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="">ORDEN DE COMPRA JUR&Iacute;DICA</option>
+                                                    <option value="">ORDEN DE COMPRA NATURAL</option>
+                                                </select>
                                             </div>
-                                        </td>
-                                    </tr>            
-                                </div>
+                                            
+                                            <div class="card-body pt-0">
+                                                <div class="card">
+                                                    <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
+                                                        SOLICITUD ORDEN DE COMPRA
+                                                    </div>
+                                                    <div class="row font-table px-4">
+                                                        <div class="col-md-6 mt-3">
+                                                            <table class="card card-body table">
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Cliente:</td>
+                                                                    <td>PEPSICO.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Proyecto:</td>
+                                                                    <td>EVENTO DEMO FARM COLOMBIA pago terceros.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Centro de Costos:</td>
+                                                                    <td>C3230907.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Ciudad:</td>
+                                                                    <td>BOGOT&Aacute;.</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                        <div class="col-md-6 mt-3">
+                                                            <table class="card card-body table">
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Proveedor:</td>
+                                                                    <td>A&F.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Email Proveedor:</td>
+                                                                    <td>Leduardo.caipa@ayf-solution.com.co</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Contacto Proveedor:</td>
+                                                                    <td>Andrea Sanchez.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bold">Tel&eacute;fono Proveedor:</td>
+                                                                    <td>3124096157</td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row font-table px-4">
+                                                        <div class="col-md-12">
+                                                            <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
+                                                                <table class="table">
+                                                                    <thead> 
+                                                                        <tr> 
+                                                                            <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
+                                                                            <th class="font-weight-bold bg-gradient-primary text-white">PIEZA - CARACTERISTICAS</th>
+                                                                            <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
+                                                                            <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="font-weight-bold">1</td>
+                                                                            <td class="font-weight-bold">
+                                                                                <textarea cols="30" rows="1">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
+                                                                            </td>
+                                                                            <td class="font-weight-bold">
+                                                                                <input type="text" value="8">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" value="$ 1'960.000">
+                                                                            </td>
+                                                                        </tr>
+    
+                                                                        <tr>
+                                                                            <td class="font-weight-bold">1</td>
+                                                                            <td class="font-weight-bold">
+                                                                                <textarea cols="30" rows="1">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
+                                                                            </td>
+                                                                            <td class="font-weight-bold">
+                                                                                <input type="text" value="8">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" value="$ 1'960.000">
+                                                                            </td>
+                                                                        </tr>
+    
+                                                                        <tr>
+                                                                            <td class="font-weight-bold">1</td>
+                                                                            <td class="font-weight-bold">
+                                                                                <textarea cols="30" rows="1">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
+                                                                            </td>
+                                                                            <td class="font-weight-bold">
+                                                                                <input type="text" value="8">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" value="$ 1'960.000">
+                                                                            </td>
+                                                                        </tr>                                                                    
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>            
                             </tr>
                         </div>
                     @endforeach
@@ -107,3 +218,21 @@
         </div>
     @endif
 </div>
+    <script>
+        function showOC (){ 
+            return {
+                Open(id, event){
+                    btn = event.target
+                    elem = document.getElementById(id);
+
+                    if (elem.style.display === 'table-row'){
+                        elem.style.display = 'none';
+                        btn.innerHTML = "🔽";
+                    }else {
+                        elem.style.display = 'table-row';
+                        btn.innerHTML = "🔼";
+                    }
+                }
+            }
+        }
+    </script>
