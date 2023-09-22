@@ -28,15 +28,15 @@
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
                                 <td class="font-weight-bold font-table text-center">
-                                    <button x-on:click="Open({{ $presupuestoItem->id }}, event)" class="btn btn-primary 4mb-0 px-3 py-1">
-                                        🔽
+                                    <button id="btn{{ $presupuestoItem->id }}" x-on:click="Open({{ $presupuestoItem->id }})" class="btn btn-primary mb-0 px-3 py-1" style="color: #ffffff; padding-bottom: .3rem !important">
+                                        <i class='fa-solid fa-caret-down'></i>
                                     </button>
                                 </td>
 
                                 <tr id="{{ $presupuestoItem->id }}" x-show="false">
                                     <td colspan="9">
                                         <div class="">
-                                            <div class="card-body">
+                                            <div class="card-body py-2">
                                                 <select class="form-control">
                                                     <option value="">Seleccionar</option>
                                                     <option value="">ORDEN DE COMPRA JUR&Iacute;DICA</option>
@@ -47,7 +47,7 @@
                                             <div class="card-body pt-0">
                                                 <div class="card">
                                                     <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
-                                                        SOLICITUD ORDEN DE COMPRA
+                                                        SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA
                                                     </div>
                                                     <div class="row font-table px-4">
                                                         <div class="col-md-6 mt-3">
@@ -146,7 +146,15 @@
                                                                 </table>
                                                             </div>
                                                         </div>
-                                                    </div> 
+                                                    </div>
+                                                    <div class="row px-4">
+                                                        <div class="col-md-4">
+                                                            <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                                                            class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;">
+                                                                <i class="fas fa-plus text-white" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -160,6 +168,7 @@
                     <tr>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white text-center" colspan="6">TOTAL COSTO INTERNO: </th>
                         <th class="font-weight-bold font-table bg-gradient-success text-white">$ {{ number_format($presupuesto->costos_proy) }} </th>
+                        <th class="font-weight-bold font-table bg-gradient-primary text-white"></th>
                     </tr>
                 </tfoot>
             </table>
@@ -221,16 +230,17 @@
     <script>
         function showOC (){ 
             return {
-                Open(id, event){
-                    btn = event.target
+                Open(id){
+                    btn = document.getElementById(`btn${id}`);
                     elem = document.getElementById(id);
 
+                    btn.innerHTML = "";
                     if (elem.style.display === 'table-row'){
                         elem.style.display = 'none';
-                        btn.innerHTML = "🔽";
+                        btn.innerHTML = "<i class='fa-solid fa-caret-down'></i>";
                     }else {
                         elem.style.display = 'table-row';
-                        btn.innerHTML = "🔼";
+                        btn.innerHTML = "<i class='fa-solid fa-caret-down fa-flip-vertical'></i>";
                     }
                 }
             }

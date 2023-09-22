@@ -9,13 +9,11 @@
   <title>
     Admin - {{ Auth::user()->name}}
   </title>
-  <!-- Fonts and icons -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" /> 
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -43,7 +41,7 @@
             </div>
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
-          <div class="collapse  show " id="dashboardsExamples">
+          <div class="collapse  show" id="dashboardsExamples">
             <ul class="nav ms-4"> 
               <li class="nav-item active">
                 <a class="nav-link active" href="{{ route('dashboard-admin') }}">
@@ -142,7 +140,7 @@
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky " id="navbarBlur" data-scroll="false">
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-4 me-5">
             <li class="breadcrumb-item text-sm">
               <a class="text-white" href="javascript:;">
                 <i class="ni ni-box-2"></i>
@@ -155,10 +153,9 @@
         </nav>
         <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
           <a href="javascript:;" class="nav-link p-0">
-            <div class="sidenav-toggler-inner">
-              <i class="sidenav-toggler-line bg-white"></i>
-              <i class="sidenav-toggler-line bg-white"></i>
-              <i class="sidenav-toggler-line bg-white"></i>
+            <div class="sidenav-toggler-inner" x-cloak x-data="{sideHidden: false}" x-on:click="sideHidden = !sideHidden">
+              <i class="fa-solid fa-bars fa-xl" style="color: #ffffff;" x-show="!sideHidden"></i>
+              <i class="fa-solid fa-bars-staggered fa-xl" style="color: #ffffff;" x-show="sideHidden"></i>
             </div>
           </a>
         </div>

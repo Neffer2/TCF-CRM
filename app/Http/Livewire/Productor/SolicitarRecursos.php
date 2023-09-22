@@ -20,7 +20,7 @@ class SolicitarRecursos extends Component
 
     public function render() 
     {
-        $this->verifyStatus();
+        $this->verifyStatus(); 
         return view('livewire.productor.solicitar-recursos');
     }
  

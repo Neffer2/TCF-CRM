@@ -1,7 +1,4 @@
 @extends('layouts.comercial.main')
-  @section('nav-hidden')
-      g-sidenav-hidden
-  @endsection
   @section('profile-card') 
     <div class="container">
       <div class="card shadow-lg">
