@@ -9,7 +9,7 @@ use App\Models\PresupuestoProyecto;
 class SolicitarRecursos extends Component 
 { 
     // Models 
-
+ 
     // Useful vars   
     public $presupuesto;
     public $presupuestoItems; 
@@ -21,7 +21,7 @@ class SolicitarRecursos extends Component
     public function render() 
     {
         $this->verifyStatus(); 
-        return view('livewire.productor.solicitar-recursos');
+        return view('livewire.productor.solicitar-recursos'); 
     }
  
     public function mount(){ 
