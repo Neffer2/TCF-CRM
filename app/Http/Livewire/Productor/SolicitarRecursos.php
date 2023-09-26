@@ -11,22 +11,19 @@ class SolicitarRecursos extends Component
     // Models 
  
     // Useful vars   
-    public $presupuesto;
-    public $presupuestoItems; 
+    public $presupuesto; 
     public $verifyPresupuesto = false; 
 
     public $id_presupuesto;
     
-
     public function render() 
     {
         $this->verifyStatus(); 
         return view('livewire.productor.solicitar-recursos'); 
     }
  
-    public function mount(){ 
-        $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto);   
-        $this->presupuestoItems = ItemPresupuesto::where('presupuesto_id', $this->id_presupuesto)->get();
+    public function mount(){  
+        $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto); 
     }
 
     public function internoPdf(){  

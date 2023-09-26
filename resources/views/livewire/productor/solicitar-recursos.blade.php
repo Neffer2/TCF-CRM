@@ -14,7 +14,7 @@
                     </tr>
                 </thead>
                 <tbody> 
-                    @foreach ($presupuestoItems as $key => $presupuestoItem)
+                    @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                         <div>                                                    
                             <tr>
                                 <td class="font-weight-bold font-table">{{ $key+1 }}</td>
@@ -99,101 +99,7 @@
                 </div>
 
                 <div id="juridica" x-show="showJuridica">
-                    <div class="card-body pt-0">
-                        <div class="card">
-                            <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
-                                SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA
-                            </div>
-                            <div class="row font-table px-4">
-                                <div class="col-md-6 mt-3">
-                                    <table class="card card-body table">
-                                        <tr>
-                                            <td class="font-weight-bold">Cliente:</td>
-                                            <td>PEPSICO.</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Proyecto:</td>
-                                            <td>EVENTO DEMO FARM COLOMBIA pago terceros.</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Centro de Costos:</td>
-                                            <td>C3230907.</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Ciudad:</td>
-                                            <td>BOGOT&Aacute;.</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-md-6 mt-3">
-                                    <table class="card card-body table">
-                                        <tr>
-                                            <td class="font-weight-bold">Proveedor:</td>
-                                            <td>A&F.</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Email Proveedor:</td>
-                                            <td>Leduardo.caipa@ayf-solution.com.co</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Contacto Proveedor:</td>
-                                            <td>Andrea Sanchez.</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-bold">Tel&eacute;fono Proveedor:</td>
-                                            <td>3124096157</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="row font-table px-4">
-                                <div class="col-md-12">
-                                    <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
-                                        <table class="table">
-                                            <thead> 
-                                                <tr> 
-                                                    <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
-                                                    <th class="font-weight-bold bg-gradient-primary text-white">PIEZA - CARACTERISTICAS</th>
-                                                    <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
-                                                    <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="font-weight-bold">
-                                                        <select class="form-control">
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach ($presupuestoItems as $key => $presupuestoItem)
-                                                                <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </td>
-                                                    <td class="font-weight-bold">
-                                                        <textarea cols="30" rows="1">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
-                                                    </td>
-                                                    <td class="font-weight-bold">
-                                                        <input type="text" value="8">
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" value="$ 1'960.000">
-                                                    </td>
-                                                </tr>                                                                  
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row px-4">
-                                <div class="col-md-4">
-                                    <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                    class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;">
-                                        <i class="fas fa-plus text-white" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
-                    </div>
+                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica".$presupuesto->id))
                 </div>
 
                 <div id="natural" x-show="showNatural">
@@ -261,13 +167,13 @@
                                                     <td class="font-weight-bold">
                                                         <select class="form-control">
                                                             <option value="">Seleccionar</option>
-                                                            @foreach ($presupuestoItems as $key => $presupuestoItem)
+                                                            @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                                                 <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
                                                             @endforeach
                                                         </select>
                                                     </td>
                                                     <td class="font-weight-bold">
-                                                        <textarea cols="30" rows="1">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
+                                                        <textarea cols="30" rows="2">iPad de 10.2" Pulgadas 64 GB Wifi 9na Gen Gris Espacial</textarea>
                                                     </td>
                                                     <td class="font-weight-bold">
                                                         <input type="text" value="8">

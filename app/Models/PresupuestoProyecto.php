@@ -17,4 +17,8 @@ class PresupuestoProyecto extends Model
     public function estado (){
         return $this->hasOne(EstadosPresupuesto::class, 'id', 'estado_id');
     }
+
+    public function presupuestoItems(){
+        return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id', 'id');
+    }
 }
