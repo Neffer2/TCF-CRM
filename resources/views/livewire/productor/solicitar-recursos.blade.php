@@ -44,7 +44,7 @@
                 <span class="btn-inner--text">Exportar</span>
             </button>
         
-            <!-- Modal --> 
+            <!-- Modal -->  
             <div class="modal fade" id="staticBackdrop{{ $id_presupuesto }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -57,7 +57,7 @@
                             <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Interno PDF</span>
-                            </button>
+                            </button> 
                             
                             <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -102,7 +102,7 @@
                     @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica".$presupuesto->id))
                 </div>
 
-                <div id="natural" x-show="showNatural">
+                {{-- <div id="natural" x-show="showNatural">
                     <div class="card-body pt-0">
                         <div class="card">
                             <div class="card-header text-center font-weight-bold bg-gradient-info text-white p-0">
@@ -110,7 +110,7 @@
                             </div>
                             <div class="row font-table px-4">
                                 <div class="col-md-6 mt-3">
-                                    <table class="card card-body table">
+                                    <table class="table">
                                         <tr>
                                             <td class="font-weight-bold">Cliente:</td>
                                             <td>PEPSICO.</td>
@@ -130,7 +130,7 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6 mt-3">
-                                    <table class="card card-body table">
+                                    <table class="table">
                                         <tr>
                                             <td class="font-weight-bold">Proveedor:</td>
                                             <td>A&F.</td>
@@ -198,7 +198,7 @@
                         </div>
                         <button class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <div id="generadas" x-show="!show" x-transition>

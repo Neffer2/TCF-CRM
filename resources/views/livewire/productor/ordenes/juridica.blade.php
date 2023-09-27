@@ -7,7 +7,7 @@
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="card card-body table">
+                        <table class="table">
                             <tr>
                                 <td class="font-weight-bold">Cliente:</td>
                                 <td>PEPSICO.</td>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="card card-body table">
+                        <table class="table">
                             <tr>
                                 <td class="font-weight-bold">Proveedor:</td>
                                 <td>A&F.</td>
@@ -67,18 +67,18 @@
                             <tbody>
                                 @foreach ($ocItems as $item)
                                     <tr>
-                                        <td class="text-center">{{ $item['item'] }}</td>
+                                        <td class="text-center">{{ $item['displayItem'] }}</td>
                                         <td>
                                             <textarea disabled cols="30" rows="1">{{ $item['desc'] }}</textarea>
-                                        </td>
+                                        </td> 
                                         <td class="text-center">{{ $item['cant'] }}</td>
-                                        <td class="text-center">{{ $item['vUnit'] }}</td>
-                                        <td class="text-center">{{ $item['vTotal'] }}</td>
+                                        <td class="text-center">{{ number_format($item['vUnit']) }}</td>
+                                        <td class="text-center">{{ number_format($item['vTotal']) }}</td>
                                         <td class="d-flex justify-content-center" style="padding: 11px;">
                                             <button class="me-2" wire:click="delete({{ $item['id'] }})">
                                                 ✖️
                                             </button>
-                                            <button class="" wire:click="getItem({{ $item['id'] }})">
+                                            <button class="" wire:click="getSelectedItem({{ $item['id'] }})">
                                                 📝
                                             </button>
                                         </td>
@@ -93,8 +93,7 @@
                 <div class="col-md-1 d-flex justify-content-center align-items-end">
                     <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
                     class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                        <i class="fas fa-plus text-white" aria-hidden="true"></i>
-                        {{-- <i class="fa-solid fa-pen text-white" aria-hidden="true"></i> --}}
+                        @if (is_null($selectedItem)) <i class="fas fa-plus text-white" aria-hidden="true"></i> @else <i class="fa-solid fa-pen-to-square"></i> @endif
                     </button>
                 </div>
                 <div class="col-md-11 row">
@@ -136,8 +135,8 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="">V. UNI</label>
-                            <input type="number" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
-                            placeholder="Valor unitario" required wire:model.lazy="vUnit"> 
+                            <input type="text" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
+                            placeholder="Valor unitario" required wire:model.lazy="vUnit" x-mask:dynamic="$money($input)"> 
                             @error('vUnit')
                                 <div id="vUnit" class="invalid-feedback">
                                     {{ $message }}
@@ -148,8 +147,8 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="">V. TOTAL</label>
-                            <input type="number" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
-                            placeholder="Total" disabled required wire:model.lazy="vTotal"> 
+                            <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
+                            placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)"> 
                             @error('vTotal')
                                 <div id="vTotal" class="invalid-feedback">
                                     {{ $message }}
