@@ -66,7 +66,7 @@ class ActualizacionesPresto extends Component
         return view('livewire.admin.gestion-comercial.actualizaciones-presto', ['presupuestos' => $presupuestos]);
     }
     
-    public function mount(){
+    public function mount(){ 
         $this->getEstados();
     }
 
@@ -81,7 +81,11 @@ class ActualizacionesPresto extends Component
         if ($presupuesto->estado_id == 1){
             $presupuesto->justificacion_compras = null;
             $presupuesto->justificacion = null;
-            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+
+            // Re-calcula los valores de la base y gestion comercial
+            $this->reCalculate($presupuesto);
+            
+            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc); 
 
             // Default indicacion actualiazcion
             ItemPresupuesto::where('presupuesto_id', $id)->get()->map(function ($item){
@@ -95,5 +99,37 @@ class ActualizacionesPresto extends Component
         $presupuesto->update();
         return redirect()->route('actualizaciones')->with('success', 'Cambios guardados exitosamente');
     } 
+
+    public function reCalculate($presupuesto){
+        $prestosCom = [];        
+        
+        // Update Gestion
+        $presupuesto->gestion->presto_cot = $presupuesto->venta_proy;
+        $presupuesto->gestion->update();
+
+        // Toma el presupuesto y id del usuario creador de la gestión
+        array_push($prestosCom, [
+            'comercial_id' => $presupuesto->gestion->id_user,
+            'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->porcentaje)/100
+        ]);
+
+        // Toma el presupuesto y id de los usuarios partiipantes en la gestion
+        $i = 2;
+        while($i < 5){
+            array_push($prestosCom, [   
+                'comercial_id' => $presupuesto->gestion->{'comercial_'.$i},
+                'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->{'porcentaje_'.$i})/100, 
+            ]);
+            $i++;
+        }
+
+        // Update Base
+        foreach ($presupuesto->gestion->baseComercial as $key => $base){
+            if ($base->id_user == $prestosCom[$key]['comercial_id']){
+                $base->valor_original = $presupuesto->venta_proy;
+                $base->valor_proyecto = $prestosCom[$key]['presupuesto'];
+                $base->update();
+            }
+        }
+    }
 }
- 

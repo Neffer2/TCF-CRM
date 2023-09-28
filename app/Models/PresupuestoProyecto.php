@@ -11,7 +11,7 @@ class PresupuestoProyecto extends Model
     protected $table = "presupuesto_proyecto";
  
     public function gestion (){
-        return $this->hasOne(GestionComercial::class, 'id', 'id_gestion');
+        return $this->hasOne(GestionComercial::class, 'id', 'id_gestion'); 
     }
 
     public function estado (){
@@ -21,4 +21,4 @@ class PresupuestoProyecto extends Model
     public function presupuestoItems(){
         return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id', 'id');
     }
-}
+} 

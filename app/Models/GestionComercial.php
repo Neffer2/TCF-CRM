@@ -12,7 +12,7 @@ class GestionComercial extends Model
 
     public function contacto (){ 
         return $this->hasOne(Contacto::class, 'id', 'id_contacto');
-    }
+    } 
 
     public function comercial (){
         return $this->hasOne(User::class, 'id', 'id_user');
@@ -20,5 +20,9 @@ class GestionComercial extends Model
 
     public function presupuesto (){
         return $this->hasOne(PresupuestoProyecto::class, 'id_gestion', 'id');
-    } 
+    }  
+
+    public function baseComercial (){
+        return $this->hasMany(Base_comercial::class, 'id_gestion', 'id');
+    }
 }

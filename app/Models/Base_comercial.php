@@ -15,7 +15,7 @@ class Base_comercial extends Model
         'nom_cliente',
         'nom_proyecto', 
         'cod_cc',
-        'valor_proyecto',
+        'valor_proyecto', 
         'com_1',
         'com_2',
         'com_3',

@@ -3,8 +3,13 @@
         <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-3">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="mb-0">Actualizaciones</h3>
-                    <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
+                    @if(Auth::user()->rol == 1)
+                        <h3 class="mb-0">Actualizaciones</h3>
+                        <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
+                    @elseif(Auth::user()->rol == 2 || Auth::user()->rol == 5)
+                        <h3 class="mb-0">Presupuestos</h3>
+                        <p class="text-sm mb-0">Lista de presupuestos.</p>
+                    @endif 
                 </div>
                 <div class="col-md-6">  
                     <label for="comercial">Buscar:</label>

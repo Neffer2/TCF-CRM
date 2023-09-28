@@ -15,7 +15,7 @@
                     <th>COD_CC</th>
                     <th>Valor Original</th>
                     <th>Valor</th> 
-                    <th>Estado</th>
+                    <th>Estado</th> 
                     <th>Cuenta</th>
                     <th>Inicio</th>
                     <th>Fin</th>

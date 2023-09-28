@@ -18,4 +18,8 @@ class Asistente extends Model
     public function comercial (){
         return $this->hasOne(User::class, 'id', 'comercial_id');
     }
+
+    public function ejecutivo (){
+        return $this->hasOne(User::class, 'id', 'asistente_id');
+    }
 }

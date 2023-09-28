@@ -226,7 +226,7 @@ class Presupuesto extends Component
         $this->administracion = $presto->administracion;   
         $this->fee = $presto->fee;  
         $this->tiempoFactura = $presto->tiempo_factura;
-        $this->notas = $presto->notas;
+        $this->notas = $presto->notas; 
     }
 
     public function getInfoFacturas(){
@@ -444,11 +444,49 @@ class Presupuesto extends Component
         $item->justificacion_compras = null;
         $item->justificacion = null;
         $item->update();
+
+
+        // Re-calcula los valores de la base y gestion comercial
+        $this->reCalculate($item);
+        
         
         // SMS
         $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, $item->cod_cc);
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
+    }
+
+    public function reCalculate($presupuesto){
+        $prestosCom = [];        
+        
+        // Update Gestion
+        $presupuesto->gestion->presto_cot = $presupuesto->venta_proy;
+        $presupuesto->gestion->update();
+
+        // Toma el presupuesto y id del usuario creador de la gestión
+        array_push($prestosCom, [
+            'comercial_id' => $presupuesto->gestion->id_user,
+            'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->porcentaje)/100
+        ]);
+
+        // Toma el presupuesto y id de los usuarios partiipantes en la gestion
+        $i = 2;
+        while($i < 5){
+            array_push($prestosCom, [   
+                'comercial_id' => $presupuesto->gestion->{'comercial_'.$i},
+                'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->{'porcentaje_'.$i})/100, 
+            ]);
+            $i++;
+        }
+
+        // Update Base
+        foreach ($presupuesto->gestion->baseComercial as $key => $base){
+            if ($base->id_user == $prestosCom[$key]['comercial_id']){
+                $base->valor_original = $presupuesto->venta_proy;
+                $base->valor_proyecto = $prestosCom[$key]['presupuesto'];
+                $base->update();
+            }
+        }
     }
 
     public function rechazar(){

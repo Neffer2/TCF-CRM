@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Com;
 
 use Livewire\Component; 
-use App\Models\Base_comercial;
+use App\Models\Base_comercial; 
 use App\Models\EstadoCuenta;
 use App\Models\Cuenta;
 

@@ -47,4 +47,8 @@ class User extends Authenticatable
     public function user_rol(){
         return $this->hasOne(Rol::class, 'id', 'rol');
     }
+
+    public function asistente(){
+        return $this->hasMany(Asistente::class, 'comercial_id', 'id');
+    }
 }
