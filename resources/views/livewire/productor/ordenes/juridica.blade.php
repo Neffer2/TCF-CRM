@@ -8,21 +8,21 @@
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
                         <table class="table">
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Cliente:</td>
-                                <td>PEPSICO.</td>
+                                <td>{{ $presupuesto->gestion->contacto->empresa }}</td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Proyecto:</td>
-                                <td>EVENTO DEMO FARM COLOMBIA pago terceros.</td>
+                                <td>{{ $presupuesto->gestion->nom_proyecto_cot }}</td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Centro de Costos:</td>
-                                <td>C3230907.</td>
+                                <td>{{ $presupuesto->cod_cc }}</td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Ciudad:</td>
-                                <td>BOGOT&Aacute;.</td>
+                                <td>{{ $presupuesto->presupuestoItems[0]->ciudad }}</td>
                             </tr>
                         </table>
                     </div>
@@ -30,21 +30,57 @@
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
                         <table class="table">
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Proveedor:</td>
-                                <td>A&F.</td>
+                                <td>
+                                    <div class="form-group m-0">
+                                        <input type="text" wire:model.lazy="proveedor" style="width: 80%;">
+                                        @error('proveedor')
+                                            <div id="proveedor" class="text-danger">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Email Proveedor:</td>
-                                <td>Leduardo.caipa@ayf-solution.com.co</td>
+                                <td>
+                                    <div class="form-group m-0">
+                                        <input type="email" wire:model.lazy="email" placeholder="alguien@ejemplo.com" style="width: 80%;">
+                                        @error('email')
+                                            <div id="email" class="text-danger">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Contacto Proveedor:</td>
-                                <td>Andrea Sanchez.</td>
+                                <td>
+                                    <div class="form-group m-0">
+                                        <input type="text" wire:model.lazy="contacto" style="width: 80%;">
+                                        @error('contacto')
+                                            <div id="contacto" class="text-danger">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
+                            <tr style="height: 35px;">
                                 <td class="font-weight-bold">Tel&eacute;fono Proveedor:</td>
-                                <td>3124096157</td>
+                                <td>
+                                    <div class="form-group m-0">
+                                        <input type="text" wire:model.lazy="tel" style="width: 80%;">
+                                        @error('tel')
+                                            <div id="tel" class="text-danger">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -131,7 +167,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="">V. UNI</label>

@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+ 
 class GestionComercial extends Model 
 {
     use HasFactory; 
-    protected $table = 'gestion_comercial'; 
-
+    protected $table = 'gestion_comercial';  
+ 
     public function contacto (){ 
         return $this->hasOne(Contacto::class, 'id', 'id_contacto');
     } 

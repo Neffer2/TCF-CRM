@@ -13,7 +13,7 @@ class PresupuestoProyecto extends Model
     public function gestion (){
         return $this->hasOne(GestionComercial::class, 'id', 'id_gestion'); 
     }
-
+ 
     public function estado (){
         return $this->hasOne(EstadosPresupuesto::class, 'id', 'estado_id');
     }

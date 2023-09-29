@@ -5,17 +5,19 @@ namespace App\Http\Livewire\Productor\Ordenes;
 use Livewire\Component;
 
 class Juridica extends Component
-{   
+{    
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0;
+    public $proveedor, $email, $contacto, $tel;
 
     // Filled
     public $presupuesto;
 
-    // Useful vars
-    public $ocItems = [];
+    // Useful vars 
+    public $ocItems = []; 
     public $selectedItem;
-    public $maxCant = 100;
+    public $maxCant;
+    public $maxValor;
 
     public function render()
     {
@@ -89,9 +91,13 @@ class Juridica extends Component
             if ($this->item == $item->id){
                 $this->desc = $item->descripcion;
                 $this->cant = $item->cantidad;
+                $this->vUnit = $item->v_unitario;
                 $this->maxCant = $this->cant;
+                $this->maxValor = $this->vUnit;
             }
         })->first();
+
+        $this->getVTotal();
     }
 
     public function updatedDesc(){
@@ -113,7 +119,7 @@ class Juridica extends Component
         $this->vUnit = str_replace(",",'', $this->vUnit);
 
         $this->validate([
-            'vUnit' => 'required|numeric',
+            'vUnit' => "required|numeric|max:$this->maxValor"
         ]);
 
         $this->getVTotal();
@@ -135,6 +141,30 @@ class Juridica extends Component
         ]);
 
         $this->vTotal = $this->cant * $this->vUnit;
+    }
+
+    public function updatedProveedor(){
+        $this->validate([
+            'proveedor' => 'required|string|max:200',
+        ]);
+    }
+
+    public function updatedEmail(){
+        $this->validate([
+            'email' => 'required|email|max:200',
+        ]);
+    }
+
+    public function updatedContacto(){
+        $this->validate([
+            'contacto' => 'required|string|max:200',
+        ]);
+    }
+
+    public function updatedTel(){
+        $this->validate([
+            'tel' => 'required|numeric|digits:10',
+        ]);
     }
 
     public function resetFields(){

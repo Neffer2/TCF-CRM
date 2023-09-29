@@ -242,13 +242,13 @@
         function navControl (){ 
             return {
                 show: true,
-                currentTab: null,
+                currentTab: 1,
 
                 showJuridica: false,
                 showNatural: false,
                 selectOc: null,
 
-                toggleMain(id){                    
+                toggleMain(id){     
                     if (this.currentTab != id){
                         this.show = !this.show;                    
                         this.currentTab = id;
