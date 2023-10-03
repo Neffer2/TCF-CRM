@@ -71,9 +71,9 @@
                 </div>
             </div>
         </div>
-        
+         
         <div x-data="navControl" class="mt-4">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs"> 
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="#" x-on:click.prevent="toggleMain(1)" x-bind:class="show ? 'active' : ''"><h6>NUEVA OC</h6></a>
                 </li>

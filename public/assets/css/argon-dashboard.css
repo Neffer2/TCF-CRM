@@ -102,6 +102,15 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+/* CUSTOM */
+.text-invalid { 
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #fd5c70;
+}
+/* *** */
+
 hr {
   margin: 1rem 0;
   color: inherit;

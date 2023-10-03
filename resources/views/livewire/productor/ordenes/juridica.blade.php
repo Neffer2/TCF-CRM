@@ -136,7 +136,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="">ITEM</label>
-                            <select wire:model.lazy="item" class="form-control">
+                            <select wire:model.lazy="item" class="form-control" @if (!is_null($selectedItem)) disabled @endif>
                                 <option value="">Seleccionar</option>
                                 @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                     <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
@@ -149,11 +149,6 @@
                             <label for="">DESCRIPCION</label>
                             <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
                                 placeholder="Descripción" wire:model.lazy="desc" cols="30" rows="1"></textarea>
-                            @error('desc')
-                                <div id="desc" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -161,11 +156,6 @@
                             <label for="">CANT</label>
                             <input type="number" class="form-control @error('cant') is-invalid @elseif(strlen($cant) > 0) is-valid @enderror"
                             placeholder="Cantidad" required wire:model.lazy="cant"> 
-                            @error('cant')
-                                <div id="cant" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
                     </div> 
                     <div class="col-md-2">
@@ -173,11 +163,6 @@
                             <label for="">V. UNI</label>
                             <input type="text" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
                             placeholder="Valor unitario" required wire:model.lazy="vUnit" x-mask:dynamic="$money($input)"> 
-                            @error('vUnit')
-                                <div id="vUnit" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -185,16 +170,61 @@
                             <label for="">V. TOTAL</label>
                             <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
                             placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)"> 
-                            @error('vTotal')
-                                <div id="vTotal" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row px-4">
+                @error('vUnit')
+                    <div id="vUnit" class="text-invalid"> 
+                        {{ $message }}
+                    </div>
+                @enderror
+                @error('cant')
+                    <div id="cant" class="text-invalid"> 
+                        {{ $message }}
+                    </div>
+                @enderror
+                @error('vTotal')
+                    <div id="vTotal" class="text-invalid"> 
+                        {{ $message }}
+                    </div>
+                @enderror
+                @error('desc')
+                    <div id="desc" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            <div class="row px-4">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="cotizacion">Adjunta tu cotizaci&oacute;n:</label>
+                        <input id="cotizacion" type="file" class="form-control">
                     </div>
                 </div>
             </div>
         </div>
         <button class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
     </div>
+    @if($errors->has('error')) 
+        <script>
+            Swal.fire(
+                '!Oppss tenemos un problema',
+                `@foreach($errors->all() as $error)
+                    {{ $error }} 
+                @endforeach`,
+                'error'
+                );
+        </script>
+    @endif 
+    @if (session('success'))
+        <script>
+            Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+                );
+        </script>
+    @endif
 </div>
