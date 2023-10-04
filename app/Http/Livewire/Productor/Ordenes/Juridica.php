@@ -3,6 +3,9 @@
 namespace App\Http\Livewire\Productor\Ordenes;
 
 use Livewire\Component;
+use App\Models\EstadoOrdenesCompra;
+use App\Models\OrdenCompra;
+use App\Models\OcItem;
 
 class Juridica extends Component
 {    
@@ -16,9 +19,9 @@ class Juridica extends Component
     // Useful vars 
     public $ocItems = []; 
     public $selectedItem;
-    public $maxCant;
+    public $maxCant; 
     public $maxValor;
-    public $items = [];
+    public $items = []; 
 
     public function render()
     {
@@ -40,7 +43,7 @@ class Juridica extends Component
             // Valida item repetido
             if (!$this->validateItems($this->item)){ 
                 $this->resetFields();
-                $this->addError('error', 'Este item ya fué registrado');
+                $this->addError('customError', 'Este item ya fué registrado.');
                 return redirect()->back();
             }
 
@@ -105,6 +108,52 @@ class Juridica extends Component
         return $validator;
     }
 
+    public function getVTotal(){
+        $this->vUnit = trim($this->vUnit);
+        $this->vUnit = str_replace(",",'', $this->vUnit);
+
+        $this->validate([
+            'cant' => 'required|numeric',
+            'vUnit' => 'required|numeric'
+        ]);
+
+        $this->vTotal = $this->cant * $this->vUnit;
+    }
+
+    public function enviarAprobacion(){
+        $this->validate([ 
+            'proveedor' => 'required|string|max:200',
+            'email' => 'required|email|max:200',
+            'contacto' => 'required|string|max:200',
+            'tel' => 'required|numeric|digits:10'
+        ]);
+
+        if (count($this->ocItems) == 0){
+            $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
+            return redirect()->back();
+        }
+
+        $orden = new OrdenCompra;
+        $orden->tipo_oc = 1; 
+        $orden->estado_id = 1;
+        $orden->presto_id = $this->presupuesto->id;
+
+        $orden->proveedor = $this->proveedor;
+        $orden->email_prov = $this->email;
+        $orden->contacto_prov = $this->contacto;
+        $orden->telefono_prov = $this->tel;
+        $orden->archivo_cot = "HOLA MUNDI";
+        $orden->save();
+
+        // $itemsOrden = new OcItem;
+        // $itemsOrden->
+
+        $this->resetFields();
+        $this->resetOcInfo();
+        return redirect()->back()->with('success', 'Orden de compra creada y enviada a aprobación.');
+    }
+    
+    /* UPDATES */
     public function updatedItem(){
         $this->validate([
             'item' => 'required'
@@ -162,18 +211,6 @@ class Juridica extends Component
         ]);
     }
 
-    public function getVTotal(){
-        $this->vUnit = trim($this->vUnit);
-        $this->vUnit = str_replace(",",'', $this->vUnit);
-
-        $this->validate([
-            'cant' => 'required|numeric',
-            'vUnit' => 'required|numeric'
-        ]);
-
-        $this->vTotal = $this->cant * $this->vUnit;
-    }
-
     public function updatedProveedor(){
         $this->validate([
             'proveedor' => 'required|string|max:200',
@@ -197,7 +234,8 @@ class Juridica extends Component
             'tel' => 'required|numeric|digits:10',
         ]);
     }
-
+    /*****/
+    
     public function resetFields(){
         $this->item = "";
         $this->desc = "";
@@ -206,5 +244,14 @@ class Juridica extends Component
         $this->vTotal = 0;
 
         $this->selectedItem = null;
+    }
+
+    public function resetOcInfo(){
+        $this->proveedor = "";
+        $this->email = "";
+        $this->contacto = "";
+        $this->tel = "";
+
+        $this->ocItems = [];
     }
 }

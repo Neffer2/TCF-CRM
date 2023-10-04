@@ -195,6 +195,11 @@
                         {{ $message }}
                     </div>
                 @enderror
+                @error('customError')
+                    <div id="customError" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror                
             </div>
             <div class="row px-4">
                 <div class="col-md-12">
@@ -205,9 +210,9 @@
                 </div>
             </div>
         </div>
-        <button class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
+        <button wire:click="enviarAprobacion" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
     </div>
-    @if($errors->has('error')) 
+    @if($errors->has('customError')) 
         <script>
             Swal.fire(
                 '!Oppss tenemos un problema',
