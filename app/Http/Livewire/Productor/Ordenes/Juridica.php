@@ -145,8 +145,16 @@ class Juridica extends Component
         $orden->archivo_cot = "HOLA MUNDI";
         $orden->save();
 
-        // $itemsOrden = new OcItem;
-        // $itemsOrden->
+        foreach ($this->ocItems as $key => $item) {
+            $itemsOrden = new OcItem;
+            $itemsOrden->oc_id = $orden->id;
+            $itemsOrden->item_id = $item['item'];
+            $itemsOrden->desc_oc = $item['desc'];
+            $itemsOrden->cant_oc = $item['cant'];
+            $itemsOrden->vunit_oc = $item['vUnit'];
+            $itemsOrden->vtotal_oc = $item['vTotal'];
+            $itemsOrden->save();
+        }        
 
         $this->resetFields();
         $this->resetOcInfo();

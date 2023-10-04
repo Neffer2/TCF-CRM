@@ -21,11 +21,11 @@ class CreateOcItems extends Migration
             $table->foreignId('item_id');
             $table->foreign('item_id')->references('id')->on('items_presupuesto');
 
-            $table->string('desc_oc');
-            $table->string('cant_oc');
-            $table->string('vunit_oc');
-            $table->string('vtotal_oc');
-            $table->timestamps();
+            $table->string('desc_oc', 2000);
+            $table->integer('cant_oc');
+            $table->decimal('vunit_oc', 15, 2)->default(0);
+            $table->decimal('vtotal_oc', 15, 2)->default(0);         
+            $table->timestamps(); 
         });
     }
 
