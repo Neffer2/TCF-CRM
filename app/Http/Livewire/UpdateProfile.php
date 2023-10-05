@@ -10,7 +10,6 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Livewire\WithFileUploads;
 
-
 class UpdateProfile extends Component
 {
     use WithFileUploads;

@@ -11,7 +11,7 @@
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
-                    </tr>
+                    </tr> 
                 </thead>
                 <tbody> 
                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
@@ -202,18 +202,69 @@
             </div>
 
             <div id="generadas" x-show="!show" x-transition>
-                <div class="card-body py-2">
-                    <div class="row">
-                        <div class="col-6">
-                            <select class="form-control">
-                                <option value="">Seleccionar</option>
-                                <option value="">ORDEN DE COMPRA JUR&Iacute;DICA</option>
-                                <option value="">ORDEN DE COMPRA NATURAL</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <button class="btn bg-gradient-primary">JIJIJI</button>
-                        </div>
+                <div class="row">
+                    <div class="col-md-12 mt-1">
+                        <div class="card">
+                            <div class="card-header text-center font-weight-bold bg-gradient-primary text-white m-0" style="padding: 1px;"></div>
+                            <div class="card-body px-1 py-1 font-table" style="background-color: white">
+                                <div class="row align-items-center">
+                                    <div class="col-5">
+                                        <table class="table mb-0"> 
+                                            <tr>
+                                                <td><span class="font-weight-bold me-1">Proveedor: </span>Make taller grafico - Roberto Gomez Bolaños jijiji.</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-5">
+                                        <table class="table mb-0"> 
+                                            <tr>
+                                                <td><span class="font-weight-bold me-1">Estado: </span>Revision.</td>
+                                            </tr> 
+                                        </table>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-primary mb-0 p-1 px-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="collapseExample">
+                                @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica".$presupuesto->id))             
+                            </div>
+                        </div>                            
+                    </div>
+
+                    <div class="col-md-12 mt-1">
+                        <div class="card">
+                            <div class="card-header text-center font-weight-bold bg-gradient-info text-white m-0" style="padding: 1px;"></div>
+                            <div class="card-body px-1 py-1 font-table" style="background-color: white">
+                                <div class="row align-items-center">
+                                    <div class="col-5">
+                                        <table class="table mb-0"> 
+                                            <tr>
+                                                <td><span class="font-weight-bold me-1">Proveedor: </span>Make taller grafico - Roberto Gomez Bolaños jijiji.</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-5">
+                                        <table class="table mb-0"> 
+                                            <tr>
+                                                <td><span class="font-weight-bold me-1">Estado: </span>Revision.</td>
+                                            </tr> 
+                                        </table>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-primary mb-0 p-1 px-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="collapseExample">
+                                @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica".$presupuesto->id))             
+                            </div>
+                        </div>                            
                     </div>
                 </div>
             </div>

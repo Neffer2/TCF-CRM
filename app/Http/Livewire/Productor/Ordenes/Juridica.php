@@ -6,16 +6,19 @@ use Livewire\Component;
 use App\Models\EstadoOrdenesCompra;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
-
+use Livewire\WithFileUploads;
+ 
 class Juridica extends Component
 {    
+    use WithFileUploads;
+
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0;
-    public $proveedor, $email, $contacto, $tel;
+    public $proveedor, $email, $contacto, $tel, $file_cot;
 
     // Filled
     public $presupuesto;
-
+ 
     // Useful vars 
     public $ocItems = []; 
     public $selectedItem;
@@ -125,9 +128,10 @@ class Juridica extends Component
             'proveedor' => 'required|string|max:200',
             'email' => 'required|email|max:200',
             'contacto' => 'required|string|max:200',
-            'tel' => 'required|numeric|digits:10'
+            'tel' => 'required|numeric|digits:10',
+            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
-
+ 
         if (count($this->ocItems) == 0){
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
@@ -142,7 +146,7 @@ class Juridica extends Component
         $orden->email_prov = $this->email;
         $orden->contacto_prov = $this->contacto;
         $orden->telefono_prov = $this->tel;
-        $orden->archivo_cot = "HOLA MUNDI";
+        $orden->archivo_cot = $this->file_cot->store('ordenes_juridicas'); 
         $orden->save();
 
         foreach ($this->ocItems as $key => $item) {
@@ -154,7 +158,7 @@ class Juridica extends Component
             $itemsOrden->vunit_oc = $item['vUnit'];
             $itemsOrden->vtotal_oc = $item['vTotal'];
             $itemsOrden->save();
-        }        
+        }         
 
         $this->resetFields();
         $this->resetOcInfo();
@@ -242,6 +246,12 @@ class Juridica extends Component
             'tel' => 'required|numeric|digits:10',
         ]);
     }
+
+    public function updatedFile_cot(){
+        $this->validate([
+            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+        ]);
+    }
     /*****/
     
     public function resetFields(){
@@ -259,6 +269,7 @@ class Juridica extends Component
         $this->email = "";
         $this->contacto = "";
         $this->tel = "";
+        $this->file_cot = null;
 
         $this->ocItems = [];
     }

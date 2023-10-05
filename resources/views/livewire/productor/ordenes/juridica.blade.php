@@ -7,11 +7,11 @@
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table"> 
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Cliente:</td>
                                 <td>{{ $presupuesto->gestion->contacto->empresa }}</td>
-                            </tr>
+                            </tr> 
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Proyecto:</td>
                                 <td>{{ $presupuesto->gestion->nom_proyecto_cot }}</td>
@@ -199,13 +199,23 @@
                     <div id="customError" class="text-invalid">
                         {{ $message }}
                     </div>
-                @enderror                
+                @enderror
+                @error('file_cot')
+                    <div id="file_cot" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror              
             </div>
             <div class="row px-4">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="cotizacion">Adjunta tu cotizaci&oacute;n:</label>
-                        <input id="cotizacion" type="file" class="form-control">
+                        <input id="cotizacion" @if (session('success')) value="" @endif wire:model="file_cot" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                        <div wire:loading wire:target="file_cot" class="py-2">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -230,6 +240,9 @@
                 `{{ session('success') }}`,
                 'success'
                 );
+
+                let file = document.getElementById('cotizacion');
+                file.value = "";
         </script>
     @endif
 </div>

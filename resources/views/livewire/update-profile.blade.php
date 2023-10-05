@@ -103,7 +103,7 @@
             <div class="col-md-6">
                 <div class="author align-items-center">
                     @php
-                        $aux = str_replace('public/', '', $storedUserData->avatar);
+                        $aux = str_replace('public/', '', $storedUserData->avatar); 
                     @endphp
                     <img src="{{ asset("storage/$aux") }}" alt="Foto de perfil" class="avatar shadow">
                     <div class="name ps-3">

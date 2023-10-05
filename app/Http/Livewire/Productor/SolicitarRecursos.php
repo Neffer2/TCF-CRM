@@ -7,7 +7,7 @@ use App\Models\ItemPresupuesto;
 use App\Models\PresupuestoProyecto;
  
 class SolicitarRecursos extends Component 
-{ 
+{  
     // Models 
  
     // Useful vars   
