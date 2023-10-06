@@ -135,12 +135,12 @@ class Juridica extends Component
         if (count($this->ocItems) == 0){
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
-        }
+        } 
 
         $orden = new OrdenCompra;
         $orden->tipo_oc = 1; 
         $orden->estado_id = 1;
-        $orden->presto_id = $this->presupuesto->id;
+        $orden->presupuesto_id = $this->presupuesto->id;
 
         $orden->proveedor = $this->proveedor;
         $orden->email_prov = $this->email;

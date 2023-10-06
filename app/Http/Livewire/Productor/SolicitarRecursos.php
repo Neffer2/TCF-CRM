@@ -5,12 +5,13 @@ namespace App\Http\Livewire\Productor;
 use Livewire\Component;
 use App\Models\ItemPresupuesto;
 use App\Models\PresupuestoProyecto;
+use App\Models\OrdenCompra;
  
 class SolicitarRecursos extends Component 
 {  
     // Models 
  
-    // Useful vars   
+    // Useful vars    
     public $presupuesto; 
     public $verifyPresupuesto = false; 
 
@@ -18,11 +19,11 @@ class SolicitarRecursos extends Component
     
     public function render() 
     {
-        $this->verifyStatus(); 
+        $this->verifyStatus();
         return view('livewire.productor.solicitar-recursos'); 
     }
  
-    public function mount(){  
+    public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto); 
     }
 

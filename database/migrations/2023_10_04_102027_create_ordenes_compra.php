@@ -19,11 +19,11 @@ class CreateOrdenesCompra extends Migration
             $table->foreignId('tipo_oc');
             $table->foreign('tipo_oc')->references('id')->on('tipo_ordenes_compra');
 
-            $table->foreignId('estado_id');
+            $table->foreignId('estado_id'); 
             $table->foreign('estado_id')->references('id')->on('estados_ordenes_compra'); 
             
-            $table->foreignId('presto_id');
-            $table->foreign('presto_id')->references('id')->on('presupuesto_proyecto');
+            $table->foreignId('presupuesto_id');
+            $table->foreign('presupuesto_id')->references('id')->on('presupuesto_proyecto');
 
             $table->string('proveedor');
             $table->string('email_prov');

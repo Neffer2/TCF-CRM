@@ -9,4 +9,8 @@ class OrdenCompra extends Model
 {
     use HasFactory;
     protected $table = "ordenes_compra";
-}
+
+    public function ordenItems(){
+        return $this->hasMany(OcItem::class, 'oc_id', 'id');
+    }
+} 
