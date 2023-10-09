@@ -17,6 +17,8 @@ class SolicitarRecursos extends Component
 
     public $id_presupuesto;
     
+    protected $listeners = ['ordenCreada' => 'mount'];
+    
     public function render() 
     {
         $this->verifyStatus();

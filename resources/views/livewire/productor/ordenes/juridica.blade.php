@@ -224,13 +224,13 @@
     </div>
     @if($errors->has('customError')) 
         <script>
-            Swal.fire(
-                '!Oppss tenemos un problema',
-                `@foreach($errors->all() as $error)
-                    {{ $error }} 
-                @endforeach`,
-                'error'
-                );
+            // Swal.fire(
+            //     '!Oppss tenemos un problema',
+            //     `@foreach($errors->all() as $error)
+            //         {{ $error }} 
+            //     @endforeach`,
+            //     'error'
+            // );
         </script>
     @endif 
     @if (session('success'))
@@ -239,10 +239,10 @@
                 'Hecho',
                 `{{ session('success') }}`,
                 'success'
-                );
+            );
 
-                let file = document.getElementById('cotizacion');
-                file.value = "";
+            let file = document.getElementById('cotizacion');
+            file.value = "";
         </script>
     @endif
 </div>

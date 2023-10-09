@@ -13,4 +13,8 @@ class OrdenCompra extends Model
     public function ordenItems(){
         return $this->hasMany(OcItem::class, 'oc_id', 'id');
     }
-} 
+
+    public function estado_oc(){
+        return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
+    }
+}  

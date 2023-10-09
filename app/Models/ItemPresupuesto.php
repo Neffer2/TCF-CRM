@@ -11,6 +11,10 @@ class ItemPresupuesto extends Model
     protected $table = "items_presupuesto";
 
     public function mesDescription (){
-        return $this->hasOne(Mes::class, 'id', 'mes'); 
+        return $this->hasOne(Mes::class, 'id', 'mes');  
     } 
+
+    public function ordenes_compra(){
+        return $this->hasMany(OcItem::class, 'item_id', 'id');  
+    }
 }

@@ -19,7 +19,7 @@
                             <tr>
                                 <td class="font-weight-bold font-table">{{ $key+1 }}</td>
                                 <td class="font-weight-bold font-table">
-                                    <textarea cols="30" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
+                                    <textarea cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
                                 </td>
                                 <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
                                 <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
@@ -102,7 +102,7 @@
                     @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica".$presupuesto->id))
                 </div>
 
-                {{-- <div id="natural" x-show="showNatural">
+                <div id="natural" x-show="showNatural">
                     <div class="card-body pt-0">
                         <div class="card">
                             <div class="card-header text-center font-weight-bold bg-gradient-info text-white p-0">
@@ -198,40 +198,50 @@
                         </div>
                         <button class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
                     </div>
-                </div> --}}
+                </div>
             </div>
 
             <div id="generadas" x-show="!show" x-transition>
-                <div class="row">
+                <div class="row" style="font-size: 12px;">
                     @foreach ($this->presupuesto->ordenesCompra as $orden)
-                        <div class="col-md-12 mt-1">
-                            <div class="card">
-                                <div class="card-header text-center font-weight-bold bg-gradient-primary text-white m-0" style="padding: 1px;"></div>
+                        <div class="col-md-12 my-1">
+                            <div class="card" style="border-top: 5px solid #825ee4; border-radius: 2px;">
                                 <div class="card-body px-1 py-1" style="background-color: white">
                                     <div class="row align-items-center">
-                                        <div class="col-5">
+                                        <div class="col-sm-4">
                                             <table class="table mb-0"> 
                                                 <tr>
                                                     <td><span class="font-weight-bold me-1">Proveedor: </span>{{ $orden->proveedor }}.</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <div class="col-5">
-                                            <table class="table mb-0"> 
-                                                <tr>
-                                                    <td><span class="font-weight-bold me-1">Estado: </span>{{ $orden->estado_id }}.</td>
                                                 </tr> 
                                             </table>
                                         </div>
-                                        <div class="col-2">
-                                            <button class="btn btn-primary mb-0 p-1 px-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                        <div class="col-sm-4">
+                                            <table class="table mb-0"> 
+                                                <tr>
+                                                    <td><span class="font-weight-bold me-1">Email: </span>{{ $orden->email_prov }}.</td>
+                                                </tr> 
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <table class="table mb-0"> 
+                                                <tr>
+                                                    <td><span class="font-weight-bold me-1">Estado: </span>{{ $orden->estado_oc->description }}.</td> 
+                                                </tr> 
+                                            </table>
+                                        </div> 
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div x-on:click="collapseOC(event.delegateTarget)" class="m-0 p-0 d-flex justify-content-center"
+                                                data-bs-toggle="collapse" href="#collapseOrden{{ $orden->id }}" role="button" aria-expanded="false"
+                                                aria-controls="collapseOrden" style="width: 100%; color: #825ee4;">
                                                 <i class="fa-solid fa-caret-down"></i>
-                                            </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="collapse mt-2" id="collapseExample">
-                                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto], key("juridica{{ $presupuesto->id }}".$orden->id))             
+                                <div class="collapse mt-2" id="collapseOrden{{ $orden->id }}">
+                                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))             
                                 </div>
                             </div>                            
                         </div>
@@ -268,7 +278,7 @@
                 showJuridica: false,
                 showNatural: false,
                 selectOc: null,
-
+            
                 toggleMain(id){     
                     if (this.currentTab != id){
                         this.show = !this.show;                    
@@ -285,6 +295,14 @@
                     }else {
                         this.showJuridica = false;
                         this.showNatural = false;
+                    }
+                },
+                collapseOC(target){
+                    let elem = target;
+                    if (target.classList.contains('collapsed')){
+                        elem.innerHTML = "<i class='fa-solid fa-caret-down'></i>";
+                    }else{
+                        elem.innerHTML = "<i class='fa-solid fa-caret-up'></i>";
                     }
                 }
             }

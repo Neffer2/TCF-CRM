@@ -17,7 +17,7 @@ class Juridica extends Component
     public $proveedor, $email, $contacto, $tel, $file_cot;
 
     // Filled
-    public $presupuesto;
+    public $presupuesto, $orden_compra;
  
     // Useful vars 
     public $ocItems = []; 
@@ -31,7 +31,13 @@ class Juridica extends Component
         return view('livewire.productor.ordenes.juridica');
     }
 
-    public function newItem(){
+    public function mount (){
+        if ($this->orden_compra){
+            $this->getItems();
+        }
+    }
+
+    public function newItem(){    
         $this->validate([
             'item' => 'required',
             'desc' => 'required',
@@ -66,7 +72,6 @@ class Juridica extends Component
             $this->ocItems[$this->selectedItem]['vUnit'] = $this->vUnit;
             $this->ocItems[$this->selectedItem]['vTotal'] = $this->vTotal;
         }
-
         $this->resetFields();
     }
 
@@ -84,7 +89,7 @@ class Juridica extends Component
         }
     }
 
-    public function getSelectedItem($id){    
+    public function getSelectedItem($id){
         $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la poscición en el arreglo
 
         $this->item = $this->ocItems[$id]['item']; // El select está con el ID de la DB.
@@ -111,6 +116,28 @@ class Juridica extends Component
         return $validator;
     }
 
+    // Trae y muestra la orden de compra de la base de datos (si ya está creada).
+    public function getItems(){
+        $this->proveedor = $this->orden_compra->proveedor;
+        $this->email = $this->orden_compra->email_prov;
+        $this->contacto = $this->orden_compra->contacto_prov;
+        $this->tel = $this->orden_compra->telefono_prov;
+        $this->file_cot = $this->orden_compra->archivo_cot;
+
+        foreach ($this->orden_compra->ordenItems as $item){
+            array_push($this->ocItems, [
+                'id' => count($this->ocItems),
+                'item' => $item->id, // $this->item contiene el id del item en DB
+                'displayItem' => $this->getDisplayItem($item->item_id),
+                'desc' => $item->desc_oc,
+                'cant' => $item->cant_oc,
+                'vUnit' => $item->vunit_oc,
+                'vTotal' => $item->vtotal_oc
+            ]);
+        }
+    }
+
+    // Valida si el item tiene aún disponibilidades en la base de datos.
     public function getVTotal(){
         $this->vUnit = trim($this->vUnit);
         $this->vUnit = str_replace(",",'', $this->vUnit);
@@ -162,6 +189,7 @@ class Juridica extends Component
 
         $this->resetFields();
         $this->resetOcInfo();
+        $this->emit('ordenCreada');
         return redirect()->back()->with('success', 'Orden de compra creada y enviada a aprobación.');
     }
     
@@ -170,17 +198,27 @@ class Juridica extends Component
         $this->validate([
             'item' => 'required'
         ]);
+        
+        $dbItem = $this->presupuesto->presupuestoItems->find($this->item);
 
-        $this->presupuesto->presupuestoItems->map(function ($item){
-            if ($this->item == $item->id){
-                $this->desc = $item->descripcion;
-                $this->cant = $item->cantidad;
-                $this->vUnit = $item->v_unitario;
-                $this->maxCant = $this->cant;
-                $this->maxValor = $this->vUnit;
-            }
-        })->first();
+        $contCant = 0;
+        foreach ($dbItem->ordenes_compra as $item) {
+            $contCant += $item->cant_oc;
+        }
 
+        $this->cant = ($dbItem->cantidad - $contCant);
+
+        if ($this->cant == 0){
+            $this->addError('customError', 'Éste item ya fué consumido.');
+            $this->resetFields();
+            return redirect()->back();
+        } 
+
+        $this->desc = $dbItem->descripcion;
+        $this->cant = $this->cant;
+        $this->vUnit = $dbItem->v_unitario;
+        $this->maxCant = $this->cant;
+        $this->maxValor = $this->vUnit;
         $this->getVTotal();
     }
 
