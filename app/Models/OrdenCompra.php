@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrdenCompra extends Model
+class OrdenCompra extends Model 
 {
     use HasFactory;
     protected $table = "ordenes_compra";
@@ -14,7 +14,11 @@ class OrdenCompra extends Model
         return $this->hasMany(OcItem::class, 'oc_id', 'id');
     }
 
-    public function estado_oc(){
+    public function estado_oc(){ 
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
     }
-}  
+
+    public function presupuesto(){
+        return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
+    }
+}   

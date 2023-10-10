@@ -13,7 +13,7 @@ class Juridica extends Component
     use WithFileUploads;
 
     // Models
-    public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0;
+    public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias;
     public $proveedor, $email, $contacto, $tel, $file_cot;
 
     // Filled
@@ -42,11 +42,12 @@ class Juridica extends Component
             'item' => 'required',
             'desc' => 'required',
             'cant' => "required|numeric|max:$this->maxCant",
+            'dias' => "required|numeric",
             'vUnit' => "required|numeric|max:$this->maxValor",
             'vTotal' => 'required|numeric',
         ]);
-           
-        $this->getVTotal(); 
+            
+        $this->getVTotal();  
 
         if (is_null($this->selectedItem)){
             // Valida item repetido
@@ -62,6 +63,7 @@ class Juridica extends Component
                 'displayItem' => $this->getDisplayItem($this->item),
                 'desc' => $this->desc,
                 'cant' => $this->cant,
+                'dias' => $this->dias,
                 'vUnit' => $this->vUnit,
                 'vTotal' => $this->vTotal
             ]);
@@ -69,6 +71,7 @@ class Juridica extends Component
             $this->ocItems[$this->selectedItem]['displayItem'] = $this->getDisplayItem($this->item);
             $this->ocItems[$this->selectedItem]['desc'] = $this->desc;
             $this->ocItems[$this->selectedItem]['cant'] = $this->cant;
+            $this->ocItems[$this->selectedItem]['dias'] = $this->dias;
             $this->ocItems[$this->selectedItem]['vUnit'] = $this->vUnit;
             $this->ocItems[$this->selectedItem]['vTotal'] = $this->vTotal;
         }
@@ -80,21 +83,13 @@ class Juridica extends Component
         $this->resetFields();
     }
 
-    // Obtiene el item que reconocen los productores
-    public function getDisplayItem($id){
-        foreach ($this->presupuesto->presupuestoItems as $key => $item) {
-            if ($id == $item->id){
-                return $key+1;
-            }
-        }
-    }
-
     public function getSelectedItem($id){
         $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la poscición en el arreglo
 
         $this->item = $this->ocItems[$id]['item']; // El select está con el ID de la DB.
         $this->desc = $this->ocItems[$id]['desc'];
         $this->cant = $this->ocItems[$id]['cant'];
+        $this->dias = $this->ocItems[$id]['dias'];
         $this->vUnit = $this->ocItems[$id]['vUnit'];
         $this->vTotal = $this->ocItems[$id]['vTotal'];
 
@@ -127,13 +122,23 @@ class Juridica extends Component
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
                 'id' => count($this->ocItems),
-                'item' => $item->id, // $this->item contiene el id del item en DB
+                'item' => $item->item_id, // $this->item contiene el id del item en DB
                 'displayItem' => $this->getDisplayItem($item->item_id),
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
+                'dias' => $item->dias,
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $item->vtotal_oc
             ]);
+        }
+    }
+
+    // Obtiene el item que reconocen los productores
+    public function getDisplayItem($id){
+        foreach ($this->presupuesto->presupuestoItems as $key => $item) {
+            if ($id == $item->id){
+                return $key+1;
+            }
         }
     }
 
@@ -147,7 +152,7 @@ class Juridica extends Component
             'vUnit' => 'required|numeric'
         ]);
 
-        $this->vTotal = $this->cant * $this->vUnit;
+        $this->vTotal = $this->cant * $this->vUnit * $this->dias;
     }
 
     public function enviarAprobacion(){
@@ -182,6 +187,7 @@ class Juridica extends Component
             $itemsOrden->item_id = $item['item'];
             $itemsOrden->desc_oc = $item['desc'];
             $itemsOrden->cant_oc = $item['cant'];
+            $itemsOrden->dias = $item['dias'];
             $itemsOrden->vunit_oc = $item['vUnit'];
             $itemsOrden->vtotal_oc = $item['vTotal'];
             $itemsOrden->save();
@@ -217,6 +223,7 @@ class Juridica extends Component
         $this->desc = $dbItem->descripcion;
         $this->cant = $this->cant;
         $this->vUnit = $dbItem->v_unitario;
+        $this->dias = $dbItem->dia;
         $this->maxCant = $this->cant;
         $this->maxValor = $this->vUnit;
         $this->getVTotal();
@@ -296,6 +303,7 @@ class Juridica extends Component
         $this->item = "";
         $this->desc = "";
         $this->cant = 0;
+        $this->dias = 0;
         $this->vUnit = 0;
         $this->vTotal = 0;
 

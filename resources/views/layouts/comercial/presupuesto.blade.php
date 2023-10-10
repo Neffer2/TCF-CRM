@@ -28,10 +28,6 @@
     .valid-input {
       border: 2px solid green;
     }
-
-    .font-table { 
-      font-size: 9px;
-    } 
     
     .item-table-background-tarifario {
       background-image: linear-gradient(310deg, rgba(17, 113, 239, .1) 0%, rgba(17, 205, 239, .5) 100%)

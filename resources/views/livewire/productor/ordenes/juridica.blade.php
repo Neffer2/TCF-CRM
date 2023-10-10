@@ -2,12 +2,12 @@
     <div class="card-body pt-0">
         <div class="card">
             <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
-                SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA
+                SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA 
             </div>
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="table"> 
+                        <table class="table">  
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Cliente:</td>
                                 <td>{{ $presupuesto->gestion->contacto->empresa }}</td>
@@ -18,7 +18,7 @@
                             </tr>
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Centro de Costos:</td>
-                                <td>{{ $presupuesto->cod_cc }}</td>
+                                <td>{{ $presupuesto->cod_cc }}</td> 
                             </tr>
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Ciudad:</td>
@@ -96,6 +96,7 @@
                                     <th class="font-weight-bold bg-gradient-primary text-white">PIEZA - CARACTERISTICAS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
+                                    <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                                     <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                                 </tr>
@@ -109,6 +110,7 @@
                                         </td> 
                                         <td class="text-center">{{ $item['cant'] }}</td>
                                         <td class="text-center">{{ number_format($item['vUnit']) }}</td>
+                                        <td class="text-center">{{ $item['vUnit'] }}</td>
                                         <td class="text-center">{{ number_format($item['vTotal']) }}</td>
                                         <td class="d-flex justify-content-center" style="padding: 11px;">
                                             <button class="me-2" wire:click="delete({{ $item['id'] }})">
@@ -144,7 +146,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="">DESCRIPCION</label>
                             <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
@@ -157,7 +159,13 @@
                             <input type="number" class="form-control @error('cant') is-invalid @elseif(strlen($cant) > 0) is-valid @enderror"
                             placeholder="Cantidad" required wire:model.lazy="cant"> 
                         </div>
-                    </div> 
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="">DIAS</label>
+                            <input type="number" class="form-control" disabled placeholder="Dias" required wire:model.lazy="dias"> 
+                        </div>
+                    </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="">V. UNI</label>

@@ -241,7 +241,7 @@
                                     </div>
                                 </div>
                                 <div class="collapse mt-2" id="collapseOrden{{ $orden->id }}">
-                                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))             
+                                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))
                                 </div>
                             </div>                            
                         </div>

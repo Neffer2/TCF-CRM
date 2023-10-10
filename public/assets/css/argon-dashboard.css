@@ -109,6 +109,10 @@ body {
   font-size: 0.875em;
   color: #fd5c70;
 }
+
+.font-table { 
+  font-size: 9px;
+} 
 /* *** */
 
 hr {
