@@ -11,9 +11,9 @@ class OrdenesCompra extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
 
-    public function render() 
+    public function render()  
     {
-        $ordenes = OrdenCompra::paginate(15);
+        $ordenes = OrdenCompra::where('estado_id', 2)->paginate(15);
         return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
     }
 

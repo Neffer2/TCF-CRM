@@ -13,9 +13,9 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <h3 class="mb-0">Items consumidos</h3>
-                                <p class="text-sm mb-0">Items consumidos en la orden de compra. Presupuesto completo <a href="#">aqu&iacute;.</a></p>
+                                <p class="text-sm mb-0">Items consumidos en la orden de compra. Presupuesto completo <a href="{{ route('presupuesto', $presupuesto->id_gestion) }}" target="_blank">aqu&iacute;.</a></p>
                             </div>
-                        </div>
+                        </div> 
                     </div>  
                     <div class="card-body rounded table-responsive bg-whitem p-0 mx-2">
                         <table class="table m-0">

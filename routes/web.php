@@ -75,7 +75,7 @@ Route::get('/', function () {
         // Presupuesto
         Route::get('/presupuesto/{gestion?}', [ComercialController::class, 'presupuesto'])->middleware(['auth'])->name('presupuesto'); 
         Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth'])->name('presupuestos');   
-    /* --- */
+    /* --- */ 
 /* --- */   
 
 /* contable */  

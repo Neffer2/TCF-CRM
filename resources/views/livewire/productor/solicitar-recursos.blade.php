@@ -205,40 +205,36 @@
                 <div class="row" style="font-size: 12px;">
                     @foreach ($this->presupuesto->ordenesCompra as $orden)
                         <div class="col-md-12 my-1">
-                            <div class="card" style="border-top: 5px solid #825ee4; border-radius: 2px;">
+                            <div class="card" style="border-top: 3px solid #825ee4; border-radius: 2px;">
                                 <div class="card-body px-1 py-1" style="background-color: white">
                                     <div class="row align-items-center">
-                                        <div class="col-sm-4">
-                                            <table class="table mb-0"> 
-                                                <tr>
-                                                    <td><span class="font-weight-bold me-1">Proveedor: </span>{{ $orden->proveedor }}.</td>
-                                                </tr> 
-                                            </table>
+                                        <div class="col-sm-2">
+                                            <span class="font-weight-bold me-1">Proveedor: <br></span>{{ $orden->proveedor }}.
                                         </div>
-                                        <div class="col-sm-4">
-                                            <table class="table mb-0"> 
-                                                <tr>
-                                                    <td><span class="font-weight-bold me-1">Email: </span>{{ $orden->email_prov }}.</td>
-                                                </tr> 
-                                            </table>
+                                        <div class="col-sm-3">
+                                            <span class="font-weight-bold me-1">Email: <br></span>{{ $orden->email_prov }}.
                                         </div>
-                                        <div class="col-sm-4">
-                                            <table class="table mb-0"> 
-                                                <tr>
-                                                    <td><span class="font-weight-bold me-1">Estado: </span>{{ $orden->estado_oc->description }}.</td> 
-                                                </tr> 
-                                            </table>
-                                        </div> 
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div x-on:click="collapseOC(event.delegateTarget)" class="m-0 p-0 d-flex justify-content-center"
-                                                data-bs-toggle="collapse" href="#collapseOrden{{ $orden->id }}" role="button" aria-expanded="false"
-                                                aria-controls="collapseOrden" style="width: 100%; color: #825ee4;">
-                                                <i class="fa-solid fa-caret-down"></i>
+                                        <div class="col-sm-2">
+                                            <span class="font-weight-bold me-1">Contacto: <br></span>{{ $orden->contacto_prov }}.
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <span class="font-weight-bold me-1">Tel&eacute;fono: <br></span>{{ $orden->telefono_prov }}.
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <span class="font-weight-bold me-1">Estado: <br></span>{{ $orden->estado_oc->description }}.
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div @if ($orden->estado_id != 2) x-on:click="collapseOC(event.delegateTarget)" data-bs-toggle="collapse" href="#collapseOrden{{ $orden->id }}" role="button" aria-expanded="false"
+                                                aria-controls="collapseOrden" @endif class="m-0 p-0 d-flex justify-content-center" 
+                                                style="width: 100%; color: #825ee4;">
+                                                @if ($orden->estado_id == 2) 
+                                                    <i class="fa-solid fa-ban"></i>
+                                                @else                                                
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                @endif
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> 
                                 </div>
                                 <div class="collapse mt-2" id="collapseOrden{{ $orden->id }}">
                                     @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))

@@ -44,9 +44,9 @@ class AdminController extends Controller
 
     public function showOrdenesCompra(){
         return view('admin.produccion.index');  
-    }
+    } 
 
-    public function showOrdenJuridica($orden_id){
+    public function showOrdenJuridica($orden_id){ 
         $orden = OrdenCompra::find($orden_id);
         $presupuesto = $orden->presupuesto;
         return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden]);  

@@ -26,6 +26,8 @@ class Juridica extends Component
     public $maxValor;
     public $items = []; 
 
+    public $edit = false;
+
     public function render()
     {
         return view('livewire.productor.ordenes.juridica');
@@ -44,7 +46,7 @@ class Juridica extends Component
             'cant' => "required|numeric|max:$this->maxCant",
             'dias' => "required|numeric",
             'vUnit' => "required|numeric|max:$this->maxValor",
-            'vTotal' => 'required|numeric',
+            'vTotal' => 'required|numeric', 
         ]);
             
         $this->getVTotal();  
@@ -78,7 +80,7 @@ class Juridica extends Component
         $this->resetFields();
     }
 
-    public function delete($id){
+    public function delete($id){ 
         unset($this->ocItems[$id]);
         $this->resetFields();
     }
@@ -163,27 +165,49 @@ class Juridica extends Component
             'tel' => 'required|numeric|digits:10',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
- 
+        
         if (count($this->ocItems) == 0){
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
         } 
 
-        $orden = new OrdenCompra;
-        $orden->tipo_oc = 1; 
-        $orden->estado_id = 1;
-        $orden->presupuesto_id = $this->presupuesto->id;
+        // Si la orden está creada, entonces edita
+        if ($this->orden_compra){           
+            $this->orden_compra->estado_id = 2;
+            $this->orden_compra->proveedor = $this->proveedor;
+            $this->orden_compra->email_prov = $this->email;
+            $this->orden_compra->contacto_prov = $this->contacto;
+            $this->orden_compra->telefono_prov = $this->tel;
+            $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
+            $this->orden_compra->update();
 
-        $orden->proveedor = $this->proveedor;
-        $orden->email_prov = $this->email;
-        $orden->contacto_prov = $this->contacto;
-        $orden->telefono_prov = $this->tel;
-        $orden->archivo_cot = $this->file_cot->store('ordenes_juridicas'); 
-        $orden->save();
+            $this->deleteItems($this->orden_compra->id);
+            $this->storeItems($this->orden_compra->id);
+        }else{
+            $orden = new OrdenCompra;
+            $orden->tipo_oc = 1; 
+            $orden->presupuesto_id = $this->presupuesto->id;
+    
+            $orden->proveedor = $this->proveedor;
+            $orden->email_prov = $this->email;
+            $orden->contacto_prov = $this->contacto;
+            $orden->telefono_prov = $this->tel;
+            $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
+            $orden->save();
 
-        foreach ($this->ocItems as $key => $item) { 
+            $this->storeItems($orden->id);        
+        }
+
+        $this->resetFields();
+        $this->resetOcInfo();
+        $this->emit('ordenCreada');
+        return redirect()->back()->with('success', 'Orden de compra creada y enviada a aprobación.');
+    }
+
+    public function storeItems($orden_id){
+        foreach ($this->ocItems as $item) {  
             $itemsOrden = new OcItem;
-            $itemsOrden->oc_id = $orden->id;
+            $itemsOrden->oc_id = $orden_id;
             $itemsOrden->item_id = $item['item'];
             $itemsOrden->display_item = $item['displayItem'];
             $itemsOrden->desc_oc = $item['desc'];
@@ -193,13 +217,28 @@ class Juridica extends Component
             $itemsOrden->vtotal_oc = $item['vTotal'];
             $itemsOrden->save();
         }         
+    }
 
-        $this->resetFields();
-        $this->resetOcInfo();
-        $this->emit('ordenCreada');
-        return redirect()->back()->with('success', 'Orden de compra creada y enviada a aprobación.');
+    // Elimina los items de la orden de compra en la DB.
+    public function deleteItems($orden_id){
+        $items = OcItem::where('oc_id', $orden_id)->get();
+
+        $items->map(function ($item){
+            $item->delete();
+        });
     }
     
+    public function cambioEstado($estado){
+        $this->orden_compra->estado_id = $estado;
+        $this->orden_compra->update();
+        
+        if ($this->orden_compra->estado_id == 1){
+            return redirect()->route('ordenes-compra')->with('success', 'Orden de compra APROBADA.');
+        }else{
+            return redirect()->route('ordenes-compra')->with('success', 'Orden de compra RECHAZADA.');
+        }
+    }
+
     /* UPDATES */
     public function updatedItem(){
         $this->validate([

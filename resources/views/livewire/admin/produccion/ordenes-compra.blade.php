@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Ordenes de compra</h3>
-                    <p class="text-sm mb-0">Lista de ordenes de compra.</p>
+                    <p class="text-sm mb-0">Lista de ordenes de compra por revisar.</p>
                 </div>
                 <div class="col-md-6">  
                     <label for="comercial">Buscar:</label>
@@ -21,12 +21,12 @@
             </div>
         </div> 
         <div class="table-responsive">
-            <table class="table align-items-center mb-0">
+            <table class="table align-items-center mb-0"> 
                 <thead> 
                     <tr>
                         <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
                         <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
-                        <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                        <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,7 +46,7 @@
                                         <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
                                     </div>
                                 </div>
-                            </td>
+                            </td> 
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
                                 <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
@@ -63,13 +63,10 @@
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
                                 <p class="text-xs text-secondary mb-0">Revision</p>
                             </td>
-                            <td class="d-flex align-items-start">
-                                <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}" target="_blank">Ver</a> 
-                                <select class="form-control mb-1">
-                                    <option value="">Seleccionar</option>
-                                </select>
+                            <td class="d-flex align-items-center justify-content-center">
+                                <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a> 
                             </td>
-                        </tr> 
+                        </tr>  
                     @endforeach
                     <tr> 
                         @php
