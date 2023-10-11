@@ -52,16 +52,12 @@
                                 <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">Valor proyecto</p>
-                                <p class="text-xs text-secondary mb-0">{{ number_format($orden->presupuesto->venta_proy) }} $</p>                                
-                            </td> 
-                            <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
                             </td>
-                            <td>
+                            <td> 
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>

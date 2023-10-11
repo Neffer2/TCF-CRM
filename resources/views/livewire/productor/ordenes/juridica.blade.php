@@ -2,7 +2,7 @@
     <div class="card-body pt-0">
         <div class="card">
             <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
-                SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA 
+                SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA  
             </div>
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
@@ -110,7 +110,7 @@
                                         </td> 
                                         <td class="text-center">{{ $item['cant'] }}</td>
                                         <td class="text-center">{{ number_format($item['vUnit']) }}</td>
-                                        <td class="text-center">{{ $item['vUnit'] }}</td>
+                                        <td class="text-center">{{ $item['dias'] }}</td>
                                         <td class="text-center">{{ number_format($item['vTotal']) }}</td>
                                         <td class="d-flex justify-content-center" style="padding: 11px;">
                                             <button class="me-2" wire:click="delete({{ $item['id'] }})">

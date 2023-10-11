@@ -25,4 +25,8 @@ class PresupuestoProyecto extends Model
     public function ordenesCompra(){
         return $this->hasMany(OrdenCompra::class, 'presupuesto_id', 'id');
     }
+
+    public function productor_info(){
+        return $this->hasOne(User::class, 'id', 'productor');
+    }
 } 

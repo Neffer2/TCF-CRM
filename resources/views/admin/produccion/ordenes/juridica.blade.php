@@ -40,7 +40,7 @@
                                 @foreach ($orden->ordenItems as $key => $item)                
                                     <tr> 
                                         <td class="font-weight-bold font-table">
-                                            {{ $key+=1 }}
+                                            {{ $item->display_item }}
                                         </td> 
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->cantidad }}

@@ -10,7 +10,7 @@ use Livewire\WithFileUploads;
  
 class Juridica extends Component
 {    
-    use WithFileUploads;
+    use WithFileUploads; 
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias;
@@ -126,7 +126,7 @@ class Juridica extends Component
                 'displayItem' => $this->getDisplayItem($item->item_id),
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
-                'dias' => $item->dias,
+                'dias' => $item->dias_oc,
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $item->vtotal_oc
             ]);
@@ -181,13 +181,14 @@ class Juridica extends Component
         $orden->archivo_cot = $this->file_cot->store('ordenes_juridicas'); 
         $orden->save();
 
-        foreach ($this->ocItems as $key => $item) {
+        foreach ($this->ocItems as $key => $item) { 
             $itemsOrden = new OcItem;
             $itemsOrden->oc_id = $orden->id;
             $itemsOrden->item_id = $item['item'];
+            $itemsOrden->display_item = $item['displayItem'];
             $itemsOrden->desc_oc = $item['desc'];
             $itemsOrden->cant_oc = $item['cant'];
-            $itemsOrden->dias = $item['dias'];
+            $itemsOrden->dias_oc = $item['dias'];
             $itemsOrden->vunit_oc = $item['vUnit'];
             $itemsOrden->vtotal_oc = $item['vTotal'];
             $itemsOrden->save();
