@@ -81,7 +81,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> 
             </div>
             <div class="col-md-12">
                 @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))
