@@ -29,7 +29,7 @@ class ActualizacionesPresto extends Component
     // public $comerciales = [];   
 
     public $rol; 
- 
+  
     public function render()      
     {   
         $filtros = [];

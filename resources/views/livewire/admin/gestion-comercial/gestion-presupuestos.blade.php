@@ -41,15 +41,15 @@
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
-                        <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
-                            <td> 
+                            <td style="width: 16rem;">
                                 <div class="d-flex px-2 py-1">
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">

@@ -2,7 +2,7 @@
     @if ($verifyPresupuesto)
         <div class="table-responsive mt-2 rounded bg-whitem mb-2">
             <table class="table mb-0">
-                <thead> 
+                <thead>  
                     <tr> 
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
@@ -15,18 +15,26 @@
                 </thead>
                 <tbody> 
                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
-                        <div>                                                    
-                            <tr>
-                                <td class="font-weight-bold font-table">{{ $key+1 }}</td>
-                                <td class="font-weight-bold font-table">
-                                    <textarea cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
-                                </td>
-                                <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
-                                <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
-                                <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
-                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
-                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
-                            </tr>
+                        <div>  
+                            @if($presupuestoItem->evento)
+                                <tr>
+                                    <td colspan="7" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                                        {{ $presupuestoItem->descripcion }}
+                                    </td>
+                                </tr> 
+                            @else 
+                                <tr>
+                                    <td class="font-weight-bold font-table">{{ $key+1 }}</td>
+                                    <td class="font-weight-bold font-table">
+                                        <textarea cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
+                                    </td>
+                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
+                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
+                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
+                                    <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
+                                    <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
+                                </tr>
+                            @endif                                                 
                         </div>
                     @endforeach
                 </tbody>

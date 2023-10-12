@@ -18,7 +18,7 @@ class Juridica extends Component
 
     // Filled
     public $presupuesto, $orden_compra;
- 
+  
     // Useful vars 
     public $ocItems = []; 
     public $selectedItem;
@@ -83,7 +83,7 @@ class Juridica extends Component
     public function delete($id){ 
         unset($this->ocItems[$id]);
         $this->resetFields();
-    }
+    } 
 
     public function getSelectedItem($id){
         $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la poscición en el arreglo
@@ -162,7 +162,7 @@ class Juridica extends Component
             'proveedor' => 'required|string|max:200',
             'email' => 'required|email|max:200',
             'contacto' => 'required|string|max:200',
-            'tel' => 'required|numeric|digits:10',
+            'tel' => 'required|numeric',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
         
@@ -201,7 +201,7 @@ class Juridica extends Component
         $this->resetFields();
         $this->resetOcInfo();
         $this->emit('ordenCreada');
-        return redirect()->back()->with('success', 'Orden de compra creada y enviada a aprobación.');
+        return redirect()->back()->with('success', 'Orden de compra enviada a aprobación.');
     }
 
     public function storeItems($orden_id){
@@ -328,7 +328,7 @@ class Juridica extends Component
 
     public function updatedTel(){
         $this->validate([
-            'tel' => 'required|numeric|digits:10',
+            'tel' => 'required|numeric',
         ]);
     }
 

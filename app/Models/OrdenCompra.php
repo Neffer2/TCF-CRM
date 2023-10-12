@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Models;
 
@@ -16,6 +16,10 @@ class OrdenCompra extends Model
 
     public function estado_oc(){ 
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
+    }
+
+    public function tipo(){
+        return $this->hasOne(TipoOrdenCompra::class, 'id', 'tipo_oc');
     }
 
     public function presupuesto(){

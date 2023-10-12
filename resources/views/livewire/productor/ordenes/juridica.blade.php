@@ -55,7 +55,7 @@
                                         @enderror
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> 
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Contacto Proveedor:</td>
                                 <td>
@@ -164,7 +164,9 @@
                                 <select wire:model.lazy="item" class="form-control" @if (!is_null($selectedItem)) disabled @endif>
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
-                                        <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
+                                        @if (!$presupuestoItem->evento)
+                                            <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>

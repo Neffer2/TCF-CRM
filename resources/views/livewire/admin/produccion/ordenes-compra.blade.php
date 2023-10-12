@@ -23,16 +23,16 @@
         <div class="table-responsive">
             <table class="table align-items-center mb-0"> 
                 <thead> 
-                    <tr>
+                    <tr> 
                         <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="4" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($ordenes as $orden)
                         <tr>
-                            <td>
+                            <td style="width: 16rem;">
                                 <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}"> 
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
@@ -46,7 +46,11 @@
                                         <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
                                     </div>
                                 </div>
-                            </td> 
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Tipo</p> 
+                                <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                            </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
                                 <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>

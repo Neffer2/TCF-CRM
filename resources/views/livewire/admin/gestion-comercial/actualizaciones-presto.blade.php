@@ -37,7 +37,7 @@
                 <tbody>
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
-                            <td>
+                            <td style="width: 16rem;">
                                 <div class="d-flex px-2 py-1" title="{{ $presupuesto->gestion->nom_proyecto_cot }}">
                                     <div>
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
