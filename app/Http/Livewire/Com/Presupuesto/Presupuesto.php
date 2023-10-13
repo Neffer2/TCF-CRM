@@ -407,7 +407,7 @@ class Presupuesto extends Component
         $presto->update(); 
         $this->estadoValidator = $presto->estado_id;
 
-        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name); 
+        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name, $cod_cc = $this->cod_cc ? $this->cod_cc : null); 
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
     
