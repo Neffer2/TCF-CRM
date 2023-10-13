@@ -15,7 +15,7 @@ trait SMS
         }else {
             $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": Tienes un presupuesto de ".$name." por revisar.";
         }
-        
+
         $this->sendAction($tel,$body);
     } 
 
@@ -67,4 +67,4 @@ trait SMS
         $err = curl_error($curl);
         curl_close($curl);
     }
-}
+} 
