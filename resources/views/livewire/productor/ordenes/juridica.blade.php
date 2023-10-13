@@ -143,13 +143,51 @@
                                 <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
                             </a>
                         </div>
-                    </div> 
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="oc_helisa">Adjunta la orden de compra generada en Helisa:</label>
+                                <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                                <div wire:loading wire:target="oc_helisa" class="py-2">
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                @error('oc_helisa')
+                                    <div id="oc_helisa" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror 
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         <button wire:click="cambioEstado(1)" class="btn bg-gradient-warning">Aprobar</button>
                         <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                     </div> 
                 </div>
-            @else  
+            @elseif(($orden_compra && $orden_compra->estado_id == 1))
+                <div class="row px-4">
+                    <div class="col-md-12">
+                        <div class="form-group"> 
+                            @php
+                                $aux = str_replace('public/', '', $this->file_cot); 
+                            @endphp
+                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                            </a>
+                        </div>
+                    </div> 
+                    <div class="col-md-12">
+                        <a class="btn btn-icon btn-3 bg-gradient-warning" type="button">
+                            <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
+                            <span class="btn-inner--text">Firmar GR</span>
+                        </a>
+                    </div>
+                </div>
+            @else
                 <div class="row px-4">
                     <div class="col-md-1 d-flex justify-content-center align-items-end">
                         <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
@@ -158,7 +196,7 @@
                         </button>
                     </div>
                     <div class="col-md-11 row">
-                        <div class="col-md-2">
+                        <div class="col-md-2"> 
                             <div class="form-group">
                                 <label for="">ITEM</label>
                                 <select wire:model.lazy="item" class="form-control" @if (!is_null($selectedItem)) disabled @endif>
@@ -237,13 +275,18 @@
                         <div id="file_cot" class="text-invalid">
                             {{ $message }}
                         </div>
-                    @enderror              
+                    @enderror
+                    @error('oc_helisa')
+                        <div id="oc_helisa" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror       
                 </div>
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="cotizacion">Adjunta tu cotizaci&oacute;n:</label>
-                            <input id="cotizacion" @if (session('success')) value="" @endif wire:model="file_cot" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                            <input id="cotizacion" wire:model="file_cot" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                             <div wire:loading wire:target="file_cot" class="py-2">
                                 <div class="spinner-border text-warning" role="status">
                                     <span class="sr-only">Loading...</span>
@@ -253,26 +296,24 @@
                     </div>
                 </div>
                 <div class="row px-4">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <button wire:click="enviarAprobacion" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
+                            <button wire:click="enviarAprobacion" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>                            
+                            @if($orden_compra && $orden_compra->estado_id == 3)
+                                <button wire:click="deleteOrden" class="btn btn-icon btn-3 btn bg-gradient-danger mt-2 mb-0" type="button">
+                                    <span class="btn-inner--icon">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </span>
+                                    <span class="btn-inner--text">Eliminar</span>
+                                </button>
+                            @endif 
                         </div>
                     </div>
                 </div>
             @endif
         </div>
     </div>
-    @if($errors->has('customError')) 
-        <script>
-            // Swal.fire(
-            //     '!Oppss tenemos un problema',
-            //     `@foreach($errors->all() as $error)
-            //         {{ $error }} 
-            //     @endforeach`,
-            //     'error'
-            // );
-        </script>
-    @endif 
+
     @if (session('success'))
         <script>
             Swal.fire(

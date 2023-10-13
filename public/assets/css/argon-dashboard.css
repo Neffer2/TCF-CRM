@@ -112,7 +112,12 @@ body {
 
 .font-table { 
   font-size: 9px;
-} 
+}
+
+.signature-pad {
+  border: 1.5px solid #fb6340;
+  border-radius: 15px;
+}
 /* *** */
 
 hr {

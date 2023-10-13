@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model;
 
 class OrdenCompra extends Model 
@@ -11,8 +11,8 @@ class OrdenCompra extends Model
     protected $table = "ordenes_compra";
 
     public function ordenItems(){
-        return $this->hasMany(OcItem::class, 'oc_id', 'id');
-    }
+        return $this->hasMany(OcItem::class, 'oc_id', 'id'); 
+    } 
 
     public function estado_oc(){ 
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');

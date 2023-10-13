@@ -14,7 +14,7 @@ class Juridica extends Component
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias;
-    public $proveedor, $email, $contacto, $tel, $file_cot;
+    public $proveedor, $email, $contacto, $tel, $file_cot, $oc_helisa;
 
     // Filled
     public $presupuesto, $orden_compra;
@@ -151,7 +151,7 @@ class Juridica extends Component
 
         $this->validate([
             'cant' => 'required|numeric',
-            'vUnit' => 'required|numeric'
+            'vUnit' => 'required|numeric' 
         ]);
 
         $this->vTotal = $this->cant * $this->vUnit * $this->dias;
@@ -165,7 +165,7 @@ class Juridica extends Component
             'tel' => 'required|numeric',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
-        
+         
         if (count($this->ocItems) == 0){
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
@@ -233,10 +233,27 @@ class Juridica extends Component
         $this->orden_compra->update();
         
         if ($this->orden_compra->estado_id == 1){
+            $this->validate([
+                'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+            ]);
+            
+            $this->orden_compra->archivo_cot_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
+            $this->orden_compra->update();
+            
             return redirect()->route('ordenes-compra')->with('success', 'Orden de compra APROBADA.');
         }else{
             return redirect()->route('ordenes-compra')->with('success', 'Orden de compra RECHAZADA.');
         }
+    }
+
+    public function deleteOrden(){
+        $this->orden_compra->ordenItems->map(function ($item){
+            $item->delete();
+        });
+        $this->orden_compra->delete();
+
+        $this->emit('ordenCreada');
+        return redirect()->back()->with('success', 'Orden de compra eliminada.');
     }
 
     /* UPDATES */
@@ -335,6 +352,12 @@ class Juridica extends Component
     public function updatedFile_cot(){
         $this->validate([
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+        ]);
+    }
+
+    public function updatedOc_helisa(){
+        $this->validate([
+            'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
     }
     /*****/

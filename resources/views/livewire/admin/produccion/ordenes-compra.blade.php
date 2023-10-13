@@ -22,10 +22,10 @@
         </div> 
         <div class="table-responsive">
             <table class="table align-items-center mb-0"> 
-                <thead> 
+                <thead>  
                     <tr> 
                         <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
@@ -50,6 +50,10 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Tipo</p> 
                                 <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                <span class="text-xs text-secondary mb-0">{{ $orden->proveedor }}</span>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>

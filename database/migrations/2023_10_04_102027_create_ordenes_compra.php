@@ -30,6 +30,7 @@ class CreateOrdenesCompra extends Migration
             $table->string('contacto_prov');
             $table->string('telefono_prov');
             $table->string('archivo_cot'); 
+            $table->string('archivo_cot_helisa')->nullable(); 
             $table->timestamps();
         });
     }
