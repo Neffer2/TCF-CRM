@@ -98,15 +98,17 @@
           <div class="collapse" id="dashboardsProduccion">
             <ul class="nav ms-4">
               <li class="nav-item">
-                {{-- <a class="nav-link" href="#">  
-                  <span class="sidenav-mini-icon text-xs"> OC </span>
-                  <span class="sidenav-normal"> Ordenes de compra </span>
-                </a> --}}
                 <a class="nav-link" href="{{ route('ordenes-compra') }}">  
                   <span class="sidenav-mini-icon text-xs"> OC </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
                 </a>
-              </li>        
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('consumidos') }}">   
+                  <span class="sidenav-mini-icon text-xs"> C </span>
+                  <span class="sidenav-normal"> Consumidos </span>
+                </a>
+              </li>
             </ul>
           </div> 
         </li>  

@@ -136,7 +136,7 @@
                     <div class="col-md-12">
                         <div class="form-group"> 
                             @php
-                                $aux = str_replace('public/', '', $this->file_cot); 
+                                $aux = str_replace('public/', '', $orden_compra->archivo_cot);
                             @endphp
                             <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -172,19 +172,55 @@
                     <div class="col-md-12">
                         <div class="form-group"> 
                             @php
-                                $aux = str_replace('public/', '', $this->file_cot); 
+                                $aux = str_replace('public/', '', $orden_compra->archivo_cot_helisa);
                             @endphp
                             <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                                <span class="btn-inner--text">Orden de compra</span>
                             </a>
                         </div>
                     </div> 
                     <div class="col-md-12">
-                        <a class="btn btn-icon btn-3 bg-gradient-warning" type="button">
+                        <a class="btn btn-icon btn-3 bg-gradient-warning" type="button" href="{{ route('firmar-gr', $orden_compra) }}">
                             <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
                             <span class="btn-inner--text">Firmar GR</span>
                         </a>
+                    </div>
+                </div>
+            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || (Auth::user()->rol == 1))))
+                <div class="row px-4">
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_cot_helisa = str_replace('public/', '', $orden_compra->archivo_cot_helisa); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             @else

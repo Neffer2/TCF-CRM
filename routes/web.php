@@ -36,10 +36,12 @@ Route::get('/', function () {
     Route::get('/base-comercial-general', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');   
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');   
     Route::get('/presupuesto-proyecto', [AdminController::class, 'showPresupuestosProyecto'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto-proyecto');   
-    Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');   
-    Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
+    Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');    
     Route::get('/actualizaciones', [AdminController::class, 'actualizaciones'])->middleware(['auth'])->name('actualizaciones');    
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
+
+    Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
+    Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->name('consumidos');    
 
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 
@@ -96,11 +98,11 @@ Route::get('/', function () {
     Route::get('cotizacionExcel/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionExcel'])->middleware(['auth'])->name('cotizacionExcel');
     // Route::get('/pdf', [ComercialController::class, 'pdf']);
     // Route::get('/pdf-vista', function(){
-    //     return view('pdf.index');
+    //     return view('pdf.index'); 
     // });
  
 /* Asistenet */    
-    /* base - functions */    
+    /* base - functions */     
     Route::get('/dashboard-asis', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-asis');  
     Route::get('/asis-dashboard-base', [AsistenteController::class, 'base'])->middleware(['auth'])->middleware(['asistente'])->name('asis-dashboard-base');   
     Route::get('/asis-gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-helisa');    
@@ -116,7 +118,7 @@ Route::get('/', function () {
 
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
-
+    Route::get('/firmar-gr/{orden?}', [ProductorController::class, 'showFirmar'])->middleware(['auth'])->middleware(['productor'])->name('firmar-gr');
 /* --- */
   
 
