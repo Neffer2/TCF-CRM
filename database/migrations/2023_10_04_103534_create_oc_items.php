@@ -25,6 +25,7 @@ class CreateOcItems extends Migration
             $table->string('desc_oc', 2000);
             $table->integer('cant_oc');
             $table->integer('dias_oc');
+            $table->integer('otros_oc');
             $table->decimal('vunit_oc', 15, 2)->default(0);
             $table->decimal('vtotal_oc', 15, 2)->default(0);         
             $table->timestamps(); 

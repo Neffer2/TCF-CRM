@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 
 class Consumidos extends Component
 {   
-    use WithPagination;
+    use WithPagination; 
     protected $paginationTheme = 'bootstrap';
  
     //Models 

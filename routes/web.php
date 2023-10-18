@@ -42,6 +42,7 @@ Route::get('/', function () {
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->name('consumidos');    
+    Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');     
 
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
 /* --- */ 

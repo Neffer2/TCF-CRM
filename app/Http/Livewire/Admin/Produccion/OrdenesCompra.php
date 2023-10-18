@@ -14,13 +14,13 @@ class OrdenesCompra extends Component
     // Models
     public $cod_cc, $fecha = 'desc';
 
-    public function render(){   
+    public function render(){    
         $filtros = [];
         array_push($filtros, ['estado_id', '2']);
         
         if ($this->cod_cc){
             $ordenes = OrdenCompra::with('presupuesto')
-                ->whereHas('presupuesto', function ($presto) {
+                ->whereHas('presupuesto', function ($presto) { 
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                 })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }else {

@@ -91,10 +91,11 @@
                     <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
                         <table class="table m-0">
                             <thead> 
-                                <tr> 
+                                <tr>  
                                     <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
+                                    <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
@@ -109,6 +110,7 @@
                                         <td class="text-center">{{ $item['displayItem'] }}</td>
                                         <td class="text-center">{{ $item['cant'] }}</td>
                                         <td class="text-center">{{ $item['dias'] }}</td>
+                                        <td class="text-center">{{ $item['otros'] }}</td>
                                         <td>
                                             <textarea disabled cols="30" rows="1">{{ $item['desc'] }}</textarea>
                                         </td> 
@@ -131,7 +133,7 @@
                     </div>
                 </div>
             </div>                    
-            @if (Auth::user()->rol == 1)
+            @if (Auth::user()->rol == 1 && $orden_compra->estado_id == 2)
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group"> 
@@ -167,11 +169,11 @@
                         <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                     </div> 
                 </div>
-            @elseif(($orden_compra && $orden_compra->estado_id == 1))
+            @elseif(($orden_compra && $orden_compra->estado_id == 1) && Auth::user()->rol == 7)
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group"> 
-                            @php
+                            @php 
                                 $aux = str_replace('public/', '', $orden_compra->archivo_cot_helisa);
                             @endphp
                             <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
@@ -225,7 +227,7 @@
                 </div>
             @else
                 <div class="row px-4">
-                    <div class="col-md-1 d-flex justify-content-center align-items-end">
+                    <div class="col-md-1 d-flex justify-content-center align-items-center">
                         <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
                         class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
                             @if (is_null($selectedItem)) <i class="fas fa-plus text-white" aria-hidden="true"></i> @else <i class="fa-solid fa-pen-to-square"></i> @endif
@@ -260,19 +262,26 @@
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
+                                <label for="">OTROS</label>
+                                <input type="number" class="form-control" disabled placeholder="Otros" required wire:model.lazy="otros"> 
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="">DESCRIPCION</label>
                                 <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
                                     placeholder="Descripción" wire:model.lazy="desc" cols="30" rows="1"></textarea>
                             </div>
                         </div>                    
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="">V. UNI</label>
                                 <input type="text" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
                                 placeholder="Valor unitario" required wire:model.lazy="vUnit" x-mask:dynamic="$money($input)"> 
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="">V. TOTAL</label>
                                 <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"

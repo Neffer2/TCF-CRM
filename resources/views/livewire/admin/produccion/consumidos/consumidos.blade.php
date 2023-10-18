@@ -59,8 +59,8 @@
                                 <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                 <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                             </td> 
-                            <td class="d-flex align-items-center justify-content-center">
-                                <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
+                            <td class="d-flex align-items-center justify-content-center"> 
+                                <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('consumido', $presupuesto->id) }}">Ver</a>
                             </td>
                         </tr> 
                     @endforeach

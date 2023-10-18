@@ -6,6 +6,6 @@
         <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
     @endsection
     @section('content') 
-        @livewire('admin.produccion.consumidos.consumido', ['presupuesto_id' => $presupuesto_id]) 
+        @livewire('admin.produccion.consumidos.consumidos')
     @endsection
   

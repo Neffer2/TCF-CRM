@@ -13,7 +13,7 @@ class Juridica extends Component
     use WithFileUploads; 
 
     // Models
-    public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias;
+    public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $email, $contacto, $tel, $file_cot, $oc_helisa;
 
     // Filled
@@ -32,7 +32,7 @@ class Juridica extends Component
     {
         return view('livewire.productor.ordenes.juridica');
     }
-
+ 
     public function mount (){
         if ($this->orden_compra){
             $this->getItems();
@@ -45,6 +45,7 @@ class Juridica extends Component
             'desc' => 'required',
             'cant' => "required|numeric|max:$this->maxCant",
             'dias' => "required|numeric",
+            'otros' => "required|numeric",
             'vUnit' => "required|numeric|max:$this->maxValor",
             'vTotal' => 'required|numeric', 
         ]);
@@ -66,6 +67,7 @@ class Juridica extends Component
                 'desc' => $this->desc,
                 'cant' => $this->cant,
                 'dias' => $this->dias,
+                'otros' => $this->otros,
                 'vUnit' => $this->vUnit,
                 'vTotal' => $this->vTotal
             ]);
@@ -74,6 +76,7 @@ class Juridica extends Component
             $this->ocItems[$this->selectedItem]['desc'] = $this->desc;
             $this->ocItems[$this->selectedItem]['cant'] = $this->cant;
             $this->ocItems[$this->selectedItem]['dias'] = $this->dias;
+            $this->ocItems[$this->selectedItem]['otros'] = $this->otros;
             $this->ocItems[$this->selectedItem]['vUnit'] = $this->vUnit;
             $this->ocItems[$this->selectedItem]['vTotal'] = $this->vTotal;
         }
@@ -92,6 +95,7 @@ class Juridica extends Component
         $this->desc = $this->ocItems[$id]['desc'];
         $this->cant = $this->ocItems[$id]['cant'];
         $this->dias = $this->ocItems[$id]['dias'];
+        $this->otros = $this->ocItems[$id]['otros'];
         $this->vUnit = $this->ocItems[$id]['vUnit'];
         $this->vTotal = $this->ocItems[$id]['vTotal'];
 
@@ -129,6 +133,7 @@ class Juridica extends Component
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
+                'otros' => $item->otros_oc,
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $item->vtotal_oc
             ]);
@@ -140,7 +145,7 @@ class Juridica extends Component
         foreach ($this->presupuesto->presupuestoItems as $key => $item) {
             if ($id == $item->id){
                 return $key+1;
-            }
+            } 
         }
     }
 
@@ -154,7 +159,7 @@ class Juridica extends Component
             'vUnit' => 'required|numeric' 
         ]);
 
-        $this->vTotal = $this->cant * $this->vUnit * $this->dias;
+        $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
     }
 
     public function enviarAprobacion(){
@@ -213,6 +218,7 @@ class Juridica extends Component
             $itemsOrden->desc_oc = $item['desc'];
             $itemsOrden->cant_oc = $item['cant'];
             $itemsOrden->dias_oc = $item['dias'];
+            $itemsOrden->otros_oc = $item['otros'];
             $itemsOrden->vunit_oc = $item['vUnit'];
             $itemsOrden->vtotal_oc = $item['vTotal'];
             $itemsOrden->save();
@@ -274,13 +280,14 @@ class Juridica extends Component
         if ($this->cant == 0){
             $this->addError('customError', 'Éste item ya fué consumido.');
             $this->resetFields();
-            return redirect()->back();
+            return redirect()->back(); 
         } 
 
         $this->desc = $dbItem->descripcion;
         $this->cant = $this->cant;
         $this->vUnit = $dbItem->v_unitario;
         $this->dias = $dbItem->dia;
+        $this->otros = $dbItem->otros;
         $this->maxCant = $this->cant;
         $this->maxValor = $this->vUnit;
         $this->getVTotal();
@@ -367,6 +374,7 @@ class Juridica extends Component
         $this->desc = "";
         $this->cant = 0;
         $this->dias = 0;
+        $this->otros = 0;
         $this->vUnit = 0;
         $this->vTotal = 0;
 

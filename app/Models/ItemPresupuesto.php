@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ItemPresupuesto extends Model
 {
-    use HasFactory;
+    use HasFactory; 
     protected $table = "items_presupuesto";
 
     public function mesDescription (){

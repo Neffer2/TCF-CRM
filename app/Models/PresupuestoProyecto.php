@@ -12,18 +12,18 @@ class PresupuestoProyecto extends Model
  
     public function gestion(){
         return $this->hasOne(GestionComercial::class, 'id', 'id_gestion'); 
-    }
- 
+    } 
+  
     public function estado(){
         return $this->hasOne(EstadosPresupuesto::class, 'id', 'estado_id');
     }
-
+ 
     public function presupuestoItems(){
         return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id', 'id');
     }
 
     public function ordenesCompra(){
-        return $this->hasMany(OrdenCompra::class, 'presupuesto_id', 'id');
+        return $this->hasMany(OrdenCompra::class, 'presupuesto_id', 'id'); 
     }
 
     public function productor_info(){
