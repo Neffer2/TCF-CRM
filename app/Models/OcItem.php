@@ -13,4 +13,8 @@ class OcItem extends Model
     public function itemPresupuesto(){ 
         return $this->hasOne(ItemPresupuesto::class, 'id', 'item_id');
     }
+
+    public function OrdenCompra(){
+        return $this->hasOne(OrdenCompra::class, 'id', 'oc_id');
+    }
 } 

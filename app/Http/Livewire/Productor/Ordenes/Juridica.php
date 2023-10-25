@@ -14,17 +14,13 @@ class Juridica extends Component
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
-    public $proveedor, $email, $contacto, $tel, $file_cot, $oc_helisa;
+    public $proveedor,$nit, $email, $contacto, $tel, $file_cot, $oc_helisa, $justificacion_rechazo;
 
     // Filled
     public $presupuesto, $orden_compra;
   
     // Useful vars 
-    public $ocItems = []; 
-    public $selectedItem;
-    public $maxCant; 
-    public $maxValor;
-    public $items = []; 
+    public $ocItems = [], $selectedItem, $maxCant, $maxValor, $items = []; 
 
     public $edit = false;
 
@@ -120,10 +116,12 @@ class Juridica extends Component
     // Trae y muestra la orden de compra de la base de datos (si ya está creada).
     public function getItems(){
         $this->proveedor = $this->orden_compra->proveedor;
+        $this->nit = $this->orden_compra->nit;
         $this->email = $this->orden_compra->email_prov;
         $this->contacto = $this->orden_compra->contacto_prov;
         $this->tel = $this->orden_compra->telefono_prov;
         $this->file_cot = $this->orden_compra->archivo_cot;
+        $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
 
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
@@ -165,6 +163,7 @@ class Juridica extends Component
     public function enviarAprobacion(){
         $this->validate([ 
             'proveedor' => 'required|string|max:200',
+            'nit' => 'required|numeric',
             'email' => 'required|email|max:200',
             'contacto' => 'required|string|max:200',
             'tel' => 'required|numeric',
@@ -178,8 +177,9 @@ class Juridica extends Component
 
         // Si la orden está creada, entonces edita
         if ($this->orden_compra){           
-            $this->orden_compra->estado_id = 2;
+            $this->orden_compra->estado_id = 2; 
             $this->orden_compra->proveedor = $this->proveedor;
+            $this->orden_compra->nit = $this->nit;
             $this->orden_compra->email_prov = $this->email;
             $this->orden_compra->contacto_prov = $this->contacto;
             $this->orden_compra->telefono_prov = $this->tel;
@@ -194,12 +194,13 @@ class Juridica extends Component
             $orden->presupuesto_id = $this->presupuesto->id;
     
             $orden->proveedor = $this->proveedor;
+            $orden->nit = $this->nit; 
             $orden->email_prov = $this->email;
             $orden->contacto_prov = $this->contacto;
             $orden->telefono_prov = $this->tel;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
+            
             $orden->save();
-
             $this->storeItems($orden->id);        
         }
 
@@ -235,19 +236,28 @@ class Juridica extends Component
     }
     
     public function cambioEstado($estado){
-        $this->orden_compra->estado_id = $estado;
-        $this->orden_compra->update();
-        
-        if ($this->orden_compra->estado_id == 1){
+        if ($estado == 1){
             $this->validate([
                 'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
             ]);
-            
+        }elseif($estado == 3){
+            $this->validate([
+                'justificacion_rechazo' => 'required|string|max:1000',
+            ]);
+        }
+        
+        $this->orden_compra->estado_id = $estado;
+        $this->orden_compra->update();
+        
+        if ($this->orden_compra->estado_id == 1){                        
             $this->orden_compra->archivo_cot_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
-            $this->orden_compra->update();
-            
+            $this->orden_compra->update();        
+
             return redirect()->route('ordenes-compra')->with('success', 'Orden de compra APROBADA.');
         }else{
+            $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
+            $this->orden_compra->update();        
+
             return redirect()->route('ordenes-compra')->with('success', 'Orden de compra RECHAZADA.');
         }
     }
@@ -338,6 +348,12 @@ class Juridica extends Component
         ]);
     }
 
+    public function updatedNit(){
+        $this->validate([
+            'nit' => 'required|numeric',
+        ]);
+    }
+
     public function updatedEmail(){
         $this->validate([
             'email' => 'required|email|max:200',
@@ -353,6 +369,12 @@ class Juridica extends Component
     public function updatedTel(){
         $this->validate([
             'tel' => 'required|numeric',
+        ]);
+    }
+
+    public function updatedJustificacionRechazo(){
+        $this->validate([
+            'justificacion_rechazo' => 'required|string|max:1000',
         ]);
     }
 
@@ -383,6 +405,7 @@ class Juridica extends Component
 
     public function resetOcInfo(){
         $this->proveedor = "";
+        $this->nit = "";
         $this->email = "";
         $this->contacto = "";
         $this->tel = "";

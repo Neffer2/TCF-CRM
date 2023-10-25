@@ -24,9 +24,17 @@
                                 <td class="font-weight-bold">Ciudad:</td>
                                 <td>{{ $presupuesto->presupuestoItems[0]->ciudad }}</td>
                             </tr>
+                            @if ($justificacion_rechazo && Auth::user()->rol != 1 && $orden_compra->estado_id == 3)
+                                <tr style="height: 35px;">
+                                    <td class="font-weight-bold">Jutificacion de rechazo:</td>
+                                    <td>
+                                        <textarea disabled cols="30" rows="2">{{ $justificacion_rechazo }}</textarea>
+                                    </td>
+                                </tr>                                
+                            @endif
                         </table>
                     </div>
-                </div>
+                </div> 
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
                         <table class="table">
@@ -37,6 +45,19 @@
                                         <input type="text" wire:model.lazy="proveedor" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
                                         @error('proveedor')
                                             <div id="proveedor" class="text-danger">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div> 
+                                </td>
+                            </tr>
+                            <tr style="height: 35px;">
+                                <td class="font-weight-bold">NIT:</td>
+                                <td>
+                                    <div class="form-group m-0">
+                                        <input type="text" wire:model.lazy="nit" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
+                                        @error('nit')
+                                            <div id="nit" class="text-danger">
                                                 <strong>{{ $message }}</strong>
                                             </div>
                                         @enderror
@@ -158,6 +179,17 @@
                                 </div>
                                 @error('oc_helisa')
                                     <div id="oc_helisa" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror 
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="justificacion_rechazo">Justificaci&oacute;n de rechazo:</label>
+                                <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" cols="100" rows="2"></textarea>
+                                @error('justificacion_rechazo')
+                                    <div id="justificacion_rechazo" class="text-invalid">
                                         {{ $message }}
                                     </div>
                                 @enderror 

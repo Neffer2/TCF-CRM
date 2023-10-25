@@ -230,6 +230,8 @@
                                                     <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
+                                                    <th class="font-weight-bold bg-gradient-primary text-white">PROVEEDOR</th>
+                                                    <th class="font-weight-bold bg-gradient-primary text-white">ORDEN DE COMPRA</th>
                                                 </tr>
                                                 @foreach ($item->ordenes_compra as $orden)
                                                     <tr>
@@ -253,6 +255,12 @@
                                                         </td>
                                                         <td class="font-weight-bold font-table">
                                                             $ {{ number_format($orden->vtotal_oc) }}
+                                                        </td>
+                                                        <td class="font-weight-bold font-table">
+                                                            {{ $orden->OrdenCompra->proveedor }} - {{ $orden->OrdenCompra->nit }}
+                                                        </td>
+                                                        <td class="font-weight-bold font-table">
+                                                            <a href="{{ route('orden-juridica', $orden->OrdenCompra->id) }}" target="_blank">Orden de compra</a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

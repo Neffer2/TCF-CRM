@@ -12,7 +12,7 @@ class FirmarGR extends Component
     use WithFileUploads;
 
     // Models
-    public $remision; 
+    public $remision, $gr;  
     protected $listeners = ['store-signal' => 'store'];
 
     // Useful vars
@@ -33,14 +33,16 @@ class FirmarGR extends Component
     public function store($data){
         $this->validate([
             'remision' => 'required|file|mimes:pdf,xls,xlsx|max:10240',
+            'gr' => 'required|numeric'
         ]);
 
         $orden = OrdenCompra::find($this->orden);
         $orden->archivo_remision = $this->remision->store('public/remisiones'); 
         $orden->archivo_firma = "public/firmas_produccion/$this->orden.png";
+        $orden->gr = $this->gr;
         $orden->estado_id = 5;
 
-        $data_uri = $data;
+        $data_uri = $data; 
         $encoded_image = explode(",", $data_uri)[1];
         $decoded_image = base64_decode($encoded_image);
         file_put_contents("storage/firmas_produccion/$this->orden.png", $decoded_image);
@@ -52,6 +54,12 @@ class FirmarGR extends Component
 
     public function getData(){
         $this->storedOrden = OrdenCompra::find($this->orden);
+    }
+
+    public function updatedGr(){
+        $this->validate([
+            'gr' => 'required|numeric'
+        ]);
     }
 } 
   

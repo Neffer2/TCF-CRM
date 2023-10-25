@@ -1,16 +1,18 @@
-<div>
+<div class="card">
     <div class="row">
-        <div class="col-md-12 d-flex justify-content-center">
-            @php
-                $archivo_cot_helisa = str_replace('public/', '', $storedOrden->archivo_cot_helisa); 
-            @endphp
-            <object data="{{ asset("storage/$archivo_cot_helisa") }}" type="application/pdf" width="500" height="500">
-                <p>Su navegador no admite la visualización de PDF.</p>
-            </object>
+        <div class="col-md-2">
+            <div class="form-group">
+                @php
+                    $archivo_cot_helisa = str_replace('public/', '', $storedOrden->archivo_cot_helisa); 
+                @endphp
+                <label for="">Orden de compra: </label>
+                <a href="{{ asset("storage/$archivo_cot_helisa") }}" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" target="_blank" style="width: 100%">
+                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                    <span class="btn-inner--text">Exportar</span>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-5">
             <div class="form-group">
                 <label for="remision">Remisi&oacute;n:</label>
                 <input id="remision" wire:model="remision" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
@@ -26,23 +28,36 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-12 d-flex justify-content-center">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="gr">Good receive: </label>
+                <input id="gr" wire:model.lazy="gr" type="text" class="form-control">
+                @error('gr')
+                    <div id="gr" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+        <div class="col-md-12 d-flex">
             <label for="signature-pad">Firma: </label>
         </div>
-        <div class="col-md-12 d-flex justify-content-center">
+        <div class="col-md-12 d-flex">
             <canvas id="signature-pad" class="signature-pad" width="400" height="200"></canvas>
             <input id="firma_hidden" type="text" wire:model="firma" style="display: none">
         </div>
-        <div class="col-md-12 d-flex justify-content-center mt-1">
+        <div class="col-md-12 d-flex mt-1">
             <div>
                 <button id="save" class="btn bg-gradient-primary">Guardar</button>
                 <button id="clear" class="btn bg-gradient-secondary">Borrar</button>
             </div>
         </div>
+    </div> 
+    <div class="row">
         <div class="col-md-12">
             <button id="enviar-btn" class="btn bg-gradient-warning" disabled>Enviar GR</button>
         </div>
-    </div> 
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script>

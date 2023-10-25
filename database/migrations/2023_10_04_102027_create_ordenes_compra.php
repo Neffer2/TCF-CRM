@@ -26,13 +26,16 @@ class CreateOrdenesCompra extends Migration
             $table->foreign('presupuesto_id')->references('id')->on('presupuesto_proyecto');
 
             $table->string('proveedor');
+            $table->string('nit')->nullable();
             $table->string('email_prov');
             $table->string('contacto_prov');
             $table->string('telefono_prov');
+            $table->string('justificacion_rechazo')->nullable(); 
             $table->string('archivo_cot'); 
             $table->string('archivo_cot_helisa')->nullable(); 
             $table->string('archivo_remision')->nullable(); 
             $table->string('archivo_firma')->nullable(); 
+            $table->string('gr')->nullable(); 
             $table->timestamps();
         });
     }
