@@ -15,7 +15,7 @@ use App\Traits\Hablame;
 
 class Presupuesto extends Component  
 { 
-    use Hablame;
+    use Hablame; 
 
     // Models
     public $cod; 

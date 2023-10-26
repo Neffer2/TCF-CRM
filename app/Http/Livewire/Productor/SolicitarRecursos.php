@@ -6,12 +6,14 @@ use Livewire\Component;
 use App\Models\ItemPresupuesto;
 use App\Models\PresupuestoProyecto;
 use App\Models\OrdenCompra;
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
  
 class SolicitarRecursos extends Component 
 {  
     // Models 
  
-    // Useful vars    
+    // Useful vars     
     public $presupuesto; 
     public $verifyPresupuesto = false; 
 
@@ -26,6 +28,9 @@ class SolicitarRecursos extends Component
     }
  
     public function mount(){
+        $email = new WelcomeMail('Eduardo Campano');
+        Mail::to('n3f73r@gmail.com')->send($email);
+        dd("Yá");
         $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto); 
     }
 

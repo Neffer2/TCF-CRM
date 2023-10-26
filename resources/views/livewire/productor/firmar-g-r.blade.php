@@ -27,7 +27,7 @@
                     </div>
                 @enderror
             </div>
-        </div>
+        </div> 
         <div class="col-md-5">
             <div class="form-group">
                 <label for="gr">Good receive: </label>

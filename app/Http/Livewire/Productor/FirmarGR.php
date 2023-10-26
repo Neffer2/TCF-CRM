@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\OrdenCompra;
 use Illuminate\Support\Facades\Storage;
-
+ 
 class FirmarGR extends Component 
 {
     use WithFileUploads;
@@ -19,7 +19,7 @@ class FirmarGR extends Component
     public $storedOrden;
 
     // Filled
-    public $orden;
+    public $orden; 
 
     public function render()
     { 

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class NuevoPresupuesto extends Mailable
+class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -17,17 +17,17 @@ class NuevoPresupuesto extends Mailable
      * @return void
      */
     public function __construct()
-    { 
-        // Este modulo se descartó y se usaron mensajes SMS
+    {
+        //
     }
 
     /**
-     * Build the message.
+     * Build the message. 
      *
      * @return $this
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->view('mails.index');
     }
 }
