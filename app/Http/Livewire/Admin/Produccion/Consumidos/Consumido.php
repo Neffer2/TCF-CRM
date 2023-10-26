@@ -9,7 +9,7 @@ class Consumido extends Component
 {
 
     // Useful vars
-    public $presupuesto;
+    public $presupuesto; 
 
     // filled
     public $presupuesto_id;
@@ -21,6 +21,5 @@ class Consumido extends Component
     
     public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->presupuesto_id);
-        // dd($this->presupuesto);
     }
 }

@@ -19,7 +19,7 @@
                 <div wire:loading wire:target="remision" class="py-2">
                     <div class="spinner-border text-warning" role="status">
                         <span class="sr-only">Loading...</span>
-                    </div>
+                    </div> 
                 </div>
                 @error('remision')
                     <div id="remision" class="text-invalid">

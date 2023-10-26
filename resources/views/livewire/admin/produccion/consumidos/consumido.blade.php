@@ -95,8 +95,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
+                    <div class="table-responsive"> 
+                        <table class="table mb-0"> 
                             <tr>
                                 <td class="font-weight-bold font-table">NOTAS</td>
                                 <td class="font-table">
@@ -173,11 +173,6 @@
                                 {{ $key+=1 }}
                             </td> 
                             <td class="font-weight-bold font-table">
-                                {{-- @if (count($item->ordenes_compra) > 0)
-                                    {{ $item->cantidad - $cont_cant_oc }}
-                                @else
-                                    {{ $item->cantidad }}
-                                @endif --}}
                                 {{ $item->cantidad }}
                             </td>
                             <td class="font-weight-bold font-table">
@@ -198,13 +193,6 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->proveedor }} 
                             </td>
-                            {{-- <td class="font-weight-bold font-table">
-                                {{ $item->margen_utilidad }}
-                            </td> --}}
-
-                            {{-- <td class="font-weight-bold font-table">
-                                {{ $item->mesDescription->description }} 
-                            </td> --}}
                             <td class="font-weight-bold font-table">
                                 {{ $item->dias }}
                             </td>
@@ -230,6 +218,7 @@
                                                     <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
+                                                    <th class="font-weight-bold bg-gradient-primary text-white">ESTADO</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">PROVEEDOR</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">ORDEN DE COMPRA</th>
                                                 </tr>
@@ -255,6 +244,9 @@
                                                         </td>
                                                         <td class="font-weight-bold font-table">
                                                             $ {{ number_format($orden->vtotal_oc) }}
+                                                        </td>
+                                                        <td class="font-weight-bold font-table">
+                                                            {{ $orden->OrdenCompra->estado_oc->description }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
                                                             {{ $orden->OrdenCompra->proveedor }} - {{ $orden->OrdenCompra->nit }}

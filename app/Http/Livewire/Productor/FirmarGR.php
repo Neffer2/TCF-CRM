@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Productor;
  
 use Livewire\Component;
-use Livewire\WithFileUploads;
+use Livewire\WithFileUploads; 
 use App\Models\OrdenCompra;
 use Illuminate\Support\Facades\Storage;
  

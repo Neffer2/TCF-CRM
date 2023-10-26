@@ -17,7 +17,7 @@ class Consumidos extends Component
     //Models 
     public $cod_cc;
 
-    // Useful vars 
+    // Useful vars  
     public $estados = [];  
      
     public function render()
