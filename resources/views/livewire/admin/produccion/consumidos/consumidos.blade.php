@@ -4,7 +4,7 @@
             <div class="row">            
                 <div class="col-md-12">
                     <h3 class="mb-0">Consumidos</h3>
-                    <p class="text-sm mb-0">Lista completa de consumidos.</p>
+                    <p class="text-sm mb-0">Lista completa de presupuestos consumidos.</p>
                 </div> 
                 <div class="form-group col-md-3">
                     <label for="comercial">Buscar:</label> 
@@ -16,12 +16,12 @@
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
-                        <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">PRESUPUESTOS</th>
                         <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
-                <tbody> 
+                <tbody>
                     @foreach ($presupuestos as $presupuesto)
                         <tr>
                             <td style="width: 16rem;">

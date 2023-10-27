@@ -168,7 +168,7 @@
                         </div>
                     </div>
                     <div class="row px-4">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="oc_helisa">Adjunta la orden de compra generada en Helisa:</label>
                                 <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
@@ -179,6 +179,17 @@
                                 </div>
                                 @error('oc_helisa')
                                     <div id="oc_helisa" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror  
+                            </div>
+                        </div>
+                        <div class="col-md-6"> 
+                            <div class="form-group">
+                                <label for="cod_oc">C&oacute;digo de orden de compra:</label>
+                                <input name="cod_oc" id="cod_oc" class="form-control" wire:model="cod_oc">
+                                @error('cod_oc')
+                                    <div id="cod_oc" class="text-invalid">
                                         {{ $message }}
                                     </div>
                                 @enderror 
@@ -206,7 +217,7 @@
                     <div class="col-md-12">
                         <div class="form-group"> 
                             @php 
-                                $aux = str_replace('public/', '', $orden_compra->archivo_cot_helisa);
+                                $aux = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
                             @endphp
                             <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -237,9 +248,9 @@
                     <div class="col-md-2">
                         <div class="form-group"> 
                             @php
-                                $archivo_cot_helisa = str_replace('public/', '', $orden_compra->archivo_cot_helisa); 
+                                $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa); 
                             @endphp
-                            <a href="{{ asset("storage/$archivo_cot_helisa") }}" target="_blank" class="">
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Orden de compra.</span>
                             </a>

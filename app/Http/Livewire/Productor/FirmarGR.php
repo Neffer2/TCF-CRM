@@ -5,14 +5,15 @@ namespace App\Http\Livewire\Productor;
 use Livewire\Component;
 use Livewire\WithFileUploads; 
 use App\Models\OrdenCompra;
+use App\Traits\Email;
 use Illuminate\Support\Facades\Storage;
  
 class FirmarGR extends Component 
 {
-    use WithFileUploads;
+    use WithFileUploads, Email;
 
     // Models
-    public $remision, $gr;  
+    public $remision, $gr, $email_prov;  
     protected $listeners = ['store-signal' => 'store'];
 
     // Useful vars
@@ -27,6 +28,7 @@ class FirmarGR extends Component
     }
 
     public function mount(){
+        $this->send();
         $this->getData();
     }
 
@@ -47,18 +49,25 @@ class FirmarGR extends Component
         $decoded_image = base64_decode($encoded_image);
         file_put_contents("storage/firmas_produccion/$this->orden.png", $decoded_image);
 
-        $orden->update();
+        $orden->update(); 
 
         return redirect()->route('dashboard-productor')->with('success', 'Good receive firmado y enviado.');
     }
 
     public function getData(){
         $this->storedOrden = OrdenCompra::find($this->orden);
+        $this->email_prov = $this->storedOrden->email_prov;
     }
 
     public function updatedGr(){
         $this->validate([
             'gr' => 'required|numeric'
+        ]);
+    }
+
+    public function updatedEmailProv(){
+        $this->validate([
+            'email_prov' => 'required|email'
         ]);
     }
 } 

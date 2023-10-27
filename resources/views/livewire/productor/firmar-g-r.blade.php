@@ -4,7 +4,7 @@
             <div class="form-group">
                 @php
                     $archivo_cot_helisa = str_replace('public/', '', $storedOrden->archivo_cot_helisa); 
-                @endphp
+                @endphp 
                 <label for="">Orden de compra: </label>
                 <a href="{{ asset("storage/$archivo_cot_helisa") }}" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" target="_blank" style="width: 100%">
                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="col-md-5">
-            <div class="form-group">
+            <div class="form-group"> 
                 <label for="remision">Remisi&oacute;n:</label>
                 <input id="remision" wire:model="remision" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                 <div wire:loading wire:target="remision" class="py-2">
@@ -39,12 +39,24 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-12 d-flex">
-            <label for="signature-pad">Firma: </label>
-        </div>
-        <div class="col-md-12 d-flex">
+        <div class="col-md-4 d-flex flex-column">
+            <h6>Firma: </h6>
             <canvas id="signature-pad" class="signature-pad" width="400" height="200"></canvas>
             <input id="firma_hidden" type="text" wire:model="firma" style="display: none">
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <h6 style="margin: 0">Verifica el correo del proveedor:</h6>
+                <div style="font-size: 9px;">
+                    Se enviar&aacute; un correo al proveedor con la orden de compra y el Good Receive.
+                </div>
+                <input wire:model="email_prov" type="email" class="form-control" placeholder="alguien@example.com">
+                @error('email_prov')
+                    <div id="email_prov" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror 
+            </div>
         </div>
         <div class="col-md-12 d-flex mt-1">
             <div>

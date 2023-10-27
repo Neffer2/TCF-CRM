@@ -14,7 +14,7 @@ class Juridica extends Component
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
-    public $proveedor,$nit, $email, $contacto, $tel, $file_cot, $oc_helisa, $justificacion_rechazo;
+    public $proveedor, $nit, $email, $contacto, $tel, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc;
 
     // Filled
     public $presupuesto, $orden_compra;
@@ -238,7 +238,8 @@ class Juridica extends Component
     public function cambioEstado($estado){
         if ($estado == 1){
             $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+                'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240',
+                'cod_oc' => 'required|max:200'
             ]);
         }elseif($estado == 3){
             $this->validate([
@@ -247,10 +248,11 @@ class Juridica extends Component
         }
         
         $this->orden_compra->estado_id = $estado;
-        $this->orden_compra->update();
+        $this->orden_compra->update(); 
         
         if ($this->orden_compra->estado_id == 1){                        
-            $this->orden_compra->archivo_cot_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
+            $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
+            $this->orden_compra->cod_oc = $this->cod_oc;
             $this->orden_compra->update();        
 
             return redirect()->route('ordenes-compra')->with('success', 'Orden de compra APROBADA.');

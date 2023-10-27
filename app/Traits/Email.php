@@ -2,12 +2,17 @@
 
 namespace App\Traits;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception; 
+use PHPMailer\PHPMailer\SMTP; 
+use PHPMailer\PHPMailer\Exception;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 trait Email 
 {
     public function send(){
+        $this->orden_compra_pdf();
+        
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -32,13 +37,13 @@ trait Email
             // $mail->addBCC('bcc@example.com');
 
             //Attachments
-            // $mail->addAttachment('/var/tmp/file.tar.gz');
+            $mail->addStringAttachment($this->orden_compra_pdf(), 'my_pdf.pdf');
             // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = 'Here is the subject';
-            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body    = view('mails.index', ['nombre' => 'SAPA PERRA']);
             $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             $mail->send();
@@ -46,5 +51,16 @@ trait Email
         } catch (Exception $e) {
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
+    }
+
+    /* Tipo: Interno, cliente */
+    public function orden_compra_pdf(){
+        $dompdf = new Dompdf(array('enable_remote' => true));
+        $html = View::make('exports.oc')->render(); 
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        return $dompdf->stream();
+        
+        // return $dompdf->output();
     }
 }

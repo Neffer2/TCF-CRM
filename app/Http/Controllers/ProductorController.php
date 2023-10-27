@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PresupuestoProyecto;
 use App\Models\ItemPresupuesto; 
+use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ProductorController extends Controller
 {   
@@ -13,7 +15,7 @@ class ProductorController extends Controller
         $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', Auth::id())->get();
         return view('productor.index', ['proyectos' => $proyectos]);
     }
-
+ 
     public function showFirmar($orden){
         return view('productor.gr.index', ['orden' => $orden]);
     }
