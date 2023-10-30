@@ -28,20 +28,21 @@ class FirmarGR extends Component
     }
 
     public function mount(){
-        $this->send();
         $this->getData();
     }
 
     public function store($data){
         $this->validate([
             'remision' => 'required|file|mimes:pdf,xls,xlsx|max:10240',
-            'gr' => 'required|numeric'
+            'gr' => 'required|numeric',
+            'email_prov' => 'required|email'
         ]);
 
         $orden = OrdenCompra::find($this->orden);
         $orden->archivo_remision = $this->remision->store('public/remisiones'); 
         $orden->archivo_firma = "public/firmas_produccion/$this->orden.png";
         $orden->gr = $this->gr;
+        $orden->email_prov = $this->email_prov;
         $orden->estado_id = 5;
 
         $data_uri = $data; 
@@ -49,7 +50,8 @@ class FirmarGR extends Component
         $decoded_image = base64_decode($encoded_image);
         file_put_contents("storage/firmas_produccion/$this->orden.png", $decoded_image);
 
-        $orden->update(); 
+        $orden->update();
+        // $this->send($orden);
 
         return redirect()->route('dashboard-productor')->with('success', 'Good receive firmado y enviado.');
     }

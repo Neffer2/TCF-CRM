@@ -122,13 +122,5 @@ Route::get('/', function () {
     Route::get('/firmar-gr/{orden?}', [ProductorController::class, 'showFirmar'])->middleware(['auth'])->middleware(['productor'])->name('firmar-gr');
 /* --- */
 
-    Route::get('email', function (){
-        return view('mails.index');
-    }); 
-
-    Route::get('export', function (){
-        return view('exports.oc');
-    });
-
 require __DIR__.'/auth.php';   
   
