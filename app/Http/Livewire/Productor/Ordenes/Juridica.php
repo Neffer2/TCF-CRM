@@ -247,9 +247,9 @@ class Juridica extends Component
 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
             $this->orden_compra->cod_oc = $this->cod_oc;
-            // $this->orden_compra->estado_id = $estado;
-                        
-            $this->orden_compra->update();   
+            $this->orden_compra->estado_id = $estado;
+            $this->orden_compra->update();
+            
             $this->mailOrdenAprobada($this->orden_compra);
             $messaje = 'Orden de compra APROBADA.';
         }elseif($estado == 3){
@@ -258,12 +258,13 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;            
-            // $this->orden_compra->estado_id = $estado;
-            // $this->orden_compra->update();        
+            $this->orden_compra->estado_id = $estado;
+            $this->orden_compra->update();        
+
             $messaje = 'Orden de compra RECHAZADA.';
         }
 
-        // return redirect()->route('ordenes-compra')->with('success', $messaje);
+        return redirect()->route('ordenes-compra')->with('success', $messaje);
     }
 
     public function deleteOrden(){

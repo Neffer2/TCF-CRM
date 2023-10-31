@@ -7,6 +7,7 @@ use PHPMailer\PHPMailer\Exception;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
 
 trait Email 
 {
@@ -73,18 +74,25 @@ trait Email
 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
-            // $mail->addAddress('james.vallejo@iglumarketingdigital.com', 'Joe User');     //Add a recipient
-            $mail->addAddress($orden->email_prov, $orden->contacto_prov);     //Add a recipient
-            // $mail->addAddress('ellen@example.com');               //Name is optional
-            // $mail->addReplyTo('info@example.com', 'Information');
-            // $mail->addCC('cc@example.com');
-            // $mail->addBCC('bcc@example.com');
-            
-            $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);             
-            $mail->addStringAttachment(asset("storage/{$archivo_orden_helisa}"), "OC_".$orden->proveedor.".pdf");
+            /* COMPRAS */
+                // $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
+                // $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+            /* *** */
+
+            /* LD PRODUCCION & PROVEEDOR */
+                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                // $mail->addCC('james.vallejo@iglumarketingdigital.com');
+                $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+                $mail->addCC($orden->email_prov, $orden->contacto_prov);
+            /* *** */
+                        
+            $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor.".pdf");
 
             //Content
-            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->isHTML(true);
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
             $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor;
             $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]);
             $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor}";

@@ -172,11 +172,6 @@
                             <div class="form-group">
                                 <label for="oc_helisa">Adjunta la orden de compra generada en Helisa:</label>
                                 <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
-                                <div wire:loading wire:target="oc_helisa" class="py-2">
-                                    <div class="spinner-border text-warning" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
                                 @error('oc_helisa')
                                     <div id="oc_helisa" class="text-invalid">
                                         {{ $message }}
@@ -208,9 +203,14 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="cambioEstado(1)" class="btn bg-gradient-warning">Aprobar</button>
+                        <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
                         <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
-                    </div> 
+                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
             @elseif(($orden_compra && $orden_compra->estado_id == 1) && Auth::user()->rol == 7)
                 <div class="row px-4">

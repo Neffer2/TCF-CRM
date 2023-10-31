@@ -122,9 +122,13 @@ Route::get('/', function () {
     Route::get('/firmar-gr/{orden?}', [ProductorController::class, 'showFirmar'])->middleware(['auth'])->middleware(['productor'])->name('firmar-gr');
 /* --- */
 
-    Route::get('correo', function () {
-        return view('mails.ordenAprobada');
-    });
+    // Route::get('ferhca', function () {
+    //     return view('mails.ordenAprobada');
+    // });
+    
+        Route::get('fecha', function(){
+            $today = getdate();
+            ($today["year"] . "-" . $today["mon"] . "-" . $today["mday"] . " " . $today["hours"] . ":" . $today["minutes"] . ":" . $today["seconds"]);
+        });
 
 require __DIR__.'/auth.php';   
-  

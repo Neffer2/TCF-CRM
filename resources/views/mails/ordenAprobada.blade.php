@@ -14,11 +14,11 @@
         Por favor validar y una vez est&eacute; recibido a satisfacci&oacute;n, enviar al &aacute;rea de compras firmada para radicar a proveedor <br>
         con el correspondiente GR que se genera desde el &aacute;rea de compras.<br><br>
 
-        Cordialmente,
+        Cordialmente,<br>
         Saludos.
     </p>
     <p style="font-size: 12px">
-        Este correo fue enviado desde <a href="https://bullcrm.com.co" target="_blank"><b>BullCRM</b></a>. <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
+        Enviado desde <b>BullCRM</b>. <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
     </p>
 </body>
 </html>
