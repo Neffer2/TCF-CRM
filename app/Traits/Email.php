@@ -81,7 +81,7 @@ trait Email
             // $mail->addBCC('bcc@example.com');
             
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);             
-            $mail->addAttachment(asset("storage/{$archivo_orden_helisa}"), "OC_".$orden->proveedor.".pdf");
+            $mail->addStringAttachment(asset("storage/{$archivo_orden_helisa}"), "OC_".$orden->proveedor.".pdf");
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
