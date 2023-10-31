@@ -13,7 +13,7 @@ class FirmarGR extends Component
     use WithFileUploads, Email;
 
     // Models
-    public $remision, $gr, $email_prov;  
+    public $remision, $gr;  
     protected $listeners = ['store-signal' => 'store'];
 
     // Useful vars
@@ -34,15 +34,13 @@ class FirmarGR extends Component
     public function store($data){
         $this->validate([
             'remision' => 'required|file|mimes:pdf,xls,xlsx|max:10240',
-            'gr' => 'required|numeric',
-            'email_prov' => 'required|email'
+            'gr' => 'required|numeric'
         ]);
 
         $orden = OrdenCompra::find($this->orden);
         $orden->archivo_remision = $this->remision->store('public/remisiones'); 
         $orden->archivo_firma = "public/firmas_produccion/$this->orden.png";
         $orden->gr = $this->gr;
-        $orden->email_prov = $this->email_prov;
         $orden->estado_id = 5;
 
         $data_uri = $data; 
@@ -64,12 +62,6 @@ class FirmarGR extends Component
     public function updatedGr(){
         $this->validate([
             'gr' => 'required|numeric'
-        ]);
-    }
-
-    public function updatedEmailProv(){
-        $this->validate([
-            'email_prov' => 'required|email'
         ]);
     }
 } 

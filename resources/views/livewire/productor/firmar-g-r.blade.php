@@ -45,20 +45,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-12">
-            <div class="form-group">
-                <h6 style="margin: 0">Verifica el correo del proveedor:</h6>
-                <div style="font-size: 9px;">
-                    Se enviar&aacute; un correo al proveedor con la orden de compra y el Good Receive.
-                </div>
-                <input wire:model="email_prov" type="email" class="form-control" placeholder="alguien@example.com">
-                @error('email_prov')
-                    <div id="email_prov" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror 
-            </div>
-        </div>
+
         <div class="col-md-4 d-flex flex-column">
             <h6>Firma: </h6>
             <canvas id="signature-pad" class="signature-pad" width="400" height="200"></canvas>

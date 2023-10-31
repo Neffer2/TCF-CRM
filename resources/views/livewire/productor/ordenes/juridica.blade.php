@@ -166,7 +166,7 @@
                                 <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
                             </a>
                         </div>
-                    </div>
+                    </div> 
                     <div class="row px-4">
                         <div class="col-md-6">
                             <div class="form-group">

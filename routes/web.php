@@ -103,7 +103,7 @@ Route::get('/', function () {
     // });
  
 /* Asistenet */    
-    /* base - functions */     
+    /* base - functions */      
     Route::get('/dashboard-asis', [AsistenteController::class, 'index'])->middleware(['auth'])->middleware(['asistente'])->name('dashboard-asis');  
     Route::get('/asis-dashboard-base', [AsistenteController::class, 'base'])->middleware(['auth'])->middleware(['asistente'])->name('asis-dashboard-base');   
     Route::get('/asis-gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-helisa');    
@@ -121,6 +121,10 @@ Route::get('/', function () {
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
     Route::get('/firmar-gr/{orden?}', [ProductorController::class, 'showFirmar'])->middleware(['auth'])->middleware(['productor'])->name('firmar-gr');
 /* --- */
+
+    Route::get('correo', function () {
+        return view('mails.ordenAprobada');
+    });
 
 require __DIR__.'/auth.php';   
   
