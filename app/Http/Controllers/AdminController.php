@@ -32,7 +32,7 @@ class AdminController extends Controller
 
     public function estadoFacturacion(Request $request){ 
         return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]);
-    }
+    }  
 
     public function showPresupuestosProyecto(){ 
         return view('admin.gestion.presupuestos');
@@ -47,7 +47,7 @@ class AdminController extends Controller
     } 
 
     public function showOrdenJuridica($orden_id){ 
-        $orden = OrdenCompra::find($orden_id);
+        $orden = OrdenCompra::find($orden_id); 
         $presupuesto = $orden->presupuesto; 
         return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden]);  
     }
@@ -58,5 +58,10 @@ class AdminController extends Controller
 
     public function showConsumido($presupuesto_id){ 
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id]);
+    }
+
+    public function showProveedores (){
+        return view('admin.produccion.proveedores.index');
+
     }
 }

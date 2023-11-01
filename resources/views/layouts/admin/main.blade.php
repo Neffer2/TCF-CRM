@@ -85,7 +85,7 @@
                   <span class="sidenav-normal"> Actualizaciones </span>
                 </a> 
               </li>            
-            </ul>
+            </ul> 
           </div>
         </li> 
         <li class="nav-item"> 
@@ -98,7 +98,12 @@
           <div class="collapse" id="dashboardsProduccion">
             <ul class="nav ms-4">
               <li class="nav-item">
-                {{-- <a class="nav-link" href="#">   --}}
+                <a class="nav-link" href="{{ route('proveedores') }}">  
+                  <span class="sidenav-mini-icon text-xs"> AN </span>
+                  <span class="sidenav-normal"> Proveedores </span> 
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="{{ route('ordenes-compra') }}">  
                   <span class="sidenav-mini-icon text-xs"> OC </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
