@@ -16,25 +16,26 @@ class CreateProveedores extends Migration
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('categoria_id');
+            $table->foreignId('categoria_id');  
             $table->foreign('categoria_id')->references('id')->on('categorias_proveedor');
 
             $table->string('tercero');
-            $table->string('tipo'); 
+            $table->string('tipo');
             $table->string('tipo_doc');
             $table->string('documento')->unique();
             $table->string('dv');
-            $table->string('direccion');
+            $table->string('direccion')->nullable();
             $table->string('departamento');
             $table->string('ciudad');
             $table->string('servicio');
+            $table->string('anticipo');
             $table->string('celular');
-            $table->string('fijo');
-            $table->string('correo');
-            $table->string('plazo');
+            $table->string('fijo')->nullable();
+            $table->string('correo')->unique();
+            $table->string('plazo')->nullable();
             $table->string('contacto');
-            $table->string('web');
-            $table->string('observaciones');
+            $table->string('web')->nullable();
+            $table->string('observaciones')->nullable();
             $table->string('estado');
             $table->timestamps();
         });

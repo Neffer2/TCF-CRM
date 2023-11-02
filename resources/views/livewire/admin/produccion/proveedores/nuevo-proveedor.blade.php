@@ -5,156 +5,277 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="">Categoria: </label>
-                        <select size="3" class="form-control">
-                            <option value="">Seleccionar</option>
+                        <label for="">Categoria*: @if($categoria) {{ $categorias->find($categoria)->description }} @endif</label>
+                        <select size="3" class="form-control" wire:model.lazy="categoria">
+                            @foreach ($categorias as $categoria)
+                                <option value="{{ $categoria->id }}">{{ $categoria->description }}</option>
+                            @endforeach
                         </select>
+                        @error('categoria')
+                            <div id="categoria" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div> 
                 </div>
-                <div class="col-md-10">
-                    <input type="text" class="form-control" placeholder="Nueva categor&iacute;a">
+                <div class="col-9">
+                    <input type="text" class="form-control" placeholder="Nueva categor&iacute;a" wire:model.lazy="nueva_categoria">
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary">+</button>
+                <div class="col-3">
+                    <button wire:click="newCategoria" class="btn btn-primary">+</button>
                 </div>
-            </div>
+            </div>    
         </div> 
         <div class="col-md-8">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tercero: </label>
-                        <input type="text" class="form-control" placeholder="Nombre proveedor">
+                        <label for="tercero">Tercero*: </label>
+                        <input id="tercero" type="text" class="form-control" placeholder="Nombre proveedor" wire:model.lazy="tercero"> 
+                        @error('tercero')
+                            <div id="tercero" class="text-invalid"> 
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tipo: </label>
-                        <select class="form-control">
+                        <label for="">Tipo*: </label>
+                        <select class="form-control" wire:model.lazy="tipo">
                             <option value="">Seleccionar</option>
+                            <option value="natural">Natural</option>
+                            <option value="juridica">Juridica</option>
                         </select>
+                        @error('tipo')
+                            <div id="tipo" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tipo de documento: </label>
-                        <select class="form-control">
+                        <label for="">Tipo de documento*: </label>
+                        <select class="form-control" wire:model.lazy="tipo_documento">
                             <option value="">Seleccionar</option>
+                            <option value="CEDULA">CEDULA</option>
+                            <option value="NIT">NIT</option>
+                            <option value="RUT">RUT</option>
                         </select>
+                        @error('tipo_documento')
+                            <div id="tipo_documento" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Documento: </label>
-                        <input type="text" class="form-control">
+                        <label for="">Documento*: </label>
+                        <input type="text" class="form-control" wire:model.lazy="documento">
+                        @error('documento')
+                            <div id="documento" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">DV: </label>
-                        <select class="form-control">
-                            <option value="">Seleccionar</option>
-                        </select>
+                        <label for="">DV*: </label>
+                        <input type="text" class="form-control" wire:model.lazy="dv">
+                        @error('dv')
+                            <div id="dv" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Servicio que ofrece: </label>
-                        <select class="form-control">
-                            <option value="">Seleccionar</option>
-                        </select>
+                        <label for="">Servicio que presta*: </label>
+                        <textarea cols="30" rows="1" class="form-control" wire:model.lazy="servicio"></textarea>
+                        @error('servicio')
+                            <div id="servicio" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Anticipo: </label>
-                        <select class="form-control">
-                            <option value="">Seleccionar</option>
-                        </select>
+                        <label for="">Anticipo*: </label>
+                        <input type="text" class="form-control" wire:model.lazy="anticipo" placeholder="%">
+                        @error('anticipo')
+                            <div id="anticipo" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <h5 class="mb-0">Informaci&oacute;n de contacto</h5> 
     <div class="row">
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Contacto: </label>
-                <input type="text" class="form-control">
+                <label for="">Contacto*: </label>
+                <input type="text" class="form-control" wire:model.lazy="contacto">
+                @error('contacto')
+                    <div id="contacto" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Celular: </label>
-                <input type="text" class="form-control">
+                <label for="">Celular*: </label>
+                <input type="text" class="form-control" wire:model.lazy="celular">
+                @error('celular')
+                    <div id="celular" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label for="">Fijo: </label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" wire:model.lazy="fijo">
+                @error('fijo')
+                    <div id="fijo" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Correo: </label>
-                <input type="text" class="form-control" placeholder="alguien@example.com">
+                <label for="">Correo*: </label>
+                <input type="text" class="form-control" placeholder="alguien@example.com" wire:model.lazy="correo">
+                @error('correo')
+                    <div id="correo" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label for="">Web: </label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" wire:model.lazy="web">
+                @error('web')
+                    <div id="web" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label for="">Direcci&oacute;n: </label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" wire:model.lazy="direccion">
+                @error('direccion')
+                    <div id="direccion" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Departamento: </label>
-                <select class="form-control">
+                <label for="">Departamento*: </label>
+                <select class="form-control" wire:model.lazy="departamento">
                     <option value="">Seleccionar</option>
+                    <option value="Bogota">Bogota</option>
                 </select>
+                @error('departamento')
+                    <div id="departamento" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Ciudad: </label>
-                <select class="form-control">
+                <label for="">Ciudad*: </label>
+                <select class="form-control" wire:model.lazy="ciudad">
                     <option value="">Seleccionar</option>
+                    <option value="Bogota">Bogota</option>
                 </select>
+                @error('ciudad')
+                    <div id="ciudad" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
     </div>
+
     <h5 class="mb-0">Mas informaci&oacute;n</h5> 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
-                <label for="">Observaciones: </label>
-                <input type="text" class="form-control">
+                <label for="">Plazo: </label>
+                <textarea class="form-control" rows="1" wire:model.lazy="plazo"></textarea>
+                @error('plazo')
+                    <div id="plazo" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
-                <label for="">Estado: </label>
-                <select class="form-control">
+                <label for="">Observaciones: </label>
+                <textarea class="form-control" rows="1" wire:model.lazy="observaciones"></textarea>
+                @error('observaciones')
+                    <div id="observaciones" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Estado*: </label>
+                <select class="form-control" wire:model="estado">
                     <option value="">Seleccionar</option>
+                    <option value="CONFIRMADO">CONFIRMADO</option>
+                    <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
+                    <option value="NO APLICA">NO APLICA</option>
+                    <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
                 </select>
+                @error('estado')
+                    <div id="estado" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button class="btn bg-gradient-warning">
+            <button class="btn bg-gradient-warning" wire:click="store">
                 Crear proveedor
             </button>
         </div>
     </div>
+    <div class="alerts"> 
+        @if (session('success'))
+            <script>
+                Swal.fire(
+                'Hecho',
+                    `{{ session('success') }}`,
+                'success'
+                );
+            </script>
+        @endif
+    </div> 
 </div>

@@ -72,7 +72,7 @@ class NewTeam extends Component
 
         User::create([
             'name' => $this->name,
-            'email' => $this->email,
+            'email' => $this->email, 
             'telefono' => $this->telefono,
             'rol' => $this->rol,
             'password' => Hash::make($this->password)
