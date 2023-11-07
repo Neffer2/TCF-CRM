@@ -12,22 +12,63 @@ class NuevoProveedor extends Component
     public $categoria, $tercero, $tipo, $tipo_documento, $documento, $dv, $servicio, $anticipo, $contacto, $celular, $fijo, $correo, $web,
             $direccion, $departamento, $ciudad, $plazo, $observaciones, $estado, $nueva_categoria;
 
-    // Useful vars
-    public $categorias = [];
+    // Useful vars 
+    public $categorias = [], $ciudades = [], $departamentos = [];
+
+    // Filled
+    public $proveedor_id;
  
     public function render() 
-    {
+    {   
         return view('livewire.admin.produccion.proveedores.nuevo-proveedor');
     }
 
     public function mount(){
+        if ($this->proveedor_id){
+            $this->getData();
+        }
+
         $this->getCategorias();
-    } 
+        $this->getCiudades();
+        $this->getDepartamentos();
+    }
+
+    public function getData(){
+        $proveedor = Proveedor::find($this->proveedor_id);
+
+        $this->categoria = $proveedor->categoria_id;
+        $this->tercero = $proveedor->tercero;
+        $this->tipo = $proveedor->tipo;
+        $this->tipo_documento = $proveedor->tipo_doc;
+        $this->documento = $proveedor->documento;
+        $this->dv = $proveedor->dv;
+        $this->servicio = $proveedor->servicio;
+        $this->anticipo = $proveedor->anticipo;
+        $this->contacto = $proveedor->contacto;
+        $this->celular = $proveedor->celular;
+        $this->fijo = $proveedor->fijo;
+        $this->correo = $proveedor->correo;
+        $this->web = $proveedor->web;
+        $this->direccion = $proveedor->direccion;
+        $this->departamento = $proveedor->departamento;
+        $this->ciudad = $proveedor->ciudad;
+        $this->plazo = $proveedor->plazo;
+        $this->observaciones = $proveedor->observaciones;
+        $this->estado = $proveedor->estado; 
+    }
 
     /* CATEGORIAS */
     public function getCategorias(){
         $this->categorias = CategoriaProveedor::all();
         $this->nueva_categoria = "";
+    }
+
+    public function getCiudades(){
+        $this->ciudades = app('ciudades'); 
+    }
+
+    public function getDepartamentos(){
+        $this->departamentos = app('departamentos'); 
     }
 
     public function newCategoria(){
@@ -45,6 +86,10 @@ class NuevoProveedor extends Component
     /* ** */  
     
     public function store(){
+        if ($this->proveedor_id){
+            return $this->update();
+        }
+
         $this->validate([
             'categoria' => 'required|numeric|max:200',
             'tercero' => 'required|string|max:200',
@@ -56,8 +101,8 @@ class NuevoProveedor extends Component
             'anticipo' => 'required|numeric',
             'contacto' => 'required|string',
             'celular' => 'required|numeric',
-            'fijo' => 'nullable|string',
             'correo' => 'required|unique:proveedores|email|max:200',
+            'fijo' => 'nullable|string',
             'web' => 'nullable|string|max:200',
             'direccion' => 'nullable|string|max:200',
             'departamento' => 'required|string|max:200',
@@ -65,14 +110,14 @@ class NuevoProveedor extends Component
             'observaciones' => 'nullable|string|max:1000',
             'estado' => 'required|string|max:200',
             'plazo' => 'nullable|string|max:200'
-        ]);
+        ]);        
         
         $proveedor = new Proveedor;
         $proveedor->categoria_id = $this->categoria;
         $proveedor->tercero = $this->tercero;
         $proveedor->tipo = $this->tipo;
         $proveedor->tipo_doc = $this->tipo_documento;
-        $proveedor->documento = $this->documento;
+        $proveedor->documento = $this->documento;            
         $proveedor->dv = $this->dv;
         $proveedor->servicio = $this->servicio;
         $proveedor->anticipo = $this->anticipo;
@@ -89,8 +134,70 @@ class NuevoProveedor extends Component
         $proveedor->estado = $this->estado; 
 
         $proveedor->save();
+
         $this->limpiar();
         return redirect()->back()->with('success', '¡Nuevo proveedor creado con éxito!');
+    }
+
+    public function update(){
+        $this->validate([
+            'categoria' => 'required|numeric|max:200',
+            'tercero' => 'required|string|max:200',
+            'tipo' => 'required|string|max:200',
+            'tipo_documento' => 'required|string|max:200',
+            'dv' => 'required|numeric',
+            'servicio' => 'required|string|max:200',
+            'anticipo' => 'required|numeric',
+            'contacto' => 'required|string',
+            'celular' => 'required|numeric',
+            'fijo' => 'nullable|string',
+            'web' => 'nullable|string|max:200',
+            'direccion' => 'nullable|string|max:200',
+            'departamento' => 'required|string|max:200',
+            'ciudad' => 'required|string|max:200',
+            'observaciones' => 'nullable|string|max:1000',
+            'estado' => 'required|string|max:200',
+            'plazo' => 'nullable|string|max:200'
+        ]);
+
+        $proveedor = Proveedor::find($this->proveedor_id);
+        $proveedor->categoria_id = $this->categoria;
+        $proveedor->tercero = $this->tercero;
+        $proveedor->tipo = $this->tipo;
+        $proveedor->tipo_doc = $this->tipo_documento;
+
+        if ($this->documento != $proveedor->documento){
+            $this->validate([
+                'documento' => 'required|unique:proveedores|numeric'
+            ]);
+            $proveedor->documento = $this->documento;            
+        }
+
+        $proveedor->dv = $this->dv;
+        $proveedor->servicio = $this->servicio;
+        $proveedor->anticipo = $this->anticipo;
+        $proveedor->contacto = $this->contacto;
+        $proveedor->celular = $this->celular;
+        $proveedor->fijo = $this->fijo;
+
+        if ($this->correo != $proveedor->correo){
+            $this->validate([
+                'correo' => 'required|unique:proveedores|email|max:200'
+            ]);
+            $proveedor->correo = $this->correo;
+        }
+
+        $proveedor->web = $this->web;
+        $proveedor->direccion = $this->direccion;
+        $proveedor->departamento = $this->departamento;
+        $proveedor->ciudad = $this->ciudad;
+        $proveedor->plazo = $this->plazo;
+        $proveedor->observaciones = $this->observaciones;
+        $proveedor->estado = $this->estado; 
+        $proveedor->update();
+
+        $this->limpiar();
+        return redirect()->back()->with('success', '¡Cambios guardados con éxito!');
     }
 
     public function limpiar(){
@@ -113,6 +220,9 @@ class NuevoProveedor extends Component
         $this->plazo = "";
         $this->observaciones = "";
         $this->estado = "";
+
+        $this->emit('refreshProveedores');
+        $this->mount();
     }
     
     /* UPDATES */

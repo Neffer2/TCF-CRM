@@ -14,9 +14,9 @@ class OrdenesCompra extends Component
 
     // Models
     public $cod_cc, $fecha = 'desc', $estado = 2;
-    
+     
     // Useful vars
-    public $estados = [];
+    public $estados = []; 
 
     public function render(){    
         $filtros = []; 

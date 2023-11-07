@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('ciudades', function () { 
             return config('ciudades');
         }); 
+
+        $this->app->singleton('departamentos', function () { 
+            return config('departamentos');
+        }); 
     }
 
     /**
@@ -26,7 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        config(['ciudades' =>
+        config([
+            'ciudades' =>
             [
                 "NACIONAL",
                 "BOGOTA D.C",
@@ -61,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
                 "TULUA",
                 "BARRANCABERMEJA",
                 "RIOHACHA",
+                "BRICEÑO",
+                "GUARNE",
 
                 "URIBIA",
                 "MAICAO",
@@ -105,6 +112,43 @@ class AppServiceProvider extends ServiceProvider
                 "ARAUCA",
                 "SAN ANDRES",
                 "APARTADO"
+            ],
+
+            'departamentos' =>
+            [
+                "BOGOTA D.C",
+                "AMAZONAS",
+                "ANTIOQUIA",
+                "ARAUCA",
+                "ATLANTICO",
+                "BOLIVAR",
+                "BOYACA",
+                "CALDAS",
+                "CAQUETA",
+                "CASANARE",
+                "CAUCA",
+                "CESAR",
+                "CHOCO",
+                "CORDOBA",
+                "CUNDINAMARCA",
+                "GUAINIA",
+                "GUAVIARE",
+                "HUILA",
+                "LA GUAJIRA",
+                "MAGDALENA",
+                "META",
+                "NARIÑO",
+                "NORTE DE SANTANDER",
+                "PUTUMAYO",
+                "QUINDIO",
+                "RISARALDA",
+                "SAN ANDRES Y PROVIDENCIA",
+                "SANTANDER",
+                "SUCRE",
+                "TOLIMA",
+                "VALLE DEL CAUCA",
+                "VAUPES",
+                "VICHADA"
             ]
         ]);
     }

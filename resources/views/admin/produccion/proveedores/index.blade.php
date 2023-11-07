@@ -17,7 +17,7 @@
             </div> 
             <div class="collapse" id="collapseExample">
                 <div class="card card-body mb-3">
-                    @livewire('admin.produccion.proveedores.nuevo-proveedor')         
+                    @livewire('admin.produccion.proveedores.nuevo-proveedor')
                 </div>          
             </div>
             
