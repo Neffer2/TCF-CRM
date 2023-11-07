@@ -31,7 +31,7 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         return view('exports.excel', [
             'items' => $this->info['items'],
             'presto' => $this->info['presto'],
-            'tipo' => $this->info['tipo']
+            'tipo' => $this->info['tipo'] 
         ]);
     }
 
@@ -39,7 +39,7 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
     {
         $drawing = new Drawing();
         $drawing->setName('Logo');
-        $drawing->setDescription('This is my logo');
+        $drawing->setDescription('Bullmarketing logo');
         $drawing->setPath(public_path('assets/img/bull-logo.png'));
         $drawing->setHeight(80);
         $drawing->setCoordinates('A1');
@@ -55,6 +55,7 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
             'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'P' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 }

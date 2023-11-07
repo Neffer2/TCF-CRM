@@ -7,7 +7,7 @@
     <title>Document</title>
     <style>
         body {
-            font-size: 12px;
+            font-size: 12px; 
             color: black !important;
         }
     </style>
@@ -16,59 +16,59 @@
     <table>
         <tr>
             <td colspan="7"></td>
-            <td colspan="@if ($tipo) 7 @else 8 @endif" style="text-align: right; color: #1b6f08;">
+            <td colspan="@if ($tipo) 7 @else 10 @endif" style="text-align: right; color: #1b6f08;">
                 <b>Integramos servicios especializados en mercadeo.</b>
             </td>
         </tr>
         <tr>
             <td colspan="7"></td>
-            <td colspan="@if ($tipo) 7 @else 8 @endif" style="text-align: right">
+            <td colspan="@if ($tipo) 7 @else 10 @endif" style="text-align: right">
                 .Diseño e implementación de estrategias de Marketing y BTL.
             </td>
         </tr>
         <tr>
             <td colspan="7"></td>
-            <td colspan="@if ($tipo) 7 @else 8 @endif" style="text-align: right">
+            <td colspan="@if ($tipo) 7 @else 10 @endif" style="text-align: right">
                 .Desarrollo y ejecución de actividades de Trade.
             </td>
         </tr>
         <tr>
             <td colspan="7"></td>         
-            <td colspan="@if ($tipo) 7 @else 8 @endif" style="text-align: right">
+            <td colspan="@if ($tipo) 7 @else 10 @endif" style="text-align: right">
                 .Logistica de distribuciones, bodegaje e instalación de POP y Stands.
             </td>
         </tr>
         <tr>
             <td colspan="7">Nit: 900.298.176-1</td>
-            <td colspan="@if ($tipo) 7 @else 8 @endif" style="text-align: right">
+            <td colspan="@if ($tipo) 7 @else 10 @endif" style="text-align: right">
                 .Creamos estrategias de PR y Medios Masivos.
             </td>
         </tr>
         <tr>
-            <td colspan="@if ($tipo) 7 @else 7 @endif">IVA REGIMEN COMUN</td>
+            <td colspan="@if ($tipo) 7 @else 8 @endif">IVA REGIMEN COMUN</td>
             <td></td>
         </tr>
     </table> 
 
     <table>
         <tr>
-            <td colspan="@if ($tipo) 8 @else 9 @endif" style="font-weight: bold;">Señor (es) {{ $presto->gestion->contacto->nombre }} {{ $presto->gestion->contacto->apellido }} </td>
+            <td colspan="@if ($tipo) 8 @else 11 @endif" style="font-weight: bold;">Señor (es) {{ $presto->gestion->contacto->nombre }} {{ $presto->gestion->contacto->apellido }} </td>
             <td colspan="3" style="text-align: center; font-weight: bold;">COTIZACION</td>
             <td colspan="3" style="text-align: center; font-weight: bold; color: red; background-color: #e4e4e4">{{ $presto->cod_cot }}</td>
         </tr>
         <tr>
-            <td colspan="@if ($tipo) 8 @else 9 @endif" style="font-weight: bold;">Empresa: {{ $presto->gestion->contacto->empresa }} </td>
+            <td colspan="@if ($tipo) 8 @else 11 @endif" style="font-weight: bold;">Empresa: {{ $presto->gestion->contacto->empresa }} </td>
             <td colspan="3" style="text-align: center;">Fecha Emisión</td>
             <td colspan="3" style="text-align: center;">Fecha Vencimiento</td>
         </tr>
         <tr>
-            <td colspan="@if ($tipo) 8 @else 9 @endif" style="font-weight: bold;">Proyecto: {{ $presto->gestion->nom_proyecto_cot }} </td>
+            <td colspan="@if ($tipo) 8 @else 11 @endif" style="font-weight: bold;">Proyecto: {{ $presto->gestion->nom_proyecto_cot }} </td>
             <td colspan="3" style="text-align: center; background-color: #e4e4e4">{{ date('d/m/Y') }}</td>
             <td colspan="3" style="text-align: center; background-color: #e4e4e4">{{ date('d/m/Y', strtotime("+ $presto->tiempo_factura days")) }}</td>
         </tr>
         <tr>            
-            @if (!$tipo) <td colspan="@if ($tipo) 8 @else 9 @endif" style="font-weight: bold;">Centro de costos: {{ $presto->cod_cc }}</td> @else 
-            <td colspan="@if ($tipo) 8 @else 9 @endif" style="font-weight: bold;">Ciudad: {{ $presto->gestion->contacto->ciudad }} </td>
+            @if (!$tipo) <td colspan="@if ($tipo) 8 @else 11 @endif" style="font-weight: bold;">Centro de costos: {{ $presto->cod_cc }}</td> @else 
+            <td colspan="@if ($tipo) 8 @else 11 @endif" style="font-weight: bold;">Ciudad: {{ $presto->gestion->contacto->ciudad }} </td>
             @endif
             <td colspan="3" style="text-align: center; font-weight: bold;">Condiciones De Pago</td>
             <td colspan="3" style="text-align: center; font-weight: bold; background-color: #e4e4e4">{{ $presto->tiempo_factura }} días</td>
@@ -87,6 +87,7 @@
                 @if (!$tipo) <td style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">ITEM</td> @endif
                 <td colspan="6" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">DESCRIPCION</td>
                 <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">CANTIDAD</td>
+                @if (!$tipo) <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">PROVEEDOR</td> @endif
                 <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">DIAS</td>
                 <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">OTROS</td>
                 <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">Vr. UNIT</td>
@@ -98,6 +99,7 @@
                         @if (!$tipo) <td style="text-align: center">{{ $key+=1 }}</td> @endif
                         <td colspan="6">{{ $item->descripcion }}</td>
                         <td colspan="2" style="text-align: center">{{ $item->cantidad }}</td>
+                        @if (!$tipo) <td colspan="2" style="text-align: center">{{ $item->proveedor }}</td> @endif
                         <td colspan="1" style="text-align: center">{{ $item->dia }}</td>
                         <td colspan="1" style="text-align: center">{{ $item->otros }}</td>
 
@@ -157,7 +159,7 @@
                 </tr>
             @else
                 <tr>
-                    <td class="text-center" colspan="11"></td>                    
+                    <td class="text-center" colspan="13"></td>                    
                     <td class="bold text-center" colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">TOTAL</td>
                     <td class="text-center" colspan="2" style="text-align: center; font-weight: bold;">{{ $totalInter }} </td>
                 </tr>

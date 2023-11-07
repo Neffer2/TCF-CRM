@@ -153,7 +153,7 @@ class Presupuesto extends Component
         $item->mes = $this->mes;
         $item->dias = $this->dias;
         $item->ciudad = $this->ciudad;
-
+ 
         // Indica actualiazcion.
         if ($presto->cod_cc){ 
             $item->actualizado = true;
@@ -372,7 +372,7 @@ class Presupuesto extends Component
             $item->update();
         }
  
-        $this->refresh(); 
+        $this->refresh();  
         $this->limpiar(); 
     }  
  

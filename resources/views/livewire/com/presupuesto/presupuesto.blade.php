@@ -137,7 +137,7 @@
                                     @enderror
                                 </div>
                             </div> 
-                        </div>        
+                        </div>         
                     </div>
                     <div class="col-md-4">  
                         <div class="card">

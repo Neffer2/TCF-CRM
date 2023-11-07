@@ -80,7 +80,7 @@ class ComercialController extends Controller
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();        
 
-        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo]), $nom_proyecto.".xlsx");
+        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo]), $nom_proyecto.".xlsx"); 
     }
  
     public function pdf(){
