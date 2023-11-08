@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\EstadoOrdenesCompra;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
+use App\Models\Proveedor;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
  
@@ -15,13 +16,14 @@ class Juridica extends Component
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
-    public $proveedor, $nit, $email, $contacto, $tel, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc;
+    public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc;
+    public $nit;
 
     // Filled
     public $presupuesto, $orden_compra;
   
     // Useful vars 
-    public $ocItems = [], $selectedItem, $maxCant, $maxValor, $items = []; 
+    public $ocItems = [], $selectedItem, $maxCant, $maxValor, $items = [], $proveedores = [];
 
     public $edit = false;
 
@@ -34,6 +36,8 @@ class Juridica extends Component
         if ($this->orden_compra){
             $this->getItems();
         }
+
+        $this->getProveedores();
     }
 
     public function newItem(){    
@@ -104,6 +108,14 @@ class Juridica extends Component
         })->first();
     }
 
+    public function getProveedores(){
+        if($this->nit){
+            $this->proveedores = Proveedor::where('documento', 'LIKE', "%{$this->nit}%")->get();
+        }else {
+            $this->proveedores = Proveedor::all();
+        }
+    }
+
     public function validateItems($itemDB){
         $validator = true;
         foreach ($this->ocItems as $key => $item) {
@@ -117,10 +129,6 @@ class Juridica extends Component
     // Trae y muestra la orden de compra de la base de datos (si ya está creada).
     public function getItems(){
         $this->proveedor = $this->orden_compra->proveedor;
-        $this->nit = $this->orden_compra->nit;
-        $this->email = $this->orden_compra->email_prov;
-        $this->contacto = $this->orden_compra->contacto_prov;
-        $this->tel = $this->orden_compra->telefono_prov;
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
 
@@ -164,10 +172,6 @@ class Juridica extends Component
     public function enviarAprobacion(){
         $this->validate([ 
             'proveedor' => 'required|string|max:200',
-            'nit' => 'required|numeric',
-            'email' => 'required|email|max:200',
-            'contacto' => 'required|string|max:200',
-            'tel' => 'required|numeric',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
          
@@ -180,10 +184,6 @@ class Juridica extends Component
         if ($this->orden_compra){           
             $this->orden_compra->estado_id = 2; 
             $this->orden_compra->proveedor = $this->proveedor;
-            $this->orden_compra->nit = $this->nit;
-            $this->orden_compra->email_prov = $this->email;
-            $this->orden_compra->contacto_prov = $this->contacto;
-            $this->orden_compra->telefono_prov = $this->tel;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
             $this->orden_compra->update();
 
@@ -195,10 +195,6 @@ class Juridica extends Component
             $orden->presupuesto_id = $this->presupuesto->id;
     
             $orden->proveedor = $this->proveedor;
-            $orden->nit = $this->nit; 
-            $orden->email_prov = $this->email;
-            $orden->contacto_prov = $this->contacto;
-            $orden->telefono_prov = $this->tel;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
             
             $orden->save();
@@ -355,26 +351,10 @@ class Juridica extends Component
 
     public function updatedNit(){
         $this->validate([
-            'nit' => 'required|numeric',
+            'nit' => 'numeric'
         ]);
-    }
 
-    public function updatedEmail(){
-        $this->validate([
-            'email' => 'required|email|max:200',
-        ]);
-    }
-
-    public function updatedContacto(){
-        $this->validate([
-            'contacto' => 'required|string|max:200',
-        ]);
-    }
-
-    public function updatedTel(){
-        $this->validate([
-            'tel' => 'required|numeric',
-        ]);
+        $this->getProveedores();
     }
 
     public function updatedJustificacionRechazo(){
@@ -410,10 +390,6 @@ class Juridica extends Component
 
     public function resetOcInfo(){
         $this->proveedor = "";
-        $this->nit = "";
-        $this->email = "";
-        $this->contacto = "";
-        $this->tel = "";
         $this->file_cot = null;
 
         $this->ocItems = [];

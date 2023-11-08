@@ -7,7 +7,7 @@
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="table">  
+                        <table class="table mb-1">
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Cliente:</td>
                                 <td>{{ $presupuesto->gestion->contacto->empresa }}</td>
@@ -37,70 +37,28 @@
                 </div> 
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="table">
-                            <tr style="height: 35px;">
-                                <td class="font-weight-bold">Proveedor:</td>
+                        <table class="table mb-1">
+                            <tr>
                                 <td>
-                                    <div class="form-group m-0">
-                                        <input type="text" wire:model.lazy="proveedor" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
-                                        @error('proveedor')
-                                            <div id="proveedor" class="text-danger">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
+                                    <div class="form-group mb-1">
+                                        <input type="text" wire:model="nit" class="form-control font-table" style="height: 32px;" placeholder="DOCUMENTO PROVEEDOR" @if (Auth::user()->rol == 1) disabled @endif>
                                     </div> 
-                                </td>
-                            </tr>
-                            <tr style="height: 35px;">
-                                <td class="font-weight-bold">NIT:</td>
-                                <td>
                                     <div class="form-group m-0">
-                                        <input type="text" wire:model.lazy="nit" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
-                                        @error('nit')
-                                            <div id="nit" class="text-danger">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
+                                        <select type="text" size="4" wire:model.lazy="proveedor" class="form-control font-table" @if (Auth::user()->rol == 1) disabled @endif>
+                                            <option value="">Seleccionar</option>
+                                            @foreach ($proveedores as $proveedor_info)
+                                                <option value="{{ $proveedor_info->id }}">{{ $proveedor_info->documento }} - {{ $proveedor_info->tercero }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr style="height: 35px;">
-                                <td class="font-weight-bold">Email Proveedor:</td>
-                                <td>
-                                    <div class="form-group m-0">
-                                        <input type="email" wire:model.lazy="email" placeholder="alguien@ejemplo.com" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
-                                        @error('email')
-                                            <div id="email" class="text-danger">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
+                                    <div class="form-group mt-1 mb-0">
+                                        <b>Proveedor:</b> @if ($proveedor) {{ $this->proveedores->find($proveedor)->tercero }} @endif
                                     </div>
-                                </td>
-                            </tr> 
-                            <tr style="height: 35px;">
-                                <td class="font-weight-bold">Contacto Proveedor:</td>
-                                <td>
-                                    <div class="form-group m-0">
-                                        <input type="text" wire:model.lazy="contacto" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
-                                        @error('contacto')
-                                            <div id="contacto" class="text-danger">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="height: 35px;">
-                                <td class="font-weight-bold">Tel&eacute;fono Proveedor:</td>
-                                <td>
-                                    <div class="form-group m-0">
-                                        <input type="text" wire:model.lazy="tel" style="width: 80%;" @if (Auth::user()->rol == 1) disabled @endif>
-                                        @error('tel')
-                                            <div id="tel" class="text-danger">
-                                                <strong>{{ $message }}</strong>
-                                            </div>
-                                        @enderror
-                                    </div>
+                                    @error('proveedor')
+                                        <div id="proveedor" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror 
                                 </td>
                             </tr>
                         </table>
@@ -110,7 +68,7 @@
             <div class="row font-table px-4">
                 <div class="col-md-12">
                     <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
-                        <table class="table m-0">
+                        <table class="table">
                             <thead> 
                                 <tr>  
                                     <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
