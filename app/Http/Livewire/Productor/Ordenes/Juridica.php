@@ -97,7 +97,7 @@ class Juridica extends Component
         $this->cant = $this->ocItems[$id]['cant'];
         $this->dias = $this->ocItems[$id]['dias'];
         $this->otros = $this->ocItems[$id]['otros'];
-        $this->vUnit = $this->ocItems[$id]['vUnit'];
+        $this->vUnit = $this->ocItems[$id]['vUnit']; 
         $this->vTotal = $this->ocItems[$id]['vTotal'];
 
         $this->presupuesto->presupuestoItems->map(function ($item){
@@ -128,7 +128,7 @@ class Juridica extends Component
 
     // Trae y muestra la orden de compra de la base de datos (si ya está creada).
     public function getItems(){
-        $this->proveedor = $this->orden_compra->proveedor;
+        $this->proveedor = $this->orden_compra->proveedor_id;
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
 
@@ -171,7 +171,7 @@ class Juridica extends Component
 
     public function enviarAprobacion(){
         $this->validate([ 
-            'proveedor' => 'required|string|max:200',
+            'proveedor' => 'required|numeric|max:200',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
         ]);
          
@@ -183,7 +183,7 @@ class Juridica extends Component
         // Si la orden está creada, entonces edita
         if ($this->orden_compra){           
             $this->orden_compra->estado_id = 2; 
-            $this->orden_compra->proveedor = $this->proveedor;
+            $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
             $this->orden_compra->update();
 
@@ -194,7 +194,7 @@ class Juridica extends Component
             $orden->tipo_oc = 1; 
             $orden->presupuesto_id = $this->presupuesto->id;
     
-            $orden->proveedor = $this->proveedor;
+            $orden->proveedor_id = $this->proveedor;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas'); 
             
             $orden->save();
@@ -246,7 +246,7 @@ class Juridica extends Component
             $this->orden_compra->estado_id = $estado;
             $this->orden_compra->update();
             
-            $this->mailOrdenAprobada($this->orden_compra);
+            // $this->mailOrdenAprobada($this->orden_compra);
             $messaje = 'Orden de compra APROBADA.';
         }elseif($estado == 3){
             $this->validate([
@@ -345,7 +345,7 @@ class Juridica extends Component
 
     public function updatedProveedor(){
         $this->validate([
-            'proveedor' => 'required|string|max:200',
+            'proveedor' => 'required|numeric|max:200',
         ]);
     }
 

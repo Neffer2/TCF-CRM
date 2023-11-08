@@ -40,12 +40,11 @@
                         <table class="table mb-1">
                             <tr>
                                 <td>
-                                    <div class="form-group mb-1">
-                                        <input type="text" wire:model="nit" class="form-control font-table" style="height: 32px;" placeholder="DOCUMENTO PROVEEDOR" @if (Auth::user()->rol == 1) disabled @endif>
+                                    <div class="form-group mb-1"> 
+                                        <input type="text" wire:model="nit" class="form-control" style="height: 32px; font-size: 9px;" placeholder="DOCUMENTO PROVEEDOR" @if (Auth::user()->rol == 1) disabled @endif>
                                     </div> 
                                     <div class="form-group m-0">
-                                        <select type="text" size="4" wire:model.lazy="proveedor" class="form-control font-table" @if (Auth::user()->rol == 1) disabled @endif>
-                                            <option value="">Seleccionar</option>
+                                        <select type="text" size="4" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)
                                                 <option value="{{ $proveedor_info->id }}">{{ $proveedor_info->documento }} - {{ $proveedor_info->tercero }}</option>
                                             @endforeach

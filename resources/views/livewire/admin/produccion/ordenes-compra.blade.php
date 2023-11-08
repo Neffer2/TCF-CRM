@@ -62,7 +62,7 @@
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Proveedor</p>
-                                <span class="text-xs text-secondary mb-0">{{ $orden->proveedor }}</span>
+                                <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>

@@ -211,22 +211,19 @@
 
             <div id="generadas" x-show="!show" x-transition>
                 <div class="row" style="font-size: 12px;">
-                    @foreach ($this->presupuesto->ordenesCompra as $orden)
+                    @foreach ($this->presupuesto->ordenesCompra as $orden) 
                         <div class="col-md-12 my-1">
                             <div class="card" style="border-top: 3px solid #825ee4; border-radius: 2px;">
                                 <div class="card-body px-1 py-1" style="background-color: white">
                                     <div class="row align-items-center">
-                                        <div class="col-sm-2">
-                                            <span class="font-weight-bold me-1">Proveedor: <br></span>{{ $orden->proveedor }}.
+                                        <div class="col-sm-3">
+                                            <span class="font-weight-bold me-1">Proveedor: <br></span>{{ $orden->proveedor->tercero }}.
                                         </div>
                                         <div class="col-sm-3">
-                                            <span class="font-weight-bold me-1">Email: <br></span>{{ $orden->email_prov }}.
+                                            <span class="font-weight-bold me-1">Contacto: <br></span>{{ $orden->proveedor->contacto }}.
                                         </div>
-                                        <div class="col-sm-2">
-                                            <span class="font-weight-bold me-1">Contacto: <br></span>{{ $orden->contacto_prov }}.
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <span class="font-weight-bold me-1">Tel&eacute;fono: <br></span>{{ $orden->telefono_prov }}.
+                                        <div class="col-sm-3">
+                                            <span class="font-weight-bold me-1">Tel&eacute;fono/Correo: <br></span>{{ $orden->proveedor->celular }}<br>{{ $orden->proveedor->correo }}.
                                         </div>
                                         <div class="col-sm-2">
                                             <span class="font-weight-bold me-1">Estado: <br></span>{{ $orden->estado_oc->description }}.

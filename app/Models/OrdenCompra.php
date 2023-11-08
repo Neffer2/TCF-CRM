@@ -25,4 +25,8 @@ class OrdenCompra extends Model
     public function presupuesto(){
         return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
     }
+
+    public function proveedor(){
+        return $this->hasOne(Proveedor::class, 'id', 'proveedor_id');
+    }
 }   
