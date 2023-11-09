@@ -21,10 +21,10 @@
                 <div class="col-md-4">
                     <label for="estado">Estados:</label>
                     <select id="estado" class="form-control" wire:model="estado">
-                        <option value="asc">Seleccionar</option>
+                        <option value="">Seleccionar</option>
                         @foreach ($estados as $estado)
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                        @endforeach
+                        @endforeach 
                     </select> 
                 </div>
             </div>

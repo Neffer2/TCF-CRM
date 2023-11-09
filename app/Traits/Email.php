@@ -82,20 +82,19 @@ trait Email
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('james.vallejo@iglumarketingdigital.com');
                 $mail->addCC('neffer.barragan@iglumarketingdigital.com');
-                $mail->addCC($orden->email_prov, $orden->contacto_prov);
+                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                         
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
-            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor.".pdf");
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
 
             //Content
             $mail->isHTML(true);
             // $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor;
-            $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]);
-            $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor}";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]); 
+            $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
             $mail->send();
         } catch (Exception $e) {

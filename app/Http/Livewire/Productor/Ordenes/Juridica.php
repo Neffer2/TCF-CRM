@@ -16,7 +16,7 @@ class Juridica extends Component
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
-    public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc;
+    public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
     public $nit;
 
     // Filled
@@ -237,16 +237,14 @@ class Juridica extends Component
 
         if ($estado == 1){      
             $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240',
+                'oc_helisa' => 'required|file|mimes:pdf|max:1024',
                 'cod_oc' => 'required|max:200'
             ]);
 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
             $this->orden_compra->cod_oc = $this->cod_oc;
-            $this->orden_compra->estado_id = $estado;
-            $this->orden_compra->update();
-            
-            // $this->mailOrdenAprobada($this->orden_compra);
+                    
+            $this->mailOrdenAprobada($this->orden_compra); 
             $messaje = 'Orden de compra APROBADA.';
         }elseif($estado == 3){
             $this->validate([
@@ -254,11 +252,18 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;            
-            $this->orden_compra->estado_id = $estado;
-            $this->orden_compra->update();        
-
             $messaje = 'Orden de compra RECHAZADA.';
+        }elseif ($estado == 5) {
+            $this->validate([
+                'gr' => 'required|string'
+            ]);
+
+            $this->orden_compra->gr = $this->gr;
+            $messaje = 'Good Receive guardado y enviado con éxito.';
         }
+
+        $this->orden_compra->estado_id = $estado;
+        $this->orden_compra->update();
 
         return redirect()->route('ordenes-compra')->with('success', $messaje);
     }
@@ -365,13 +370,19 @@ class Juridica extends Component
 
     public function updatedFile_cot(){
         $this->validate([
-            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+            'file_cot' => 'required|file|mimes:pdf|max:10240'
         ]);
     }
 
     public function updatedOc_helisa(){
         $this->validate([
-            'oc_helisa' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+            'oc_helisa' => 'required|file|mimes:pdf|max:1024',
+        ]);
+    }
+
+    public function updatedGr(){
+        $this->validate([
+            'gr' => 'required|string'
         ]);
     }
     /*****/

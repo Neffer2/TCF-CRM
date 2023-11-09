@@ -127,7 +127,7 @@
                     <div class="row px-4">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="oc_helisa">Adjunta la orden de compra generada en Helisa:</label>
+                                <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
                                 <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                                 @error('oc_helisa')
                                     <div id="oc_helisa" class="text-invalid">
@@ -169,27 +169,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && $orden_compra->estado_id == 1) && Auth::user()->rol == 7)
-                <div class="row px-4">
-                    <div class="col-md-12">
-                        <div class="form-group"> 
-                            @php 
-                                $aux = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
-                            @endphp
-                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
-                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Orden de compra</span>
-                            </a>
-                        </div>
-                    </div> 
-                    <div class="col-md-12">
-                        <a class="btn btn-icon btn-3 bg-gradient-warning" type="button" href="{{ route('firmar-gr', $orden_compra) }}">
-                            <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
-                            <span class="btn-inner--text">Firmar GR</span>
-                        </a>
-                    </div>
-                </div>
-            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || (Auth::user()->rol == 1))))
+            @elseif(Auth::user()->rol == 1 && $orden_compra->estado_id == 1)
                 <div class="row px-4">
                     <div class="col-md-2">
                         <div class="form-group"> 
@@ -221,6 +201,168 @@
                             <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cod Oc: @if ($orden_compra->cod_oc) {{ $orden_compra->cod_oc }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @elseif(($orden_compra && $orden_compra->estado_id == 1) && Auth::user()->rol == 7)
+                <div class="row px-4">
+                    <div class="col-md-12">
+                        <div class="form-group"> 
+                            @php 
+                                $aux = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
+                            @endphp
+                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra</span>
+                            </a>
+                        </div>
+                    </div> 
+                    <div class="col-md-12">
+                        <a class="btn btn-icon btn-3 bg-gradient-warning" type="button" href="{{ route('firmar-remision', $orden_compra) }}">
+                            <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
+                            <span class="btn-inner--text">Firmar remisi&oacute;n</span>
+                        </a>
+                    </div>
+                </div>
+            @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
+                {{-- GOOD RECEIVE --}}
+                <div class="row px-4">
+                    <label for="gr">Good Receive:</label>
+                    <div class="col-md-4">
+                        <div class="form-group">                            
+                            <input id="gr" wire:model="gr" class="form-control">
+                            @error('gr')
+                                <div id="gr" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"> 
+                            <button wire:click="cambioEstado(5)" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $firma = str_replace('public/', '', $orden_compra->archivo_firma); 
+                            @endphp
+                            <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Firma.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cod: @if ($orden_compra->cod_oc) {{ $orden_compra->cod_oc }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) && Auth::user()->rol == 7)))
+                <div class="row px-4">
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>            
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cod: @if ($orden_compra->cod_oc) {{ $orden_compra->cod_oc }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
                             </a>
                         </div>
                     </div>

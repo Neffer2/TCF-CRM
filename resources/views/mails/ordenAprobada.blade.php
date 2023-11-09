@@ -10,13 +10,13 @@
     <p>
         Hola <b>{{ $orden->presupuesto->productor_info->name }}</b>,<br><br>
 
-        De acuerdo con tu solicitud se gener&oacute; la <b>Orden de compra: {{ $orden->cod_oc }}</b> para el proveedor <b>{{ $orden->proveedor }}</b>.<br>
+        De acuerdo con tu solicitud se gener&oacute; la <b>Orden de compra: {{ $orden->cod_oc }}</b> para el proveedor <b>{{ $orden->proveedor->tercero }}</b>.<br>
         Por favor validar y una vez est&eacute; recibido a satisfacci&oacute;n, enviar al &aacute;rea de compras firmada para radicar a proveedor <br>
         con el correspondiente GR que se genera desde el &aacute;rea de compras.<br><br>
 
         Cordialmente,<br>
         Saludos.
-    </p>
+    </p> 
     <p style="font-size: 12px">
         Enviado desde <b>BullCRM</b>. <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
     </p>

@@ -31,11 +31,14 @@ class CreateOrdenesCompra extends Migration
             $table->string('justificacion_rechazo')->nullable(); 
             $table->string('archivo_cot'); 
             $table->string('archivo_orden_helisa')->nullable(); 
+
             $table->string('archivo_remision')->nullable(); 
+            $table->string('observacion_remision')->nullable(); 
             $table->string('archivo_firma')->nullable(); 
+
             $table->string('cod_oc')->nullable(); 
             $table->string('gr')->nullable(); 
-            $table->timestamps();
+            $table->timestamps(); 
         });
     }
 

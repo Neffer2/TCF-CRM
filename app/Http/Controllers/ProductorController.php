@@ -16,7 +16,7 @@ class ProductorController extends Controller
         return view('productor.index', ['proyectos' => $proyectos]);
     }
  
-    public function showFirmar($orden){
-        return view('productor.gr.index', ['orden' => $orden]);
+    public function showRemision($orden){
+        return view('productor.remision.index', ['orden' => $orden]);
     }
-}
+} 

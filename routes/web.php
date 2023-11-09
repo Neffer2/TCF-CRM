@@ -88,6 +88,6 @@ Route::get('/', function () {
 
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
-    Route::get('/firmar-gr/{orden?}', [ProductorController::class, 'showFirmar'])->middleware(['auth'])->middleware(['productor'])->name('firmar-gr');
+    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
 /* --- */
 require __DIR__.'/auth.php';   

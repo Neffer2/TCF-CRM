@@ -13,14 +13,16 @@ class OrdenesCompra extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $cod_cc, $fecha = 'desc', $estado = 2;
+    public $cod_cc, $fecha = 'desc', $estado;
      
     // Useful vars
     public $estados = []; 
 
     public function render(){    
         $filtros = []; 
-        array_push($filtros, ['estado_id', $this->estado]);
+        if ($this->estado){
+            array_push($filtros, ['estado_id', $this->estado]);
+        }
         
         if ($this->cod_cc){
             $ordenes = OrdenCompra::with('presupuesto')
