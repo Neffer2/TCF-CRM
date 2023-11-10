@@ -7,7 +7,7 @@
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
-    Admin - {{ Auth::user()->name}}
+    Tesorer&iacute;a - {{ Auth::user()->name}}
   </title>
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
@@ -34,60 +34,6 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-shop text-primary text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Inicio</span>
-          </a>
-          <div class="collapse  show" id="dashboardsExamples">
-            <ul class="nav ms-4"> 
-              <li class="nav-item active">
-                <a class="nav-link active" href="{{ route('dashboard-admin') }}">
-                  <span class="sidenav-mini-icon"> D </span>
-                  <span class="sidenav-normal"> Dashboard </span>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link " href="{{ route('estado-facturacion') }}">
-                  <span class="sidenav-mini-icon"> E </span>
-                  <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link " href="{{ route('base-comercial-general') }}">
-                  <span class="sidenav-mini-icon"> B </span>
-                  <span class="sidenav-normal"> Base comercial general </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li class="nav-item">  
-          <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link" aria-controls="dashboardsGestion" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-badge text-primary text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
-          </a>
-          <div class="collapse" id="dashboardsGestion">
-            <ul class="nav ms-4">
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('presupuesto-proyecto') }}">
-                  <span class="sidenav-mini-icon text-xs"> P </span>
-                  <span class="sidenav-normal"> Presupuestos </span>
-                </a>
-              </li> 
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('actualizaciones') }}">
-                  <span class="sidenav-mini-icon text-xs"> A </span>
-                  <span class="sidenav-normal"> Actualizaciones </span>
-                </a> 
-              </li>            
-            </ul>  
-          </div>
-        </li> 
         <li class="nav-item"> 
           <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link" aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -98,66 +44,14 @@
           <div class="collapse" id="dashboardsProduccion">
             <ul class="nav ms-4">
               <li class="nav-item">
-                {{-- <a class="nav-link" href="#">  
-                  <span class="sidenav-mini-icon text-xs"> AN </span>
-                  <span class="sidenav-normal"> Proveedores </span> 
-                </a> --}}
-                <a class="nav-link" href="{{ route('proveedores') }}">  
-                  <span class="sidenav-mini-icon text-xs"> AN </span>
-                  <span class="sidenav-normal"> Proveedores </span> 
-                </a>
-              </li>
-              {{-- <li class="nav-item">
-                <a class="nav-link" href="#">  
-                  <span class="sidenav-mini-icon text-xs"> OC </span>
-                  <span class="sidenav-normal"> Ordenes de compra </span>
-                </a>
-              </li> --}}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('ordenes-compra') }}">  
-                  <span class="sidenav-mini-icon text-xs"> OC </span>
-                  <span class="sidenav-normal"> Ordenes de compra </span>
-                </a>
-              </li>
-              {{-- <li class="nav-item">
-                <a class="nav-link" href="#">   
-                  <span class="sidenav-mini-icon text-xs"> C </span>
-                  <span class="sidenav-normal"> Consumidos </span>
-                </a>
-              </li> --}}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('consumidos') }}">   
-                  <span class="sidenav-mini-icon text-xs"> C </span>
-                  <span class="sidenav-normal"> Consumidos </span>
+                <a class="nav-link" href="{{ route('anticipos') }}">   
+                  <span class="sidenav-mini-icon text-xs"> A </span>
+                  <span class="sidenav-normal"> Anticipos </span>
                 </a>
               </li>
             </ul>
           </div> 
         </li>  
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Acciones</span>
-          </a>
-          <div class="collapse" id="acciones" style="">
-            <ul class="nav ms-4">
-              <li class="nav-item ">
-                <a class="nav-link " href="{{ route('presupuesto') }}"> 
-                  <span class="sidenav-mini-icon"> P </span>
-                  <span class="sidenav-normal"> Presupuesto </span>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link " href="{{ route('mi-equpo') }}">
-                  <span class="sidenav-mini-icon"> M </span>
-                  <span class="sidenav-normal"> Mi equipo </span>
-                </a>
-              </li>
-            </ul> 
-          </div>
-        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">

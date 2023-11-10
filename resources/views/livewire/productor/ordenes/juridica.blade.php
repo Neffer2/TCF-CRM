@@ -243,7 +243,15 @@
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
                 {{-- GOOD RECEIVE --}}
-                <div class="row px-4">
+                <div class="row px-4">                    
+                    @if ($orden_compra->observacion_remision)
+                        <div class="col-md-12">
+                            <div class="form-group"> 
+                                <label for="">Observaciones: </label>
+                                <textarea wire:model="observaciones_remision" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    @endif
                     <label for="gr">Good Receive:</label>
                     <div class="col-md-4">
                         <div class="form-group">                            
@@ -258,6 +266,9 @@
                     <div class="col-md-4">
                         <div class="form-group"> 
                             <button wire:click="cambioEstado(5)" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
                     </div>
                 </div>

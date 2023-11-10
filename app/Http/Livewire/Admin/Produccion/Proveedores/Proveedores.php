@@ -5,9 +5,13 @@ namespace App\Http\Livewire\Admin\Produccion\Proveedores;
 use Livewire\Component;
 use App\Models\Proveedor;
 use App\Models\CategoriaProveedor;
+use Livewire\WithPagination; 
 
 class Proveedores extends Component
 {   
+    use WithPagination; 
+    protected $paginationTheme = 'bootstrap'; 
+
     // Models 
     public $contacto, $categoria, $ciudad, $estado;
 

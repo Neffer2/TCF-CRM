@@ -13,7 +13,7 @@ class OrdenesCompra extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $cod_cc, $fecha = 'desc', $estado;
+    public $cod_cc, $fecha = 'desc', $estado; 
      
     // Useful vars
     public $estados = []; 

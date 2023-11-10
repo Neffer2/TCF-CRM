@@ -17,9 +17,9 @@ class Juridica extends Component
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
-    public $nit;
+    public $nit, $observaciones_remision; 
 
-    // Filled
+    // Filled 
     public $presupuesto, $orden_compra;
   
     // Useful vars 
@@ -131,6 +131,7 @@ class Juridica extends Component
         $this->proveedor = $this->orden_compra->proveedor_id;
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
+        $this->observaciones_remision = $this->orden_compra->observacion_remision;
 
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
@@ -172,7 +173,7 @@ class Juridica extends Component
     public function enviarAprobacion(){
         $this->validate([ 
             'proveedor' => 'required|numeric|max:200',
-            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10240'
+            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
         ]);
          
         if (count($this->ocItems) == 0){
@@ -235,11 +236,12 @@ class Juridica extends Component
     public function cambioEstado($estado){
         $messaje = '';
 
-        if ($estado == 1){      
+        if ($estado == 1){     
+            // ORDEN APROBADA 
             $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf|max:1024',
+                'oc_helisa' => 'required|file|mimes:pdf|max:10000',
                 'cod_oc' => 'required|max:200'
-            ]);
+            ]); 
 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
             $this->orden_compra->cod_oc = $this->cod_oc;
@@ -247,18 +249,23 @@ class Juridica extends Component
             $this->mailOrdenAprobada($this->orden_compra); 
             $messaje = 'Orden de compra APROBADA.';
         }elseif($estado == 3){
-            $this->validate([
+            // ORDEN RECHAZADA
+            $this->validate([ 
                 'justificacion_rechazo' => 'required|string|max:1000',
             ]);
-
+ 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;            
             $messaje = 'Orden de compra RECHAZADA.';
         }elseif ($estado == 5) {
+            // GR GENERADO
             $this->validate([
-                'gr' => 'required|string'
+                'gr' => 'required|string',
+                'observaciones_remision' => 'nullable|string|max:1000'
             ]);
 
             $this->orden_compra->gr = $this->gr;
+            $this->orden_compra->observacion_remision = $this->observaciones_remision;
+            $this->mailGrGenerado($this->orden_compra);  
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
 
@@ -370,19 +377,25 @@ class Juridica extends Component
 
     public function updatedFile_cot(){
         $this->validate([
-            'file_cot' => 'required|file|mimes:pdf|max:10240'
+            'file_cot' => 'required|file|mimes:pdf|max:10000'
         ]);
     }
 
     public function updatedOc_helisa(){
         $this->validate([
-            'oc_helisa' => 'required|file|mimes:pdf|max:1024',
+            'oc_helisa' => 'required|file|mimes:pdf|max:10000',
         ]);
     }
 
     public function updatedGr(){
         $this->validate([
             'gr' => 'required|string'
+        ]);
+    }
+
+    public function updatedObservacionesRemision(){
+        $this->validate([
+            'observaciones_remision' => 'nullable|string|max:1000'
         ]);
     }
     /*****/

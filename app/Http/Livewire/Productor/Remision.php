@@ -30,10 +30,10 @@ class Remision extends Component
     public function mount(){
         $this->getData();
     }
-
+ 
     public function store($data){
         $this->validate([
-            'remision' => 'required|file|mimes:pdf|max:1024',
+            'remision' => 'required|file|mimes:pdf|max:10000',
             'observaciones' => 'nullable|string'
         ]);  
  
@@ -60,7 +60,7 @@ class Remision extends Component
 
     public function updatedRemision(){
         $this->validate([
-            'remision' => 'required|file|mimes:pdf|max:1024',
+            'remision' => 'required|file|mimes:pdf|max:10000',
         ]);
     }
 

@@ -20,6 +20,8 @@ class HomeController extends Controller
             return redirect()->route('dashboard-lider-produccion');  
         }elseif (Auth::user()->rol == 7){
             return redirect()->route('dashboard-productor');  
+        }elseif (Auth::user()->rol == 8){
+            return redirect()->route('dashboard-tesoreria');   
         } 
     }
 }  

@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AsistenteController;  
 use App\Http\Controllers\LiderProduccionController;  
 use App\Http\Controllers\ProductorController;  
+use App\Http\Controllers\TesoreriaController;  
  
 /*
 |--------------------------------------------------------------------------
@@ -41,8 +42,8 @@ Route::get('/', function () {
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
-    Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->name('consumidos');    
-    Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');     
+    Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');    
+    Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->middleware(['admin'])->name('consumido');     
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
     Route::get('/proveedores', [AdminController::class, 'showProveedores'])->middleware(['auth'])->middleware(['admin'])->name('proveedores');   
 /* --- */ 
@@ -90,4 +91,14 @@ Route::get('/', function () {
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
 /* --- */
+ 
+/* Tesoreria */
+    Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
+    Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
+    Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
+/* --- */
+ 
+// Route::get('trial-mail', function (){ 
+//     return view('mails.grGenerado');
+// });
 require __DIR__.'/auth.php';   

@@ -249,7 +249,7 @@
                                                             {{ $orden->OrdenCompra->estado_oc->description }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->OrdenCompra->proveedor }} - {{ $orden->OrdenCompra->nit }}
+                                                            {{ $orden->OrdenCompra->proveedor->tercero }} - {{ $orden->OrdenCompra->proveedor->documento }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
                                                             <a href="{{ route('orden-juridica', $orden->OrdenCompra->id) }}" target="_blank">Orden de compra</a>

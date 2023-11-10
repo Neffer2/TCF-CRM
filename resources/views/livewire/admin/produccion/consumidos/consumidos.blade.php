@@ -12,7 +12,7 @@
                 </div>
             </div> 
         </div>  
-        <div class="table-responsive"> 
+        <div class="table-responsive">  
             <table class="table align-items-center mb-0">
                 <thead> 
                     <tr>
@@ -70,7 +70,6 @@
                             $registros_page = sizeof($presupuestosArray['data']);
                             $total = $presupuestosArray['total'];
                         @endphp
-
                         <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                         <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
                     </tr>
