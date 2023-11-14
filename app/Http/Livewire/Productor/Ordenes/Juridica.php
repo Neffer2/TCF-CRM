@@ -246,7 +246,7 @@ class Juridica extends Component
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
             $this->orden_compra->cod_oc = $this->cod_oc;
                     
-            $this->mailOrdenAprobada($this->orden_compra); 
+            $this->mailOrdenAprobada($this->orden_compra);  
             $messaje = 'Orden de compra APROBADA.';
         }elseif($estado == 3){
             // ORDEN RECHAZADA

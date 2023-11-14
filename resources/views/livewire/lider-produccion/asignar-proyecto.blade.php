@@ -61,14 +61,14 @@
                     );
                 </script>
             @endif 
-            @if (session('success'))
-                <script>
-                    Swal.fire(
-                    'Hecho',
-                    `{{ session('success') }}`,
-                    'success'
-                    );
-                </script>
+        @if (session('success'))
+            <script>
+                Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+                );
+            </script>
         @endif
     </div>         
 </div>

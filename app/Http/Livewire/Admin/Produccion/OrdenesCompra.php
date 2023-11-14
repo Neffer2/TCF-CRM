@@ -16,15 +16,15 @@ class OrdenesCompra extends Component
     public $cod_cc, $fecha = 'desc', $estado; 
      
     // Useful vars
-    public $estados = []; 
+    public $estados = [];   
 
     public function render(){    
-        $filtros = []; 
+        $filtros = [];  
         if ($this->estado){
-            array_push($filtros, ['estado_id', $this->estado]);
+            array_push($filtros, ['estado_id', $this->estado]); 
         }
         
-        if ($this->cod_cc){
+        if ($this->cod_cc){ 
             $ordenes = OrdenCompra::with('presupuesto')
                 ->whereHas('presupuesto', function ($presto) { 
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");

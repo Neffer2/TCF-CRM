@@ -265,7 +265,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group"> 
-                            <button wire:click="cambioEstado(5)" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                            <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
                             <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                                 <span class="sr-only">Loading...</span>
                             </div>

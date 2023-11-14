@@ -9,4 +9,4 @@
     @livewire('teso.produccion.anticipo', ['orden_id' => $orden_id])
 @endsection 
 @section('scripts')
-@endsection 
+@endsection  

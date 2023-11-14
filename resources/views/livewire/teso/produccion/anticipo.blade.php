@@ -38,10 +38,15 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="store" class="btn bg-gradient-warning mb-1">Marcar como pagado</button>
+                        <button wire:click="store"wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como pagado</button>
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>
+                        @error('error')
+                            <div id="error" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
                         <div style="font-size: 9px;">
                             Se enviar&aacute; un correo al proveedor y productor del proyecto con el comprobante y las observaciones del pago del anticipo.
                         </div>

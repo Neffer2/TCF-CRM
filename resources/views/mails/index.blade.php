@@ -15,8 +15,14 @@
             <li>OC: {{ $cod_oc }}</li>
             <li>GR: {{ $gr }}</li>
         </ul>
-        Por favor radicar en Facturacion.proveedores@bullmarketing.com.co con copia a compras@bullmarketing.com.
-        coSlds. 
+        Por favor radicar en Facturacion.proveedores@bullmarketing.com.co con copia a compras@bullmarketing.com. <br><br>
+        
+        Cordialmente,<br>
+        Saludos.
+    </p>
+
+    <p style="font-size: 12px">
+        Enviado desde <b>BullCRM</b>. <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
     </p>
 </body>
 </html>

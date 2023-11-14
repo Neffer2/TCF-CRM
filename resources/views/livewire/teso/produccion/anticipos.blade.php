@@ -16,14 +16,14 @@
                         <option value="asc">Seleccionar</option>
                         <option value="asc">M&aacute;s antiguos</option>
                         <option value="desc">M&aacute;s recientes</option>
-                    </select> 
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label for="estado">Estados:</label>
                     <select id="estado" class="form-control" wire:model="estado">
                         <option value="">Seleccionar</option>
                         <option value="1">Pendiente</option> 
-                        <option value="2">Pagado</option> 
+                        <option value="2">Pagado</option>  
                     </select> 
                 </div>
             </div>
@@ -36,9 +36,9 @@
                         <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
-                </thead>
+                </thead> 
                 <tbody>
-                    @foreach ($ordenes as $orden)
+                    @foreach ($ordenes as $orden) 
                         <tr>
                             <td style="width: 16rem;">
                                 <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}"> 
@@ -75,16 +75,23 @@
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p>
                             </td>
-                            <td>
+                            <td> 
                                 <p class="text-xs font-weight-bold mb-0">Anticipo</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->proveedor->anticipo }}%</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
-                                <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo', ['orden' => $orden->id]) }}">Pagar</a> 
+                                @if (!$orden->archivo_comprobante_pago)
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo', ['orden' => $orden->id]) }}">Pagar</a> 
+                                @else
+                                    @php
+                                        $archivo_comprobante_pago = str_replace('public/', '', $orden->archivo_comprobante_pago); 
+                                    @endphp
+                                    <a class="btn bg-gradient-secondary m-0 me-1 mb-1" href="{{ asset("storage/$archivo_comprobante_pago") }}" target="_blank">PAGADO</a> 
+                                @endif
                             </td>
                         </tr>  
-                    @endforeach
-                    <tr> 
+                    @endforeach 
+                    <tr>  
                         @php
                             $ordenesArray = $ordenes->toArray();
                             $registros_page = sizeof($ordenesArray['data']);
@@ -97,4 +104,13 @@
             </table>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire(
+            'Hecho',
+            `{{ session('success') }}`,
+            'success'
+            );
+        </script>
+    @endif
 </div>

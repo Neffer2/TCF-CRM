@@ -16,7 +16,7 @@
                         <option value="asc">Seleccionar</option>
                         <option value="asc">M&aacute;s antiguos</option>
                         <option value="desc">M&aacute;s recientes</option>
-                    </select> 
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label for="estado">Estados:</label>

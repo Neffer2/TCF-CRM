@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
 
 trait Email 
-{
-    public function mailGrGenerado($orden){  
+{   
+    public function mailAnticipoPagado($orden, $observaciones){   
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -25,7 +25,53 @@ trait Email
             $mail->Password   = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = env('MAIL_PORT', 587);
+ 
+            //Recipients
+            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
+            /* COMPRAS */
+                // $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
+                // $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+            /* *** */
 
+            /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
+            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+            $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+            /* *** */
+                        
+            $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
+            $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
+
+            //Content
+            $mail->isHTML(true);
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]); 
+            $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
+
+            $mail->send();
+        } catch (Exception $e) {
+            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        }
+    }
+
+    public function mailGrGenerado($orden){  
+        require base_path("vendor/autoload.php");
+        $mail = new PHPMailer(true);     // Passing `true` enables exceptions
+        
+        try{
+            //Server settings
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      
+            $mail->isSMTP();
+            $mail->Host       = env('MAIL_HOST');
+            $mail->SMTPAuth   = true;
+            $mail->Username   = env('MAIL_USERNAME');
+            $mail->Password   = env('MAIL_PASSWORD'); 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = env('MAIL_PORT', 587);
+ 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
@@ -36,7 +82,8 @@ trait Email
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+                // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+                $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
                 // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                          
@@ -83,7 +130,7 @@ trait Email
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+                $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                         

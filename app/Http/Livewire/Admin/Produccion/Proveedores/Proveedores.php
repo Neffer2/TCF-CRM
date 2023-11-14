@@ -17,7 +17,7 @@ class Proveedores extends Component
 
     // Usefull vars
     public $categorias = [], $ciudades = [];
-
+ 
     // Listeners
     protected $listeners = ['refreshProveedores' => 'render'];
 
