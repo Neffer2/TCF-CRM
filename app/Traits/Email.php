@@ -11,6 +11,75 @@ use Illuminate\Support\Facades\Storage;
 
 trait Email 
 {   
+    
+    /* PRESUPEUSTOS */
+    public function presupuestoRechazado($user, $gestion, $cod_cc){          
+        $subject = "PRUEBAS CRM, IGNORAR";
+        // $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
+        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido RECHAZADO.";
+        $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
+        $recipients = [];
+        $cc = $user->asistente;
+        
+        array_push($recipients, [
+            'name'=> $user->name,
+            'email'=> $user->email
+        ]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    } 
+    
+    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
+        require base_path("vendor/autoload.php");
+        $mail = new PHPMailer(true);     // Passing `true` enables exceptions
+        
+        try{
+            //Server settings
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      
+            $mail->isSMTP();
+            $mail->Host       = env('MAIL_HOST');
+            $mail->SMTPAuth   = true;
+            $mail->Username   = env('MAIL_USERNAME');
+            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = env('MAIL_PORT', 587);
+ 
+            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
+            
+            /* Recipients */
+                foreach ($recipients as $recipient) {
+                    $mail->addAddress($recipient['email'], $recipient['name']);
+                }
+
+                foreach ($cc as $copiados) {
+                    $mail->addCC($copiados->ejecutivo->email);        
+                }
+            /* *** */
+            
+            if ($attachment){
+                // $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
+                $archivo_pago = str_replace('public/', '', $attachment);
+                $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
+            }
+
+            //Content
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+            $mail->AltBody = $altBody;
+
+            $mail->send();
+        } catch (Exception $e) {
+            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        }
+    }
+
+    /* ORDENES COMPRA */
     public function mailAnticipoPagado($orden, $observaciones){   
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions

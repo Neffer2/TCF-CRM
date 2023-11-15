@@ -11,14 +11,15 @@ use App\Models\Año;
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;  
 use App\Models\PresupuestoProyecto; 
-use App\Traits\Hablame;
+// use App\Traits\Hablame;
+use App\Traits\Email;
 
 class Presupuesto extends Component  
 { 
-    use Hablame; 
+    use Email; 
 
     // Models
-    public $cod; 
+    public $cod;  
     public $concepto; 
 
     public $cantidad;
@@ -497,12 +498,12 @@ class Presupuesto extends Component
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presupuesto->justificacion_compras = $this->justificacion_compras;
         $presupuesto->estado_id = 3;
-        $presupuesto->update(); 
+        // $presupuesto->update(); 
         
-        // SMS
+        // EMAIL
         $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
 
-        return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');  
+        // return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');  
     }
 
     // VALIDATIONS

@@ -55,7 +55,7 @@ trait SMS
             'flash' => '0',
             'sc' => '890202',
             'request_dlvr_rcpt' => '0'
-        ]),
+        ]), 
         CURLOPT_HTTPHEADER => [
             "Account: 10025540",
             "ApiKey: AXx6DeXD0QO4agaXZIboUnxK4a5Q0I",
