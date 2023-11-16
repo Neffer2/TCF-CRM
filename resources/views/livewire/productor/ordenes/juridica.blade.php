@@ -253,13 +253,13 @@
                         </div>
                     @endif
                     <label for="gr">Good Receive:</label>
-                    <div class="col-md-4">
+                    <div class="col-md-4"> 
                         <div class="form-group">                            
                             <input id="gr" wire:model="gr" class="form-control">
                             @error('gr')
                                 <div id="gr" class="text-invalid">
                                     {{ $message }}
-                                </div>
+                                </div> 
                             @enderror
                         </div>
                     </div>
@@ -496,7 +496,7 @@
                 <div class="row px-4">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <button wire:click="enviarAprobacion" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>                            
+                            <button wire:click="enviarAprobacion" wire:loading.attr="disabled" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>                            
                             @if($orden_compra && $orden_compra->estado_id == 3)
                                 <button wire:click="deleteOrden" class="btn btn-icon btn-3 btn bg-gradient-danger mt-2 mb-0" type="button">
                                     <span class="btn-inner--icon">

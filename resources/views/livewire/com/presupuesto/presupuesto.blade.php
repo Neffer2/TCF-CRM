@@ -158,7 +158,9 @@
                                         </small>
                                     @enderror
                                 </div>
-                                <button class="btn bg-gradient-warning m-0" wire:click="rechazar">Rechazar</button>
+                                <div class="form-group">
+                                    <button class="btn bg-gradient-warning m-0" wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
+                                </div>                            
                             </div>
                         </div>        
                     </div>
@@ -585,7 +587,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning" data-bs-dismiss="modal">Enviar</button>
+                                <button wire:click="aprobacion" wire:loading.attr="disabled" type="button" class="btn bg-gradient-warning">Enviar</button>
                             </div>
                         </div>
                     </div>
@@ -604,7 +606,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror 
-                            <button wire:click="updateCentro" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
+                            <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
                                 <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                                 <span class="btn-inner--text">Guardar</span>
                             </button>

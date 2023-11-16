@@ -2,14 +2,14 @@
 
 namespace App\Traits;
 use App\models\User;
- 
+  
 trait SMS  
 {
     public function presupuestoAprobacion($rentabilidad, $name, $cod_cc = null){    
         // Adri - Alejo
         $admin_id = ($rentabilidad > 35) ? "30" : "26";        
         $tel = User::select('telefono')->find($admin_id)->telefono;
-        
+         
         if ($cod_cc){
             $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto con centro de costos: ".$cod_cc." de ".$name." fué actualizado.";
         }else {

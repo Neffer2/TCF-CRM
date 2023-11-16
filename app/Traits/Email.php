@@ -8,15 +8,73 @@ use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
+use App\models\User;
 
-trait Email 
-{   
-    
+trait Email  
+{       
     /* PRESUPEUSTOS */
-    public function presupuestoRechazado($user, $gestion, $cod_cc){          
-        $subject = "PRUEBAS CRM, IGNORAR";
-        // $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
-        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido RECHAZADO.";
+    public function presupuestoAprobacion($rentabilidad, $name, $justificacion, $cod_cc = null){
+        $subject = "NOTIFICACIÓN CRM";
+        $recipients = [];
+        $cc = [];
+
+        // Adri - Alejo
+        $admin_id = ($rentabilidad > 35) ? "30" : "26";        
+        $recipient = User::select('name', 'email')->find($admin_id);
+        array_push($recipients, [
+            'name'=> $recipient->name,
+            'email'=> $recipient->email
+        ]);
+        
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+        
+        if ($cod_cc){
+            $body = "El presupuesto con centro de costos: <b>{$cod_cc}</b> de <b>{$name}</b> fué actualizado.";
+        }else {
+            $body = "Tienes un presupuesto de {$name} por revisar.";
+        }
+
+        if ($justificacion){
+            $body .= "<br><b>{$name}</b> ha realizado las siguientes observaciones: {$justificacion}.";
+        }
+
+        $altBody = "NOTIFICACIÓN CRM";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    } 
+
+    public function presupuestoAprobado($user, $gestion, $justificacion, $cod_cc = null){
+        $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." APROBADO";
+        $body = "El presupuesto del proyecto: <b>{$gestion->nom_proyecto_cot}</b> ha sido APROBADO con el siguiente centro de costos: <b>{$cod_cc}</b>.";
+
+        if ($justificacion){
+            $body .= "<br>El equipo de compras ha realizado las siguientes observaciones: {$justificacion}.";
+        }
+
+        $altBody = "Se ha Aprobado el presupuesto: ".$gestion->nom_proyecto_cot;
+        $recipients = [];
+        $cc = $user->asistente;
+        
+        array_push($recipients, [
+            'name'=> $user->name,
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            // 'email'=> $user->email
+        ]);
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function presupuestoRechazado($user, $gestion, $justificacion, $cod_cc = null){
+        $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
+        $body = "El presupuesto del proyecto: <b>".$gestion->nom_proyecto_cot."</b> ha sido <b>RECHAZADO.</b>";
+
+        if ($justificacion){
+            $body .= "<br>El equipo de compras ha realizado las siguientes observaciones: {$justificacion}.";
+        }
+
         $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
         $recipients = [];
         $cc = $user->asistente;
@@ -26,13 +84,13 @@ trait Email
             'email'=> $user->email
         ]);
 
-        array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-        ]);
+        // array_push($recipients, [
+        //     'name'=> 'Nefer Barragan',
+        //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        // ]);
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
-    } 
+    }
     
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
         require base_path("vendor/autoload.php");
@@ -69,13 +127,13 @@ trait Email
 
             //Content
             $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $body;
-            $mail->AltBody = $altBody;
+            $mail->Subject = utf8_decode($subject);
+            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
+            $mail->AltBody = utf8_decode($altBody);
 
             $mail->send();
         } catch (Exception $e) {
-            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
 
@@ -122,7 +180,7 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
 
@@ -170,7 +228,7 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
 
@@ -215,7 +273,7 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            dd("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
 }

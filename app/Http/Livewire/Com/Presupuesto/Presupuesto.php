@@ -408,7 +408,8 @@ class Presupuesto extends Component
         $presto->update(); 
         $this->estadoValidator = $presto->estado_id;
 
-        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name, $cod_cc = $this->cod_cc ? $this->cod_cc : null); 
+        // EMAIL
+        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name, $presto->justificacion, $cod_cc = $this->cod_cc ? $this->cod_cc : null); 
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
     
@@ -450,9 +451,8 @@ class Presupuesto extends Component
         // Re-calcula los valores de la base y gestion comercial
         $this->reCalculate($item);
         
-        
-        // SMS
-        $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, $item->cod_cc);
+        // EMAIL
+        $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, null, $item->cod_cc);
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');  
     }
@@ -498,12 +498,12 @@ class Presupuesto extends Component
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presupuesto->justificacion_compras = $this->justificacion_compras;
         $presupuesto->estado_id = 3;
-        // $presupuesto->update(); 
+        $presupuesto->update(); 
         
         // EMAIL
-        $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+        $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->justificacion_compras, $presupuesto->cod_cc);
 
-        // return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');  
+        return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');  
     }
 
     // VALIDATIONS
