@@ -86,7 +86,7 @@
                             </td>
                             <td class="d-flex align-items-start">
                                 <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
-                                <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)">
+                                <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">
                                     @foreach ($estados as $estado) 
                                         @if ($presupuesto->estado_id == $estado->id)
                                             <option selected value="{{ $estado->id }}">{{ $estado->description }}</option>

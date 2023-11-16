@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 </head>  
 <body>
-    <p>
+    <p> 
         Hola 
         @foreach ($recipients as $key => $recipient)
             @if ($key == count($recipients)-1)

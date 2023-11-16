@@ -7,12 +7,12 @@ use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
 use App\Models\GestionComercial;
 use App\Models\User; 
-use App\Traits\Hablame;
+use App\Traits\Email;
 use Livewire\WithPagination; 
 
 class GestionPresupuestos extends Component 
 {
-    use WithPagination, Hablame;
+    use WithPagination, Email;
     protected $paginationTheme = 'bootstrap';
 
     //Models 
@@ -68,7 +68,7 @@ class GestionPresupuestos extends Component
         // Aprobado
         if ($estado == 1){ 
             $gestion = GestionComercial::find($presupuesto->id_gestion);
-            $gestion->id_estado = 4;
+            $gestion->id_estado = 4; 
             $gestion->update();
             $presupuesto->justificacion_compras = null;
             $presupuesto->justificacion = null;
@@ -76,9 +76,9 @@ class GestionPresupuestos extends Component
         $presupuesto->update();
 
         if ($presupuesto->estado_id == 1){
-            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);
+            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
         }elseif ($presupuesto->estado_id == 3){
-            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
+            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
         }
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');

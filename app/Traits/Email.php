@@ -81,13 +81,9 @@ trait Email
         
         array_push($recipients, [
             'name'=> $user->name,
-            'email'=> $user->email
+            // 'email'=> $user->email
+                'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]);
-
-        // array_push($recipients, [
-        //     'name'=> 'Nefer Barragan',
-        //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-        // ]);
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }

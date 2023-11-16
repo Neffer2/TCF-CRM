@@ -12,11 +12,11 @@ use App\Models\ItemPresupuesto;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth; 
-use App\Traits\Hablame;
+use App\Traits\Email;
 
 class ActualizacionesPresto extends Component
 {   
-    use WithPagination, Hablame;
+    use WithPagination, Email;
     protected $paginationTheme = 'bootstrap';
 
     //Models 
@@ -84,16 +84,15 @@ class ActualizacionesPresto extends Component
 
             // Re-calcula los valores de la base y gestion comercial
             $this->reCalculate($presupuesto);
-            
-            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc); 
 
+            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
             // Default indicacion actualiazcion
             ItemPresupuesto::where('presupuesto_id', $id)->get()->map(function ($item){
                 $item->actualizado = false;
                 $item->update();
             });
         }elseif ($presupuesto->estado_id == 3){
-            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->cod_cc);            
+            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
         }
         
         $presupuesto->update();
