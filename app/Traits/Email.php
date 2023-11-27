@@ -169,6 +169,7 @@ trait Email
             // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
             $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+            $mail->addCC('james.vallejo@bullmarketing.com.co');
             $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
             /* *** */
                         
@@ -215,6 +216,7 @@ trait Email
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
                 $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+                $mail->addCC('james.vallejo@bullmarketing.com.co');
                 // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                          
@@ -262,6 +264,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+                $mail->addCC('james.vallejo@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                         
