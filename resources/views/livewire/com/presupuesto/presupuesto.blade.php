@@ -270,11 +270,13 @@
                                     $ {{ number_format($item->v_total) }}
                                 </td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($item->proveedor_info)
+                                    {{-- @if ($item->proveedor_info)
                                         {{ $item->proveedor_info->tercero }}
                                     @else 
                                         {{ $item->proveedor }}
-                                    @endif
+                                    @endif --}}
+
+                                    {{ $item->proveedor }}
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
