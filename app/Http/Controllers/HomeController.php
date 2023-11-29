@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 { 
-    public function dashboard (){
+    public function dashboard (){ 
         if (Auth::user()->rol == 1) {
             return redirect()->route('dashboard-admin');
         }elseif (Auth::user()->rol == 2){
@@ -23,6 +23,16 @@ class HomeController extends Controller
         }elseif (Auth::user()->rol == 8){
             return redirect()->route('dashboard-tesoreria');   
         } 
+    }
+
+    public function showProveedores (){
+        if (Auth::user()->rol == 1) {
+            return view('admin.produccion.proveedores.index');
+        }elseif (Auth::user()->rol == 2){
+            return view('comercial.produccion.proveedores.index');
+        }elseif (Auth::user()->rol == 7){
+            return view('productor.proveedores.index'); 
+        }  
     }
 }  
  

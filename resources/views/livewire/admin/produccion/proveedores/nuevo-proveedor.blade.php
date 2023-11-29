@@ -3,10 +3,10 @@
     <div class="row">
         <div class="col-md-4">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12"> 
                     <div class="form-group">
-                        <label for="">Categoria<span class="text-danger">*</span>: @if($categoria) {{ $categorias->find($categoria)->description }} @endif</label>
-                        <select size="3" class="form-control" wire:model.lazy="categoria">
+                        <label for="categoria">Categoria<span class="text-danger">*</span>: @if($categoria) {{ $categorias->find($categoria)->description }} @endif</label>
+                        <select id="categoria" size="3" class="form-control" wire:model.lazy="categoria">
                             @foreach ($categorias as $categoria)
                                 <option value="{{ $categoria->id }}">{{ $categoria->description }}</option>
                             @endforeach
@@ -17,7 +17,7 @@
                             </div>
                         @enderror
                     </div> 
-                </div>
+                </div> 
                 <div class="col-md-12">
                     <div class="col-md-12">
                         <div class="input-group mb-3">
@@ -43,8 +43,8 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tipo<span class="text-danger">*</span>: </label>
-                        <select class="form-control" wire:model.lazy="tipo">
+                        <label for="tipo">Tipo<span class="text-danger">*</span>: </label>
+                        <select id="tipo" class="form-control" wire:model.lazy="tipo">
                             <option value="">Seleccionar</option>
                             <option value="natural">Natural</option>
                             <option value="juridica">Juridica</option>
@@ -58,12 +58,12 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tipo de documento<span class="text-danger">*</span>: </label>
-                        <select class="form-control" wire:model.lazy="tipo_documento">
+                        <label for="tipo_doc">Tipo de documento<span class="text-danger">*</span>: </label>
+                        <select id="tipo_doc" class="form-control" wire:model.lazy="tipo_documento">
                             <option value="">Seleccionar</option>
                             <option value="CEDULA">CEDULA</option>
                             <option value="NIT">NIT</option>
-                            <option value="RUT">RUT</option>
+                            <option value="Otros">OTROS</option>
                         </select>
                         @error('tipo_documento')
                             <div id="tipo_documento" class="text-invalid">
@@ -76,8 +76,8 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Documento<span class="text-danger">*</span>: </label>
-                        <input type="text" class="form-control" wire:model.lazy="documento">
+                        <label for="documento">Documento<span class="text-danger">*</span>: </label>
+                        <input id="documento" type="text" class="form-control" wire:model.lazy="documento">
                         @error('documento')
                             <div id="documento" class="text-invalid">
                                 {{ $message }}
@@ -87,8 +87,8 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">DV<span class="text-danger">*</span>: </label>
-                        <input type="text" class="form-control" wire:model.lazy="dv">
+                        <label for="dv">DV<span class="text-danger">*</span>: </label>
+                        <input id="dv" type="text" class="form-control" wire:model.lazy="dv">
                         @error('dv')
                             <div id="dv" class="text-invalid">
                                 {{ $message }}
@@ -98,8 +98,8 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Servicio<span class="text-danger">*</span>: </label>
-                        <textarea cols="30" rows="1" class="form-control" wire:model.lazy="servicio" placeholder="Servicio que presta"></textarea>
+                        <label for="servicio">Servicio<span class="text-danger">*</span>: </label>
+                        <textarea id="servicio" cols="30" rows="1" class="form-control" wire:model.lazy="servicio" placeholder="Servicio que presta"></textarea>
                         @error('servicio')
                             <div id="servicio" class="text-invalid">
                                 {{ $message }}
@@ -109,8 +109,8 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">Anticipo<span class="text-danger">*</span>: </label>
-                        <input type="text" class="form-control" wire:model.lazy="anticipo" placeholder="%">
+                        <label for="anticipo">Anticipo<span class="text-danger">*</span>: </label>
+                        <input id="anticipo" type="text" class="form-control" wire:model.lazy="anticipo" placeholder="%">
                         @error('anticipo')
                             <div id="anticipo" class="text-invalid">
                                 {{ $message }}
@@ -126,8 +126,8 @@
     <div class="row">
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Contacto<span class="text-danger">*</span>: </label>
-                <input type="text" class="form-control" wire:model.lazy="contacto">
+                <label for="contacto">Contacto<span class="text-danger">*</span>: </label>
+                <input id="contacto" type="text" class="form-control" wire:model.lazy="contacto">
                 @error('contacto')
                     <div id="contacto" class="text-invalid">
                         {{ $message }}
@@ -137,8 +137,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Celular<span class="text-danger">*</span>: </label>
-                <input type="text" class="form-control" wire:model.lazy="celular">
+                <label for="celular">Celular<span class="text-danger">*</span>: </label>
+                <input id="celular" type="text" class="form-control" wire:model.lazy="celular">
                 @error('celular')
                     <div id="celular" class="text-invalid">
                         {{ $message }}
@@ -148,8 +148,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Fijo: </label>
-                <input type="text" class="form-control" wire:model.lazy="fijo">
+                <label for="fijo">Fijo: </label>
+                <input id="fijo" type="text" class="form-control" wire:model.lazy="fijo">
                 @error('fijo')
                     <div id="fijo" class="text-invalid">
                         {{ $message }}
@@ -159,8 +159,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Correo<span class="text-danger">*</span>: </label>
-                <input type="text" class="form-control" placeholder="alguien@example.com" wire:model.lazy="correo">
+                <label for="correo">Correo<span class="text-danger">*</span>: </label>
+                <input id="correo" type="text" class="form-control" placeholder="alguien@example.com" wire:model.lazy="correo">
                 @error('correo')
                     <div id="correo" class="text-invalid">
                         {{ $message }}
@@ -170,8 +170,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Web: </label>
-                <input type="text" class="form-control" wire:model.lazy="web">
+                <label for="web">Web: </label>
+                <input id="web" type="text" class="form-control" wire:model.lazy="web">
                 @error('web')
                     <div id="web" class="text-invalid">
                         {{ $message }}
@@ -181,8 +181,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Direcci&oacute;n: </label>
-                <input type="text" class="form-control" wire:model.lazy="direccion">
+                <label for="direccion">Direcci&oacute;n: </label>
+                <input id="direccion" type="text" class="form-control" wire:model.lazy="direccion">
                 @error('direccion')
                     <div id="direccion" class="text-invalid">
                         {{ $message }}
@@ -192,8 +192,8 @@
         </div> 
         <div class="col-md-3"> 
             <div class="form-group">
-                <label for="">Departamento<span class="text-danger">*</span>: </label>
-                <select class="form-control" wire:model.lazy="departamento">
+                <label for="departamento">Departamento<span class="text-danger">*</span>: </label>
+                <select id="departamento" class="form-control" wire:model.lazy="departamento">
                     <option value="">Seleccionar</option>
                     @foreach ($departamentos as $departamento)
                         <option value="{{ $departamento }}">{{ $departamento }}</option>
@@ -208,8 +208,8 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Ciudad<span class="text-danger">*</span>: </label>
-                <select class="form-control" wire:model.lazy="ciudad">
+                <label for="ciudad">Ciudad<span class="text-danger">*</span>: </label>
+                <select id="ciudad" class="form-control" wire:model.lazy="ciudad">
                     <option value="">Seleccionar</option>
                     @foreach ($this->ciudades as $ciudad)
                         <option value="{{ $ciudad }}">{{ $ciudad }}</option>                        
@@ -228,8 +228,8 @@
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
-                <label for="">Plazo: </label>
-                <textarea class="form-control" rows="1" wire:model.lazy="plazo"></textarea>
+                <label for="plazo">Plazo<span class="text-danger">*</span>: </label>
+                <textarea id="plazo" class="form-control" rows="1" wire:model.lazy="plazo"></textarea>
                 @error('plazo')
                     <div id="plazo" class="text-invalid">
                         {{ $message }}
@@ -239,8 +239,8 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="">Observaciones: </label>
-                <textarea class="form-control" rows="1" wire:model.lazy="observaciones"></textarea>
+                <label for="observaciones">Observaciones: </label>
+                <textarea id="observaciones" class="form-control" rows="1" wire:model.lazy="observaciones"></textarea>
                 @error('observaciones')
                     <div id="observaciones" class="text-invalid">
                         {{ $message }}
@@ -250,8 +250,8 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="">Estado<span class="text-danger">*</span>: </label>
-                <select class="form-control" wire:model="estado">
+                <label for="estado">Estado<span class="text-danger">*</span>: </label>
+                <select id="estado" class="form-control" wire:model="estado">
                     <option value="">Seleccionar</option>
                     <option value="CONFIRMADO">CONFIRMADO</option>
                     <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>

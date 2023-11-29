@@ -9,6 +9,7 @@
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">DIAS</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
+                        <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
                     </tr> 
@@ -31,6 +32,13 @@
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
+                                    <td class="font-weight-bold font-table">
+                                        @if ($presupuestoItem->proveedor_info)
+                                            {{ $presupuestoItem->proveedor_info->tercero }}
+                                        @else 
+                                            {{ $presupuestoItem->proveedor }}
+                                        @endif
+                                    </td>
                                     <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
                                     <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
                                 </tr>
@@ -40,7 +48,7 @@
                 </tbody>
                 <tfoot class="border-0">
                     <tr>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white text-center" colspan="6">TOTAL COSTO INTERNO: </th>
+                        <th class="font-weight-bold font-table bg-gradient-warning text-white text-center" colspan="7">TOTAL COSTO INTERNO: </th>
                         <th class="font-weight-bold font-table bg-gradient-success text-white">$ {{ number_format($presupuesto->costos_proy) }} </th>
                     </tr>
                 </tfoot>

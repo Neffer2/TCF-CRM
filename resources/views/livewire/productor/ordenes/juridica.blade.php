@@ -40,9 +40,6 @@
                         <table class="table mb-1">
                             <tr>
                                 <td>
-                                    <div class="form-group mb-1"> 
-                                        <input type="text" wire:model="nit" class="form-control" style="height: 32px; font-size: 9px;" placeholder="DOCUMENTO PROVEEDOR" @if (Auth::user()->rol == 1) disabled @endif>
-                                    </div> 
                                     <div class="form-group m-0">
                                         <select type="text" size="4" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)
@@ -107,7 +104,7 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                        </table>
+                        </table> 
                     </div>
                 </div>
             </div>                    
@@ -122,7 +119,7 @@
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
                             </a>
-                        </div>
+                        </div> 
                     </div> 
                     <div class="row px-4">
                         <div class="col-md-6">

@@ -45,7 +45,7 @@ Route::get('/', function () {
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');    
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->middleware(['admin'])->name('consumido');     
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
-    Route::get('/proveedores', [AdminController::class, 'showProveedores'])->middleware(['auth'])->middleware(['admin'])->name('proveedores');   
+    Route::get('/proveedores', [HomeController::class, 'showProveedores'])->middleware(['auth'])->name('proveedores');   
 /* --- */ 
   
 /* commercial */   
@@ -89,6 +89,7 @@ Route::get('/', function () {
 
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
+    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
 /* --- */
  

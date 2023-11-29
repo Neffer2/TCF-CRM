@@ -13,7 +13,7 @@ class Proveedores extends Component
     protected $paginationTheme = 'bootstrap'; 
 
     // Models 
-    public $contacto, $categoria, $ciudad, $estado;
+    public $contacto, $tercero, $categoria, $ciudad, $estado;
 
     // Usefull vars
     public $categorias = [], $ciudades = [];
@@ -29,9 +29,13 @@ class Proveedores extends Component
             array_push($filtros, ['contacto', 'LIKE', "%{$this->contacto}%"]);
         }
 
+        if ($this->tercero){
+            array_push($filtros, ['tercero', 'LIKE', "%{$this->tercero}%"]);
+        }
+
         if ($this->categoria){
             array_push($filtros, ['categoria_id', $this->categoria]);
-        }
+        } 
 
         if ($this->ciudad){
             array_push($filtros, ['ciudad', $this->ciudad]);

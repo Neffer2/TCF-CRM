@@ -59,9 +59,4 @@ class AdminController extends Controller
     public function showConsumido($presupuesto_id){ 
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id]);
     }
-
-    public function showProveedores (){
-        return view('admin.produccion.proveedores.index');
-
-    }
 }

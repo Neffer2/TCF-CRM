@@ -17,7 +17,7 @@ class Juridica extends Component
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
-    public $nit, $observaciones_remision; 
+    public $observaciones_remision; 
 
     // Filled 
     public $presupuesto, $orden_compra;
@@ -109,11 +109,7 @@ class Juridica extends Component
     }
 
     public function getProveedores(){
-        if($this->nit){
-            $this->proveedores = Proveedor::where('documento', 'LIKE', "%{$this->nit}%")->get();
-        }else {
-            $this->proveedores = Proveedor::all();
-        }
+        $this->proveedores = Proveedor::all();
     }
 
     public function validateItems($itemDB){
@@ -236,7 +232,7 @@ class Juridica extends Component
     public function cambioEstado($estado){
         $messaje = '';
 
-        if ($estado == 1){     
+        if ($estado == 1){      
             // ORDEN APROBADA 
             $this->validate([
                 'oc_helisa' => 'required|file|mimes:pdf|max:10000',

@@ -1,16 +1,20 @@
 <div>
     <div class="card">
-        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-6">
+        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Proveedores</h3> 
                     <p class="text-sm mb-0">Lista de proveedores.</p>
                 </div>
-                <div class="col-md-3">  
-                    <label for="comercial">Buscar:</label>
+                <div class="col-md-2">  
+                    <label for="comercial">Nombre:</label>
                     <input type="text" wire:model="contacto" class="form-control" placeholder="Nombre contacto">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">  
+                    <label for="comercial">Tercero:</label>
+                    <input type="text" wire:model="tercero" class="form-control" placeholder="Nombre tercero">
+                </div> 
+                <div class="col-md-2">
                     <label for="filtro_fecha">Categor&iacute;a:</label>
                     <select id="filtro_fecha" class="form-control" wire:model="categoria">
                         <option value="">Seleccionar</option>
@@ -19,7 +23,7 @@
                         @endforeach
                     </select> 
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="estado">Ciudad:</label>
                     <select id="estado" class="form-control" wire:model="ciudad">
                         <option value="">Seleccionar</option>
@@ -28,16 +32,18 @@
                         @endforeach
                     </select> 
                 </div>
-                <div class="col-md-3">
-                    <label for="estado">Estado:</label>
-                    <select id="estado" class="form-control" wire:model="estado">
-                        <option value="">Seleccionar</option>
-                        <option value="CONFIRMADO">CONFIRMADO</option>
-                        <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
-                        <option value="NO APLICA">NO APLICA</option>
-                        <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
-                    </select> 
-                </div>
+                @if (Auth::user()->rol == 1)
+                    <div class="col-md-2">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" class="form-control" wire:model="estado">
+                            <option value="">Seleccionar</option>
+                            <option value="CONFIRMADO">CONFIRMADO</option>
+                            <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
+                            <option value="NO APLICA">NO APLICA</option>
+                            <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
+                        </select> 
+                    </div>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -76,8 +82,8 @@
                                 <p class="text-xs text-secondary">{{ $proveedor->ciudad }}</p>
                             </td>
                             <td colspan="2"> 
-                                <button class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $proveedor->id }}">Editar</button>
-                                <button class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $proveedor->id }}">Eliminar</button>
+                                <button @if (!(Auth::user()->rol == 1)) disabled @endif class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $proveedor->id }}">Editar</button>
+                                <button @if (!(Auth::user()->rol == 1)) disabled @endif class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $proveedor->id }}">Eliminar</button>
                             </td>
                         </tr>
                         <!-- Edit Modal --> 

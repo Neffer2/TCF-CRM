@@ -9,4 +9,8 @@ class Proveedor extends Model
 {
     use HasFactory;
     protected $table = 'proveedores';
+
+    public function categoria(){
+        return $this->hasOne(CategoriaProveedor::class, 'id', 'categoria_id');
+    }
 }

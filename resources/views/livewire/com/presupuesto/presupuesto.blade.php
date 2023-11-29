@@ -270,7 +270,11 @@
                                     $ {{ number_format($item->v_total) }}
                                 </td>
                                 <td class="font-weight-bold font-table">
-                                    {{ $item->proveedor }} 
+                                    @if ($item->proveedor_info)
+                                        {{ $item->proveedor_info->tercero }}
+                                    @else 
+                                        {{ $item->proveedor }}
+                                    @endif
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
@@ -284,7 +288,7 @@
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->ciudad }}
-                                </td>
+                                </td> 
 
                                 @if ($rentabilidadView)
                                     <td class="font-weight-bold font-table">
@@ -405,7 +409,7 @@
                             @error('valor_total')
                                 <div id="valor_total" class="invalid-feedback">
                                     {{ $message }}
-                                </div>
+                                </div> 
                             @enderror
                         </div>
                     </div>
@@ -414,6 +418,16 @@
                             <label for="proveedor">PROVEEDOR</label>
                             <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                             placeholder="Proveedor" required wire:model.lazy="proveedor">
+                            {{-- <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                                placeholder="Proveedor" required wire:model.lazy="proveedor">
+                                <option value="">Seleccionar</option>
+                                <option value="Nomina x dia">N&oacute;mina por d&iacute;a</option>
+                                <option value="Nomina mensual">N&oacute;mina mensual</option>
+                                <option value="Cuenta de cobro">Cuenta de cobro</option>
+                                @foreach ($proveedores as $proveedor)
+                                    <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
+                                @endforeach
+                            </select> --}}
                             @error('proveedor')
                                 <div id="proveedor" class="invalid-feedback">
                                     {{ $message }}
@@ -594,7 +608,7 @@
                 </div>
             </div>
         @elseif (Auth::user()->rol == 1)
-            <div class="col-md-12 p-2"> 
+            <div class="col-md-12 p-2">  
                 <div class="row gy-0">
                     <div class="col-md-3">
                         <div class="form-group mb-0">

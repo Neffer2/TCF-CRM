@@ -14,14 +14,14 @@
                     <i class="fa-solid fa-minus text-white" aria-hidden="true" x-cloak x-show="!collapse"></i>
                 </button>
                 <h5><b>Nuevo proveedor</b></h5>
-            </div> 
+            </div>             
             <div class="collapse" id="collapseExample">
                 <div class="card card-body mb-3">
                     @livewire('admin.produccion.proveedores.nuevo-proveedor')
                 </div>          
             </div>
             
-            @livewire('admin.produccion.proveedores.proveedores') 
+            @livewire('admin.produccion.proveedores.proveedores')  
         </div>
     </div>
     @endsection   

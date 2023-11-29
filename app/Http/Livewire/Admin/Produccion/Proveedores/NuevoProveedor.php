@@ -109,7 +109,7 @@ class NuevoProveedor extends Component
             'ciudad' => 'required|string|max:200',
             'observaciones' => 'nullable|string|max:1000',
             'estado' => 'required|string|max:200',
-            'plazo' => 'nullable|string|max:200'
+            'plazo' => 'required|nullable|string|max:200'
         ]);        
         
         $proveedor = new Proveedor;
@@ -335,9 +335,9 @@ class NuevoProveedor extends Component
         ]);
     }
 
-    public function updatePlazo(){
+    public function updatedPlazo(){
         $this->validate([
-            'plazo' => 'nullable|string|max:200'
+            'plazo' => 'required|nullable|string|max:200'
         ]);
     }
     /* ** */

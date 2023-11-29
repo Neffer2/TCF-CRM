@@ -17,4 +17,9 @@ class ItemPresupuesto extends Model
     public function ordenes_compra(){
         return $this->hasMany(OcItem::class, 'item_id', 'id');  
     }
+
+    // Proveedor no tiene relacion en base de datos porque se implementaron después de creado el modulo presupuestos.
+    public function proveedor_info(){
+        return $this->hasOne(Proveedor::class, 'id', 'proveedor');
+    }
 }

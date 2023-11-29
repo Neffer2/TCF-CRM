@@ -7,7 +7,8 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial; 
 use App\Models\Mes;
-use App\Models\Año;
+use App\Models\Año; 
+use App\Models\Proveedor; 
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;  
 use App\Models\PresupuestoProyecto; 
@@ -49,6 +50,7 @@ class Presupuesto extends Component
     public $presupuesto_id;
     public $ciudades = []; 
     public $meses = [];
+    public $proveedores = [];
     public $tarifario = [];
     public $selected_item;
     public $rentabilidadView = false;
@@ -103,6 +105,7 @@ class Presupuesto extends Component
         $this->refresh();
         $this->getContacto();
         $this->getCiudades();
+        $this->getProveedores();
         $this->getMeses();
         $this->getTarifario();
     }
@@ -127,7 +130,7 @@ class Presupuesto extends Component
             'valor_unitario' => ['required'],
             'valor_total' => ['required'],
             'proveedor' => ['required'],
-            'utilidad' => ['required', 'numeric', 'max:2'],
+            'utilidad' => ['required', 'numeric'],
             'mes' => ['required'], 
             'dias' => ['required'],
             'ciudad' => ['required'],
@@ -229,7 +232,7 @@ class Presupuesto extends Component
         $this->notas = $presto->notas; 
     }
 
-    public function getInfoFacturas(){
+    public function getInfoFacturas(){ 
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $this->imprevistos = $presto->imprevistos;
         $this->administracion = $presto->administracion;
@@ -252,6 +255,10 @@ class Presupuesto extends Component
  
     public function getCiudades(){
         $this->ciudades = app('ciudades');
+    }
+
+    public function getProveedores(){
+        $this->proveedores = Proveedor::select('id', 'tercero', 'categoria_id')->get();
     }
 
     public function getMeses(){
@@ -300,7 +307,7 @@ class Presupuesto extends Component
         $this->mes = $this->selected_item->mes;
         $this->dias = $this->selected_item->dias;
         $this->ciudad = $this->selected_item->ciudad;
-    } 
+    }  
 
     public function actionEdit(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
@@ -329,7 +336,7 @@ class Presupuesto extends Component
             $item->mes = 0;
             $item->dias = 0;
             $item->ciudad = 0;
-            $item->update();
+            $item->update(); 
         }else{
             $this->validate([
                 'cod' => ['required'], 
@@ -579,7 +586,7 @@ class Presupuesto extends Component
         $this->utilidad = trim($this->utilidad);
         $this->utilidad = str_replace(",",'', $this->utilidad);
         $this->validate([
-            'utilidad' => ['required', 'numeric', 'max:2']
+            'utilidad' => ['required', 'numeric']
         ]);
     }
 
