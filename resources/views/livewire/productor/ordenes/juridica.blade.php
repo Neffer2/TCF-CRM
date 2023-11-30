@@ -41,15 +41,15 @@
                             <tr>
                                 <td>
                                     <div class="form-group m-0">
-                                        <select type="text" size="4" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
-                                            @foreach ($proveedores as $proveedor_info)
-                                                <option value="{{ $proveedor_info->id }}">{{ $proveedor_info->documento }} - {{ $proveedor_info->tercero }}</option>
+                                        <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->find($proveedor)->tercero }} @endif </label>
+                                        <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
+                                            @foreach ($proveedores as $proveedor_info)                                                
+                                                @if ($proveedor_info)
+                                                    <option value="{{ $proveedor_info->id }}">{{ $proveedor_info->documento }} - {{ $proveedor_info->tercero }}</option>                                                
+                                                @endif
                                             @endforeach
                                         </select>
-                                    </div>
-                                    <div class="form-group mt-1 mb-0">
-                                        <b>Proveedor:</b> @if ($proveedor) {{ $this->proveedores->find($proveedor)->tercero }} @endif
-                                    </div>
+                                    </div> 
                                     @error('proveedor')
                                         <div id="proveedor" class="text-invalid">
                                             {{ $message }}

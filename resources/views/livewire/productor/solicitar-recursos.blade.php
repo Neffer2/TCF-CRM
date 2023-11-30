@@ -1,6 +1,6 @@
 <div>     
     @if ($verifyPresupuesto)
-        <div class="table-responsive mt-2 rounded bg-whitem mb-2">
+        <div class="table-responsive mt-2 rounded bg-whitem mb-2"> 
             <table class="table mb-0">
                 <thead>  
                     <tr> 
@@ -19,7 +19,7 @@
                         <div>  
                             @if($presupuestoItem->evento)
                                 <tr>
-                                    <td colspan="7" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                                    <td colspan="8" class="font-weight-bold font-table text-center bg-gradient-info text-white">
                                         {{ $presupuestoItem->descripcion }}
                                     </td>
                                 </tr> 

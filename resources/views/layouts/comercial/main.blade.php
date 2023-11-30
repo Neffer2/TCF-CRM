@@ -106,8 +106,7 @@
             <div class="collapse" id="dashboardsProduccion">
               <ul class="nav ms-4">
                 <li class="nav-item">
-                  {{-- <a class="nav-link" href="{{ route('proveedores') }}"> --}}
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{{ route('proveedores') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Proveedores </span>
                   </a> 

@@ -270,13 +270,11 @@
                                     $ {{ number_format($item->v_total) }}
                                 </td>
                                 <td class="font-weight-bold font-table">
-                                    {{-- @if ($item->proveedor_info)
+                                    @if ($item->proveedor_info)
                                         {{ $item->proveedor_info->tercero }}
                                     @else 
                                         {{ $item->proveedor }}
-                                    @endif --}}
-
-                                    {{ $item->proveedor }}
+                                    @endif
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
@@ -290,7 +288,7 @@
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->ciudad }}
-                                </td> 
+                                </td>
 
                                 @if ($rentabilidadView)
                                     <td class="font-weight-bold font-table">
@@ -411,16 +409,14 @@
                             @error('valor_total')
                                 <div id="valor_total" class="invalid-feedback">
                                     {{ $message }}
-                                </div> 
+                                </div>
                             @enderror
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
-                            <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                            placeholder="Proveedor" required wire:model.lazy="proveedor">
-                            {{-- <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
                                 <option value="">Seleccionar</option>
                                 <option value="Nomina x dia">N&oacute;mina por d&iacute;a</option>
@@ -429,7 +425,7 @@
                                 @foreach ($proveedores as $proveedor)
                                     <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                 @endforeach
-                            </select> --}}
+                            </select>
                             @error('proveedor')
                                 <div id="proveedor" class="invalid-feedback">
                                     {{ $message }}
@@ -488,7 +484,7 @@
                                     <option value="{{ $ciudad }}">{{ $ciudad }}</option>
                                 @endforeach
                             </select>
-                            @error('ciudad')
+                            @error('ciudad') 
                                 <div id="ciudad" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -499,7 +495,7 @@
                         <div class="form-group">
                             <label for="justificacion">JUSTIFICACI&Oacute;N</label>
                             <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="1" class="form-control"
-                                wire:model.lazy="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
+                                wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
                                 @if($cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
                             @error('justificacion')
                                 <small id="justificacion" class="text-danger">

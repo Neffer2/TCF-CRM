@@ -258,7 +258,7 @@ class Presupuesto extends Component
     }
 
     public function getProveedores(){
-        // $this->proveedores = Proveedor::select('id', 'tercero', 'categoria_id')->get();
+        $this->proveedores = Proveedor::select('id', 'tercero', 'categoria_id')->get();
     }
 
     public function getMeses(){

@@ -7,6 +7,7 @@ use App\Models\EstadoOrdenesCompra;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
 use App\Models\Proveedor;
+use App\Models\ItemPresupuesto;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
  
@@ -108,8 +109,10 @@ class Juridica extends Component
         })->first();
     }
 
-    public function getProveedores(){
-        $this->proveedores = Proveedor::all();
+    public function getProveedores(){    
+        $this->proveedores = $this->presupuesto->presupuestoItems->unique('proveedor')->map(function ($item){
+            return $item->proveedor_info;
+        });
     }
 
     public function validateItems($itemDB){
@@ -121,7 +124,7 @@ class Juridica extends Component
         }
         return $validator;
     }
-
+ 
     // Trae y muestra la orden de compra de la base de datos (si ya está creada).
     public function getItems(){
         $this->proveedor = $this->orden_compra->proveedor_id;
@@ -353,16 +356,8 @@ class Juridica extends Component
 
     public function updatedProveedor(){
         $this->validate([
-            'proveedor' => 'required|numeric|max:200',
+            'proveedor' => 'required|numeric',
         ]);
-    }
-
-    public function updatedNit(){
-        $this->validate([
-            'nit' => 'numeric'
-        ]);
-
-        $this->getProveedores();
     }
 
     public function updatedJustificacionRechazo(){
