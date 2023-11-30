@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class contable
+class contabilidad
 {
     /**
      * Handle an incoming request.
@@ -17,9 +17,10 @@ class contable
      */
     public function handle(Request $request, Closure $next)
     {   
-        if (Auth::user()->rol == 3) { 
+        if (Auth::user()->rol == 9) { 
             return $next($request);  
         }
-        return redirect()->route('dashboard');  
-    } 
+
+        return redirect()->route('dashboard');          
+    }
 }

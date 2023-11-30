@@ -60,6 +60,7 @@ class Kernel extends HttpKernel
         'asistente' => \App\Http\Middleware\asistente::class, 
         'lproduccion' => \App\Http\Middleware\lproduccion::class, 
         'productor' => \App\Http\Middleware\productor::class, 
+        'contabilidad' => \App\Http\Middleware\contabilidad::class,  
         'tesoreria' => \App\Http\Middleware\tesoreria::class,  
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

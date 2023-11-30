@@ -16,7 +16,7 @@ class CreateOrdenesCompra extends Migration
         Schema::create('ordenes_compra', function (Blueprint $table) {
             $table->id();        
 
-            $table->foreignId('tipo_oc');
+            $table->foreignId('tipo_oc'); 
             $table->foreign('tipo_oc')->references('id')->on('tipo_ordenes_compra');
 
             $table->foreignId('estado_id')->default(2);  
@@ -31,6 +31,9 @@ class CreateOrdenesCompra extends Migration
             $table->string('justificacion_rechazo')->nullable(); 
             $table->string('archivo_cot'); 
             $table->string('archivo_orden_helisa')->nullable(); 
+            $table->string('cod_causal')->nullable(); 
+            $table->string('observacion_causal')->nullable(); 
+
             $table->string('archivo_comprobante_pago')->nullable(); 
 
             $table->string('archivo_remision')->nullable(); 

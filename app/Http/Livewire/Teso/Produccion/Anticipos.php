@@ -31,13 +31,13 @@ class Anticipos extends Component
                     ->whereHas('presupuesto', function ($presto) { 
                         $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                     })
-                ->where('estado_id', 1)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
+                ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
             }else {
                 $ordenes = OrdenCompra::with('proveedor')
                     ->whereHas('proveedor', function ($proveedor){ 
                         $proveedor->where('anticipo', '>', 0);
                     })
-                ->where('estado_id', 1)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
+                ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
             }
         }else {
             if ($this->cod_cc){
@@ -57,7 +57,6 @@ class Anticipos extends Component
                 ->where('estado_id', 1)->where('archivo_comprobante_pago', '<>', 'NULL')->orderBy('created_at', $this->fecha)->paginate(15);
             }
         }
-
         
         return view('livewire.teso.produccion.anticipos', ['ordenes' => $ordenes]);
     }

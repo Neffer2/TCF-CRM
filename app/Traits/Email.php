@@ -63,10 +63,11 @@ trait Email
             'email'=> $user->email
         ]);
 
-        // array_push($recipients, [
-        //     'name'=> 'Nefer Barragan',
-        //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-        // ]);
+        array_push($recipients, [
+            'name'=> 'Líder producción',
+            'email'=> 'Armando.Espinosa@bullmarketing.com.co'
+        ]);
+
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }

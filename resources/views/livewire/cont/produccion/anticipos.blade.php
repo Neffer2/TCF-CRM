@@ -23,7 +23,6 @@
                     <select id="estado" class="form-control" wire:model="estado">
                         <option value="">Seleccionar</option>
                         <option value="1">Pendiente</option> 
-                        <option value="2">Pagado</option>  
                     </select> 
                 </div>
             </div>
@@ -85,11 +84,7 @@
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
                                 @if (!$orden->archivo_comprobante_pago)
-                                    @if (Auth::user()->rol == 8) 
-                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo', ['orden' => $orden->id]) }}">Pagar</a> 
-                                    @else 
-                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a> 
-                                    @endif
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a> 
                                 @else 
                                     @php
                                         $archivo_comprobante_pago = str_replace('public/', '', $orden->archivo_comprobante_pago); 
@@ -99,7 +94,7 @@
                             </td>
                         </tr>  
                     @endforeach 
-                    <tr>  
+                    <tr>   
                         @php
                             $ordenesArray = $ordenes->toArray();
                             $registros_page = sizeof($ordenesArray['data']);

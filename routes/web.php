@@ -2,13 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController;  
-use App\Http\Controllers\ContableController; 
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\HomeController;  
 use App\Http\Controllers\AsistenteController;  
 use App\Http\Controllers\LiderProduccionController;  
 use App\Http\Controllers\ProductorController;  
-use App\Http\Controllers\TesoreriaController;  
+use App\Http\Controllers\ContabilidadController; 
+use App\Http\Controllers\TesoreriaController; 
  
 /*
 |--------------------------------------------------------------------------
@@ -82,17 +82,23 @@ Route::get('/', function () {
     Route::get('/asis-contactos', [AsistenteController::class, 'Contactos'])->middleware(['auth'])->middleware(['asistente'])->name('asis-contactos');    
     Route::get('/actualizar-perfil-asis', [AsistenteController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['asistente'])->name('actualizar-perfil-asis'); 
 /* --- */ 
-
+ 
 /* Líder produccion */
     Route::get('/dashboard-lider-produccion', [LiderProduccionController::class, 'index'])->middleware(['auth'])->middleware(['lproduccion'])->name('dashboard-lider-produccion');
 /* --- */
-
+ 
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
 /* --- */
- 
+
+/* Contabilidad */   
+    Route::get('/dashboard-contabilidad', [ContabilidadController::class, 'index'])->middleware(['auth'])->middleware(['contabilidad'])->name('dashboard-contabilidad');
+    Route::get('/anticipos-contabilidad', [ContabilidadController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipos-contabilidad');
+    Route::get('/anticipo-contabilidad/{orden?}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
+/* --- */
+
 /* Tesoreria */
     Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');

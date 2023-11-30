@@ -12,6 +12,12 @@
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-12">
+                        @if ($orden->observacion_causal)
+                            <div class="form-group"> 
+                                <h6 style="margin: 0">Observaciones contabilidad:</h6>
+                                <textarea class="form-control" disabled>{{ $orden->observacion_causal }}</textarea>
+                            </div>                            
+                        @endif
                         <div class="form-group"> 
                             <h6 style="margin: 0">Comprobante:</h6>
                             <div style="font-size: 9px;">

@@ -22,7 +22,9 @@ class HomeController extends Controller
             return redirect()->route('dashboard-productor');  
         }elseif (Auth::user()->rol == 8){
             return redirect()->route('dashboard-tesoreria');   
-        } 
+        }elseif (Auth::user()->rol == 9){
+            return redirect()->route('dashboard-contabilidad');   
+        }
     }
 
     public function showProveedores (){

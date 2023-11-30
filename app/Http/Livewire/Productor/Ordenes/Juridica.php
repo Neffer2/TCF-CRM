@@ -105,7 +105,7 @@ class Juridica extends Component
             if ($this->item == $item->id){
                 $this->maxCant = $item->cantidad;
                 $this->maxValor = $item->v_unitario;
-            }
+            } 
         })->first();
     }
 
@@ -358,6 +358,9 @@ class Juridica extends Component
         $this->validate([
             'proveedor' => 'required|numeric',
         ]);
+
+        $this->mount(); 
+        $this->ocItems = [];
     }
 
     public function updatedJustificacionRechazo(){

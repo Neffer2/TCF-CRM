@@ -74,7 +74,13 @@
                             </td>
                             <td> 
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p>
+                                <p class="text-xs text-secondary mb-0">
+                                    @if ($orden->presupuesto->productor_info)
+                                        {{ $orden->presupuesto->productor_info->name }}
+                                    @else 
+                                        NO ASIGNADO
+                                    @endif
+                                </p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>

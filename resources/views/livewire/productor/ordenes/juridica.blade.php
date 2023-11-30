@@ -37,7 +37,7 @@
                 </div> 
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
-                        <table class="table mb-1">
+                        <table class="table mb-1"> 
                             <tr>
                                 <td>
                                     <div class="form-group m-0">
@@ -391,7 +391,11 @@
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
-                                            <option value="{{ $presupuestoItem->id }}">{{ $key+1 }}</option>
+                                            <option value="{{ $presupuestoItem->id }}"
+                                                @if ($presupuestoItem->proveedor != $proveedor) disabled 
+                                                style="background-color: #e9ecef !important;" @endif>
+                                                {{ $key+1 }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </select>

@@ -20,6 +20,7 @@ class comercial
         if (Auth::user()->rol == 2) { 
             return $next($request);  
         }
+        
         return redirect()->route('dashboard');  
     }
 }

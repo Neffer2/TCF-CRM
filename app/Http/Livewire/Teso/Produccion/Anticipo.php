@@ -16,7 +16,7 @@ class Anticipo extends Component
 
     // Useful vars
     public $orden;
-
+ 
     // Filled
     public $orden_id;
 

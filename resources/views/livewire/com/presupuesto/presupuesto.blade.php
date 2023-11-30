@@ -419,9 +419,6 @@
                             <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
                                 <option value="">Seleccionar</option>
-                                <option value="Nomina x dia">N&oacute;mina por d&iacute;a</option>
-                                <option value="Nomina mensual">N&oacute;mina mensual</option>
-                                <option value="Cuenta de cobro">Cuenta de cobro</option>
                                 @foreach ($proveedores as $proveedor)
                                     <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                 @endforeach
@@ -572,10 +569,6 @@
                     <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
                     <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
                 </div> 
-
-                {{-- <a href="{{ route('gestion-comercial') }}" wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button">
-                    <span class="btn-inner--text">Volver</span>
-                </a>  --}}
             </div>
 
             <div class="col-md-4 d-flex justify-content-end p-2">
