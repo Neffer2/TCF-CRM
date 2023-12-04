@@ -8,7 +8,7 @@ use App\Models\EstadosPresupuesto;
 use App\Models\GestionComercial;
 use App\Models\User; 
 use App\Traits\Email;
-use Livewire\WithPagination; 
+use Livewire\WithPagination;
 
 class GestionPresupuestos extends Component 
 {

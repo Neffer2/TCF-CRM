@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\OrdenCompra;
 use App\Models\EstadoCuenta;
+use App\Models\Helisa;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\HelisaExport;
  
 class AdminController extends Controller
 {
@@ -24,6 +27,10 @@ class AdminController extends Controller
 
     public function showBaseComercialGeneral (){
         return view('admin.data.base-comercial');
+    }
+
+    public function showHelisaGeneral() {
+        return view('admin.generales.helisa');
     }
 
     public function showPresupuestos (){
@@ -56,7 +63,26 @@ class AdminController extends Controller
         return view('admin.produccion.consumidos.list');
     }
 
-    public function showConsumido($presupuesto_id){ 
+    public function showConsumido($presupuesto_id){  
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id]);
+    } 
+
+    public function exportHelisa($comercial = null, $centro = null){     
+        $this->filtros = [];
+
+        if ($comercial != 'none'){
+            $title = "Reporte Helisa - ".User::find($comercial)->name.".xlsx";
+            array_push($this->filtros, ['comercial', $comercial]);
+        }else {
+            $title = "Reporte Helisa.xlsx";
+        }
+
+        if($centro != 'none'){
+            array_push($this->filtros, ['centro', 'LIKE', "%{$centro}%"]);
+        }
+
+        $registros_helisa = Helisa::where($this->filtros)->get(); 
+
+        return Excel::download(new HelisaExport(['registros_helisa' => $registros_helisa]), $title); 
     }
 }

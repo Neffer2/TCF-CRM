@@ -10,7 +10,7 @@
     <div class="card-body pt-2">
         <div class="row">
             <div class="col-md-6">
-                <div class="row">
+                <div class="row"> 
                     <div class="col-md-12">
                         <div class="form-group"> 
                             <h6 style="margin: 0">N&uacute;mero de causaci&oacute;n:</h6>
