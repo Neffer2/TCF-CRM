@@ -383,7 +383,7 @@ class Presupuesto extends Component
         $this->limpiar(); 
     }  
  
-    public function cotizacionPdf(){  
+    public function cotizacionPdf(){   
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }
 

@@ -270,11 +270,12 @@
                                     $ {{ number_format($item->v_total) }}
                                 </td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($item->proveedor_info)
+                                    {{-- @if ($item->proveedor_info)
                                         {{ $item->proveedor_info->tercero }}
                                     @else 
                                         {{ $item->proveedor }}
-                                    @endif
+                                    @endif --}}
+                                    {{ $item->proveedor }}
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
@@ -416,18 +417,20 @@
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
-                            <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            {{-- <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
                                 <option value="">Seleccionar</option>
                                 @foreach ($proveedores as $proveedor)
                                     <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                 @endforeach
-                            </select>
+                            </select> --}}
+                            <input class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                                placeholder="Proveedor" required wire:model.lazy="proveedor">                            
                             @error('proveedor')
                                 <div id="proveedor" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
+                            @enderror 
                         </div>
                     </div>
                     <div class="col-md-2">
