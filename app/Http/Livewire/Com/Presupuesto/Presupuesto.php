@@ -105,7 +105,7 @@ class Presupuesto extends Component
         $this->refresh();
         $this->getContacto();
         $this->getCiudades();
-        // $this->getProveedores();
+        $this->getProveedores();
         $this->getMeses();
         $this->getTarifario();
     }
@@ -383,7 +383,7 @@ class Presupuesto extends Component
         $this->limpiar(); 
     }  
  
-    public function cotizacionPdf(){   
+    public function cotizacionPdf(){  
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
     }
 
