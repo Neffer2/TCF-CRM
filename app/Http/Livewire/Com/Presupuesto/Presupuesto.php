@@ -28,6 +28,7 @@ class Presupuesto extends Component
     public $descripcion;
     public $valor_unitario = 0;
     public $valor_total = 0;
+    public $valor_total_cliente = 0;
     public $proveedor;
     public $utilidad;
     public $tiempoFactura; 
@@ -318,7 +319,7 @@ class Presupuesto extends Component
 
         if ($this->selected_item->evento){
             $this->validate([
-                'descripcion' => ['required'],
+                'descripcion' => ['required'], 
             ]);
     
             $item = ItemPresupuesto::find($this->selected_item->id);
@@ -575,6 +576,18 @@ class Presupuesto extends Component
         ]);
     }
 
+    public function updatedValorTotalCliente(){
+        $this->valor_total_cliente = trim($this->valor_total_cliente);
+        $this->valor_total_cliente = str_replace(",",'', $this->valor_total_cliente);
+        $this->validate([
+            'valor_total_cliente' => ['numeric']
+        ]);
+        
+        if ($this->valor_total != 0){
+            $this->getUtilidad();
+        }
+    }
+
     public function updatedProveedor(){
         $this->proveedor = trim($this->proveedor);
         $this->validate([
@@ -657,6 +670,14 @@ class Presupuesto extends Component
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->otros) && !is_null($this->valor_unitario)){
             $this->valor_total = $this->cantidad * $this->dia * $this->otros * $this->valor_unitario;
         }
+
+        if ($this->valor_total_cliente != 0){
+            $this->getUtilidad();
+        }
+    }
+
+    public function getUtilidad(){
+        $this->utilidad = $this->valor_total / $this->valor_total_cliente;
     }
 
     public function setDataTarifario($cod_tarifario){       

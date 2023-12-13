@@ -108,7 +108,7 @@
                                         <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
                                     </td>
                                 </tr>
-                            </table>
+                            </table> 
                         </div>
                     </div>
                 </div>
@@ -228,17 +228,17 @@
                 <tbody>
                     @foreach ($items as $key => $item)                
                         @if ($item->evento)
-                            <tr>
-                                <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                            <tr class="font-weight-bold font-table bg-gradient-info text-white">
+                                <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
                                     {{ $item->descripcion }}
                                 </td>
                                 @if (Auth::user()->rol != 1)
-                                    <td class="font-weight-bold font-table">
+                                    <td>
                                         <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                                     </td>
                                 @endif
                                 @if (Auth::user()->rol != 1)
-                                    <td class="font-weight-bold font-table">
+                                    <td>
                                         <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                     </td>
                                 @endif
@@ -281,7 +281,9 @@
                                 </td>
 
                                 <td class="font-weight-bold font-table">
-                                    {{ $item->mesDescription->description }} 
+                                    @if ($item->mesDescription)
+                                        {{ $item->mesDescription->description }}
+                                    @endif
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->dias }}
@@ -322,7 +324,7 @@
     <div class="row mt-2">
         @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
             <div class="col-md-12 p-2"> 
-                <div class="row gy-0">
+                <div class="row gy-0 mb-3">
                     <div class="col-md-1">
                         <div class="form-group mb-0">
                             <label for="cod">COD</label>
@@ -415,6 +417,18 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group mb-0">
+                            <label for="valor_total_cliente">V. TOTAL CLIENTE (CLARO)</label>
+                            <input id="valor_total_cliente" type="text" class="form-control @error('valor_total_cliente') is-invalid @elseif(strlen($valor_total_cliente) > 0) is-valid @enderror"
+                            placeholder="Valor total cliente (claro)" required wire:model.lazy="valor_total_cliente" x-mask:dynamic="$money($input)">
+                            @error('valor_total_cliente')
+                                <div id="valor_total_cliente" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
                             <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
@@ -487,11 +501,13 @@
                                 </div>
                             @enderror 
                         </div>
-                    </div>  
-                    <div class="col-md-4">
+                    </div> 
+                </div>                
+                <div class="row">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="justificacion">JUSTIFICACI&Oacute;N</label>
-                            <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="1" class="form-control"
+                            <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="5" rows="2" class="form-control"
                                 wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
                                 @if($cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
                             @error('justificacion')
@@ -501,7 +517,7 @@
                             @enderror
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
 
             <div class="col-md-8 d-flex p-2">
@@ -572,7 +588,7 @@
             </div>
 
             <div class="col-md-4 d-flex justify-content-end p-2">
-                <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" wire:loading.attr="disabled">
                     <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></i></span>
                 <span class="btn-inner--text">Enviar a aprobaci&oacute;n</span>
                 </button>
@@ -592,7 +608,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button wire:click="aprobacion" wire:loading.attr="disabled" type="button" class="btn bg-gradient-warning">Enviar</button>
+                                <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning" data-bs-dismiss="modal">Enviar</button>
                             </div>
                         </div>
                     </div>

@@ -136,6 +136,7 @@ trait Email
             $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
             $mail->AltBody = utf8_decode($altBody);
 
+            return 0;
             $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
@@ -161,16 +162,14 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
             /* COMPRAS */
-                // $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
-                // $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
-            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-            // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
-            // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+            $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
-            $mail->addCC('james.vallejo@bullmarketing.com.co');
             $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
             /* *** */
                         
@@ -208,16 +207,14 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                // $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
-                // $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('neffer.barragan@iglumarketingdigital.com');
+                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
-                $mail->addCC('james.vallejo@bullmarketing.com.co');
                 // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                          
@@ -257,15 +254,14 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                // $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
-                // $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
-                $mail->addCC('james.vallejo@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                         
