@@ -41,7 +41,7 @@ Route::get('/', function () {
     Route::get('/presupuesto-proyecto', [AdminController::class, 'showPresupuestosProyecto'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto-proyecto');   
     Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');    
     Route::get('/actualizaciones', [AdminController::class, 'actualizaciones'])->middleware(['auth'])->name('actualizaciones');    
-    Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');   
+    Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');    
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');    

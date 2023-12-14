@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('telefono');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('rol')->default('2');
+            $table->foreignId('rol')->default('2'); 
             $table->foreign('rol')->references('id')->on('roles_user');
             $table->string('avatar')->nullable()->default('public/photos/avatar.jpg');;
             $table->rememberToken();

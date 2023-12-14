@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row"> 
                     @foreach ($xfacturar as $key => $cliente)
                         <button class="accordion-button border-bottom font-weight-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $cont }}" aria-expanded="false" aria-controls="collapse{{ $cont }}">
                             <div class="col-md-6 text-left">

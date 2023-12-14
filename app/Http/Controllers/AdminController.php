@@ -38,7 +38,7 @@ class AdminController extends Controller
     }
 
     public function estadoFacturacion(Request $request){ 
-        return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]);
+        return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]); 
     }  
 
     public function showPresupuestosProyecto(){ 

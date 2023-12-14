@@ -3,13 +3,13 @@
 namespace App\Http\Livewire\Admin\EstadosFacturacion;
 
 use Livewire\Component;
-use App\dels\Base_comercial;
+use App\Models\Base_comercial;
 use App\Models\Helisa;
 use App\Models\Mes;
 use App\Models\Año;
 use App\Models\Presupuesto;
 use Illuminate\Support\Facades\DB;
-
+ 
 class EstadosFacturacion extends Component
 {   
     protected $listeners = ['Block1' => 'getData'];
@@ -92,9 +92,10 @@ class EstadosFacturacion extends Component
         // SELECT nom_cliente, SUM(valor_proyecto) FROM `base_comerciales` WHERE id_estado = 3 GROUP BY nom_cliente;
 
         $Base_results = DB::table('base_comerciales')
-                        ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
+                        ->select(DB::raw('nom_cliente, SUM(valor_proyecto) as valor'))
                         ->where($filters_array)
-                        ->whereBetween('fecha', $date_filters_array)->orderBy('fecha')
+                        ->whereBetween('fecha', $date_filters_array)
+                        // ->orderBy('fecha')
                         ->groupBy('nom_cliente')
                         ->get();
 
@@ -129,7 +130,8 @@ class EstadosFacturacion extends Component
         $Base_results = DB::table('base_comerciales')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
-                            ->whereBetween('fecha', $date_filters_array)->orderBy('fecha')
+                            ->whereBetween('fecha', $date_filters_array)
+                            // ->orderBy('fecha')
                             ->groupBy('nom_cliente')
                             ->get();
 
@@ -164,7 +166,8 @@ class EstadosFacturacion extends Component
         $Base_results = DB::table('base_comerciales')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
-                            ->whereBetween('fecha', $date_filters_array)->orderBy('fecha')
+                            ->whereBetween('fecha', $date_filters_array)
+                            // ->orderBy('fecha')
                             ->groupBy('nom_cliente')
                             ->get();
 
