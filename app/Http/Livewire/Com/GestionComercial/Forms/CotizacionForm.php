@@ -21,6 +21,7 @@ class CotizacionForm extends Component
     public $cotizacionFile;  
     public $com_2;
     public $cotizacionUrl;
+    public $claro;
 
     // porcentajes
     public $comercial0;
@@ -267,10 +268,11 @@ class CotizacionForm extends Component
         $this->validate([ 
             'presupuesto' => 'required|numeric',
             'nom_proyecto' => 'required|string',
+            'claro' => 'boolean',
             // 'cotizacionFile' => 'required|max:1024',
             'fecha' => 'required|date',
             'cotizacionUrl' => 'nullable|string',
-
+ 
             // PARTICIPACIONES 
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
             'participaciones' => 'required|numeric|min:1|max:4',
@@ -304,9 +306,9 @@ class CotizacionForm extends Component
         $lead->cotizacion_file = null;
         $lead->propuesta_url = $this->cotizacionUrl;
         // $lead->id_estado = 3;
+        $lead->claro = $this->claro;
         $lead->id_estado = 7;
         $lead->update(); 
-
 
         if (Auth::user()->rol == 2){  
             return redirect()->route('gestion-comercial')->with('success', '¡Propuesta registrada exitosamente!');

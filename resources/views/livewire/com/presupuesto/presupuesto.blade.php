@@ -25,7 +25,7 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">MARGEN BRUTO (PESOS)</td>
                                     <td class="font-table">{{ number_format($margenBruto) }}</td>
-                                </tr>
+                                </tr> 
                             </table>
                         </div>
                     </div>
@@ -36,26 +36,26 @@
                             <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">CONTACTO</td>
-                                    <td class="font-table">
-                                        {{ $this->nombre }}
+                                    <td class="font-table"> 
+                                        {{$presupuesto->gestion->contacto->nombre}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">CLIENTE</td>
                                     <td class="font-table">
-                                        {{ $this->cliente }}
+                                        {{$presupuesto->gestion->contacto->empresa}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">PROYECTO</td>
                                     <td class="font-table">
-                                        {{ $this->nomProyecto }}
+                                        {{$presupuesto->gestion->nom_proyecto_cot}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">CIUDAD</td>
                                     <td class="font-table">
-                                        {{ $this->ciudadContacto }}
+                                        {{$presupuesto->gestion->contacto->ciudad}}
                                     </td>
                                 </tr>
                             </table>
@@ -415,18 +415,20 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
-                            <label for="valor_total_cliente">V. TOTAL CLIENTE (CLARO)</label>
-                            <input id="valor_total_cliente" type="text" class="form-control @error('valor_total_cliente') is-invalid @elseif(strlen($valor_total_cliente) > 0) is-valid @enderror"
-                            placeholder="Valor total cliente (claro)" required wire:model.lazy="valor_total_cliente" x-mask:dynamic="$money($input)">
-                            @error('valor_total_cliente')
-                                <div id="valor_total_cliente" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                    @if ($presupuesto->gestion->claro)
+                        <div class="col-md-2">
+                            <div class="form-group mb-0">
+                                <label for="valor_total_cliente">V. TOTAL CLIENTE (CLARO)</label>
+                                <input id="valor_total_cliente" type="text" class="form-control @error('valor_total_cliente') is-invalid @elseif(strlen($valor_total_cliente) > 0) is-valid @enderror"
+                                placeholder="Valor total cliente (claro)" required wire:model.lazy="valor_total_cliente" x-mask:dynamic="$money($input)">
+                                @error('valor_total_cliente')
+                                    <div id="valor_total_cliente" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
@@ -495,7 +497,7 @@
                                     <option value="{{ $ciudad }}">{{ $ciudad }}</option>
                                 @endforeach
                             </select>
-                            @error('ciudad') 
+                            @error('ciudad')  
                                 <div id="ciudad" class="invalid-feedback">
                                     {{ $message }}
                                 </div>

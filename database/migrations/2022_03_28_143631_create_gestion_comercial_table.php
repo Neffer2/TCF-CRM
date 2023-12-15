@@ -51,6 +51,7 @@ class CreateGestionComercialTable extends Migration
             $table->string('nom_proyecto_cot')->nullable();
             $table->date('fecha_estimada_cot')->nullable();
             $table->string('cotizacion_file')->nullable();
+            $table->boolean('claro')->nullable();
             // Propuesta 
             $table->decimal('presto_prop', 15, 2)->default(0);
             $table->string('nom_proyecto_prop')->nullable();

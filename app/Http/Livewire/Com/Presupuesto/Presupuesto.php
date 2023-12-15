@@ -14,7 +14,7 @@ use App\Models\Tarifario;
 use App\Models\PresupuestoProyecto; 
 use App\Traits\Email;
 
-class Presupuesto extends Component  
+class Presupuesto extends Component   
 { 
     use Email; 
 
@@ -47,6 +47,7 @@ class Presupuesto extends Component
     public $justificacion_compras;
 
     // Useful vars
+    public $presupuesto;
     public $items = [];
     public $presupuesto_id;
     public $ciudades = []; 
@@ -86,6 +87,7 @@ class Presupuesto extends Component
             $presupuesto->id_gestion = $this->id_gestion; 
             $presupuesto->cod_cot = $this->getLatestCodCot() + 1; 
             $presupuesto->save();
+            $this->presupuesto = $presupuesto;
 
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
@@ -96,7 +98,9 @@ class Presupuesto extends Component
             $this->cod_cc = $validator->cod_cc; 
             $this->justificacion = $validator->justificacion;
             $this->justificacion_compras = $validator->justificacion_compras;
+            $this->presupuesto = $validator;
         }
+
 
         // Valida si es actualización. 
         if ($this->cod_cc){
@@ -104,7 +108,6 @@ class Presupuesto extends Component
         }
 
         $this->refresh();
-        $this->getContacto();
         $this->getCiudades();
         $this->getProveedores();
         $this->getMeses();
@@ -140,6 +143,12 @@ class Presupuesto extends Component
             'administracion' => ['required', 'numeric'],
             'fee' => ['required', 'numeric'],
         ]);
+
+        if ($this->presupuesto->gestion->claro){
+            $this->validate([
+                'valor_total_cliente' => ['numeric', 'required']
+            ]);
+        }
          
         $item = new ItemPresupuesto;
         $item->cod = $this->cod; 
@@ -157,7 +166,8 @@ class Presupuesto extends Component
         $item->mes = $this->mes;
         $item->dias = $this->dias;
         $item->ciudad = $this->ciudad;
- 
+        $item->v_total_cliente = $this->valor_total_cliente;
+
         // Indica actualiazcion.
         if ($presto->cod_cc){ 
             $item->actualizado = true;
@@ -197,7 +207,7 @@ class Presupuesto extends Component
         $item->v_unitario_cot = 0;
         $item->v_total_cot = 0;
         $item->rentabilidad = 0;
-
+ 
         $item->save();
 
         $this->refresh(); 
@@ -281,14 +291,6 @@ class Presupuesto extends Component
         $this->getItems();
     }
 
-    public function getContacto(){
-        $contacto = GestionComercial::where('id', $this->id_gestion)->first();
-        $this->nombre = $contacto->contacto->nombre." ".$contacto->apellido;
-        $this->cliente = $contacto->contacto->empresa;
-        $this->nomProyecto = $contacto->nom_proyecto_cot;
-        $this->ciudadContacto = $contacto->contacto->ciudad; 
-    }
-
     public function getDataEdit($id){
         $this->selected_item = []; 
         foreach ($this->items as $key => $item) {
@@ -303,6 +305,7 @@ class Presupuesto extends Component
         $this->descripcion = $this->selected_item->descripcion;
         $this->valor_unitario = $this->selected_item->v_unitario;
         $this->valor_total = $this->selected_item->v_total;
+        $this->valor_total_cliente = $this->selected_item->v_total_cliente;
         $this->proveedor = $this->selected_item->proveedor;
         $this->utilidad = $this->selected_item->margen_utilidad;
         $this->mes = $this->selected_item->mes;
@@ -382,7 +385,7 @@ class Presupuesto extends Component
  
         $this->refresh();  
         $this->limpiar(); 
-    }  
+    } 
  
     public function cotizacionPdf(){  
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
@@ -580,7 +583,7 @@ class Presupuesto extends Component
         $this->valor_total_cliente = trim($this->valor_total_cliente);
         $this->valor_total_cliente = str_replace(",",'', $this->valor_total_cliente);
         $this->validate([
-            'valor_total_cliente' => ['numeric']
+            'valor_total_cliente' => ['numeric', 'required']
         ]);
         
         if ($this->valor_total != 0){

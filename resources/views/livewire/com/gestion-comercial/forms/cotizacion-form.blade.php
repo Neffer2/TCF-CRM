@@ -122,8 +122,16 @@
                 @enderror
             </div>
             <div class="col-md-12">
-                <div class="form-group mt-4">
-                    <div id="passwordHelpBlock mt-0" class="form-text">
+                <div class="form-check mt-2"> 
+                    <input id="check" wire:model="claro" class="form-check-input" type="checkbox">
+                    <label for="check" class="form-check-label ms-0" for="flexCheckDefault">
+                        Este prospecto es cuenta de <b>Claro</b>?
+                    </label>                    
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group mt-2">
+                    <div class="form-text">
                         Al guardar los cambios, confirmas que &eacute;ste prospecto se convierte en <b>cotizacion.</b>
                     </div>
                 </div>
