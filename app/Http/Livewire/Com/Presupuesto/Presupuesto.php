@@ -337,7 +337,7 @@ class Presupuesto extends Component
             $item->v_total = 0;
             $item->proveedor = 0;
             $item->margen_utilidad = 0;
-            $item->mes = 0;
+            $item->mes = 1;
             $item->dias = 0;
             $item->ciudad = 0;
             $item->update(); 
@@ -355,6 +355,12 @@ class Presupuesto extends Component
                 'dias' => ['required'],
                 'ciudad' => ['required'] 
             ]);
+
+            if ($this->presupuesto->gestion->claro){
+                $this->validate([
+                    'valor_total_cliente' => ['numeric', 'required']
+                ]);
+            }
     
             $item = ItemPresupuesto::find($this->selected_item->id);
             $item->cod = $this->cod;
@@ -365,6 +371,9 @@ class Presupuesto extends Component
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
             $item->v_total = $this->valor_total;
+            if ($this->presupuesto->gestion->claro){
+                $item->v_total_cliente = $this->valor_total_cliente;
+            }
             $item->proveedor = $this->proveedor;
             $item->margen_utilidad = $this->utilidad;
             $item->mes = $this->mes;  
@@ -375,7 +384,7 @@ class Presupuesto extends Component
             if ($presto->cod_cc){
                 $item->actualizado = true;
                 $this->setEnEdicion($presto);
-            }
+            } 
             
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
             $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
@@ -387,20 +396,21 @@ class Presupuesto extends Component
         $this->limpiar(); 
     } 
  
-    public function cotizacionPdf(){  
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
+    public function cotizacionPdf(){
+
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 1]);
     }
 
     public function internoPdf(){  
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
     }
 
     public function cotizacionExcel(){  
-        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 1]);
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 1]);
     }  
 
     public function internoExcel(){   
-        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nomProyecto, 'tipo' => 0]);
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
     }
    
     // Envía a probacion 
@@ -680,7 +690,12 @@ class Presupuesto extends Component
     }
 
     public function getUtilidad(){
-        $this->utilidad = $this->valor_total / $this->valor_total_cliente;
+        if ($this->valor_total_cliente > 0){
+            $this->utilidad = $this->valor_total / $this->valor_total_cliente;
+        }
+        else {
+            $this->utilidad = 0;
+        }
     }
 
     public function setDataTarifario($cod_tarifario){       
@@ -705,6 +720,7 @@ class Presupuesto extends Component
         $this->valor_total = 0;
         $this->proveedor = "";
         $this->utilidad = "";
+        $this->valor_total_cliente = 0;
 
         $this->mes = "";
         $this->dias = "";

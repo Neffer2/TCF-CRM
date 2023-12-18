@@ -94,7 +94,7 @@ class ComercialController extends Controller
         $dompdf->render();
         // Output the generated PDF to Browser
         $dompdf->stream();
-    }
+    } 
 
     // Hubo que hacer esto porque livewire no es compatible con el datatable
     public function delete_proyecto($user_id){ 

@@ -207,6 +207,9 @@
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
+                        @if ($presupuesto->gestion->claro)
+                            <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL CLIENTE</th>
+                        @endif
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
 
@@ -269,6 +272,11 @@
                                 <td class="font-weight-bold font-table">
                                     $ {{ number_format($item->v_total) }}
                                 </td>
+                                @if ($presupuesto->gestion->claro)
+                                    <td class="font-weight-bold font-table">
+                                        $ {{ number_format($item->v_total_cliente) }}
+                                    </td>
+                                @endif
                                 <td class="font-weight-bold font-table">
                                     @if ($item->proveedor_info)
                                         {{ $item->proveedor_info->tercero }}
