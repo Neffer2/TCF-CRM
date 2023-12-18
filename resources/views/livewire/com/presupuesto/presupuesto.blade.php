@@ -440,13 +440,15 @@
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
-                            <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            placeholder="Proveedor" required wire:model.lazy="proveedor">
+                            {{-- <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
                                 <option value="">Seleccionar</option>
                                 @foreach ($proveedores as $proveedor)
                                     <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                             @error('proveedor')
                                 <div id="proveedor" class="invalid-feedback">
                                     {{ $message }}
