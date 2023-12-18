@@ -124,7 +124,7 @@
             <div class="col-md-12">
                 <div class="form-check mt-2"> 
                     <input id="check" wire:model="claro" class="form-check-input" type="checkbox">
-                    <label for="check" class="form-check-label ms-0" for="flexCheckDefault">
+                    <label for="check" class="form-check-label ms-0 form-text" for="flexCheckDefault">
                         Este prospecto es cuenta de <b>Claro</b>?
                     </label>                    
                 </div>
