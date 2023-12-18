@@ -109,7 +109,7 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->getCiudades();
-        $this->getProveedores();
+        // $this->getProveedores();
         $this->getMeses();
         $this->getTarifario();
     }
