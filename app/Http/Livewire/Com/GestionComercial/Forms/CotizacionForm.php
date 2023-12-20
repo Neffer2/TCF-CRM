@@ -254,7 +254,7 @@ class CotizacionForm extends Component
             $i++;
         }
     } 
-
+ 
     public function getPorcentaje(){
         $i = 0;
         while($i < $this->participaciones){     
@@ -268,7 +268,6 @@ class CotizacionForm extends Component
         $this->validate([ 
             'presupuesto' => 'required|numeric',
             'nom_proyecto' => 'required|string',
-            'claro' => 'boolean',
             // 'cotizacionFile' => 'required|max:1024',
             'fecha' => 'required|date',
             'cotizacionUrl' => 'nullable|string',
@@ -286,6 +285,12 @@ class CotizacionForm extends Component
             'comercial2' => 'nullable|numeric',
             'comercial3' => 'nullable|numeric',
         ]);
+
+        if ($this->claro){
+            $this->validate([
+                'claro' => 'boolean'
+            ]);
+        }
   
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->presto_cot = $this->presupuesto;
@@ -306,7 +311,9 @@ class CotizacionForm extends Component
         $lead->cotizacion_file = null;
         $lead->propuesta_url = $this->cotizacionUrl;
         // $lead->id_estado = 3;
-        $lead->claro = $this->claro;
+        if ($this->claro){
+            $lead->claro = $this->claro;
+        }
         $lead->id_estado = 7;
         $lead->update(); 
 

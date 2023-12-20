@@ -15,12 +15,13 @@ class CotizacionForm extends Component
     use WithFileUploads;
 
     // Models 
-    public $presupuesto; 
+    public $presupuesto;  
     public $nom_proyecto;
     public $fecha;
     public $cotizacionFile; 
     public $com_2;
     public $cotizacionUrl;
+    public $claro;
 
     // porcentajes
     public $comercial0;
@@ -272,6 +273,12 @@ class CotizacionForm extends Component
             'comercial2' => 'nullable|numeric',
             'comercial3' => 'nullable|numeric',
         ]);
+
+        if ($this->claro){
+            $this->validate([
+                'claro' => 'boolean'
+            ]);
+        }
   
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->presto_cot = $this->presupuesto;
@@ -291,6 +298,9 @@ class CotizacionForm extends Component
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = null;
         // $lead->id_estado = 4; 
+        if ($this->claro){
+            $lead->claro = $this->claro;
+        }
         $lead->id_estado = 7; 
         $lead->update(); 
 

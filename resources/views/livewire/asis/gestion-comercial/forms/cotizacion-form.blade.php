@@ -102,7 +102,7 @@
                         {{ $message }}
                     </div>
                 @enderror
-            </div>
+            </div> 
             {{-- <div class="col-md-12">
                 <label for="cotizacionFile">Archivo cotizaci&oacute;n:</label>
                 <input type="file" id="cotizacionFile" class="form-control @error('cotizacionFile') is-invalid @elseif(strlen($cotizacionFile) > 0) is-valid @enderror" value="{{ old('cotizacionFile') }}" wire:model.lazy="cotizacionFile" required>
@@ -111,7 +111,7 @@
                         {{ $message }} 
                     </div>
                 @enderror
-            </div> --}}
+            </div> --}} 
             <div class="col-md-12">
                 <label for="cotizacionUrl">Enlace propuesta (opcional):</label>
                 <input type="text" id="cotizacionUrl" class="form-control @error('cotizacionUrl') is-invalid @elseif(strlen($cotizacionUrl) > 0) is-valid @enderror" value="{{ old('cotizacionUrl') }}" wire:model.lazy="cotizacionUrl">
@@ -122,8 +122,16 @@
                 @enderror
             </div>
             <div class="col-md-12">
-                <div class="form-group mt-4">
-                    <div id="passwordHelpBlock mt-0" class="form-text">
+                <div class="form-check mt-2"> 
+                    <input id="check" wire:model="claro" class="form-check-input" type="checkbox">
+                    <label for="check" class="form-check-label ms-0 form-text" for="flexCheckDefault">
+                        Este prospecto es cuenta de <b>Claro</b>?
+                    </label>                    
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group mt-2">
+                    <div class="form-text">
                         Al guardar los cambios, confirmas que &eacute;ste prospecto se convierte en <b>cotizacion.</b>
                     </div>
                 </div>
