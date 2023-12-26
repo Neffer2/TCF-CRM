@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>   
-                @foreach ($list as $item) 
+                @foreach ($list as $item)  
                     <tr>
                         <td>
                             <div class="d-flex px-2">

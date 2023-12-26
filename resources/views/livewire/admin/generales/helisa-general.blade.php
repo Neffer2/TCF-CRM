@@ -69,19 +69,21 @@
                             </td>
                         </tr> 
                     @endforeach
-                    <tr>
-                        @php
-                            $registrosHelisaArray = $registros_helisa->toArray();
-                            $registros_page = sizeof($registrosHelisaArray['data']);
-                            $total = $registrosHelisaArray['total'];
-                        @endphp
-                        <td colspan="7" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
-                    </tr>
-                    <tr>
-                        <td colspan="7" class="d-flex pt-0">{{ $registros_helisa->links() }}</td>
-                    </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="row p-2">
+            <div class="col-md-6">
+                @php
+                    $registrosHelisaArray = $registros_helisa->toArray();
+                    $registros_page = sizeof($registrosHelisaArray['data']);
+                    $total = $registrosHelisaArray['total'];
+                @endphp
+                <span class="text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</span>        
+            </div>
+            <div class="col-md-12 table-responsive">
+                {{ $registros_helisa->links() }}
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6">

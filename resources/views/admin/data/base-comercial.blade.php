@@ -7,14 +7,7 @@
 @endsection
 @section('content')
     <div class="col-12"> 
-        <div class="col-lg-12 col-12 mx-auto">
-            <div class="card card-body mt-4">
-                <h6 class="mb-0">Base comercial general</h6>
-                <p class="text-sm mb-0">Aqu&iacute; encontrar&aacute;s toda la base comercial almacenada en sistema.</p>
-                <hr class="horizontal dark my-3"> 
-                    @livewire('admin.base-comercial')
-            </div>
-        </div>
+        @livewire('admin.generales.base-comercial-general')
     </div>
 @endsection
 

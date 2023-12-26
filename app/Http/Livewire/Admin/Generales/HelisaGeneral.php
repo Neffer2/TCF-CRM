@@ -15,7 +15,7 @@ class HelisaGeneral extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $comercial, $centro;
+    public $comercial, $centro; 
 
     // Useful vars
     public $comerciales = [], $filtros;
