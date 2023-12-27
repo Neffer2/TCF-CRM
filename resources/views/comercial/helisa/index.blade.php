@@ -27,9 +27,15 @@
   @endsection 
  
   @section('content')     
-    <div class="row mt-4" x-show="!toggle[1]" x-transition> 
-      @livewire('com.helisa.new-registro')  
-      @livewire('com.helisa.helisa-list')  
+    <div class="row mt-4" x-show="!toggle[1]" x-transition>
+      <div class="row">
+        <div class="col-md-12 pb-4">
+          @livewire('com.helisa.new-registro')    
+        </div>
+        <div class="col-md-12">
+          @livewire('com.helisa.helisa-list')
+        </div>
+      </div>
     </div>
   @endsection
  
@@ -59,6 +65,7 @@
           return {
             form_project: false,
             show_form(){
+              console.log(this.form_project);
               this.form_project = !this.form_project;
             }
           }

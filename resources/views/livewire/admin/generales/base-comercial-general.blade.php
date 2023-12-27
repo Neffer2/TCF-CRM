@@ -5,13 +5,22 @@
                 <div class="col-md-12">
                     <h3 class="mb-0">Base comercial general</h3> 
                     <p class="text-sm mb-0">Aqu&iacute; encontrar&aacute;s toda la base comercial almacenada en sistema.</p>
-                </div> 
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="comercial">Año:</label>
+                    <select wire:model="año" class="form-control">
+                        <option value="">Seleccionar</option>
+                        @foreach ($años as $año)
+                            <option value="{{ $año->id }}">{{ $año->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-group col-md-2">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="centro" class="form-control" placeholder="Centro de costos">
                 </div>
                 <div class="form-group col-md-2">
-                    <label for="comercial">Comercial:</label> 
+                    <label for="comercial">Comercial:</label>
                     <select wire:model="comercial" class="form-control">
                         <option value="">Seleccionar</option>
                         @foreach ($comerciales as $comercial)
@@ -21,10 +30,10 @@
                 </div>
                 <div class="form-group col-md-2">
                     <label for="comercial">Estado:</label> 
-                    <select wire:model="comercial" class="form-control">
+                    <select wire:model="estado" class="form-control">
                         <option value="">Seleccionar</option>
-                        @foreach ($comerciales as $comercial)
-                            <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -32,7 +41,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive"> 
-                <table class="table font-table align-items-center mb-0">
+                <table class="table font-table align-items-center table-striped mb-0">
                     <thead class="font-weight-bold bg-gradient-warning text-white">
                         <tr> 
                             <th>FECHA</th>
@@ -47,7 +56,7 @@
                         </tr> 
                     </thead>
                     <tbody> 
-                        @foreach ($baseComerciales as $baseComercial)
+                        @foreach ($baseComerciales as $key => $baseComercial)
                             <tr>
                                 <td class="font-weight-bold">{{ $baseComercial->fecha }}</td>
                                 <td class="font-weight-bold">{{ $baseComercial->nom_cliente }}</td>

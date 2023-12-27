@@ -5,12 +5,21 @@
                 <div class="col-md-12">
                     <h3 class="mb-0">Presupuestos</h3>
                     <p class="text-sm mb-0">Lista completa de presupuestos.</p>
-                </div> 
-                <div class="form-group col-md-3">
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="comercial">Año:</label>
+                    <select wire:model="año" class="form-control">
+                        <option value="">Seleccionar</option>
+                        @foreach ($años as $año)
+                            <option value="{{ $año->id }}">{{ $año->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="centro" class="form-control" placeholder="Centro de costos">
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                     <label for="comercial">Comercial:</label> 
                     <select wire:model="comercial" class="form-control">
                         <option value="">Seleccionar</option>

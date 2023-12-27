@@ -13,4 +13,8 @@ class Año extends Model
     protected $fillable = [
         'description'
     ];
+
+    public function Meses (){
+        return $this->hasMany(Mes::class, 'ano_id', 'id');
+    }
 }
