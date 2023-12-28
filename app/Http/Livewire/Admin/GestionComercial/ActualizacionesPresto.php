@@ -5,39 +5,38 @@ namespace App\Http\Livewire\Admin\GestionComercial;
 use Livewire\Component;
 use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
-use App\Models\GestionComercial; 
+use App\Models\Año; 
 use App\Models\Asistente;
-use App\Models\User;   
 use App\Models\ItemPresupuesto;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth; 
 use App\Traits\Email;
 
-class ActualizacionesPresto extends Component
+class ActualizacionesPresto extends Component 
 {   
     use WithPagination, Email;
     protected $paginationTheme = 'bootstrap';
 
     //Models 
-    // public $comercial = 0;
-    public $fecha = 'desc';
-    public $cod_cc;
+    public $fecha = 'desc', $cod_cc, $año;
 
     // Useful vars
-    public $estados = [];  
-    // public $comerciales = [];   
+    public $estados = [], $años = [], $yearInfo;
 
     public $rol; 
   
     public function render()      
     {   
-        $filtros = [];
-
-        array_push($filtros, ['cod_cc', '<>', null]);
+        $filtros = [['cod_cc', '<>', null]];
 
         if ($this->cod_cc){
             array_push($filtros, ['cod_cc', 'like', "%$this->cod_cc%"]);   
+        }
+
+        if($this->año){
+            array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
+            array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
         if ($this->rol == 1){ array_push($filtros, ['estado_id', 2]); }
@@ -68,6 +67,7 @@ class ActualizacionesPresto extends Component
     
     public function mount(){ 
         $this->getEstados();
+        $this->getAños();
     }
 
     public function getEstados(){
@@ -130,5 +130,20 @@ class ActualizacionesPresto extends Component
                 $base->update();
             }
         }
+    }
+
+    public function getAños(){
+        $this->años = Año::all();
+        /* CURRENT YEAR */
+        $this->año = $this->años->sortByDesc('description')->first()->id;
+        $this->updatedAño();
+    }
+
+    public function updatedAño(){
+        $this->validate([
+            'año' => 'required'
+        ]);
+        
+        $this->yearInfo = Año::find($this->año);
     }
 }

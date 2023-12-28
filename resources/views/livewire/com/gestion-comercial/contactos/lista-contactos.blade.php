@@ -5,7 +5,7 @@
                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n personal</th>
                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">CARGO</th>
                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">CONTACTO</th>
-                <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ACCIONES</th>
+                <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ACCIONES</th>
             </thead>  
             <tbody>  
                 @foreach ($contactos as $contacto)
@@ -29,7 +29,7 @@
                             <p class="text-xs font-weight-bold mb-0">{{ $contacto->web }}</p>
                             <p class="text-xs text-secondary">{{ $contacto->celular }}</p>
                         </td>
-                        <td colspan="2"> 
+                        <td class="text-center" colspan="2"> 
                             <button class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $contacto->id }}">Editar</button>
                             <button class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $contacto->id }}">Eliminar</button>
                         </td>
@@ -155,9 +155,9 @@
                     </div>
                 @endforeach
                 <tr>
-                    <td colspan="6" class="d-flex">{{ $contactos->links() }}</td>
+                    <td colspan="4">{{ $contactos->links() }}</td>
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div> 
 </div>  

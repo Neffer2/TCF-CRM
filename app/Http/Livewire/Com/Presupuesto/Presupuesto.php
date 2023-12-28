@@ -104,7 +104,7 @@ class Presupuesto extends Component
 
         // Valida si es actualización. 
         if ($this->cod_cc){
-            $this->showJustificacion = true;
+            // $this->showJustificacion = true; 
         }
 
         $this->refresh();

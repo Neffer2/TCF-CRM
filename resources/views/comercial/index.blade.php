@@ -6,7 +6,7 @@
       <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
   @endsection 
   @section('profile-card')
-    <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
+    <div class="card shadow-lg mx-4 card-profile-bottom mt-0 mb-3">
       <div class="card-body p-3">
         <div class="row gx-4">
           <div class="col-auto"> 

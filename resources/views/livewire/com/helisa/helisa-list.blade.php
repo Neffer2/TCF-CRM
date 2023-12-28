@@ -5,7 +5,7 @@
                 <div class="col-md-12">
                     <h3 class="mb-0">Facturaci&oacute;n Helisa</h3> 
                     <p class="text-sm mb-0">Aqu&iacute; encontrar&aacute;s toda la facturaci&oacute;n de Helisa.</p>
-                </div> 
+                </div>
                 <div class="form-group col-md-1">
                     <label for="comercial">Año:</label>
                     <select wire:model="año" class="form-control">
@@ -18,7 +18,7 @@
                 <div class="form-group col-md-2">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="centro" class="form-control" placeholder="Centro de costos">
-                </div>
+                </div> 
                 <div class="form-group col-md-2">
                     <label for="comercial">Fecha:</label> 
                     <select wire:model="orderBy" class="form-control">
@@ -27,51 +27,60 @@
                         <option value="DESC">Mas recientes</option>
                     </select>
                 </div>
+                <div class="form-group col-md-2">
+                    <label for="mes">Mes:</label> 
+                    <select wire:model="mes" class="form-control">
+                        <option value="">Seleccionar</option>
+                        @foreach ($meses as $mes)
+                            <option value="{{ $mes->description }}">{{ $mes->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div> 
         </div>
         <div class="card-body">
             <div class="table-responsive"> 
                 <table class="table font-table align-items-center table-striped mb-0">
                     <thead class="font-weight-bold bg-gradient-warning text-white">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Tipo Doc</th>
-                            <th>N&uacute;mero Doc</th>
-                            <th>Identidad</th>
-                            <th>Nombre del tercero</th>
-                            <th>Centro costo</th>
-                            <th>Nombre Centro de Costo</th>
-                            <th>Debito</th>
-                            <th>Credito</th>
-                            <th>Comercial</th>
-                            <th>Cuenta</th>
-                            <th>Participaci&oacute;n</th>
-                            <th>Base factura</th>
-                            <th>Mes</th>
-                            <th>Año</th>
-                            <th>Comision</th> 
-                            <th>Acciones</th>
+                        <tr class="text-center"> 
+                            <th>FECHA</th>
+                            <th>TIPO DOC</th>
+                            <th>N&Uacute;MERO DOC</th>
+                            <th>IDENTIDAD</th>
+                            <th>NOMBRE DEL TERCERO</th>
+                            <th>CENTRO COSTOS</th>
+                            <th>NOMBRE CENTRO DE COSTOS</th>
+                            <th>D&Eacute;BITO</th>
+                            <th>CR&Eacute;DITO</th>
+                            <th>COMERCIAL</th>
+                            <th>CUENTA</th>
+                            <th>PARTICIPACI&Oacute;N</th>
+                            <th>BASE FACTURA</th>
+                            <th>MES</th>
+                            <th>AÑO</th>
+                            <th>COMISI&Oacute;N</th> 
+                            <th>ACCIONES</th>
                         </tr> 
                     </thead>
                     <tbody> 
                         @foreach ($registrosHelisa as $key => $registroHelisa)  
                             <tr>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->fecha }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->tipo_doc }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->num_doc }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->identidad }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->fecha }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->tipo_doc }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->num_doc }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->identidad }}</td>
                                 <td class="text-sm font-weight-normal">{{ $registroHelisa->nom_tercero }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->centro }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->centro }}</td>
                                 <td class="text-sm font-weight-normal">{{ $registroHelisa->nom_centro_costo }}</td>
-                                <td class="text-sm font-weight-normal">{{ number_format($registroHelisa->debito) }}</td>
-                                <td class="text-sm font-weight-normal">{{ number_format($registroHelisa->credito) }}</td> 
+                                <td class="text-center text-sm font-weight-normal">$ {{ number_format($registroHelisa->debito) }}</td>
+                                <td class="text-center text-sm font-weight-normal">$ {{ number_format($registroHelisa->credito) }}</td> 
                                 <td class="text-sm font-weight-normal">{{ $registroHelisa->comercial_user->name }}</td>
                                 <td class="text-sm font-weight-normal">{{ $registroHelisa->cuenta->description }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->participacion }}</td>
-                                <td class="text-sm font-weight-normal">{{ number_format($registroHelisa->base_factura) }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->participacion }}</td>
+                                <td class="text-sm font-weight-normal">$ {{ number_format($registroHelisa->base_factura) }}</td>
                                 <td class="text-sm font-weight-normal">{{ $registroHelisa->mes }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->año }}</td>
-                                <td class="text-sm font-weight-normal">{{ $registroHelisa->comision }}</td>
+                                <td class="text-center text-sm font-weight-normal">{{ $registroHelisa->año }}</td>
+                                <td class="text-center text-sm font-weight-normal">$ {{ number_format($registroHelisa->comision) }}</td>
                                 <td class="text-sm font-weight-normal">
                                     <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $registroHelisa->id }}">Eliminar</button>
                                     <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $registroHelisa->id }}"> Editar </button>

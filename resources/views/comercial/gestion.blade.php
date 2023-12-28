@@ -1,31 +1,4 @@
 @extends('layouts.comercial.main')
-  @section('profile-card') 
-    <div class="card shadow-lg mx-4 card-profile-bottom mt-5">
-      <div class="card-body p-3">
-        <div class="row gx-4">
-          <div class="col-auto"> 
-            <div class="avatar avatar-xl position-relative">
-              @php
-                $aux = str_replace('public/', '', Auth::user()->avatar);
-              @endphp
-              <img src="{{ asset("storage/$aux") }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
-            </div>
-          </div>
-          <div class="col-auto my-auto">
-            <div class="h-100">
-              <h5 class="mb-1">
-                {{ Auth::user()->name }}
-              </h5>
-                <p class="mb-0 font-weight-bold text-sm">
-                {{ Auth::user()->email }}
-                </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  @endsection 
-
   @section('content')    
     <div class="card card-frame">
       <div class="card-body">
@@ -34,9 +7,7 @@
             <i class="fas fa-plus text-white" aria-hidden="true" x-show="collapse"></i>
             <i class="fa-solid fa-minus text-white" aria-hidden="true" x-cloak x-show="!collapse"></i>
           </button> 
-          <h5>
-            <b>Nuevo prospecto</b>
-          </h5>
+          <h5><b>Nuevo prospecto</b></h5>
         </div>
         <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
         <div class="collapse" id="collapseExample">

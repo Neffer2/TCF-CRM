@@ -14,17 +14,7 @@
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
                         @endforeach
                     </select>
-                </div> 
-                <div class="form-group col-md-2">
-                    <div class="form-group">
-                        <label for="comercial">Fecha:</label>
-                        <select id="comercial" class="form-control" wire:model="fecha">
-                            <option value="asc">Seleccionar</option>
-                            <option value="asc">M&aacute;s reciente</option>
-                            <option value="desc">M&aacute;s antiguos</option>
-                        </select>
-                    </div>
-                </div> 
+                </div>
                 <div class="form-group col-md-2">
                     <div class="form-group">
                         <label for="comercial">Margen:</label>
@@ -35,6 +25,16 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group col-md-2">
+                    <div class="form-group">
+                        <label for="comercial">Fecha:</label>
+                        <select id="comercial" class="form-control" wire:model="fecha">
+                            <option value="asc">Seleccionar</option>
+                            <option value="asc">M&aacute;s reciente</option>
+                            <option value="desc">M&aacute;s antiguos</option>
+                        </select>
+                    </div>
+                </div> 
             </div>
         </div>
         <div class="table-responsive">

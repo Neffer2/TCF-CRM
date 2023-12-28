@@ -1,6 +1,6 @@
 <div>
-    <form wire:submit.prevent="store" class="p-3">  
-        <div class="row p-2"> 
+    <form wire:submit.prevent="store">  
+        <div class="row"> 
             <div class="col-md-4"> 
                 <div class="form-group">
                     <label for="nombre">Nombre: </label>
@@ -12,7 +12,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4"> 
                 <div class="form-group">
                     <label for="apellido">Apellido: </label>
                     <input id="apellido" wire:model.lazy="apellido" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror" value="{{ old('apellido') }}" placeholder="Apellido">

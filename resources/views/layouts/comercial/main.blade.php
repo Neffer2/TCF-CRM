@@ -34,7 +34,7 @@
         </a>
       </div>
       <hr class="horizontal dark mt-0">
-      <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+      <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
           <li class="nav-item"> 
             <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
@@ -43,22 +43,22 @@
               </div>
               <span class="nav-link-text ms-1">Inicio</span>
             </a>
-            <div class="collapse  show " id="dashboardsExamples">
+            <div class="collapse show" id="dashboardsExamples">
               <ul class="nav ms-4">
-                <li class="nav-item active">
-                  <a class="nav-link active" href="{{ route('dashboard-com') }}">
+                <li @class(['active' => request()->is('dashboard-com'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('dashboard-com'), 'nav-link' => true]) href="{{ route('dashboard-com') }}">
                     <span class="sidenav-mini-icon"> D </span>
                     <span class="sidenav-normal"> Dashboard </span> 
                   </a>
                 </li>
-                <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('gestion-helisa') }}">  
+                <li @class(['active' => request()->is('gestion-helisa'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('gestion-helisa'), 'nav-link' => true]) href="{{ route('gestion-helisa') }}">  
                     <span class="sidenav-mini-icon"> H </span>
                     <span class="sidenav-normal"> Helisa </span>
                   </a> 
                 </li>
-                <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('dashboard-base') }}"> 
+                <li @class(['active' => request()->is('dashboard-base'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('dashboard-base'), 'nav-link' => true]) href="{{ route('dashboard-base') }}"> 
                     <span class="sidenav-mini-icon"> B </span>
                     <span class="sidenav-normal"> Base comercial </span>
                   </a> 
@@ -75,20 +75,20 @@
             </a>
             <div class="collapse" id="dashboardsGestion">
               <ul class="nav ms-4">
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ route('contactos') }}">
+                <li @class(['active' => request()->is('contactos'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('contactos'), 'nav-link' => true]) href="{{ route('contactos') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Contactos </span>
                   </a> 
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ route('gestion-comercial') }}">
+                <li @class(['active' => request()->is('gestion-comercial'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('gestion-comercial'), 'nav-link' => true]) href="{{ route('gestion-comercial') }}">
                     <span class="sidenav-mini-icon text-xs"> Pro </span>
                     <span class="sidenav-normal"> Prospectos </span>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ route('presupuestos') }}">
+                <li @class(['active' => request()->is('presupuestos'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('presupuestos'), 'nav-link' => true]) href="{{ route('presupuestos') }}">
                     <span class="sidenav-mini-icon text-xs"> Pre </span>
                     <span class="sidenav-normal"> Presupuestos </span>
                   </a>
@@ -105,18 +105,12 @@
             </a>
             <div class="collapse" id="dashboardsProduccion">
               <ul class="nav ms-4">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
+                <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Proveedores </span>
                   </a> 
                 </li>
-                {{-- <li class="nav-item">
-                  <a class="nav-link" href="{{ route('proveedores') }}">
-                    <span class="sidenav-mini-icon text-xs"> C </span>
-                    <span class="sidenav-normal"> Proveedores </span>
-                  </a> 
-                </li> --}}
               </ul>
             </div>
           </li>
@@ -129,8 +123,8 @@
             </a>
             <div class="collapse" id="applicationsExamples" style="">
               <ul class="nav ms-4"> 
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ route('actualizar-perfil-com') }}"> 
+                <li @class(['active' => request()->is('actualizar-perfil-com'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('actualizar-perfil-com'), 'nav-link' => true]) href="{{ route('actualizar-perfil-com') }}"> 
                     <span class="sidenav-mini-icon"> A </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>
@@ -201,8 +195,9 @@
       </nav>
       <!-- End Navbar -->
       @yield('profile-card')
-        <div class="container-fluid py-4"> 
-      @yield('content')
+        <div class="container-fluid"> 
+          @yield('content')
+        </div>
         
         <footer class="footer pt-3  ">
           <div class="container-fluid">

@@ -30,7 +30,7 @@ class GestionPresupuestos extends Component
     public $rol;
  
     public function render() 
-    {   
+    {    
         $filtros = [];
  
         if ($this->filter != 0){
