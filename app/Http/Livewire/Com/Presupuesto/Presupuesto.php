@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Com\Presupuesto; 
 
 use Livewire\Component;
-use Illuminate\Validation\Rules;
+use App\Rules\CentroCostos;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial; 
 use App\Models\Mes;
@@ -109,7 +109,7 @@ class Presupuesto extends Component
 
         $this->refresh();
         $this->getCiudades();
-        // $this->getProveedores();
+        $this->getProveedores();
         $this->getMeses();
         $this->getTarifario();
     }
@@ -443,7 +443,7 @@ class Presupuesto extends Component
 
     public function updateCentro(){
         $this->validate([
-            'centroCostos' => ['required', 'string']
+            'centroCostos' => ['required', 'string', new CentroCostos] 
         ]);
 
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
@@ -637,11 +637,9 @@ class Presupuesto extends Component
     }
 
     public function updatedCentroCostos(){    
-        if (Auth::user()->rol == 1){
-            $this->validate([
-                'centroCostos' => ['required', 'string']
-            ]);
-        }
+        $this->validate([
+            'centroCostos' => ['required', 'string', new CentroCostos]
+        ]);
     }
     
     public function updatedImprevistos(){    

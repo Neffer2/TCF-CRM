@@ -8,9 +8,9 @@ use App\Models\Cuenta;
 use App\Models\Base_comercial;
 use App\Models\User; 
 use App\Models\Asistente; 
+use App\Rules\CentroCostos;
 use App\Models\GestionComercial;
-use App\Models\PresupuestoProyecto;
-use Illuminate\Validation\Rules; 
+use App\Models\PresupuestoProyecto; 
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
@@ -124,7 +124,7 @@ class NewProyecto extends Component
     }
 
     public function updatedCodCc(){ 
-        $this->validate(['cod_cc' => ['required', 'string']]);
+        $this->validate(['cod_cc' => ['required', 'string', new CentroCostos]]);
     }
 
     public function updatedValorProyecto(){ 
@@ -388,7 +388,6 @@ class NewProyecto extends Component
         $this->nom_proyecto = ""; 
         $this->cod_cc = ""; 
         $this->valor_proyecto = ""; 
-        $this->com_1 = ""; 
         $this->com_2 = ""; 
         $this->id_estado = "";
         $this->fecha_inicio = null;

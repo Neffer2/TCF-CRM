@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header p-0 mx-3 mt-3">
+    <div class="card-header p-0 px-3 mt-3">
         <div class="row">
             <div class="col-md-12">
                 @if(Auth::user()->rol == 1)
@@ -10,7 +10,7 @@
                     <p class="text-sm mb-0">Lista de presupuestos.</p>
                 @endif 
             </div>
-            <div class="col-md-1 form-group">
+            <div class="col-md-1 form-group mb-0">
                 <label for="comercial">Año:</label>
                 <select wire:model="año" class="form-control">
                     <option value="">Seleccionar</option>
@@ -19,11 +19,11 @@
                     @endforeach
                 </select>
             </div> 
-            <div class="col-md-2">   
+            <div class="col-md-2 mb-0">
                 <label for="comercial">Buscar:</label>
                 <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 mb-0">
                 <label for="filtro_fecha">Fecha:</label>
                 <select id="filtro_fecha" class="form-control" wire:model="fecha">
                     <option value="asc">Seleccionar</option>

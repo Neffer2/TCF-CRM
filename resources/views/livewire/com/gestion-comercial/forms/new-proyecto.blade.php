@@ -6,13 +6,13 @@
                     <label for="fecha"> 
                         Fecha Centro de Costos: 
                     </label>
-                    <input wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
+                    <input disabled wire:model.lazy="fecha" id="fecha" type="date" name="fecha" class="form-control @error('fecha') is-invalid @elseif(strlen($fecha) > 0) is-valid @enderror" value="{{ old('date') }}" placeholder="Nombre" required>
                     @error('fecha')
                         <div id="fecha" class="invalid-feedback">
                             {{ $message }} 
                         </div>
                     @enderror
-                </div>  
+                </div>    
             </div> 
             <div class="col-md-7">
                 <div class="form-group"> 
@@ -39,7 +39,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="cod_cc">COD C.C:</label>
-                    <input wire:model.lazy="cod_cc" id="cod_cc" type="text" name="cod_cc" class="form-control @error('cod_cc') is-invalid @elseif(strlen($cod_cc) > 0) is-valid @enderror" value="{{ old('cod_cc') }}" placeholder="COD C.C." required>
+                    <input disabled wire:model.lazy="cod_cc" id="cod_cc" type="text" name="cod_cc" class="form-control @error('cod_cc') is-invalid @elseif(strlen($cod_cc) > 0) is-valid @enderror" value="{{ old('cod_cc') }}" placeholder="COD C.C." required>
                     @error('cod_cc')
                         <div id="cod_cc" class="invalid-feedback">
                             {{ $message }}

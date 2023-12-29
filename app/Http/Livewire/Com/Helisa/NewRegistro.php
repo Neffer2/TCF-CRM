@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Año;
 use App\Models\Mes; 
 use App\Models\Cuenta; 
-use App\Models\Asistente; 
 use App\Models\Helisa;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
@@ -324,7 +323,7 @@ class NewRegistro extends Component
                 $this->{'porcentaje'.$i} = 100/$this->participaciones;
                 $i++;
             }
-
+ 
             $this->getComision();
         }
 

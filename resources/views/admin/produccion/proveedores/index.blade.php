@@ -7,7 +7,7 @@
  
     @section('content')
     <div class="card">
-        <div class="card-body">
+        <div class="card-body px-1 py-3">
             <div class="d-flex align-items-baseline" x-data="{ collapse: true}" x-cloak>
                 <button class="btn bg-gradient-warning me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" x-on:click="collapse = !collapse">
                     <i class="fas fa-plus text-white" aria-hidden="true" x-show="collapse"></i>

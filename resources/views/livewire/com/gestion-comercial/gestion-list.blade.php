@@ -1,11 +1,11 @@
 <div class="card">
-    <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
+    <div class="card-header p-0 px-3 mt-3">
         <div class="row">            
             <div class="col-md-12">
                 <h3 class="mb-0">Gesti&oacute;n comercial</h3>
                 <p class="text-sm mb-0">Lista completa de gestiones comerciales.</p>
             </div> 
-            <div class="form-group col-md-1"> 
+            <div class="form-group col-md-1 mb-0"> 
                 <label for="año">Año:</label> 
                 <select id="año" wire:model="año" class="form-control">
                     <option value="">Seleccionar</option>
@@ -14,11 +14,11 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-md-2"> 
+            <div class="form-group col-md-2 mb-0">  
                 <label for="filtro_buscar">Buscar:</label> 
                 <input id="filtro_buscar" type="text" wire:model="nomProyecto" class="form-control" placeholder="Nombre proyecto">
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-2 mb-0"> 
                 <label for="contacto">Contacto:</label> 
                 <select id="contacto" wire:model="contacto" class="form-control">
                     <option value="">Seleccionar</option>
@@ -27,7 +27,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-2 mb-0"> 
                 <label for="filtro_estado">Estado:</label> 
                 <select id="filtro_estado" wire:model="estado" class="form-control">
                     <option value="">Seleccionar</option>
@@ -36,7 +36,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-2 mb-0"> 
                 <label for="filtro_fecha">Fecha:</label> 
                 <select id="filtro_fecha" class="form-control" wire:model="order">
                     <option value="asc">Seleccionar</option>
@@ -46,7 +46,7 @@
             </div> 
         </div> 
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-0 pt-1">
         <div class="table-responsive">  
             <table class="table mb-0">
                 <thead> 

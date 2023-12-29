@@ -26,7 +26,7 @@
       <span class="mask bg-gradient-warning opacity-6"></span>
     </div>
     <!-- Barra lateral -->
-    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
+    <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
       <div class="sidenav-header d-flex align-items-center justify-content-center">
         <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0 d-flex flex-column" href="{{ route('dashboard') }}">
@@ -37,13 +37,16 @@
       <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
           <li class="nav-item"> 
-            <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
+            <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-shop text-primary text-sm opacity-10"></i>
               </div>
               <span class="nav-link-text ms-1">Inicio</span>
             </a>
-            <div class="collapse show" id="dashboardsExamples">
+            <div @class([
+              'show' => (request()->is('dashboard-com') || request()->is('gestion-helisa') || request()->is('dashboard-base')),
+              'collapse' => true
+              ]) id="dashboardsExamples">
               <ul class="nav ms-4">
                 <li @class(['active' => request()->is('dashboard-com'), 'nav-item' => true])>
                   <a @class(['active' => request()->is('dashboard-com'), 'nav-link' => true]) href="{{ route('dashboard-com') }}">
@@ -73,7 +76,10 @@
               </div>
               <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
             </a>
-            <div class="collapse" id="dashboardsGestion">
+            <div @class([
+              'show' => (request()->is('contactos') || request()->is('gestion-comercial') || request()->is('presupuestos')),
+              'collapse' => true
+              ]) id="dashboardsGestion">
               <ul class="nav ms-4">
                 <li @class(['active' => request()->is('contactos'), 'nav-item' => true])>
                   <a @class(['active' => request()->is('contactos'), 'nav-link' => true]) href="{{ route('contactos') }}">
@@ -93,7 +99,7 @@
                     <span class="sidenav-normal"> Presupuestos </span>
                   </a>
                 </li>            
-              </ul>
+              </ul> 
             </div>
           </li>
           <li class="nav-item"> 
@@ -103,7 +109,10 @@
               </div>
               <span class="nav-link-text ms-1">Producci&oacute;n</span>
             </a>
-            <div class="collapse" id="dashboardsProduccion">
+            <div @class([
+              'show' => (request()->is('proveedores')),
+              'collapse' => true
+              ]) id="dashboardsProduccion">
               <ul class="nav ms-4">
                 <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
                   <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
@@ -121,7 +130,10 @@
               </div>
               <span class="nav-link-text ms-1">Ajustes</span>
             </a>
-            <div class="collapse" id="applicationsExamples" style="">
+            <div @class([
+              'show' => (request()->is('actualizar-perfil-com')),
+              'collapse' => true
+              ]) id="applicationsExamples" style="">
               <ul class="nav ms-4"> 
                 <li @class(['active' => request()->is('actualizar-perfil-com'), 'nav-item' => true])>
                   <a @class(['active' => request()->is('actualizar-perfil-com'), 'nav-link' => true]) href="{{ route('actualizar-perfil-com') }}"> 

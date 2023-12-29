@@ -1,6 +1,6 @@
 <div>
     <div class="card">
-        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
+        <div class="card-header p-0 px-3 mt-3 col-md-12">
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Proveedores</h3> 
@@ -46,7 +46,7 @@
                 @endif
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0 pt-1">
             <table class="table">
                 <thead> 
                     <th colspan="6" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n proveedores</th>

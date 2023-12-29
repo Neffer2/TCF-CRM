@@ -6,7 +6,7 @@
                     <h3 class="mb-0">Presupuestos</h3>
                     <p class="text-sm mb-0">Lista completa de presupuestos.</p>
                 </div> 
-                <div class="col-md-1 form-group">
+                <div class="col-md-1 form-group mb-0">
                     <label for="comercial">Año:</label>
                     <select wire:model="año" class="form-control">
                         <option value="">Seleccionar</option>
@@ -15,11 +15,11 @@
                         @endforeach
                     </select>
                 </div>  
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div> 
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Fecha:</label> 
                     <select wire:model="orderBy" class="form-control">
                         <option value="DESC">Seleccionar</option>
@@ -29,7 +29,7 @@
                 </div> 
             </div>  
         </div>
-        <div class="card-body p-0">
+        <div class="card-body p-0 pt-1">
             <div class="table-responsive"> 
                 <table class="table align-items-center mb-0">
                     <thead> 

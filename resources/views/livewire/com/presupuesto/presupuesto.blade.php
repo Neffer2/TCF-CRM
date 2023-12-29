@@ -440,15 +440,15 @@
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
-                            <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                            placeholder="Proveedor" required wire:model.lazy="proveedor">
-                            {{-- <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            {{-- <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            placeholder="Proveedor" required wire:model.lazy="proveedor"> --}}
+                            <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
                                 placeholder="Proveedor" required wire:model.lazy="proveedor">
                                 <option value="">Seleccionar</option>
                                 @foreach ($proveedores as $proveedor)
                                     <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                 @endforeach
-                            </select> --}}
+                            </select> 
                             @error('proveedor')
                                 <div id="proveedor" class="invalid-feedback">
                                     {{ $message }}
@@ -633,11 +633,11 @@
                         <div class="form-group mb-0">
                             <label for="centroCostos">CENTRO DE COSTOS</label>
                             <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
-                            placeholder="Centro de costos" required wire:model.lazy="centroCostos">
+                            placeholder="Centro de costos" required wire:model.lazy="centroCostos"> 
                             @error('centroCostos')
                                 <div id="centroCostos" class="invalid-feedback">
                                     {{ $message }}
-                                </div>
+                                </div> 
                             @enderror 
                             <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
                                 <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>

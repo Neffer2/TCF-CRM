@@ -1,42 +1,38 @@
-<div>
-    <div class="card">
-        <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3 class="mb-0">Aprobar</h3>
-                    <p class="text-sm mb-0">Presupuestos por aprobar.</p>
-                </div>
-                <div class="form-group col-md-2"> 
-                    <label for="estados">Estados:</label>
-                    <select id="estados" class="form-control" wire:model="filter">
-                        <option selected value="0">Todos</option>                    
-                        @foreach ($estados as $estado)
-                            <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group col-md-2">
-                    <div class="form-group">
-                        <label for="comercial">Margen:</label>
-                        <select id="comercial" class="form-control" wire:model="margen">
-                            <option value="">Seleccionar</option>
-                            <option value=">">Mayor a 35</option>
-                            <option value="<">Menor a 35</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group col-md-2">
-                    <div class="form-group">
-                        <label for="comercial">Fecha:</label>
-                        <select id="comercial" class="form-control" wire:model="fecha">
-                            <option value="asc">Seleccionar</option>
-                            <option value="asc">M&aacute;s reciente</option>
-                            <option value="desc">M&aacute;s antiguos</option>
-                        </select>
-                    </div>
-                </div> 
+<div class="card">
+    <div class="card-header p-0 px-2 mt-3">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="mb-0">Aprobar</h3>
+                <p class="text-sm mb-0">Presupuestos por aprobar.</p>
             </div>
+            <div class="form-group col-md-1 mb-0">
+                <label for="estados">Estados:</label>
+                <select id="estados" class="form-control" wire:model="filter">
+                    <option selected value="0">Todos</option>                    
+                    @foreach ($estados as $estado)
+                        <option value="{{ $estado->id }}">{{ $estado->description }}</option>                    
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                <label for="comercial">Margen:</label>
+                <select id="comercial" class="form-control" wire:model="margen">
+                    <option value="">Seleccionar</option>
+                    <option value=">">Mayor a 35</option>
+                    <option value="<">Menor a 35</option>
+                </select>
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                <label for="comercial">Fecha:</label>
+                <select id="comercial" class="form-control" wire:model="fecha">
+                    <option value="asc">Seleccionar</option>
+                    <option value="asc">M&aacute;s reciente</option>
+                    <option value="desc">M&aacute;s antiguos</option>
+                </select>
+            </div> 
         </div>
+    </div>
+    <div class="card-body p-0 pt-1">
         <div class="table-responsive">
             <table class="table align-items-center mb-0">
                 <thead> 
@@ -101,17 +97,21 @@
                             </td>
                         </tr>  
                     @endforeach
-                    <tr>                        
-                        @php
-                            $presupuestosArray = $presupuestos->toArray();
-                            $registros_page = sizeof($presupuestosArray['data']);
-                            $total = $presupuestosArray['total'];
-                        @endphp
-                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
-                        <td colspan="5" class="d-flex pt-0">{{ $presupuestos->links() }}</td>
-                    </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row p-2 pt-0">
+        <div class="col-md-6">
+            @php
+                $presupuestosArray = $presupuestos->toArray();
+                $registros_page = sizeof($presupuestosArray['data']);
+                $total = $presupuestosArray['total'];
+            @endphp
+            <span class="text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</span>        
+        </div>
+        <div class="col-md-12 table-responsive">
+            {{ $presupuestos->links() }}
         </div>
     </div>
 </div>
