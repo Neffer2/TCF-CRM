@@ -63,7 +63,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div :wire:key="'item-'.$item->id"> 
-                                    @livewire('com.base.edit', ['proyecto_id' => $item->id, key('item-'.$item->id)])   
+                                    @livewire('com.base.edit', ['proyecto_id' => $item->id], key('item-'.$item->id))     
                                 </div>
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                 </tbody>
             </table>
         </div>
-
+ 
         <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
             @csrf
             <button type="submit" class="btn bg-gradient-warning mt-3">

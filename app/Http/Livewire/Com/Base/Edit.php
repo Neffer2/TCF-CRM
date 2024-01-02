@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithFileUploads;
   
-class Edit extends Component
+class Edit extends Component 
 {   
     use WithFileUploads;
 
@@ -104,7 +104,7 @@ class Edit extends Component
         $this->validate([
             'nom_cliente' => 'string|min:0'
         ]); 
-    }
+    } 
 
     public function updatedCC(){
         $this->validate([
@@ -283,7 +283,7 @@ class Edit extends Component
         }
         /************/
 
-    public function getEstados(){
+    public function getEstados(){ 
         $this->estados = EstadoCuenta::select('id', 'description')->get();
     }
 

@@ -1,7 +1,7 @@
 <div>
-    <form wire:submit.prevent="update_proyecto">
+    <form wire:submit.prevent="">
         <div class="modal-body">
-            <div class="row">
+            <div class="row"> 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="nom_cliente">Cliente:</label>
@@ -13,7 +13,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6"> 
                     <div class="form-group">
                         <label for="nom_proyecto">Nombre Proyecto:</label>
                         <input type="text" id="nom_proyecto" class="form-control @error('nom_proyecto') is-invalid @elseif(strlen($nom_proyecto) > 0) is-valid @enderror" value="{{ old('nom_proyecto') }}" wire:model.lazy="nom_proyecto" required>
@@ -23,7 +23,7 @@
                             </div>
                         @enderror
                     </div> 
-                </div>
+                </div> 
                 <div class="col-md-6">
                     <div class="form-group"> 
                         <label for="CC">C&oacute;digo centro de costos:</label>
@@ -166,7 +166,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
+            <button type="button" wire:click="update_proyecto" class="btn bg-gradient-primary">Guardar cambios</button>
         </div>
     </form>
 </div>
