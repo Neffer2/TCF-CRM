@@ -1,5 +1,5 @@
 <div> 
-    <form wire:submit.prevent="update_helisa"> 
+    <form> 
         <div class="modal-content" x-data="">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Editar</h1>
@@ -245,9 +245,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer"> 
                 <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn bg-gradient-warning">Guardar cambios</button>
+                <button type="button" wire:click.lazy="update_helisa" class="btn bg-gradient-warning">Guardar cambios</button>
             </div>
         </div>
     </form>
