@@ -2,12 +2,7 @@
 
 namespace App\Traits;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP; 
 use PHPMailer\PHPMailer\Exception;
-use Dompdf\Dompdf;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Storage;
 use App\models\User;
 
 trait Email  
@@ -115,20 +110,20 @@ trait Email
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
             
             /* Recipients */
-                foreach ($recipients as $recipient) {
+                foreach ($recipients as $recipient) {  
                     $mail->addAddress($recipient['email'], $recipient['name']);
                 }
 
-                foreach ($cc as $copiados) {
-                    $mail->addCC($copiados->ejecutivo->email);        
-                }
+                // foreach ($cc as $copiados) {
+                //     $mail->addCC($copiados->ejecutivo->email);        
+                // }
             /* *** */
             
             if ($attachment){
                 // $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
                 $archivo_pago = str_replace('public/', '', $attachment);
                 $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
-            }
+            } 
 
             //Content
             $mail->isHTML(true);
@@ -143,7 +138,7 @@ trait Email
     }
 
     /* ORDENES COMPRA */
-    public function mailAnticipoPagado($orden, $observaciones){   
+    public function mailAnticipoPagado($orden, $observaciones){    
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -166,10 +161,12 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
+            // $mail->addCC('tesoreria@bullmarketing.com.co');
+            // $mail->addCC('contabiliad@bullmarketing.com.co');
+            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
             $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
             $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
-            $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
-            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
             /* *** */
                         
             $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
@@ -182,7 +179,7 @@ trait Email
             $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]); 
             $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
@@ -211,10 +208,11 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
+                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
-                // $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+                // $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                          
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
@@ -229,13 +227,13 @@ trait Email
             $mail->Body    = view('mails.grGenerado', ['orden' => $orden]); 
             $mail->AltBody = "Se ha asignado el GR: {$orden->gr} para la orden de compra {$orden->cod_oc}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
 
-    public function mailOrdenAprobada($orden){
+    public function mailOrdenAprobada($orden){ 
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -257,11 +255,16 @@ trait Email
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
-            /* LD PRODUCCION & PROVEEDOR */
+            /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
+                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
+                // $mail->addCC('Neffer.Barragan@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            /* *** */
+            
+            /* CONTABILIDAD */
+            dd($orden->proveedor->anticipo);
             /* *** */
                         
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
@@ -274,7 +277,7 @@ trait Email
             $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]); 
             $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }

@@ -22,7 +22,7 @@ class OrdenCompra extends Model
         return $this->hasOne(TipoOrdenCompra::class, 'id', 'tipo_oc');
     }
 
-    public function presupuesto(){
+    public function presupuesto(){ 
         return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
     }
 

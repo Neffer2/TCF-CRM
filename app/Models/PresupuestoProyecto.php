@@ -20,7 +20,7 @@ class PresupuestoProyecto extends Model
  
     public function presupuestoItems(){
         return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id', 'id');
-    }
+    } 
 
     public function ordenesCompra(){
         return $this->hasMany(OrdenCompra::class, 'presupuesto_id', 'id'); 

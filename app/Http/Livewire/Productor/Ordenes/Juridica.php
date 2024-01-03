@@ -3,11 +3,8 @@
 namespace App\Http\Livewire\Productor\Ordenes;
 
 use Livewire\Component;
-use App\Models\EstadoOrdenesCompra;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
-use App\Models\Proveedor;
-use App\Models\ItemPresupuesto;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
  
@@ -268,8 +265,8 @@ class Juridica extends Component
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
 
-        $this->orden_compra->estado_id = $estado;
-        $this->orden_compra->update();
+        // $this->orden_compra->estado_id = $estado;
+        // $this->orden_compra->update();
 
         return redirect()->route('ordenes-compra')->with('success', $messaje);
     }

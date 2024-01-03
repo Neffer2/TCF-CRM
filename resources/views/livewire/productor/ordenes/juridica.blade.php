@@ -123,7 +123,7 @@
                     </div> 
                     <div class="row px-4">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div class="form-group"> 
                                 <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
                                 <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                                 @error('oc_helisa')

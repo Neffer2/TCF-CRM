@@ -14,10 +14,10 @@ class GestionComercial extends Model
         return $this->hasOne(Contacto::class, 'id', 'id_contacto');
     } 
 
-    public function comercial (){ 
+    public function comercial (){  
         return $this->hasOne(User::class, 'id', 'id_user');
     }
-
+ 
     public function presupuesto (){
         return $this->hasOne(PresupuestoProyecto::class, 'id_gestion', 'id');
     }  
