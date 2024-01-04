@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Com\Helisa;
 use Livewire\Component;
 use Livewire\WithPagination; 
 use App\Models\Helisa; 
-use App\Models\User;
 use App\Models\Año;
 use App\Models\Mes;
 use App\Models\Cuenta; 
@@ -42,7 +41,13 @@ class HelisaList extends Component
 
         $registrosHelisa = Helisa::where($filtros)->orderBy('created_at', $this->orderBy)->paginate(15);
         return view('livewire.com.helisa.helisa-list', ['registrosHelisa' => $registrosHelisa]);
-    }   
+    }
+
+    // Delete Helisa
+    public function delete_registro($registro_id){
+        Helisa::find($registro_id)->delete(); 
+        return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
+    }
 
     public function mount(){
         $this->getAños();
@@ -71,5 +76,5 @@ class HelisaList extends Component
         ]);
         
         $this->yearInfo = Año::find($this->año);
-    }
+    } 
 } 

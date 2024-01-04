@@ -11,9 +11,9 @@ use App\Models\Base_comercial;
 use App\Models\GestionComercial;
 use App\Models\PresupuestoProyecto;
 use App\Models\ItemPresupuesto;
+use App\Models\Contacto;
 use App\Models\Helisa;
 use App\Models\Asistente;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
@@ -103,10 +103,10 @@ class ComercialController extends Controller
     }
 
     // Delete Helisa
-    public function delete_registro($centro, $num_doc){
+    public function delete_registro($centro, $num_doc){ 
         Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete(); 
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
-    } 
+    }  
    
     public function upload_base (Request $request){          
         return redirect()->route('dashboard-base')->with('error', '¡Ésta función fué descontinuada.!');

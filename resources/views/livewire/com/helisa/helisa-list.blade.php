@@ -88,30 +88,27 @@
                             </tr>
                             {{-- edit modal --}}   
                             <div class="modal fade" id="editmodal{{ $registroHelisa->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
-                                <div :wire:key="'proyecto-'.$registroHelisa->id" class="modal-dialog"> 
+                                <div :wire:key="'proyecto-'.$registroHelisa->id" class="modal-dialog">
                                     @livewire('com.helisa.edit', ['id_helisa' => $registroHelisa->id, key('proyecto-'.$registroHelisa->id)])  
                                 </div>
                             </div> 
                             {{-- delete modal --}} 
                             <div class="modal fade" id="modal{{ $registroHelisa->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <form action="{{ route('delete-registro', [$registroHelisa->centro, $registroHelisa->num_doc]) }}" method="POST">
-                                    @csrf 
+                                <div :wire:key="'delete-'.$registroHelisa->id" class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h1 class="modal-title fs-5" id="exampleModalLabel">¿Estas seguro?</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <div class="modal-body">
-                                                ¿Desea eliminar &eacute;ste registro?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn bg-gradient-warning">Eliminar</button>
-                                            </div>
-                                        </div> 
-                                    </div>
-                                </form>
+                                        <div class="modal-body"> 
+                                            ¿Deseas eliminar &eacute;ste registro?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn bg-gradient-warning" data-bs-dismiss="modal" wire:click="delete_registro({{ $registroHelisa->id }})">Eliminar</button>
+                                        </div>
+                                    </div> 
+                                </div>
                             </div> 
                         @endforeach
                     </tbody>
@@ -132,4 +129,13 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+      <script>
+        Swal.fire(
+          'Hecho',
+          `{{ session('success') }}`,
+          'success'
+        );
+      </script>
+    @endif
 </div>

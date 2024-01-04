@@ -118,18 +118,18 @@
                   <span class="sidenav-normal"> Proveedores </span> 
                 </a>
               </li>
-              <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
+              {{-- <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">  
                   <span class="sidenav-mini-icon text-xs"> OC </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
                 </a> 
-              </li>
-              <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
+              </li> --}}
+              {{-- <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">   
                   <span class="sidenav-mini-icon text-xs"> C </span>
                   <span class="sidenav-normal"> Consumidos </span>
                 </a>
-              </li>
+              </li> --}}
             </ul>
           </div> 
         </li>  

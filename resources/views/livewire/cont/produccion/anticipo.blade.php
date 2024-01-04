@@ -47,6 +47,21 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

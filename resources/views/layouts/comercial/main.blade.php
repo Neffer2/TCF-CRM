@@ -114,12 +114,12 @@
               'collapse' => true
               ]) id="dashboardsProduccion">
               <ul class="nav ms-4">
-                <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
+                {{-- <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
                   <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Proveedores </span>
                   </a> 
-                </li>
+                </li> --}}
               </ul>
             </div>
           </li>

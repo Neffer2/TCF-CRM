@@ -265,8 +265,8 @@ class Juridica extends Component
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
 
-        // $this->orden_compra->estado_id = $estado;
-        // $this->orden_compra->update();
+        $this->orden_compra->estado_id = $estado;
+        $this->orden_compra->update();
 
         return redirect()->route('ordenes-compra')->with('success', $messaje);
     }

@@ -21,7 +21,7 @@
                 <div class="col-md-4">
                     <label for="estado">Estados:</label>
                     <select id="estado" class="form-control" wire:model="estado">
-                        <option value="">Seleccionar</option>
+                        <option value="1">Seleccionar</option>
                         <option value="1">Pendiente</option> 
                     </select> 
                 </div>

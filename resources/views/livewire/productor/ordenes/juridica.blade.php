@@ -249,24 +249,29 @@
                             </div>
                         </div>
                     @endif
-                    <label for="gr">Good Receive:</label>
-                    <div class="col-md-4"> 
-                        <div class="form-group">                            
-                            <input id="gr" wire:model="gr" class="form-control">
-                            @error('gr')
-                                <div id="gr" class="text-invalid">
-                                    {{ $message }}
-                                </div> 
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group"> 
-                            <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
-                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                                <span class="sr-only">Loading...</span>
+                    <div class="row">
+                        <div id="aprobado" class="col-md-12">
+                            <div class="col-md-12"> 
+                                <div class="form-group">                            
+                                    <label for="gr">Good Receive:</label>
+                                    <input id="gr" wire:model="gr" class="form-control">
+                                    @error('gr')
+                                        <div id="gr" class="text-invalid">
+                                            {{ $message }}
+                                        </div> 
+                                    @enderror 
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                            <span class="sr-only">Loading...</span>
+                                        </div> 
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </div>    
+                        <div id="rechazado" class="col-md-12"></div>    
                     </div>
                 </div>
                 <div class="row px-4">

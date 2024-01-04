@@ -19,7 +19,7 @@ class ItemPresupuesto extends Model
     }
 
     // Proveedor no tiene relacion en base de datos porque se implementaron después de creado el modulo presupuestos.
-    public function proveedor_info(){
+    public function proveedorInfo(){
         return $this->hasOne(Proveedor::class, 'id', 'proveedor');
     }
 }

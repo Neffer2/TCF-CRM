@@ -131,7 +131,7 @@ trait Email
             $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
             $mail->AltBody = utf8_decode($altBody);
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
@@ -161,12 +161,17 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
-            // $mail->addCC('tesoreria@bullmarketing.com.co');
-            // $mail->addCC('contabiliad@bullmarketing.com.co');
-            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-            $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-            $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+                // $mail->addCC('tesoreria@bullmarketing.com.co');
+                // $mail->addCC('contabiliad@bullmarketing.com.co');
+                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            /* *** */
+
+            /* CONTABILIDAD */
+                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');                
+                
             /* *** */
                         
             $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
@@ -264,7 +269,8 @@ trait Email
             /* *** */
             
             /* CONTABILIDAD */
-            dd($orden->proveedor->anticipo);
+            // if ($orden->proveedor->anticipo > 0)
+                
             /* *** */
                         
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);

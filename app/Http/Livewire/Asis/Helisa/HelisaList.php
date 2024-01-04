@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class HelisaList extends Component 
 {
     //USEFUL VARS
-    public $comerciales = [];
-    public $cuentas = []; 
-    public $años = []; 
-    public $meses = []; 
+    public $comerciales = [], $cuentas = [], $años = [], $meses = [], $list = []; 
 
     public function render()
     {
