@@ -236,7 +236,7 @@
                             <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
                             <span class="btn-inner--text">Firmar remisi&oacute;n</span>
                         </a>
-                    </div>
+                    </div> 
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
                 {{-- GOOD RECEIVE --}}

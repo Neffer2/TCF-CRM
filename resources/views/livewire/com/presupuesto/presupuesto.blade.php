@@ -278,8 +278,8 @@
                                     </td>
                                 @endif
                                 <td class="font-weight-bold font-table">
-                                    @if ($item->proveedor_info)
-                                        {{ $item->proveedor_info->tercero }}
+                                    @if ($item->proveedorInfo)
+                                        {{ $item->proveedorInfo->tercero }}
                                     @else 
                                         {{ $item->proveedor }}
                                     @endif

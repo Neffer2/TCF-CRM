@@ -99,7 +99,7 @@
                         @if (!$tipo) <td style="text-align: center">{{ $key+=1 }}</td> @endif
                         <td colspan="6">{{ $item->descripcion }}</td>
                         <td colspan="2" style="text-align: center">{{ $item->cantidad }}</td>
-                        @if (!$tipo)
+                        @if (!$tipo) 
                             <td colspan="2" style="text-align: center"> @if ($item->proveedorInfo) {{ $item->proveedorInfo->tercero }} @else {{ $item->proveedor }} @endif </td>
                         @endif
                         <td colspan="1" style="text-align: center">{{ $item->dia }}</td>
