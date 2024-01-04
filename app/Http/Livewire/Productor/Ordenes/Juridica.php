@@ -108,7 +108,7 @@ class Juridica extends Component
 
     public function getProveedores(){    
         $this->proveedores = $this->presupuesto->presupuestoItems->unique('proveedor')->map(function ($item){
-            return $item->proveedor_info;
+            return $item->proveedorInfo;
         });
     }
 
@@ -238,7 +238,7 @@ class Juridica extends Component
                 'oc_helisa' => 'required|file|mimes:pdf|max:10000',
                 'cod_oc' => 'required|max:200'
             ]); 
-
+ 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
             $this->orden_compra->cod_oc = $this->cod_oc;
                     

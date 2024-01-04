@@ -40,7 +40,7 @@
                         <table class="table mb-1"> 
                             <tr>
                                 <td>
-                                    <div class="form-group m-0">
+                                    <div class="form-group m-0"> 
                                         <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->find($proveedor)->tercero }} @endif </label>
                                         <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)                                                
@@ -249,11 +249,21 @@
                             </div>
                         </div>
                     @endif
-                    <div class="row">
-                        <div id="aprobado" class="col-md-12">
-                            <div class="col-md-12"> 
+                    <div class="row mb-3" x-data="{ accion: true }" x-cloak>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="acciones">Acciones</label>
+                                <select x-model="accion" id="acciones" class="form-control" >
+                                    <option value="1">Aprobar</option>
+                                    <option value="">Anular</option>
+                                </select>
+                            </div>
+                        </div>
+                        {{-- <span x-text="accion"> --}}
+                        <div class="row col-md-10" x-show="accion"> 
+                            <label for="gr">Good Receive:</label>
+                            <div class="col-md-4"> 
                                 <div class="form-group">                            
-                                    <label for="gr">Good Receive:</label>
                                     <input id="gr" wire:model="gr" class="form-control">
                                     @error('gr')
                                         <div id="gr" class="text-invalid">
@@ -261,17 +271,37 @@
                                         </div> 
                                     @enderror 
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group"> 
-                                        <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
-                                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                                            <span class="sr-only">Loading...</span>
-                                        </div> 
-                                    </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group"> 
+                                    <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                        <span class="sr-only">Loading...</span>
+                                    </div> 
                                 </div>
                             </div>
                         </div>    
-                        <div id="rechazado" class="col-md-12"></div>    
+                        <div class="row col-md-10" x-show="!accion"> 
+                            <label for="gr">Observaciones de anulaci&oacute;n:</label>
+                            <div class="col-md-4"> 
+                                <div class="form-group">                            
+                                    <textarea wire:model="observaciones_remision" class="form-control" rows="1"></textarea>
+                                    {{-- @error('gr')
+                                        <div id="gr" class="text-invalid">
+                                            {{ $message }}
+                                        </div> 
+                                    @enderror  --}}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group"> 
+                                    <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
+                                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                        <span class="sr-only">Loading...</span>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>    
                     </div>
                 </div>
                 <div class="row px-4">
