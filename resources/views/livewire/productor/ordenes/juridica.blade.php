@@ -284,18 +284,18 @@
                         <div class="row col-md-10" x-show="!accion"> 
                             <label for="gr">Observaciones de anulaci&oacute;n:</label>
                             <div class="col-md-4"> 
-                                <div class="form-group">                            
-                                    <textarea wire:model="observaciones_remision" class="form-control" rows="1"></textarea>
-                                    {{-- @error('gr')
-                                        <div id="gr" class="text-invalid">
+                                <div class="form-group">                              
+                                    <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
+                                    @error('observaciones_anulacion')
+                                        <div id="observaciones_anulacion" class="text-invalid">
                                             {{ $message }}
                                         </div> 
-                                    @enderror  --}}
+                                    @enderror 
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group"> 
-                                    <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
+                                    <button wire:click="cambioEstado(6)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
                                     <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                                         <span class="sr-only">Loading...</span>
                                     </div> 
@@ -358,7 +358,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) && Auth::user()->rol == 7)))
+            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6))))
                 <div class="row px-4">
                     <div class="col-md-2">
                         <div class="form-group"> 

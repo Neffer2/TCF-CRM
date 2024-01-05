@@ -41,7 +41,8 @@ class CreateOrdenesCompra extends Migration
             $table->string('archivo_firma')->nullable(); 
 
             $table->string('cod_oc')->nullable(); 
-            $table->string('gr')->nullable(); 
+            $table->string('gr')->nullable();
+            $table->string('observaciones_anulacion')->nullable();
             $table->timestamps(); 
         });
     }

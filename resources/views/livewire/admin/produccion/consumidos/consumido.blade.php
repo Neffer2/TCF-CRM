@@ -136,15 +136,17 @@
             <tbody>
                 @foreach ($presupuesto->presupuestoItems as $key => $item)
                     @php
-                        if (count($item->ordenes_compra) > 0){
+                        if (count($item->consumidos) > 0){ 
                             $cont_cant_oc = 0;
                             $cont_dias_oc = 0;
                             $cont_otros_oc = 0;
 
-                            $item->ordenes_compra->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc){
-                                $cont_cant_oc += $item->cant_oc;
-                                $cont_dias_oc += $item->dias_oc;
-                                $cont_otros_oc += $item->otros_oc;
+                            $item->consumidos->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc){
+                                if (!($item->OrdenCompra->estado_id == 6)){
+                                    $cont_cant_oc += $item->cant_oc;
+                                    $cont_dias_oc += $item->dias_oc;
+                                    $cont_otros_oc += $item->otros_oc;
+                                }
                             });
                         }
                     @endphp
@@ -165,7 +167,7 @@
                             @endif
                         </tr>
                     @else
-                        <tr @if (count($item->ordenes_compra) > 0 && $item->cantidad - $cont_cant_oc == 0) style="background-color: #f5365c; color: white;" @endif> 
+                        <tr @if (count($item->consumidos) > 0 && $item->cantidad - $cont_cant_oc == 0) style="background-color: #f5365c; color: white;" @endif> 
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
                             </td>
@@ -199,7 +201,7 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->ciudad }}
                             </td>
-                            @if (count($item->ordenes_compra) > 0)
+                            @if (count($item->consumidos) > 0)
                                 <td class="font-weight-bold font-table">
                                     <div data-bs-toggle="collapse" href="#collapseOrden{{ $key }}" role="button" aria-expanded="false"
                                         aria-controls="collapseOrden" class="m-0 p-0 d-flex justify-content-center" style="width: 100%;">
@@ -222,37 +224,37 @@
                                                     <th class="font-weight-bold bg-gradient-primary text-white">PROVEEDOR</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">ORDEN DE COMPRA</th>
                                                 </tr>
-                                                @foreach ($item->ordenes_compra as $orden)
-                                                    <tr>
+                                                @foreach ($item->consumidos as $ordenItem)
+                                                    <tr @if ($ordenItem->OrdenCompra->estado_id == 6) style="text-decoration-line: line-through;" @endif>
                                                         <td class="font-weight-bold font-table">
                                                             {{ $key}}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->cant_oc }}
+                                                            {{ $ordenItem->cant_oc }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->dias_oc }}
+                                                            {{ $ordenItem->dias_oc }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->otros_oc }}
+                                                            {{ $ordenItem->otros_oc }}
                                                         </td>
                                                         <td class="font-weight-bold font-table" style="width: 1rem;">
-                                                            <textarea cols="30" rows="1" readonly>{{ $orden->desc_oc }}</textarea>                                                    
+                                                            <textarea cols="30" rows="1" readonly>{{ $ordenItem->desc_oc }}</textarea>                                                    
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            $ {{ number_format($orden->vunit_oc) }}
+                                                            $ {{ number_format($ordenItem->vunit_oc) }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            $ {{ number_format($orden->vtotal_oc) }}
+                                                            $ {{ number_format($ordenItem->vtotal_oc) }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->OrdenCompra->estado_oc->description }}
+                                                            {{ $ordenItem->OrdenCompra->estado_oc->description }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            {{ $orden->OrdenCompra->proveedor->tercero }} - {{ $orden->OrdenCompra->proveedor->documento }}
+                                                            {{ $ordenItem->OrdenCompra->proveedor->tercero }} - {{ $ordenItem->OrdenCompra->proveedor->documento }}
                                                         </td>
                                                         <td class="font-weight-bold font-table">
-                                                            <a href="{{ route('orden-juridica', $orden->OrdenCompra->id) }}" target="_blank">Orden de compra</a>
+                                                            <a href="{{ route('orden-juridica', $ordenItem->OrdenCompra->id) }}" target="_blank">Orden de compra</a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

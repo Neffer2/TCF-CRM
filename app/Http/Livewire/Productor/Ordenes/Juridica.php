@@ -15,7 +15,7 @@ class Juridica extends Component
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
-    public $observaciones_remision; 
+    public $observaciones_remision, $observaciones_anulacion; 
 
     // Filled 
     public $presupuesto, $orden_compra;
@@ -263,6 +263,15 @@ class Juridica extends Component
             $this->orden_compra->observacion_remision = $this->observaciones_remision;
             $this->mailGrGenerado($this->orden_compra);  
             $messaje = 'Good Receive guardado y enviado con éxito.';
+        }elseif ($estado == 6) {
+            // ORDEN ANULADA
+            $this->validate([
+                'observaciones_anulacion' => 'required|string|max:1000' 
+            ]); 
+
+            $this->orden_compra->observaciones_anulacion = $this->observaciones_anulacion; 
+            $this->mailOrdenAnulada($this->orden_compra);   
+            $messaje = 'Orden de compra ANULADA.'; 
         }
 
         $this->orden_compra->estado_id = $estado;
@@ -287,14 +296,16 @@ class Juridica extends Component
             'item' => 'required'
         ]);
         
-        $dbItem = $this->presupuesto->presupuestoItems->find($this->item);
+        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
 
         $contCant = 0;
-        foreach ($dbItem->ordenes_compra as $item) {
-            $contCant += $item->cant_oc;
+        foreach ($dbItemPresto->consumidos as $item) {
+            if (!($item->OrdenCompra->estado_id == 6)){
+                $contCant += $item->cant_oc;            
+            }
         }
 
-        $this->cant = ($dbItem->cantidad - $contCant);
+        $this->cant = ($dbItemPresto->cantidad - $contCant);
 
         if ($this->cant == 0){
             $this->addError('customError', 'Éste item ya fué consumido.');
@@ -302,11 +313,11 @@ class Juridica extends Component
             return redirect()->back(); 
         } 
 
-        $this->desc = $dbItem->descripcion;
+        $this->desc = $dbItemPresto->descripcion;
         $this->cant = $this->cant;
-        $this->vUnit = $dbItem->v_unitario;
-        $this->dias = $dbItem->dia;
-        $this->otros = $dbItem->otros;
+        $this->vUnit = $dbItemPresto->v_unitario;
+        $this->dias = $dbItemPresto->dia;
+        $this->otros = $dbItemPresto->otros;
         $this->maxCant = $this->cant;
         $this->maxValor = $this->vUnit;
         $this->getVTotal();

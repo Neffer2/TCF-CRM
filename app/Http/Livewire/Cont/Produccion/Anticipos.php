@@ -24,7 +24,7 @@ class Anticipos extends Component
         if ($this->estado == 1){
             if ($this->cod_cc){
                 // WhereHas busca dentro de la colleccion el campo 'proveedor'
-                $ordenes = OrdenCompra::with('proveedor')->with('presupuesto')
+                $ordenes = OrdenCompra::with('proveedor')->with('presupuesto') 
                     ->whereHas('proveedor', function ($proveedor){ 
                         $proveedor->where('anticipo', '>', 0);
                     })
