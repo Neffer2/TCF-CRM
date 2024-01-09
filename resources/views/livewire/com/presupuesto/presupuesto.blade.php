@@ -497,7 +497,7 @@
                             @enderror 
                         </div>
                     </div>
-                    <div class="col-md-2"> 
+                    <div class="col-md-2">  
                         <div class="form-group mb-0">
                             <label for="ciudad">CIUDAD</label>
                             <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
@@ -633,7 +633,7 @@
                         <div class="form-group mb-0">
                             <label for="centroCostos">CENTRO DE COSTOS</label>
                             <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
-                            placeholder="Centro de costos" required wire:model.lazy="centroCostos"> 
+                            placeholder="Centro de costos" required wire:model.lazy="centroCostos" @if($this->presupuesto->cod_cc) disabled @endif> 
                             @error('centroCostos')
                                 <div id="centroCostos" class="invalid-feedback">
                                     {{ $message }}

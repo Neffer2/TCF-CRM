@@ -442,9 +442,15 @@ class Presupuesto extends Component
     }
 
     public function updateCentro(){
-        $this->validate([
-            'centroCostos' => ['required', 'string', new CentroCostos] 
-        ]);
+        if (!$this->presupuesto->cod_cc){ 
+            $this->validate([
+                'centroCostos' => ['required', 'string', new CentroCostos] 
+            ]);
+        }else {
+            $this->validate([
+                'centroCostos' => ['required', 'string'] 
+            ]);
+        }
 
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         
