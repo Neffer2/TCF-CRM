@@ -33,10 +33,10 @@
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
                                     <td class="font-weight-bold font-table">
-                                        @if ($presupuestoItem->proveedor_info)
-                                            {{ $presupuestoItem->proveedor_info->tercero }}
+                                        @if ($item->proveedorInfo)
+                                            {{ $item->proveedorInfo->tercero }}
                                         @else 
-                                            {{ $presupuestoItem->proveedor }}
+                                            {{ $item->proveedor }}
                                         @endif
                                     </td>
                                     <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
