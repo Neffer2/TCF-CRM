@@ -131,7 +131,7 @@ trait Email
                 $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
                 $mail->AltBody = utf8_decode($altBody);
 
-                // $mail->send();
+                $mail->send();
             } catch (Exception $e) {
                 return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
             }
