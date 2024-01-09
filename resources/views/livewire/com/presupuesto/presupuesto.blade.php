@@ -502,8 +502,8 @@
                             <label for="ciudad">CIUDAD</label>
                             <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                             placeholder="Ciudad" required wire:model.lazy="ciudad">
-                                <option selected value="">Seleccionar</option>
-                                @foreach ($ciudades as $ciudad)
+                                <option sel0ected value="">Seleccionar</option>
+                                @foreach ($ciudades as $ciudad) 
                                     <option value="{{ $ciudad }}">{{ $ciudad }}</option>
                                 @endforeach
                             </select>

@@ -12,7 +12,7 @@ trait Email
             $subject = "NOTIFICACIÓN CRM";
             $recipients = [];
             $cc = [];
-
+ 
             // Adri - Alejo
             $admin_id = ($rentabilidad > 35) ? "30" : "26";        
             $recipient = User::select('name', 'email')->find($admin_id);
@@ -138,8 +138,8 @@ trait Email
         }
     /* *** */
 
-    /* ORDENES COMPRA */
-    public function mailAnticipoPagado($orden, $observaciones){    
+    /* ORDENES COMPRA */    
+    public function mailOrdenAprobada($orden){ 
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -153,42 +153,44 @@ trait Email
             $mail->Password   = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = env('MAIL_PORT', 587);
- 
+
             //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
+            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
                 $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
-            /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
+            /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
-
+            
             /* CONTABILIDAD */
-                $mail->addCC('contadores@bullmarketing.com.co');
-                $mail->addCC('tesoreria@bullmarketing.com.co');                    
+                if ($orden->proveedor->anticipo > 0){
+                    $mail->addCC('contadores@bullmarketing.com.co');
+                    $mail->addCC('tesoreria@bullmarketing.com.co');    
+                }
             /* *** */
                         
-            $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-            $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
+            $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
 
             //Content
             $mail->isHTML(true);
-            $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            // $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]); 
-            $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]); 
+            $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
             $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
-
+    
     public function mailGrGenerado($orden){  
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
@@ -226,8 +228,8 @@ trait Email
 
             //Content
             $mail->isHTML(true); 
-            $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            // $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
             $mail->Body    = view('mails.grGenerado', ['orden' => $orden]); 
             $mail->AltBody = "Se ha asignado el GR: {$orden->gr} para la orden de compra {$orden->cod_oc}";
 
@@ -273,8 +275,8 @@ trait Email
 
             //Content
             $mail->isHTML(true); 
-            $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            // $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
             $mail->Body    = view('mails.ordenAnulada', ['orden' => $orden]); 
             $mail->AltBody = "Se ha anulado la roden de compra {$orden->cod_oc}";
 
@@ -284,7 +286,7 @@ trait Email
         }
     }
 
-    public function mailOrdenAprobada($orden){ 
+    public function mailAnticipoPagado($orden, $observaciones){    
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
         
@@ -298,37 +300,35 @@ trait Email
             $mail->Password   = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = env('MAIL_PORT', 587);
-
+ 
             //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
             /* COMPRAS */
                 $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
-            /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
+            /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
-            
+
             /* CONTABILIDAD */
-                if ($orden->proveedor->anticipo > 0){
-                    $mail->addCC('contadores@bullmarketing.com.co');
-                    $mail->addCC('tesoreria@bullmarketing.com.co');    
-                }
+                $mail->addCC('contadores@bullmarketing.com.co');
+                $mail->addCC('tesoreria@bullmarketing.com.co');                    
             /* *** */
                         
-            $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
-            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
+            $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
+            $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
 
             //Content
             $mail->isHTML(true);
-            $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            // $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]); 
-            $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
+            // $mail->Subject = "IGNORAR, PRUEBAS CRM";
+            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+            $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]); 
+            $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
             $mail->send();
         } catch (Exception $e) {
