@@ -122,7 +122,7 @@ class Presupuesto extends Component
         return $results->cod_cot;
     }
 
-    public function new_item(){      
+    public function new_item(){       
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         
         $this->validate([
@@ -429,7 +429,7 @@ class Presupuesto extends Component
         $this->estadoValidator = $presto->estado_id;
 
         // EMAIL
-        $this->presupuestoAprobacion($presto->margen_proy, Auth::user()->name, $presto->justificacion, $cod_cc = $this->cod_cc ? $this->cod_cc : null); 
+        $this->presupuestoAprobacion($presto, Auth::user()); 
         return redirect()->route('presupuesto', $this->id_gestion); 
     }
     

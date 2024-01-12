@@ -8,13 +8,15 @@ use App\models\User;
 trait Email  
 {       
     /* PRESUPEUSTOS */
-        public function presupuestoAprobacion($rentabilidad, $name, $justificacion, $cod_cc = null){
+        public function presupuestoAprobacion($presto, $user){
             $subject = "NOTIFICACIÓN CRM";
             $recipients = [];
             $cc = [];
  
-            // Adri - Alejo
-            $admin_id = ($rentabilidad > 35) ? "30" : "26";        
+            // Adri - Alejo / CLARO JHONY
+            $admin_id = ($presto->margen_proy > 35) ? "30" : "26";        
+            $admin_id = ($presto->gestion->claro) ? "10" : $admin_id;
+
             $recipient = User::select('name', 'email')->find($admin_id);
             array_push($recipients, [
                 'name'=> $recipient->name,
@@ -26,14 +28,14 @@ trait Email
             //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
             // ]);
             
-            if ($cod_cc){
-                $body = "El presupuesto con centro de costos: <b>{$cod_cc}</b> de <b>{$name}</b> fué actualizado.";
+            if ($presto->cod_cc){
+                $body = "El presupuesto con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
             }else {
-                $body = "Tienes un presupuesto de {$name} por revisar.";
+                $body = "Tienes un presupuesto de {$user->name} por revisar.";
             }
 
-            if ($justificacion){
-                $body .= "<br><b>{$name}</b> ha realizado las siguientes observaciones: {$justificacion}.";
+            if ($presto->justificacion){
+                $body .= "<br><b>{$user->name}</b> ha realizado las siguientes observaciones: {$presto->justificacion}.";
             }
 
             $altBody = "NOTIFICACIÓN CRM";
@@ -131,7 +133,7 @@ trait Email
                 $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
                 $mail->AltBody = utf8_decode($altBody);
 
-                $mail->send();
+                // $mail->send();
             } catch (Exception $e) {
                 return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
             }
