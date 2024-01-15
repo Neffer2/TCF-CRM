@@ -8,4 +8,4 @@
     @section('content') 
         @livewire('admin.produccion.consumidos.consumidos')
     @endsection
-  
+    

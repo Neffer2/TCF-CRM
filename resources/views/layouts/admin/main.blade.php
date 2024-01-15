@@ -45,7 +45,7 @@
             'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
             'collapse' => true
             ]) id="dashboardsExamples">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">  
               <li @class(['active' => request()->is('dashboard-admin'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('dashboard-admin'), 'nav-link' => true]) href="{{ route('dashboard-admin') }}">
                   <span class="sidenav-mini-icon"> D </span>
@@ -122,7 +122,7 @@
                 <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">  
                   <span class="sidenav-mini-icon text-xs"> OC </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
-                </a> 
+                </a>  
               </li>
               <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">   

@@ -16,7 +16,7 @@
                         <option value="{{ $asignado->id }}">{{ $asignado->cod_cc }} - {{ $asignado->gestion->nom_proyecto_cot }} - {{ $asignado->id_gestion }}</option>
                     @endforeach
                 </select>
-            </div> 
+            </div>  
         </div> 
         <div class="col-md-2 d-flex flex-column justify-content-center">
             <button wire:click="asignar" class="btn btn-icon btn-3 bg-gradient-warning" type="button">

@@ -100,7 +100,7 @@
                   </a>
                 </li>            
               </ul> 
-            </div>
+            </div> 
           </li>
           <li class="nav-item"> 
             <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link" aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
@@ -110,7 +110,7 @@
               <span class="nav-link-text ms-1">Producci&oacute;n</span>
             </a>
             <div @class([
-              'show' => (request()->is('proveedores')),
+              'show' => (request()->is('proveedores') || request()->is('consumidos-com')),
               'collapse' => true
               ]) id="dashboardsProduccion">
               <ul class="nav ms-4">
@@ -119,6 +119,12 @@
                     <span class="sidenav-mini-icon text-xs"> C </span>
                     <span class="sidenav-normal"> Proveedores </span>
                   </a> 
+                </li>
+                <li @class(['active' => request()->is('consumidos-com'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('consumidos-com'), 'nav-link' => true]) href="{{ route('consumidos-com') }}">    
+                    <span class="sidenav-mini-icon text-xs"> C </span>
+                    <span class="sidenav-normal"> Consumidos </span>
+                  </a>
                 </li>
               </ul>
             </div>

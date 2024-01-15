@@ -22,4 +22,4 @@ class Consumido extends Component
     public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->presupuesto_id);
     }
-}
+} 

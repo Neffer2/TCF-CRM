@@ -9,6 +9,7 @@ use App\Models\EstadoCuenta;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HelisaExport;
+use Illuminate\Support\Facades\Auth;
  
 class AdminController extends Controller
 {
@@ -63,8 +64,14 @@ class AdminController extends Controller
         return view('admin.produccion.consumidos.list');
     }
 
-    public function showConsumido($presupuesto_id){  
-        return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id]);
+    public function showConsumido($presupuesto_id){
+        if (Auth::user()->rol == 1){
+            $rol = 'admin';
+        }else {            
+            $rol = (Auth::user()->rol == 2) ? 'comercial' : 'productor';
+        }
+
+        return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id, 'rol' => $rol]);
     } 
 
     public function exportHelisa($comercial = null, $centro = null){     

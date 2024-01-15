@@ -9,16 +9,12 @@ use App\Models\PresupuestoProyecto;
 class AsignarProyecto extends Component 
 {
     // Models
-    public $proyecto;
-    public $productor;
-    public $asignado; 
-    public $comercial; 
+    public $proyecto, $productor, $asignado, $comercial; 
 
     // Useful vars
-    public $proyectos = [];
-    public $comerciales = []; 
-    public $asignados = [];
+    public $proyectos, $comerciales, $asignados = [];
 
+    // Filled
     public $id_productor;
 
     public function render()

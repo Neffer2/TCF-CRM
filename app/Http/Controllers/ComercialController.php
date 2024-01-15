@@ -48,6 +48,10 @@ class ComercialController extends Controller
         return view('comercial.helisa.index');
     }  
 
+    public function showConsumidos(){ 
+        return view('comercial.produccion.consumidos.list'); 
+    }
+
     public function update_gestion($leadId){
         return view('comercial.gestion.edit', ['leadId' => $leadId]);
     }
