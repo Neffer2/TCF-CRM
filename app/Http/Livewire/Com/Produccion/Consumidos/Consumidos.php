@@ -21,25 +21,20 @@ class Consumidos extends Component
 
     public function render()
     {
+        $filters = [];
+
         if ($this->cod_cc){ 
-            $presupuestos = PresupuestoProyecto::with('gestion', 'ordenesCompra')
-                ->whereHas('gestion', function ($gestion) {
-                    $gestion->where('id_user', Auth::id());
-                })
-                ->whereHas('ordenesCompra', function ($orden){
-                    $orden->where('estado_id', 1)->orWhere('estado_id', 5);
-                })
-                ->orderBy('id', 'desc')->where('cod_cc', 'like', "%$this->cod_cc%")->paginate(15);
-        }else {
-            $presupuestos = PresupuestoProyecto::with('gestion', 'ordenesCompra')
+            array_push($filters, ['cod_cc', 'like', "%$this->cod_cc%"]);
+        }
+
+        $presupuestos = PresupuestoProyecto::with('gestion', 'ordenesCompra')
             ->whereHas('gestion', function ($gestion) {
                 $gestion->where('id_user', Auth::id());
             })
             ->whereHas('ordenesCompra', function ($orden){
                 $orden->where('estado_id', 1)->orWhere('estado_id', 5);
             })
-            ->orderBy('id', 'desc')->paginate(15);
-        }
+            ->orderBy('id', 'desc')->where($filters)->paginate(15);
 
         return view('livewire.com.produccion.consumidos.consumidos', ['presupuestos' => $presupuestos]);
     }

@@ -78,16 +78,22 @@
           </a>
           <div class="collapse  show " id="dashboardsExamples">
             <ul class="nav ms-4"> 
-              <li class="nav-item active"> 
-                <a class="nav-link active" href="{{ route('dashboard-admin') }}"> 
+              <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
                   <span class="sidenav-mini-icon"> D </span>
                   <span class="sidenav-normal"> Dashboard </span>
                 </a>
               </li>
-              <li class="nav-item"> 
-                <a class="nav-link" href="{{ route('proveedores') }}"> 
+              <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}"> 
                   <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Proveedores </span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('consumidos-prod'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('consumidos-prod'), 'nav-link' => true]) href="{{ route('consumidos-prod') }}">    
+                  <span class="sidenav-mini-icon text-xs"> C </span>
+                  <span class="sidenav-normal"> Consumidos </span>
                 </a>
               </li>
             </ul>
@@ -110,7 +116,7 @@
               </li>
             </ul> 
           </div>
-        </li>
+        </li> 
       </ul>
     </div>
   </aside>

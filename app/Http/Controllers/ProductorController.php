@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers; 
 
-use Illuminate\Http\Request;
 use App\Models\PresupuestoProyecto;
-use App\Models\ItemPresupuesto; 
-use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 
 class ProductorController extends Controller
 {   
@@ -18,5 +14,9 @@ class ProductorController extends Controller
  
     public function showRemision($orden){
         return view('productor.remision.index', ['orden' => $orden]);
+    }
+
+    public function showConsumidos(){ 
+        return view('productor.consumidos.list'); 
     }
 } 
