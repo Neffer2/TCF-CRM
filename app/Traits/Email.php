@@ -13,7 +13,7 @@ trait Email
             $recipients = [];
             $cc = [];
  
-            // Adri - Alejo / CLARO JHONY
+            // COMPRAS - Alejo / CLARO JHONY
             $admin_id = ($presto->margen_proy > 35) ? "30" : "26";        
             $admin_id = ($presto->gestion->claro) ? "10" : $admin_id;
 
@@ -133,7 +133,7 @@ trait Email
                 $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
                 $mail->AltBody = utf8_decode($altBody);
 
-                // $mail->send();
+                $mail->send();
             } catch (Exception $e) {
                 return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
             }

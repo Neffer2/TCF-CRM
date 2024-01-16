@@ -24,7 +24,7 @@ class Base_comercial extends Model
         'fecha_inicio',
         'dura_mes', 
         'id_user',
-        'id_gestion', 
+        'id_gestion',  
         'id_asistente', 
     ];
 

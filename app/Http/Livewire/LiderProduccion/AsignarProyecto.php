@@ -4,6 +4,7 @@ namespace App\Http\Livewire\LiderProduccion;
  
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Año; 
 use App\Models\PresupuestoProyecto;
 
 class AsignarProyecto extends Component 
@@ -34,17 +35,34 @@ class AsignarProyecto extends Component
     }  
  
     public function getProyectos(){
-        $this->proyectos = [];        
-        // Filter
+        $año = Año::orderBy('description', 'DESC')->first();
+        $this->proyectos = [];
+        $filter = [];
+        $gestionFilter = [];
+        $baseFilter = [];
+
         if ($this->comercial){
-            PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->orderBy('created_at', 'desc')->get()->map(function ($item){
-                if ($item->gestion->id_user == $this->comercial){
-                    array_push($this->proyectos, $item);
-                }
-            });
-        }else {
-            $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('estado_id', 1)->where('productor', null)->get(); 
+            array_push($gestionFilter, ['id_user', $this->comercial]);
         }
+
+        array_push($filter, ['estado_id', 1]); 
+        array_push($filter, ['productor', null]);
+
+        array_push($baseFilter, ['id_estado', '<>', 4]); 
+        array_push($baseFilter, ['id_estado', '<>', 1]);
+        array_push($baseFilter, ['fecha', '>=', $año->meses->first()->f_inicio]);
+        array_push($baseFilter, ['fecha', '<=', $año->meses->last()->f_fin]);
+  
+        $this->proyectos = PresupuestoProyecto::with('gestion', 'baseComercial')->select('id', 'id_gestion', 'cod_cc')
+                            ->whereHas('gestion', function ($gestion) use ($gestionFilter){
+                                $gestion->where($gestionFilter);
+                            })
+                            ->whereHas('baseComercial', function ($base) use ($baseFilter){
+                                $base->where($baseFilter);
+                            })
+                            ->where($filter)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
     }
 
     public function getAsigandos(){   
@@ -69,7 +87,7 @@ class AsignarProyecto extends Component
         $this->validate([
             'asignado' => ['required', 'string'],
         ]);        
- 
+  
         $presupuesto = PresupuestoProyecto::find($this->asignado);
         $presupuesto->productor = null;
         $presupuesto->update(); 

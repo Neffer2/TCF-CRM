@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-md-2 mb-3">
                             <div class="list-group">
-                                <select x-on:change="Open" x-model="productor" id="productor" class="form-control" size="10">
+                                <select x-on:change="Open" x-model="productor" id="productor" class="form-control" size="20">
                                     @foreach ($productores as $productor)
                                         <option value="{{ $productor->id }}">{{ $productor->name }}</option>
                                     @endforeach

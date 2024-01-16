@@ -10,10 +10,14 @@ class PresupuestoProyecto extends Model
     use HasFactory;
     protected $table = "presupuesto_proyecto";
  
-    public function gestion(){
+    public function gestion(){ 
         return $this->hasOne(GestionComercial::class, 'id', 'id_gestion'); 
     } 
-  
+
+    public function baseComercial(){ 
+        return $this->hasMany(Base_comercial::class, 'id_gestion', 'id_gestion'); 
+    } 
+   
     public function estado(){
         return $this->hasOne(EstadosPresupuesto::class, 'id', 'estado_id');
     }

@@ -6,7 +6,6 @@ use Livewire\Component;
 use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto; 
 use App\Models\GestionComercial;
-use App\Models\User; 
 use App\Traits\Email;
 use Livewire\WithPagination;
 
