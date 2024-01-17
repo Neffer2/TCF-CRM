@@ -23,7 +23,7 @@ class Consumidos extends Component
     {
         $filters = [];  
 
-        if ($this->cod_cc){
+        if ($this->cod_cc){ 
             array_push($filters, ['cod_cc', 'like', "%$this->cod_cc%"]);
         }
 
