@@ -625,7 +625,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
         @elseif (Auth::user()->rol == 1)
             <div class="col-md-12 p-2">  
                 <div class="row gy-0">
@@ -634,6 +634,7 @@
                             <label for="centroCostos">CENTRO DE COSTOS</label>
                             <input type="text" class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
                             placeholder="Centro de costos" required wire:model.lazy="centroCostos">
+                            {{-- @if($this->presupuesto->cod_cc) disabled @endif --}}
                             @error('centroCostos')
                                 <div id="centroCostos" class="invalid-feedback">
                                     {{ $message }}

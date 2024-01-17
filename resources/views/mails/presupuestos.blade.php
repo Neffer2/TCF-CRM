@@ -20,7 +20,8 @@
         {!! utf8_decode($body) !!} <br><br><br>
     </p> 
     <p style="font-size: 12px">
-        Enviado desde <b>BullCRM</b>. <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
+        Enviado desde <b>BullCRM</b>. <br>
+        <a href="https://www.bullmarketing.com.co/" target="_blank"><b>BullMarketing</b></a> <b>Siempre se Puede</b>.
     </p>
 </body>
 </html>

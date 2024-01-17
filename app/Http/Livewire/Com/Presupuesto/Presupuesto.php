@@ -611,7 +611,7 @@ class Presupuesto extends Component
         $this->proveedor = trim($this->proveedor);
         $this->validate([
             'proveedor' => ['required']
-        ]);
+        ]); 
     }
 
     public function updatedUtilidad(){

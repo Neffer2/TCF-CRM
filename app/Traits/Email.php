@@ -29,9 +29,9 @@ trait Email
             // ]);
             
             if ($presto->cod_cc){
-                $body = "El presupuesto con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
+                $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
             }else {
-                $body = "Tienes un presupuesto de {$user->name} por revisar.";
+                $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
             }
 
             if ($presto->justificacion){
