@@ -7,26 +7,43 @@ use App\models\User;
 
 trait Email  
 {       
-    /* PRESUPEUSTOS */
+    /* PRESUPEUSTOS */ 
         public function presupuestoAprobacion($presto, $user){
             $subject = "NOTIFICACIÓN CRM";
             $recipients = [];
             $cc = [];
  
             // COMPRAS - Alejo / CLARO JHONY
-            $admin_id = ($presto->margen_proy > 35) ? "30" : "26";        
-            $admin_id = ($presto->gestion->claro) ? "10" : $admin_id;
+            if ($presto->margen_proy > 35 && (!$presto->gestion->claro)){
+                $admin_id = 30;
+            }elseif ($presto->margen_proy > 35 && $presto->gestion->claro){
+                $admin_id = 36;
+            }elseif ($presto->margen_proy < 35 && (!$presto->gestion->claro)){
+                $admin_id = 8;
+
+                array_push($recipients, [
+                    'name'=> 'Luz Melo',
+                    'email'=> 'Compras@bullmarketing.com.co'
+                ]);
+            }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
+                $admin_id = 10;
+                
+                array_push($recipients, [
+                    'name'=> 'Sebastian Beltran',
+                    'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                ]);
+            }                
 
             $recipient = User::select('name', 'email')->find($admin_id);
             array_push($recipients, [
                 'name'=> $recipient->name,
                 'email'=> $recipient->email
             ]);
-            
-            // array_push($recipients, [
-            //     'name'=> 'Nefer Barragan',
-            //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-            // ]);
+
+            array_push($recipients, [
+                'name'=> 'Nefer Barragan',
+                'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            ]);
             
             if ($presto->cod_cc){
                 $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
@@ -54,6 +71,28 @@ trait Email
             $altBody = "Se ha Aprobado el presupuesto: ".$gestion->nom_proyecto_cot;
             $recipients = [];
             $cc = $user->asistente;
+
+            if ($gestion->presupuesto->margen_proy < 35 && (!$gestion->claro)){
+                $admin_id = 8;
+
+                array_push($recipients, [
+                    'name'=> 'Luz Melo',
+                    'email'=> 'Compras@bullmarketing.com.co'
+                ]);
+            }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+                $admin_id = 10;
+                
+                array_push($recipients, [
+                    'name'=> 'Sebastian Beltran',
+                    'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                ]);
+            }  
+            
+            $recipient = User::select('name', 'email')->find($admin_id);            
+            array_push($recipients, [
+                'name'=> $recipient->name,
+                'email'=> $recipient->email
+            ]);
             
             array_push($recipients, [
                 'name'=> $user->name,
@@ -65,31 +104,57 @@ trait Email
                 'email'=> 'Armando.Espinosa@bullmarketing.com.co'
             ]);
 
-
             $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
         }
 
         public function presupuestoRechazado($user, $gestion, $justificacion, $cod_cc = null){
+            $recipients = [];
             $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
             $body = "El presupuesto del proyecto: <b>".$gestion->nom_proyecto_cot."</b> ha sido <b>RECHAZADO.</b>";
+
+            // COMPRAS - Alejo / CLARO JHONY
+            if ($gestion->presupuesto->margen_proy > 35 && (!$gestion->claro)){
+                $admin_id = 30;
+            }elseif ($gestion->presupuesto->margen_proy > 35 && $gestion->claro){
+                $admin_id = 36;
+            }elseif ($gestion->presupuesto->margen_proy < 35 && !($gestion->claro)){
+                $admin_id = 8;
+
+                array_push($recipients, [
+                    'name'=> 'Luz Melo',
+                    'email'=> 'Compras@bullmarketing.com.co'
+                ]);
+            }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+                $admin_id = 10;
+
+                array_push($recipients, [
+                    'name'=> 'Sebastian Beltran',
+                    'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                ]);
+            }
+
+            $recipient = User::select('name', 'email')->find($admin_id);            
+            array_push($recipients, [
+                'name'=> $recipient->name,
+                'email'=> $recipient->email
+            ]);
+
+            array_push($recipients, [
+                'name'=> $user->name,
+                'email'=> $user->email
+            ]);
+
+            array_push($recipients, [
+                'name'=> 'Nefer Barragan',
+                'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            ]);
 
             if ($justificacion){
                 $body .= "<br>El equipo de compras ha realizado las siguientes observaciones: {$justificacion}.";
             }
 
             $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
-            $recipients = [];
-            $cc = $user->asistente;
-            
-            array_push($recipients, [
-                'name'=> $user->name,
-                'email'=> $user->email
-            ]);
-
-            // array_push($recipients, [
-            //     'name'=> 'Nefer Barragan',
-            //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-            // ]);
+            $cc = $user->asistente;                    
 
             $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
         }
@@ -159,7 +224,6 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
@@ -211,7 +275,6 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
@@ -259,7 +322,6 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
@@ -306,7 +368,6 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing'); 
             /* COMPRAS */
-                $mail->addAddress('Adriana.Trujillo@bullmarketing.com.co', 'Adriana Trujillo');
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
