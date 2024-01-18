@@ -40,10 +40,10 @@ trait Email
                 'email'=> $recipient->email
             ]);
 
-            array_push($recipients, [
-                'name'=> 'Nefer Barragan',
-                'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-            ]);
+            // array_push($recipients, [
+            //     'name'=> 'Nefer Barragan',
+            //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            // ]);
             
             if ($presto->cod_cc){
                 $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
@@ -142,11 +142,6 @@ trait Email
             array_push($recipients, [
                 'name'=> $user->name,
                 'email'=> $user->email
-            ]);
-
-            array_push($recipients, [
-                'name'=> 'Nefer Barragan',
-                'email'=> 'Neffer.Barragan@bullmarketing.com.co'
             ]);
 
             if ($justificacion){
