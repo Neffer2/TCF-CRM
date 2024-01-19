@@ -9,6 +9,7 @@ use App\Models\GestionComercial;
 use App\Models\Mes;
 use App\Models\Año; 
 use App\Models\CategoriaProveedor; 
+use App\Models\Proveedor;
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;  
 use App\Models\PresupuestoProyecto; 
@@ -53,6 +54,7 @@ class Presupuesto extends Component
     public $ciudades = []; 
     public $meses = [];
     public $categorias_proveedor = [];
+    public $proveedores = [];
     public $tarifario = [];
     public $selected_item;
     public $rentabilidadView = false;
@@ -270,6 +272,7 @@ class Presupuesto extends Component
 
     public function getProveedores(){
         $this->categorias_proveedor = CategoriaProveedor::select('id', 'description')->orderBy('id','desc')->get();
+        $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 
     public function getMeses(){

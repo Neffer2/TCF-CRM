@@ -88,11 +88,13 @@ trait Email
                 ]);
             }  
             
-            $recipient = User::select('name', 'email')->find($admin_id);            
-            array_push($recipients, [
-                'name'=> $recipient->name,
-                'email'=> $recipient->email
-            ]);
+            if ($gestion->presupuesto->margen_proy < 35){
+                $recipient = User::select('name', 'email')->find($admin_id);            
+                array_push($recipients, [
+                    'name'=> $recipient->name,
+                    'email'=> $recipient->email
+                ]);
+            }
             
             array_push($recipients, [
                 'name'=> $user->name,
@@ -175,7 +177,6 @@ trait Email
                     foreach ($recipients as $recipient) {  
                         $mail->addAddress($recipient['email'], $recipient['name']);
                     }
-
                     // foreach ($cc as $copiados) {
                     //     $mail->addCC($copiados->ejecutivo->email);        
                     // }
@@ -193,7 +194,7 @@ trait Email
                 $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]); 
                 $mail->AltBody = utf8_decode($altBody);
 
-                // $mail->send();
+                $mail->send(); 
             } catch (Exception $e) {
                 return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
             }
