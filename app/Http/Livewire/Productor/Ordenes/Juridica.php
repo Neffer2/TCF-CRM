@@ -110,6 +110,7 @@ class Juridica extends Component
         $this->proveedores = $this->presupuesto->presupuestoItems->unique('proveedor')->map(function ($item){
             return $item->proveedorInfo;
         });
+        
     }
 
     public function validateItems($itemDB){

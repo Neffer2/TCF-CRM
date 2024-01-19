@@ -1,4 +1,4 @@
-<div x-data>
+<div x-data="">
     @if ($estadoValidator != 2 || Auth::user()->rol == 1)
         <div class="card card-frame p-2">
             <div class="row justify-content-md-center">
@@ -278,8 +278,11 @@
                                     </td>
                                 @endif
                                 <td class="font-weight-bold font-table">
-                                    @if ($item->proveedorInfo)
-                                        {{ $item->proveedorInfo->tercero }}
+                                    @if (is_array($item->proveedor))
+                                        @php $proveedores = unserialize(); @endphp
+                                        @foreach ($proveedores as $proveedor)
+                                            {{ $proveedor }} <br>
+                                        @endforeach
                                     @else 
                                         {{ $item->proveedor }}
                                     @endif
@@ -439,25 +442,6 @@
                     @endif
                     <div class="col-md-2">
                         <div class="form-group mb-0">
-                            <label for="proveedor">PROVEEDOR</label>
-                            {{-- <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                            placeholder="Proveedor" required wire:model.lazy="proveedor"> --}}
-                            <select class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
-                                placeholder="Proveedor" required wire:model.lazy="proveedor">
-                                <option value="">Seleccionar</option>
-                                @foreach ($proveedores as $proveedor)
-                                    <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
-                                @endforeach
-                            </select> 
-                            @error('proveedor')
-                                <div id="proveedor" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group mb-0">
                             <label for="utilidad">UTILIDAD</label>
                             <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
                             placeholder="Utilidad" required wire:model.lazy="utilidad">
@@ -514,8 +498,29 @@
                             @enderror 
                         </div>
                     </div> 
-                </div>                
-                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-0">
+                            <label for="proveedor">PROVEEDOR</label>
+                            {{-- <input type="text" class="form-control @error('proveedor') is-invalid @elseif(strlen($proveedor) > 0) is-valid @enderror"
+                            placeholder="Proveedor" required wire:model.lazy="proveedor"> --}}
+                            <select class="form-control select-multiple" @error('proveedor') is-invalid @enderror
+                                placeholder="Proveedor" required wire:model.lazy="proveedor" multiple>
+                                <option value="">Seleccionar</option>
+                                @foreach ($categorias_proveedor as $categoria)                                    
+                                    <optgroup label="{{ $categoria->description }}">
+                                        @foreach ($categoria->proveedores as $proveedor)
+                                            <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select> 
+                            @error('proveedor')
+                                <div id="proveedor" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="justificacion">JUSTIFICACI&Oacute;N</label>
@@ -529,7 +534,7 @@
                             @enderror
                         </div>
                     </div>
-                </div>
+                </div>                
             </div>
 
             <div class="col-md-8 d-flex p-2">
@@ -624,7 +629,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div> 
         @elseif (Auth::user()->rol == 1)
             <div class="col-md-12 p-2">  

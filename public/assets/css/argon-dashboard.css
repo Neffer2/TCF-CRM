@@ -123,6 +123,15 @@ body {
   border: 1.5px solid #fb6340;
   border-radius: 15px;
 }
+
+.select-multiple {
+  transition: height .5s !important;
+  height: 40px;
+}
+
+.select-multiple:hover {
+  height: 190px;
+}
 /* *** */
 
 hr {

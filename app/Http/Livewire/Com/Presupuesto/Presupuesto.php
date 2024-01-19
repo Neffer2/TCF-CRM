@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial; 
 use App\Models\Mes;
 use App\Models\Año; 
-use App\Models\Proveedor; 
+use App\Models\CategoriaProveedor; 
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;  
 use App\Models\PresupuestoProyecto; 
@@ -29,7 +29,7 @@ class Presupuesto extends Component
     public $valor_unitario = 0;
     public $valor_total = 0;
     public $valor_total_cliente = 0;
-    public $proveedor;
+    public $proveedor = [];
     public $utilidad;
     public $tiempoFactura; 
     public $notas;
@@ -52,7 +52,7 @@ class Presupuesto extends Component
     public $presupuesto_id;
     public $ciudades = []; 
     public $meses = [];
-    public $proveedores = [];
+    public $categorias_proveedor = [];
     public $tarifario = [];
     public $selected_item;
     public $rentabilidadView = false;
@@ -160,7 +160,7 @@ class Presupuesto extends Component
         $item->descripcion = $this->descripcion;
         $item->v_unitario = $this->valor_unitario; 
         $item->v_total = $this->valor_total;
-        $item->proveedor = $this->proveedor;
+        $item->proveedor = serialize($this->proveedor);
         $item->margen_utilidad = $this->utilidad;
 
         $item->mes = $this->mes;
@@ -269,7 +269,7 @@ class Presupuesto extends Component
     }
 
     public function getProveedores(){
-        $this->proveedores = Proveedor::select('id', 'tercero', 'categoria_id')->orderBy('id','desc')->get();
+        $this->categorias_proveedor = CategoriaProveedor::select('id', 'description')->orderBy('id','desc')->get();
     }
 
     public function getMeses(){
@@ -294,19 +294,19 @@ class Presupuesto extends Component
     public function getDataEdit($id){
         $this->selected_item = []; 
         foreach ($this->items as $key => $item) {
-            if ($item->id == $id){ $this->selected_item = $item; } 
+            if ($item->id == $id){ $this->selected_item = $item; }  
         }
 
         $this->cod = $this->selected_item->cod;
         $this->presupuesto_id = $this->selected_item->presupuesto_id;
         $this->cantidad = $this->selected_item->cantidad;
-        $this->dia = $this->selected_item->dia;
+        $this->dia = $this->selected_item->dia; 
         $this->otros = $this->selected_item->otros;
         $this->descripcion = $this->selected_item->descripcion;
         $this->valor_unitario = $this->selected_item->v_unitario;
         $this->valor_total = $this->selected_item->v_total;
         $this->valor_total_cliente = $this->selected_item->v_total_cliente;
-        $this->proveedor = $this->selected_item->proveedor;
+        $this->proveedor = unserialize($this->selected_item->proveedor);
         $this->utilidad = $this->selected_item->margen_utilidad;
         $this->mes = $this->selected_item->mes;
         $this->dias = $this->selected_item->dias;
@@ -335,7 +335,7 @@ class Presupuesto extends Component
             $item->descripcion = $this->descripcion;
             $item->v_unitario = 0;
             $item->v_total = 0;
-            $item->proveedor = 0;
+            $item->proveedor = [];
             $item->margen_utilidad = 0;
             $item->mes = 1;
             $item->dias = 0;
@@ -374,7 +374,7 @@ class Presupuesto extends Component
             if ($this->presupuesto->gestion->claro){
                 $item->v_total_cliente = $this->valor_total_cliente;
             }
-            $item->proveedor = $this->proveedor;
+            $item->proveedor = serialize($this->proveedor);
             $item->margen_utilidad = $this->utilidad;
             $item->mes = $this->mes;  
             $item->dias = $this->dias;
@@ -593,12 +593,12 @@ class Presupuesto extends Component
         $this->validate([
             'valor_total' => ['required', 'numeric']
         ]);
-    }
+    } 
 
     public function updatedValorTotalCliente(){
         $this->valor_total_cliente = trim($this->valor_total_cliente);
         $this->valor_total_cliente = str_replace(",",'', $this->valor_total_cliente);
-        $this->validate([
+        $this->validate([ 
             'valor_total_cliente' => ['numeric', 'required']
         ]);
         
@@ -608,7 +608,6 @@ class Presupuesto extends Component
     }
 
     public function updatedProveedor(){
-        $this->proveedor = trim($this->proveedor);
         $this->validate([
             'proveedor' => ['required']
         ]); 
@@ -722,7 +721,7 @@ class Presupuesto extends Component
         $this->descripcion = "";
         $this->valor_unitario = 0;
         $this->valor_total = 0;
-        $this->proveedor = "";
+        $this->proveedor = [];
         $this->utilidad = "";
         $this->valor_total_cliente = 0;
 
