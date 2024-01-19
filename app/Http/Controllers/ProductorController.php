@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Proveedor;
 
 class ProductorController extends Controller
 {   

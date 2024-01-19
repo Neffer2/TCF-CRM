@@ -38,10 +38,10 @@
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
                         <table class="table mb-1"> 
-                            <tr>
+                            <tr>  
                                 <td>
                                     <div class="form-group m-0"> 
-                                        <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->find($proveedor)->tercero }} @endif </label>
+                                        {{-- <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->find($proveedor)->tercero }} @endif </label> --}}
                                         <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)                                                
                                                 @if ($proveedor_info)

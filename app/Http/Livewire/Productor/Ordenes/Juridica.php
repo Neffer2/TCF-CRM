@@ -5,12 +5,13 @@ namespace App\Http\Livewire\Productor\Ordenes;
 use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
+use App\Models\Proveedor;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
  
 class Juridica extends Component
 {    
-    use WithFileUploads, Email;
+    use WithFileUploads, Email; 
 
     // Models
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
@@ -105,12 +106,22 @@ class Juridica extends Component
             } 
         })->first();
     }
-
-    public function getProveedores(){    
-        $this->proveedores = $this->presupuesto->presupuestoItems->unique('proveedor')->map(function ($item){
-            return $item->proveedorInfo;
-        });
+  
+    public function getProveedores(){
+        $proveedores_presupuesto = [];
+        $proveedores_db = Proveedor::select('id', 'tercero')->get();
         
+        foreach ($this->presupuesto->presupuestoItems->unique('proveedor') as $item){
+            if ($proveedores_id = @unserialize($item->proveedor)){
+                foreach ($proveedores_id as $proveedor_id) {
+                    array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
+                }
+            }else {
+                array_push($proveedores_presupuesto, $proveedores_db->find($item->proveedor));
+            }
+        }  
+
+        $this->proveedores = $proveedores_presupuesto;
     }
 
     public function validateItems($itemDB){

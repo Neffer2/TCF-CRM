@@ -3,20 +3,17 @@
 namespace App\Http\Livewire\Productor;
 
 use Livewire\Component;
-use App\Models\ItemPresupuesto;
 use App\Models\PresupuestoProyecto;
-use App\Models\OrdenCompra;
+use App\Models\Proveedor;
  
 class SolicitarRecursos extends Component 
 {  
     // Models 
  
     // Useful vars     
-    public $presupuesto; 
-    public $verifyPresupuesto = false; 
-
-    public $id_presupuesto;
+    public $presupuesto, $proveedores = [], $verifyPresupuesto = false, $id_presupuesto;
     
+    // Filled
     protected $listeners = ['ordenCreada' => 'mount'];
     
     public function render() 
@@ -27,6 +24,7 @@ class SolicitarRecursos extends Component
  
     public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto); 
+        $this->proveedores = Proveedor::select('id', 'tercero')->get();;
     }
 
     public function internoPdf(){  
