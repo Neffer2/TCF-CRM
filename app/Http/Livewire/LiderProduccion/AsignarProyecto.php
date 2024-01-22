@@ -44,7 +44,7 @@ class AsignarProyecto extends Component
         if ($this->comercial){
             array_push($gestionFilter, ['id_user', $this->comercial]);
         }
-
+ 
         array_push($filter, ['estado_id', 1]); 
         array_push($filter, ['productor', null]);
 

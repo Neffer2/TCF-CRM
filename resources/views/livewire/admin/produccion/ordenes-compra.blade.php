@@ -85,7 +85,7 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
-                            </td>
+                            </td> 
                             <td class="d-flex align-items-center justify-content-center">
                                 <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a> 
                             </td>

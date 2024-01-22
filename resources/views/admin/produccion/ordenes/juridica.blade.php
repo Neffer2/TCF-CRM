@@ -6,10 +6,10 @@
     @endsection
 
     @section('content')     
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-12">
                 <div class="card mb-3">
-                    <div class="card-header p-0 mx-3 my-3 position-relative z-index-1 col-md-3">
+                    <div class="card-header p-0 mx-3 my-3 position-relative z-index-1 col-md-6">
                         <div class="row">
                             <div class="col-md-12">
                                 <h3 class="mb-0">Items consumidos</h3>
@@ -61,7 +61,17 @@
                                             $ {{ number_format($item->itemPresupuesto->v_total) }}
                                         </td>
                                         <td class="font-weight-bold font-table">
-                                            {{ $item->itemPresupuesto->proveedor }} 
+                                            @if ($proveedores_item = @unserialize($item->itemPresupuesto->proveedor))
+                                                @foreach ($proveedores_item as $proveedor) 
+                                                    {{ $proveedores->find($proveedor)->tercero }} <br>
+                                                @endforeach 
+                                            @else  
+                                                @if ($proveedores->find($item->itemPresupuesto->proveedor))
+                                                    {{ $proveedores->find($item->itemPresupuesto->proveedor)->tercero }}
+                                                @else   
+                                                    {{ $item->itemPresupuesto->proveedor }}
+                                                @endif
+                                            @endif
                                         </td>
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->margen_utilidad }}

@@ -30,7 +30,7 @@
                 </div>
             </div> 
             <div class="col-md-3">
-                <div class="card">
+                <div class="card"> 
                     <div class="table-responsive">
                         <table class="table mb-0">
                             <tr>
@@ -193,7 +193,17 @@
                                 $ {{ number_format($item->v_total) }}
                             </td>
                             <td class="font-weight-bold font-table">
-                                {{ $item->proveedor }} 
+                                @if ($proveedores_item = @unserialize($item->proveedor))
+                                    @foreach ($proveedores_item as $proveedor) 
+                                        {{ $proveedores->find($proveedor)->tercero }} <br>
+                                    @endforeach 
+                                @else  
+                                    @if ($proveedores->find($item->proveedor))
+                                        {{ $proveedores->find($item->proveedor)->tercero }}
+                                    @else   
+                                        {{ $item->proveedor }}
+                                    @endif
+                                @endif
                             </td>
                             <td class="font-weight-bold font-table">
                                 {{ $item->dias }}

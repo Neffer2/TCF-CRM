@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\OrdenCompra;
 use App\Models\EstadoCuenta;
+use App\Models\Proveedor;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HelisaExport;
@@ -57,7 +58,9 @@ class AdminController extends Controller
     public function showOrdenJuridica($orden_id){ 
         $orden = OrdenCompra::find($orden_id); 
         $presupuesto = $orden->presupuesto; 
-        return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden]);  
+        $proveedores = Proveedor::select('id', 'tercero')->get();
+
+        return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);  
     }
 
     public function showConsumidos(){ 

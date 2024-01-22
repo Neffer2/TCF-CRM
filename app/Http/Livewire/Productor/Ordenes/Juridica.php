@@ -28,6 +28,7 @@ class Juridica extends Component
 
     public function render() 
     {
+        $this->getProveedores();
         return view('livewire.productor.ordenes.juridica');
     }
  
@@ -35,8 +36,6 @@ class Juridica extends Component
         if ($this->orden_compra){
             $this->getItems();
         }
-
-        $this->getProveedores();
     }
 
     public function newItem(){    
@@ -118,10 +117,10 @@ class Juridica extends Component
                 }
             }else {
                 array_push($proveedores_presupuesto, $proveedores_db->find($item->proveedor));
-            }
+            }  
         }  
 
-        $this->proveedores = $proveedores_presupuesto;
+        $this->proveedores = collect($proveedores_presupuesto);
     }
 
     public function validateItems($itemDB){
@@ -172,7 +171,7 @@ class Juridica extends Component
 
         $this->validate([
             'cant' => 'required|numeric',
-            'vUnit' => 'required|numeric' 
+            'vUnit' => 'required|numeric'  
         ]);
 
         $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
@@ -180,7 +179,7 @@ class Juridica extends Component
 
     public function enviarAprobacion(){
         $this->validate([ 
-            'proveedor' => 'required|numeric|max:200',
+            'proveedor' => 'required',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
         ]);
          

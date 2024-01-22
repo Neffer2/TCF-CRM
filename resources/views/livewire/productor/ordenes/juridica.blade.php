@@ -41,11 +41,11 @@
                             <tr>  
                                 <td>
                                     <div class="form-group m-0"> 
-                                        {{-- <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->find($proveedor)->tercero }} @endif </label> --}}
+                                        <label for="proveedor"><b>Proveedor:</b> @if ($proveedor) {{ $proveedores->where('id', $proveedor)->first()->tercero }} @endif </label>
                                         <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)                                                
                                                 @if ($proveedor_info)
-                                                    <option value="{{ $proveedor_info->id }}">{{ $proveedor_info->documento }} - {{ $proveedor_info->tercero }}</option>                                                
+                                                    <option value="{{ $proveedor_info->id }}"> • {{ $proveedor_info->tercero }}</option>                                                
                                                 @endif
                                             @endforeach
                                         </select>
@@ -106,7 +106,7 @@
                             </tbody>
                         </table> 
                     </div>
-                </div>
+                </div> 
             </div>                    
             @if (Auth::user()->rol == 1 && $orden_compra->estado_id == 2)
                 <div class="row px-4">
@@ -426,9 +426,20 @@
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
+                                        @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
                                             <option value="{{ $presupuestoItem->id }}"
-                                                @if ($presupuestoItem->proveedor != $proveedor) disabled 
-                                                style="background-color: #e9ecef !important;" @endif>
+                                                @if (is_array($itemProveedor))
+                                                    @php
+                                                        $validator = in_array($proveedor, $itemProveedor);
+                                                    @endphp
+                                                    @if (!$validator)
+                                                        disabled 
+                                                        style="background-color: #e9ecef !important;"
+                                                    @endif
+                                                @elseif (!is_array($itemProveedor) && $itemProveedor != $proveedor)
+                                                    disabled
+                                                    style="background-color: #e9ecef !important;"
+                                                @endif>
                                                 {{ $key+1 }}
                                             </option>
                                         @endif

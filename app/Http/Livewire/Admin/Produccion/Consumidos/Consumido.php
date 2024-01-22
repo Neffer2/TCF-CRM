@@ -4,13 +4,14 @@ namespace App\Http\Livewire\Admin\Produccion\Consumidos;
 
 use Livewire\Component;
 use App\Models\PresupuestoProyecto;
+use App\Models\Proveedor;
 
 class Consumido extends Component
 {
 
     // Useful vars
-    public $presupuesto; 
-
+    public $presupuesto, $proveedores = []; 
+ 
     // filled
     public $presupuesto_id;
 
@@ -21,5 +22,6 @@ class Consumido extends Component
     
     public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->presupuesto_id);
+        $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 } 
