@@ -11,6 +11,7 @@ use App\Models\Base_comercial;
 use App\Models\GestionComercial;
 use App\Models\PresupuestoProyecto;
 use App\Models\ItemPresupuesto;
+use App\Models\Proveedor;
 use App\Models\Contacto;
 use App\Models\Helisa;
 use App\Models\Asistente;
@@ -83,8 +84,9 @@ class ComercialController extends Controller
     public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {                
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();        
+        $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();        
 
-        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo]), $nom_proyecto.".xlsx"); 
+        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx"); 
     }
  
     public function pdf(){

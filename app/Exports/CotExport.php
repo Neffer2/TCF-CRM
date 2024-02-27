@@ -31,7 +31,8 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         return view('exports.excel', [
             'items' => $this->info['items'],
             'presto' => $this->info['presto'],
-            'tipo' => $this->info['tipo'] 
+            'tipo' => $this->info['tipo'],
+            'proveedores' => $this->info['proveedores'] 
         ]);
     }
 

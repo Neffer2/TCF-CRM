@@ -305,7 +305,7 @@
                                 <td class="font-weight-bold font-table">
                                     {{ $item->ciudad }}
                                 </td>
-
+ 
                                 @if ($rentabilidadView)
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_unitario_cot) }}
@@ -508,7 +508,6 @@
                             placeholder="Proveedor" required wire:model.lazy="proveedor"> --}}
                             <select class="form-control select-multiple" @error('proveedor') is-invalid @enderror
                                 placeholder="Proveedor" required wire:model.lazy="proveedor" multiple>
-                                <option value="">Seleccionar</option>
                                 @foreach ($categorias_proveedor as $categoria)                                    
                                     <optgroup label="{{ $categoria->description }}">
                                         @foreach ($categoria->proveedores as $proveedor)

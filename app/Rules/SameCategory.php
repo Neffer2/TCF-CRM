@@ -21,7 +21,7 @@ class SameCategory implements Rule
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute 
-     * @param  mixed  $value
+     * @param  mixed  $value 
      * @return bool
      */
     public function passes($attribute, $value)
@@ -29,7 +29,9 @@ class SameCategory implements Rule
         $categorias = [];
         $proveedores = Proveedor::select('id', 'tercero', 'categoria_id')->get();
         foreach ($value as $proveedor) {
-            array_push($categorias, $proveedores->find($proveedor)->categoria_id);
+            if (is_numeric($proveedor)){
+                array_push($categorias, $proveedores->find($proveedor)->categoria_id);
+            }
         }
         
         $validator = array_unique($categorias);

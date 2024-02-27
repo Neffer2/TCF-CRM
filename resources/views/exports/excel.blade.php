@@ -100,7 +100,23 @@
                         <td colspan="6">{{ $item->descripcion }}</td>
                         <td colspan="2" style="text-align: center">{{ $item->cantidad }}</td>
                         @if (!$tipo) 
-                            <td colspan="2" style="text-align: center"> @if ($item->proveedorInfo) {{ $item->proveedorInfo->tercero }} @else {{ $item->proveedor }} @endif </td>
+                            <td colspan="2" style="text-align: center">
+                                @if ($proveedores_item = @unserialize($item->proveedor))
+                                    @php
+                                        $auxProveedores = "";
+                                    @endphp
+                                    @foreach ($proveedores_item as $proveedor) 
+                                        @php $auxProveedores .= $proveedores->find($proveedor)->tercero.", "; @endphp
+                                    @endforeach
+                                    {{ substr($auxProveedores, 0, -2) }} 
+                                @else 
+                                    @if ($proveedores->find($item->proveedor))
+                                        {{ $proveedores->find($item->proveedor)->tercero }}
+                                    @else   
+                                        {{ $item->proveedor }}
+                                    @endif
+                                @endif 
+                            </td>
                         @endif
                         <td colspan="1" style="text-align: center">{{ $item->dia }}</td>
                         <td colspan="1" style="text-align: center">{{ $item->otros }}</td>

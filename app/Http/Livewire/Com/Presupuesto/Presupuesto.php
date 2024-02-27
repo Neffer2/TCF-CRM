@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Rules\CentroCostos;
 use App\Rules\SameCategory;
 use Illuminate\Support\Facades\Auth;
-use App\Models\GestionComercial; 
+use App\Models\GestionComercial;  
 use App\Models\Mes;
 use App\Models\Año; 
 use App\Models\CategoriaProveedor; 
@@ -597,7 +597,7 @@ class Presupuesto extends Component
         $this->validate([
             'valor_total' => ['required', 'numeric']
         ]);
-    } 
+    }  
 
     public function updatedValorTotalCliente(){
         $this->valor_total_cliente = trim($this->valor_total_cliente);
@@ -615,7 +615,7 @@ class Presupuesto extends Component
         $this->validate([
             'proveedor' => ['required', new SameCategory]
         ]); 
-    }
+    }  
 
     public function updatedUtilidad(){
         $this->utilidad = trim($this->utilidad);
