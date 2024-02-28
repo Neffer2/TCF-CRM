@@ -37,6 +37,7 @@ class ItemsPresupuestoTable extends Migration
             $table->decimal('rentabilidad', 15, 2)->default(0);
 
             $table->boolean('actualizado')->default(false);
+            $table->boolean('disponible')->default(true);
             $table->timestamps();
         });
     }

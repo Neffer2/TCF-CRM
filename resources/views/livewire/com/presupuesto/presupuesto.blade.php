@@ -224,7 +224,7 @@
                         @endif
 
                         @if (Auth::user()->rol != 1)
-                            <th colspan="2" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
+                            <th colspan="3" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
                         @endif
                     </tr>
                 </thead>
@@ -275,8 +275,8 @@
                                 @if ($presupuesto->gestion->claro)
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cliente) }}
-                                    </td>
-                                @endif
+                                    </td> 
+                                @endif 
                                 <td class="font-weight-bold font-table">
                                     @if ($proveedores_item = @unserialize($item->proveedor))
                                         @foreach ($proveedores_item as $proveedor) 
@@ -317,7 +317,12 @@
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>
                                 @endif
-
+                                <td class="font-weight-bold">
+                                    <div class="form-check">  
+                                        <input wire:change="changeDisponibilidad({{ $item->id }})"
+                                            class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
+                                    </div>
+                                </td>
                                 @if (Auth::user()->rol != 1)
                                     <td class="font-weight-bold font-table">
                                         <button wire:click="deleteItem({{ $item->id }})">✖️</button>

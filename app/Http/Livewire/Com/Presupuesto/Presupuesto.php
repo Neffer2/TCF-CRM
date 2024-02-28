@@ -285,6 +285,13 @@ class Presupuesto extends Component
         $this->tarifario = Tarifario::select('id', 'concepto', 'caso', 'v_unidad')->get();
     }
 
+    public function changeDisponibilidad($id){
+        $item = ItemPresupuesto::find($id);
+        $item->disponible = !$item->disponible;
+        $item->update();
+        $this->refresh();
+    }
+
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);        
         $this->refresh();
@@ -710,11 +717,11 @@ class Presupuesto extends Component
             $this->descripcion = "";
             $this->valor_unitario = 0;
             return redirect()->back();
-        }
+        } 
         $tarifario = $this->tarifario->firstWhere('id', $cod_tarifario);
         $this->descripcion = $tarifario->concepto." ".$tarifario->caso;
         $this->valor_unitario = $tarifario->v_unidad;
-    }
+    } 
 
     public function limpiar(){
         $this->cod = "";

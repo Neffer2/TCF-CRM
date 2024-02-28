@@ -5,7 +5,7 @@
                 SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA  
             </div>
             <div class="row font-table px-4">
-                <div class="col-md-6 mt-3">
+                <div class="col-md-6 mt-3"> 
                     <div class="table-responsive">
                         <table class="table mb-1">
                             <tr style="height: 35px;">

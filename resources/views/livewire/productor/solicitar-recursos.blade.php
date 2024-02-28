@@ -14,7 +14,7 @@
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
                     </tr> 
                 </thead>
-                <tbody>  
+                <tbody>   
                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                         <div>  
                             @if($presupuestoItem->evento)
@@ -24,10 +24,11 @@
                                     </td>
                                 </tr> 
                             @else 
-                                <tr>
+                                <tr @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif>
                                     <td class="font-weight-bold font-table">{{ $key+1 }}</td>
                                     <td class="font-weight-bold font-table">
-                                        <textarea cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
+                                        <textarea @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif 
+                                            cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
                                     </td>
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
                                     <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>

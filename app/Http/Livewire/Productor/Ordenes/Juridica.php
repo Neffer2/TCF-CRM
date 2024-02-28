@@ -29,7 +29,7 @@ class Juridica extends Component
     public function render() 
     {
         $this->getProveedores();
-        return view('livewire.productor.ordenes.juridica');
+        return view('livewire.productor.ordenes.juridica'); 
     }
  
     public function mount (){
@@ -309,6 +309,13 @@ class Juridica extends Component
         
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
 
+        // Valida dispinibilidad
+        if (!$dbItemPresto->disponible){
+            $this->addError('customError', 'Este item no está disponible para ser consumido.');
+            $this->resetFields();
+            return redirect()->back();
+        }
+
         $contCant = 0;
         foreach ($dbItemPresto->consumidos as $item) {
             if (!($item->OrdenCompra->estado_id == 6)){
@@ -319,7 +326,7 @@ class Juridica extends Component
         $this->cant = ($dbItemPresto->cantidad - $contCant);
 
         if ($this->cant == 0){
-            $this->addError('customError', 'Éste item ya fué consumido.');
+            $this->addError('customError', 'Este item ya fué consumido.');
             $this->resetFields();
             return redirect()->back(); 
         } 
