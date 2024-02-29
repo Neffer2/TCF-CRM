@@ -44,8 +44,8 @@ class Proveedores extends Component
         if ($this->estado){
             array_push($filtros, ['estado', $this->estado]);
         }
-
-        $proveedores = Proveedor::where($filtros)->orderBy('created_at', 'desc')->paginate(15);
+  
+        $proveedores = Proveedor::where($filtros)->orderBy('tercero', 'asc')->paginate(15);
         return view('livewire.admin.produccion.proveedores.proveedores', ['proveedores' => $proveedores]);
     }
 

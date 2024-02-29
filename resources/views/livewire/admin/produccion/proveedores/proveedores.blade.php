@@ -22,7 +22,7 @@
                             <option value="{{ $categoria->id }}">{{ $categoria->description }}</option>
                         @endforeach
                     </select> 
-                </div>
+                </div> 
                 <div class="col-md-2">
                     <label for="estado">Ciudad:</label>
                     <select id="estado" class="form-control" wire:model="ciudad">
@@ -60,8 +60,8 @@
                                         <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="mb-0 text-xs">{{ $proveedor->contacto }}</h6>
-                                        <p class="text-xs text-secondary mb-0">{{ $proveedor->tercero }}</p>
+                                        <h6 class="mb-0 text-xs">{{ $proveedor->tercero }}</h6>
+                                        <p class="text-xs text-secondary mb-0">{{ $proveedor->contacto }}</p>
                                     </div>
                                 </div>
                             </td>
