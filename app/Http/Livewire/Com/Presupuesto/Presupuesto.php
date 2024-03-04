@@ -284,7 +284,7 @@ class Presupuesto extends Component
     public function getTarifario(){
         $this->tarifario = Tarifario::select('id', 'concepto', 'caso', 'v_unidad')->get();
     }
-
+ 
     public function changeDisponibilidad($id){
         $item = ItemPresupuesto::find($id);
         $item->disponible = !$item->disponible;
