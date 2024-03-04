@@ -280,7 +280,7 @@
                                 <td class="font-weight-bold font-table">
                                     @if ($proveedores_item = @unserialize($item->proveedor))
                                         @foreach ($proveedores_item as $proveedor) 
-                                            {{ $proveedores->find($proveedor)->tercero }} <br>
+                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
                                         @endforeach 
                                     @else 
                                         @if ($proveedores->find($item->proveedor))
@@ -289,7 +289,7 @@
                                             {{ $item->proveedor }}
                                         @endif
                                     @endif
-                                </td>
+                                </td> 
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
                                 </td>
