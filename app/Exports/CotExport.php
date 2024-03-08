@@ -50,13 +50,13 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
 
     public function columnFormats(): array 
     {
-        return [
+        return [ 
             // 'I' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
             'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'P' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 }

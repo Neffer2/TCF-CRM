@@ -317,13 +317,13 @@
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>
                                 @endif
-                                <td class="font-weight-bold">
-                                    <div class="form-check">  
-                                        <input wire:change="changeDisponibilidad({{ $item->id }})"
-                                            class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
-                                    </div>
-                                </td>
                                 @if (Auth::user()->rol != 1)
+                                    <td class="font-weight-bold">
+                                        <div class="form-check">  
+                                            <input wire:change="changeDisponibilidad({{ $item->id }})"
+                                                class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
+                                        </div>
+                                    </td>
                                     <td class="font-weight-bold font-table">
                                         <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                                     </td>
