@@ -1,7 +1,7 @@
 <div>
     <div class="card">
         <div class="card-header p-0 px-3 mt-3">
-            <div class="row">            
+            <div class="row gy-1">            
                 <div class="col-md-12">
                     <h3 class="mb-0">Presupuestos</h3>
                     <p class="text-sm mb-0">Lista completa de presupuestos.</p>
@@ -14,10 +14,23 @@
                             <option value="{{ $año->id }}">{{ $año->description }}</option>
                         @endforeach
                     </select>
-                </div>  
+                </div>   
                 <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                </div> 
+                <div class="form-group col-md-2 mb-0">
+                    <label for="comercial">Buscar:</label> 
+                    <input type="text" wire:model="nom_proyecto" class="form-control" placeholder="Nombre proyecto">
+                </div> 
+                <div class="form-group col-md-2 mb-0">
+                    <label for="comercial">Comercial:</label> 
+                    <select wire:model="comercial" class="form-control">
+                        <option value="">Seleccionar</option>
+                        @foreach ($comerciales as $comercial)
+                            <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>                            
+                        @endforeach
+                    </select>
                 </div> 
                 <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Fecha:</label> 
