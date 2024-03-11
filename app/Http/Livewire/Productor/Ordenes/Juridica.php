@@ -308,7 +308,7 @@ class Juridica extends Component
         ]);
         
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
-
+ 
         // Valida dispinibilidad
         if (!$dbItemPresto->disponible){
             $this->addError('customError', 'Este item no está disponible para ser consumido.');
@@ -387,6 +387,7 @@ class Juridica extends Component
 
         $this->mount(); 
         $this->ocItems = [];
+        $this->resetFields();
     }
 
     public function updatedJustificacionRechazo(){

@@ -244,9 +244,9 @@
                                     <td>
                                         <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                     </td>
-                                @endif
+                                @endif 
                             </tr>
-                        @else
+                        @else  
                             <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif> 
                                 <td class="font-weight-bold font-table">
                                     {{ $item->cod }}
@@ -369,7 +369,7 @@
                             placeholder="Cantidad" required wire:model.lazy="cantidad"> 
                             @error('cantidad')
                                 <div id="cantidad" class="invalid-feedback">
-                                    {{ $message }}
+                                    {!! $message !!}
                                 </div>
                             @enderror
                         </div>
@@ -429,7 +429,7 @@
                             placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
                             @error('valor_total')
                                 <div id="valor_total" class="invalid-feedback">
-                                    {{ $message }}
+                                    {!! $message !!}
                                 </div>
                             @enderror
                         </div>

@@ -18,6 +18,10 @@ class ItemPresupuesto extends Model
         return $this->hasMany(OcItem::class, 'item_id', 'id');  
     }
 
+    public function presto(){
+        return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');  
+    }
+
     // Proveedor no tiene relacion en base de datos porque se implementaron después de creado el modulo presupuestos.
     public function proveedorInfo(){
         return $this->hasOne(Proveedor::class, 'id', 'proveedor');

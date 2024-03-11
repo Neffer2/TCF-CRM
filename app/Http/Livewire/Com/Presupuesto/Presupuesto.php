@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Com\Presupuesto;
 use Livewire\Component;
 use App\Rules\CentroCostos;
 use App\Rules\SameCategory;
+use App\Rules\PrestoConsumido;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GestionComercial;  
 use App\Models\Mes;
@@ -77,12 +78,12 @@ class Presupuesto extends Component
 
     // globals
     public $id_gestion; 
-
+ 
     public function render()
     {
         return view('livewire.com.presupuesto.presupuesto');
     }
-
+ 
     public function mount(){ 
         $validator = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         if (is_null($validator)){
@@ -284,7 +285,7 @@ class Presupuesto extends Component
     public function getTarifario(){
         $this->tarifario = Tarifario::select('id', 'concepto', 'caso', 'v_unidad')->get();
     }
- 
+  
     public function changeDisponibilidad($id){
         $item = ItemPresupuesto::find($id);
         $item->disponible = !$item->disponible;
@@ -358,8 +359,6 @@ class Presupuesto extends Component
                 'dia' => ['required'],
                 'otros' => ['required'],
                 'descripcion' => ['required'],
-                'valor_unitario' => ['required'],
-                'valor_total' => ['required'],
                 'proveedor' => ['required', new SameCategory],
                 'utilidad' => ['required'],
                 'mes' => ['required'],
@@ -374,6 +373,12 @@ class Presupuesto extends Component
             }
     
             $item = ItemPresupuesto::find($this->selected_item->id);
+
+            $this->validate([
+                'cantidad' => ['required', (new PrestoConsumido($item))],
+                'valor_total' => ['required', (new PrestoConsumido($item))],
+            ]);
+
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
             $item->cantidad = $this->cantidad;
