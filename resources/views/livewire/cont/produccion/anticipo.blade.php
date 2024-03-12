@@ -32,7 +32,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div>
+                        </div> 
                     </div>
                     <div class="col-md-12">
                         <button wire:click="store"wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como causado</button>
@@ -57,6 +57,17 @@
                             <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden->archivo_cot); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
                             </a>
                         </div>
                     </div>

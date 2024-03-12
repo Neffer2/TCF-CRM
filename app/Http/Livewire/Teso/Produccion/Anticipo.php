@@ -15,7 +15,7 @@ class Anticipo extends Component
     public $comprobante, $observacion_anticipo;
 
     // Useful vars
-    public $orden;
+    public $orden; 
  
     // Filled
     public $orden_id;

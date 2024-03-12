@@ -24,7 +24,7 @@
                         <option value="1">Seleccionar</option>
                         <option value="1">Pendiente</option> 
                     </select> 
-                </div>
+                </div> 
             </div>
         </div> 
         <div class="table-responsive">

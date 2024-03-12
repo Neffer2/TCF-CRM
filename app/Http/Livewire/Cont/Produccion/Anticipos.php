@@ -21,7 +21,7 @@ class Anticipos extends Component
             * 1: Pendiente.
             * 2: Pagado.
         */
-        if ($this->estado == 1){
+        if ($this->estado == 1){ 
             if ($this->cod_cc){
                 // WhereHas busca dentro de la colleccion el campo 'proveedor'
                 $ordenes = OrdenCompra::with('proveedor')->with('presupuesto') 
