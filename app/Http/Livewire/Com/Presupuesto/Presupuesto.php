@@ -364,7 +364,7 @@ class Presupuesto extends Component
                 'mes' => ['required'],
                 'dias' => ['required'],
                 'ciudad' => ['required'] 
-            ]);
+            ]); 
 
             if ($this->presupuesto->gestion->claro){
                 $this->validate([
@@ -378,6 +378,12 @@ class Presupuesto extends Component
                 'cantidad' => ['required', (new PrestoConsumido($item))],
                 'valor_total' => ['required', (new PrestoConsumido($item))],
             ]);
+
+            // Indica actualiazcion
+            if ($presto->cod_cc && ($this->valor_total > $item->v_total)){
+                $item->actualizado = true;
+                $this->setEnEdicion($presto);
+            }
 
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
@@ -395,12 +401,6 @@ class Presupuesto extends Component
             $item->mes = $this->mes;  
             $item->dias = $this->dias;
             $item->ciudad = $this->ciudad;
-
-            // Indica actualiazcion
-            if ($presto->cod_cc){
-                $item->actualizado = true;
-                $this->setEnEdicion($presto);
-            } 
             
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
             $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;

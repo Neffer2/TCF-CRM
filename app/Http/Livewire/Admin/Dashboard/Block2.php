@@ -7,7 +7,7 @@ use App\Models\Base_comercial;
 use App\Models\Helisa; 
 use App\Models\Mes;
 use App\Models\Año;
-use App\Models\Presupuesto;
+use App\Models\Presupuesto;  
 
 class Block2 extends Component
 {

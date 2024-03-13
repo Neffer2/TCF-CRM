@@ -7,16 +7,16 @@
             <div class="col-md-6 text-center">
                 <h6 class="mb-0 font-weight-bolder">SUMATORIA DE VENTAS</h6>
             </div>
-        </div>                    
+        </div>                     
     </div>
     <div class="card-body pt-1">
         <div class="row"> 
             <div class="col-md-6 text-center d-flex justify-content-center">
                 <div class="">
                     <div class="p-3">
-                        <div class="d-flex">
+                        <div class="d-flex"> 
                             <div class="numbers">
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                <a href="{{ route('estados', ['año' => $año, 'comercial' => $comercial]) }}" target="_blank">
                                     <p class="text-sm mb-0 text-uppercase font-weight-bold">
                                         EJECUCIÓN X FACTURAR
                                     </p>

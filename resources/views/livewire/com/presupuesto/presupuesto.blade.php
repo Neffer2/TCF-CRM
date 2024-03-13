@@ -409,7 +409,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="valor_unitario">V. UNITARIO</label>
@@ -421,7 +421,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div>  
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="valor_total">V. TOTAL</label>

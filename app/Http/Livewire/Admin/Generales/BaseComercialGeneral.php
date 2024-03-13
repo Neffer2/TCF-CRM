@@ -15,7 +15,7 @@ class BaseComercialGeneral extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $comercial, $centro, $estado, $año;
+    public $comercial, $centro, $estado, $año, $valorTotal;
 
     // Useful vars
     public $comerciales = [], $estados = [], $años = [], $yearInfo;
@@ -41,7 +41,7 @@ class BaseComercialGeneral extends Component
             array_push($filtros, ['id_user', $this->comercial]);
         }
 
-
+        $this->valorTotal = Base_comercial::where($filtros)->sum('valor_proyecto');
         $baseComerciales = Base_comercial::where($filtros)->paginate(25);
         return view('livewire.admin.generales.base-comercial-general', ['baseComerciales' => $baseComerciales]);
     }
@@ -73,6 +73,6 @@ class BaseComercialGeneral extends Component
         ]);
         
         $this->yearInfo = Año::find($this->año);
-    }
+    } 
 }
  

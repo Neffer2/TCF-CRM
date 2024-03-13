@@ -31,7 +31,7 @@ class PrestoConsumido implements Rule
                 $this->cantidadConsumido += $consumido->cant_oc;
             }
 
-            if ($value > $this->cantidadConsumido){
+            if ($value >= $this->cantidadConsumido){
                 return true;
             }    
         }elseif ($attribute == 'valor_total'){
@@ -39,7 +39,7 @@ class PrestoConsumido implements Rule
                 $this->valorTotalConsumido += $consumido->vtotal_oc;
             }
             
-            if ($value > $this->valorTotalConsumido){
+            if ($value >= $this->valorTotalConsumido){
                 return true;
             } 
         }    

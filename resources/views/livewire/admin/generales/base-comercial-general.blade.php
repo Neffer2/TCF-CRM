@@ -18,7 +18,7 @@
                 <div class="form-group col-md-2">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="centro" class="form-control" placeholder="Centro de costos">
-                </div>
+                </div> 
                 <div class="form-group col-md-2">
                     <label for="comercial">Comercial:</label>
                     <select wire:model="comercial" class="form-control">
@@ -57,7 +57,7 @@
                     </thead>
                     <tbody> 
                         @foreach ($baseComerciales as $key => $baseComercial)
-                            <tr>
+                            <tr> 
                                 <td class="font-weight-bold">{{ $baseComercial->fecha }}</td>
                                 <td class="font-weight-bold">{{ $baseComercial->nom_cliente }}</td>
                                 <td class="font-weight-bold">{{ $baseComercial->nom_proyecto }}</td>
@@ -67,9 +67,20 @@
                                 <td class="font-weight-bold">{{ $baseComercial->fecha_inicio }}</td>
                                 <td class="font-weight-bold">{{ $baseComercial->dura_mes }}</td>
                                 <td class="font-weight-bold">{{ $baseComercial->comercial->name }}</td>
-                            </tr>                                   
+                            </tr>  
                         @endforeach
                     </tbody>
+                    <tfoot class="font-weight-bold bg-gradient-warning text-white">
+                        <tr>
+                            <th colspan="4" class="text-center">
+                                <span class="font-weight-bold">Total:</span>
+                            </th>
+                            <th colspan="1">
+                                <span class="font-weight-bold">{{ number_format($valorTotal) }}</span>
+                            </th>
+                            <th colspan="4"></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="row p-2">
