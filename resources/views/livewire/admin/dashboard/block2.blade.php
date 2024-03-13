@@ -16,7 +16,7 @@
                     <div class="p-3">
                         <div class="d-flex">
                             <div class="numbers">
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                <a href="{{ route('base-comercial-general', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial, 'estado' => 3]) }}" target="_blank">
                                     <p class="text-sm mb-0 text-uppercase font-weight-bold">
                                         EJECUCIÓN X FACTURAR
                                     </p>
@@ -42,7 +42,7 @@
                     <div class="p-3">
                         <div class="d-flex">
                             <div class="numbers"> 
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                <a href="{{ route('base-comercial-general', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial, 'estado' => 7]) }}" target="_blank">
                                     <p class="text-sm mb-0 text-uppercase font-weight-bold">
                                         VENTA<br>EJECUCIÓN
                                     </p>
@@ -67,7 +67,7 @@
                     <div class="p-3">
                         <div class="d-flex">
                             <div class="numbers">
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
+                                <a href="{{ route('base-comercial-general', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial, 'estado' => 6]) }}" target="_blank">
                                     <p class="text-sm mb-0 text-uppercase font-weight-bold">
                                         VENTA
                                     </p>

@@ -52,12 +52,12 @@
                   <span class="sidenav-normal"> Dashboard </span>
                 </a>
               </li>
-              <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
+              {{-- <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('estado-facturacion'), 'nav-link' => true]) href="{{ route('estado-facturacion') }}">
                   <span class="sidenav-mini-icon"> E </span>
                   <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
                 </a>
-              </li>
+              </li> --}}
               <li @class(['active' => request()->is('base-comercial-general'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
                   <span class="sidenav-mini-icon"> B </span>

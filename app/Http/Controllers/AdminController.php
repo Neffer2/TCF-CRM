@@ -27,8 +27,9 @@ class AdminController extends Controller
         return view('admin.ajustes.perfil.actualizar');
     } 
 
-    public function showBaseComercialGeneral (){
-        return view('admin.data.base-comercial');
+    public function showBaseComercialGeneral (Request $request){
+        $filtro = ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial, 'estado' => $request->estado];
+        return view('admin.data.base-comercial', ['filtros' => $filtro]);
     }
 
     public function showHelisaGeneral() {

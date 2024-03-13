@@ -15,6 +15,15 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="form-group col-md-1">
+                    <label for="comercial">Mes:</label>
+                    <select wire:model="mes" class="form-control"> 
+                        <option value="">Seleccionar</option>
+                        @foreach ($yearInfo->Meses as $mes) 
+                            <option value="{{ $mes->id }}">{{ $mes->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-group col-md-2">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="centro" class="form-control" placeholder="Centro de costos">

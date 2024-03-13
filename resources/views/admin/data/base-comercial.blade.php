@@ -7,10 +7,9 @@
 @endsection
 @section('content')
     <div class="col-12"> 
-        @livewire('admin.generales.base-comercial-general')
-    </div>
+        @livewire('admin.generales.base-comercial-general', ['requested_filters' => $filtros])
+    </div> 
 @endsection
-
     @section('scripts-imports')
         <script src="{{ asset('assets/js/plugins/datatables.js') }}"></script>
     @endsection

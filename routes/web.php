@@ -34,7 +34,7 @@ Route::get('/', function () {
     Route::get('/dashboard-admin', [AdminController::class, 'index'])->middleware(['auth'])->middleware(['admin'])->name('dashboard-admin'); 
     Route::get('/mi-equpo', [AdminController::class, 'show_team'])->middleware(['auth'])->middleware(['admin'])->name('mi-equpo');     
     Route::get('/actualizar-perfil-adm', [AdminController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['admin'])->name('actualizar-perfil-adm');   
-    Route::get('/base-comercial-general', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');   
+    Route::get('/base-comercial-general/{filtro?}', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');   
     Route::get('/helisa-general', [AdminController::class, 'showHelisaGeneral'])->middleware(['auth'])->middleware(['admin'])->name('helisa-general');
     Route::get('/export-helisa/{comercial?}/{centro?}', [AdminController::class, 'exportHelisa'])->middleware(['auth'])->middleware(['admin'])->name('export-helisa');
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');   

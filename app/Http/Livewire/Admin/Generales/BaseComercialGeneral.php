@@ -15,10 +15,13 @@ class BaseComercialGeneral extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $comercial, $centro, $estado, $año, $valorTotal;
+    public $comercial, $centro, $mes, $estado, $año, $valorTotal;
 
     // Useful vars
     public $comerciales = [], $estados = [], $años = [], $yearInfo;
+
+    // Filled 
+    public $requested_filters;
 
     public function render()
     {
@@ -28,9 +31,14 @@ class BaseComercialGeneral extends Component
             array_push($filtros, ['cod_cc', 'LIKE', "%$this->centro%"]);
         }
 
-        if($this->año){
+        if($this->año){ 
             array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->last()->f_fin]);
+        }
+
+        if ($this->mes){
+            array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->find($this->mes)->f_inicio]);
+            array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->find($this->mes)->f_fin]);
         }
 
         if ($this->estado){
@@ -47,9 +55,17 @@ class BaseComercialGeneral extends Component
     }
 
     public function mount(){
+        $this->getRequestedFilters();
         $this->getComerciales();
         $this->getEstados();
         $this->getAños();
+    }
+
+    public function getRequestedFilters(){
+        $this->año = $this->requested_filters['año'];
+        $this->mes = $this->requested_filters['mes'];
+        $this->comercial = $this->requested_filters['comercial'];
+        $this->estado = $this->requested_filters['estado'];
     }
 
     public function getComerciales(){ 

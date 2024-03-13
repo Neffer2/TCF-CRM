@@ -11,7 +11,7 @@ class Consumido extends Component
 
     // Useful vars
     public $presupuesto, $proveedores = []; 
- 
+  
     // filled
     public $presupuesto_id;
 
