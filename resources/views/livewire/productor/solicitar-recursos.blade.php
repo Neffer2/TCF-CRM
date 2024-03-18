@@ -36,8 +36,8 @@
                                     <td class="font-weight-bold font-table">
                                         @if ($proveedores_item = @unserialize($presupuestoItem->proveedor))
                                         @foreach ($proveedores_item as $proveedor) 
-                                            {{ $proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach 
+                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
+                                        @endforeach  
                                         @else 
                                             @if ($proveedores->find($presupuestoItem->proveedor))
                                                 {{ $proveedores->find($presupuestoItem->proveedor)->tercero }}
