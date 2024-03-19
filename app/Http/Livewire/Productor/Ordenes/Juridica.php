@@ -22,7 +22,7 @@ class Juridica extends Component
     public $presupuesto, $orden_compra;
   
     // Useful vars 
-    public $ocItems = [], $selectedItem, $maxCant, $maxValor, $items = [], $proveedores = [];
+    public $ocItems = [], $selectedItem, $maxCant, $maxValor, $maxDias, $maxOtros, $items = [], $proveedores = [];
 
     public $edit = false;
 
@@ -101,6 +101,8 @@ class Juridica extends Component
         $this->presupuesto->presupuestoItems->map(function ($item){
             if ($this->item == $item->id){
                 $this->maxCant = $item->cantidad;
+                $this->maxDias = $item->dia;
+                $this->maxOtros = $item->otros;
                 $this->maxValor = $item->v_unitario;
             } 
         })->first();
@@ -174,6 +176,7 @@ class Juridica extends Component
             'vUnit' => 'required|numeric'  
         ]);
 
+        dd($this->cant * $this->vUnit * $this->dias * $this->otros);
         $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
     }
 
@@ -336,6 +339,7 @@ class Juridica extends Component
         $this->vUnit = $dbItemPresto->v_unitario;
         $this->dias = $dbItemPresto->dia;
         $this->otros = $dbItemPresto->otros;
+        
         $this->maxCant = $this->cant;
         $this->maxValor = $this->vUnit;
         $this->getVTotal();
@@ -354,6 +358,18 @@ class Juridica extends Component
 
         if ($this->cant < 0){
             $this->cant = 0;
+        }
+
+        $this->getVTotal();
+    }
+
+    public function updatedDias(){
+        $this->validate([
+            'dias' => "required|numeric|max:$this->maxDias",
+        ]);
+
+        if ($this->dias < 0){
+            $this->dias = 0;
         }
 
         $this->getVTotal();
@@ -387,7 +403,7 @@ class Juridica extends Component
 
         $this->mount(); 
         $this->ocItems = [];
-        $this->resetFields();
+        $this->resetFields(); 
     }
 
     public function updatedJustificacionRechazo(){

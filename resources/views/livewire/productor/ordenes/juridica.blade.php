@@ -34,7 +34,7 @@
                             @endif
                         </table>
                     </div>
-                </div> 
+                </div>  
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
                         <table class="table mb-1"> 
@@ -459,13 +459,13 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">DIAS</label>
-                                <input type="number" class="form-control" disabled placeholder="Dias" required wire:model.lazy="dias"> 
+                                <input type="number" class="form-control" placeholder="Dias" required wire:model.lazy="dias"> 
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">OTROS</label>
-                                <input type="number" class="form-control" disabled placeholder="Otros" required wire:model.lazy="otros"> 
+                                <input type="number" class="form-control" placeholder="Otros" required wire:model.lazy="otros"> 
                             </div>
                         </div>
                         
@@ -500,6 +500,11 @@
                     @enderror
                     @error('cant')
                         <div id="cant" class="text-invalid"> 
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    @error('dias')
+                        <div id="dias" class="text-invalid"> 
                             {{ $message }}
                         </div>
                     @enderror
