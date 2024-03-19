@@ -276,7 +276,7 @@
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cliente) }}
                                     </td> 
-                                @endif 
+                                @endif  
                                 <td class="font-weight-bold font-table">
                                     @if ($proveedores_item = @unserialize($item->proveedor))
                                         @foreach ($proveedores_item as $proveedor) 

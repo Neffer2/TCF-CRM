@@ -63,7 +63,7 @@ class Presupuesto extends Component
     public $estadoValidator;
     public $cod_cc;
 
-    // metricas
+    // metricas 
     public $margenGeneral = 0;
     public $costosProyecto = 0; 
     public $ventaProyecto = 0;
@@ -137,7 +137,8 @@ class Presupuesto extends Component
             'descripcion' => ['required'],
             'valor_unitario' => ['required'],
             'valor_total' => ['required'],
-            'proveedor' => ['required', new SameCategory],
+            // 'proveedor' => ['required', new SameCategory],
+            'proveedor' => ['required'],
             'utilidad' => ['required', 'numeric'],
             'mes' => ['required'], 
             'dias' => ['required'],
@@ -359,7 +360,8 @@ class Presupuesto extends Component
                 'dia' => ['required'],
                 'otros' => ['required'],
                 'descripcion' => ['required'],
-                'proveedor' => ['required', new SameCategory],
+                // 'proveedor' => ['required', new SameCategory],
+                'proveedor' => ['required'],
                 'utilidad' => ['required'],
                 'mes' => ['required'],
                 'dias' => ['required'],
