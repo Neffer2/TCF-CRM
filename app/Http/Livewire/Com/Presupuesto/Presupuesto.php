@@ -627,7 +627,8 @@ class Presupuesto extends Component
 
     public function updatedProveedor(){
         $this->validate([
-            'proveedor' => ['required', new SameCategory]
+            // 'proveedor' => ['required', new SameCategory]
+            'proveedor' => ['required']
         ]); 
     }  
 
