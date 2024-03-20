@@ -459,13 +459,15 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">DIAS</label>
-                                <input type="number" class="form-control" placeholder="Dias" required wire:model.lazy="dias" disabled> 
+                                <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
+                                placeholder="Dias" required wire:model.lazy="dias"> 
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">OTROS</label>
-                                <input type="number" class="form-control" placeholder="Otros" required wire:model.lazy="otros" disabled> 
+                                <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror" 
+                                placeholder="Otros" required wire:model.lazy="otros"> 
                             </div>
                         </div>
                         
@@ -505,6 +507,11 @@
                     @enderror
                     @error('dias')
                         <div id="dias" class="text-invalid"> 
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    @error('otros')
+                        <div id="otros" class="text-invalid"> 
                             {{ $message }}
                         </div>
                     @enderror

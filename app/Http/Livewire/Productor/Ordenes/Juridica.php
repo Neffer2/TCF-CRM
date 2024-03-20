@@ -176,7 +176,6 @@ class Juridica extends Component
             'vUnit' => 'required|numeric'   
         ]);
 
-        // dd($this->cant * $this->vUnit * $this->dias * $this->otros);
         $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
     }
 
@@ -320,13 +319,19 @@ class Juridica extends Component
         }
 
         $contCant = 0;
+        $contDias = 0;
+        $contOtros = 0;
         foreach ($dbItemPresto->consumidos as $item) {
             if (!($item->OrdenCompra->estado_id == 6)){
-                $contCant += $item->cant_oc;            
+                $contCant += $item->cant_oc;
+                $contDias += $item->dias_oc;
+                $contOtros += ($item->otros_oc > 1) ? $item->otros_oc : 0;  
             }
         }
 
         $this->cant = ($dbItemPresto->cantidad - $contCant);
+        $this->dias = ($dbItemPresto->dia - $contDias);
+        $this->otros = ($dbItemPresto->otros - $contOtros);
 
         if ($this->cant == 0){
             $this->addError('customError', 'Este item ya fué consumido.');
@@ -337,10 +342,12 @@ class Juridica extends Component
         $this->desc = $dbItemPresto->descripcion;
         $this->cant = $this->cant;
         $this->vUnit = $dbItemPresto->v_unitario;
-        $this->dias = $dbItemPresto->dia;
-        $this->otros = $dbItemPresto->otros;
+        $this->dias = $this->dias;
+        $this->otros = $this->otros;
         
         $this->maxCant = $this->cant;
+        $this->maxDias = $this->dias;
+        $this->maxOtros = $this->otros;
         $this->maxValor = $this->vUnit;
         $this->getVTotal();
     }
@@ -370,6 +377,18 @@ class Juridica extends Component
 
         if ($this->dias < 0){
             $this->dias = 0;
+        }
+
+        $this->getVTotal();
+    }
+
+    public function updatedOtros(){
+        $this->validate([
+            'otros' => "required|numeric|max:$this->maxOtros",
+        ]);
+
+        if ($this->otros < 0){
+            $this->otros = 0;
         }
 
         $this->getVTotal();
