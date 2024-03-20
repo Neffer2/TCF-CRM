@@ -79,6 +79,6 @@ class HelisaGeneral extends Component
             $centro = 'none';
         }
  
-        return redirect()->route('export-helisa', ['comercial' => $comercial, 'centro' => $centro]); 
+        return redirect()->route('export-helisa', ['comercial' => $comercial, 'centro' => $centro]);  
     }    
 }

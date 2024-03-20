@@ -11,7 +11,7 @@
         <thead>
             <tr>
                 <th style="text-align: center">FECHA</th>
-                <th style="text-align: center">TIPO DOC.</th>
+                <th style="text-align: center">NUM DOC.</th>
                 <th style="text-align: center">IDENTIDAD</th>
                 <th style="text-align: center">NOMBRE DEL TERCERO</th>
                 <th style="text-align: center">CENTRO DE COSTOS</th>
@@ -31,7 +31,7 @@
             @foreach ($registros_helisa as $registro_helisa)
             <tr> 
                     <td>{{ $registro_helisa->fecha }}</td>   
-                    <td>{{ $registro_helisa->tipo_doc }}</td>   
+                    <td>{{ $registro_helisa->num_doc }}</td>   
                     <td>{{ $registro_helisa->identidad }}</td>   
                     <td>{{ $registro_helisa->nom_tercero }}</td>   
                     <td>{{ $registro_helisa->centro }}</td>   

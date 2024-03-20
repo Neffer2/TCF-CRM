@@ -22,8 +22,8 @@ trait Email
                 $admin_id = 8;
 
                 array_push($recipients, [
-                    'name'=> 'Luz Melo',
-                    'email'=> 'Compras@bullmarketing.com.co'
+                    'name'=> 'Adriana Trujillo',
+                    'email'=> 'adriana.trujillo@bullmarketing.com.co'
                 ]);
             }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
                 $admin_id = 10;
@@ -76,8 +76,8 @@ trait Email
                 $admin_id = 8;
 
                 array_push($recipients, [
-                    'name'=> 'Luz Melo',
-                    'email'=> 'Compras@bullmarketing.com.co'
+                    'name'=> 'Adriana Trujillo',
+                    'email'=> 'adriana.trujillo@bullmarketing.com.co'
                 ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
                 $admin_id = 10;
@@ -123,8 +123,8 @@ trait Email
                 $admin_id = 8;
 
                 array_push($recipients, [
-                    'name'=> 'Luz Melo',
-                    'email'=> 'Compras@bullmarketing.com.co'
+                    'name'=> 'Adriana Trujillo',
+                    'email'=> 'adriana.trujillo@bullmarketing.com.co'
                 ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
                 $admin_id = 10;
@@ -147,7 +147,7 @@ trait Email
             ]);
 
             if ($justificacion){
-                $body .= "<br>El equipo de compras ha realizado las siguientes observaciones: {$justificacion}.";
+                $body .= "<br>El equipo de controller ha realizado las siguientes observaciones: {$justificacion}.";
             }
 
             $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
@@ -325,7 +325,6 @@ trait Email
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
                          
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);

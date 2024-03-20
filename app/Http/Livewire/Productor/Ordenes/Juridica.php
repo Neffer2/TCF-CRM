@@ -173,10 +173,10 @@ class Juridica extends Component
 
         $this->validate([
             'cant' => 'required|numeric',
-            'vUnit' => 'required|numeric'  
+            'vUnit' => 'required|numeric'   
         ]);
 
-        dd($this->cant * $this->vUnit * $this->dias * $this->otros);
+        // dd($this->cant * $this->vUnit * $this->dias * $this->otros);
         $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
     }
 
@@ -186,7 +186,7 @@ class Juridica extends Component
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
         ]);
          
-        if (count($this->ocItems) == 0){
+        if (count($this->ocItems) == 0){ 
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
         } 

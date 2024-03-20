@@ -27,7 +27,7 @@ class HelisaExport implements FromView, WithStyles, WithColumnFormatting, WithCo
     */
     public function view(): View
     {   
-        return view('exports.excel-helisa', [
+        return view('exports.excel-helisa', [ 
             'registros_helisa' => $this->data['registros_helisa']
         ]);
     }

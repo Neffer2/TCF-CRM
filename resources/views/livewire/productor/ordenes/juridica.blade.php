@@ -459,13 +459,13 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">DIAS</label>
-                                <input type="number" class="form-control" placeholder="Dias" required wire:model.lazy="dias"> 
+                                <input type="number" class="form-control" placeholder="Dias" required wire:model.lazy="dias" disabled> 
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">OTROS</label>
-                                <input type="number" class="form-control" placeholder="Otros" required wire:model.lazy="otros"> 
+                                <input type="number" class="form-control" placeholder="Otros" required wire:model.lazy="otros" disabled> 
                             </div>
                         </div>
                         
