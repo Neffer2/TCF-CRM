@@ -460,14 +460,14 @@
                             <div class="form-group">
                                 <label for="">DIAS</label>
                                 <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
-                                placeholder="Dias" required wire:model.lazy="dias"> 
+                                placeholder="Dias" required wire:model.lazy="dias" disabled> 
                             </div>
-                        </div>
+                        </div> 
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">OTROS</label>
                                 <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror" 
-                                placeholder="Otros" required wire:model.lazy="otros"> 
+                                placeholder="Otros" required wire:model.lazy="otros" disabled> 
                             </div>
                         </div>
                         

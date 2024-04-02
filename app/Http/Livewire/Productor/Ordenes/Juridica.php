@@ -324,8 +324,8 @@ class Juridica extends Component
         foreach ($dbItemPresto->consumidos as $item) {
             if (!($item->OrdenCompra->estado_id == 6)){
                 $contCant += $item->cant_oc;
-                $contDias += $item->dias_oc;
-                $contOtros += ($item->otros_oc > 1) ? $item->otros_oc : 0;  
+                // $contDias += $item->dias_oc;
+                // $contOtros += ($item->otros_oc > 1) ? $item->otros_oc : 0;  
             }
         }
 
@@ -408,7 +408,7 @@ class Juridica extends Component
 
         $this->getVTotal();
     }
-
+ 
     public function updatedVTotal(){
         $this->validate([
             'vTotal' => 'required'
