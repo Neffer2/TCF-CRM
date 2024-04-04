@@ -22,7 +22,7 @@
                             @foreach ($años as $año)
                                 <option value="{{ $año->id }}">{{ $año->description }}</option>
                             @endforeach
-                        </select>
+                        </select> 
                     </div>
                     {{-- <div class="author align-items-center">
                         <img src="./assets/img/kit/pro/team-2.jpg" alt="..." class="avatar shadow">

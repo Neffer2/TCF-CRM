@@ -14,7 +14,7 @@ class ItemPresupuesto extends Model
         return $this->hasOne(Mes::class, 'id', 'mes');  
     }  
 
-    public function consumidos(){
+    public function consumidos(){ 
         return $this->hasMany(OcItem::class, 'item_id', 'id');  
     }
 

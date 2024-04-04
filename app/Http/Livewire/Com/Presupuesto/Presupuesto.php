@@ -373,7 +373,7 @@ class Presupuesto extends Component
                     'valor_total_cliente' => ['numeric', 'required']
                 ]);
             }
-    
+     
             $item = ItemPresupuesto::find($this->selected_item->id);
 
             $this->validate([
@@ -398,6 +398,21 @@ class Presupuesto extends Component
             if ($this->presupuesto->gestion->claro){
                 $item->v_total_cliente = $this->valor_total_cliente;
             }
+
+            $proveedores_consumidos = $item->consumidos->map(function ($orden){
+                return $orden->OrdenCompra->proveedor_id;
+            });
+
+            // $proveedor
+            if (!is_string($item->proveedor)){
+                foreach (@unserialize($item->proveedor) as $proveedor) {
+                    if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
+                        $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
+                        return redirect()->back();
+                    }
+                }
+            }
+
             $item->proveedor = serialize($this->proveedor);
             $item->margen_utilidad = $this->utilidad;
             $item->mes = $this->mes;  
