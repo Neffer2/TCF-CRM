@@ -404,12 +404,10 @@ class Presupuesto extends Component
             });
 
             // $proveedor
-            if (!is_string($item->proveedor)){
-                foreach (@unserialize($item->proveedor) as $proveedor) {
-                    if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
-                        $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
-                        return redirect()->back();
-                    }
+            foreach (@unserialize($item->proveedor) as $proveedor) {
+                if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
+                    $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
+                    return redirect()->back();
                 }
             }
 
