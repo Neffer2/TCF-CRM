@@ -411,6 +411,7 @@ class Presupuesto extends Component
                 }
             }
 
+
             $item->proveedor = serialize($this->proveedor);
             $item->margen_utilidad = $this->utilidad;
             $item->mes = $this->mes;  

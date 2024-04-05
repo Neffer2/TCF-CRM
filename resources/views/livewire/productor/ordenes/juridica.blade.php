@@ -395,7 +395,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -403,11 +403,22 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group"> 
+                            @php
+                                $archivo_comprobante_pago = str_replace('public/', '', $orden_compra->archivo_comprobante_pago); 
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_comprobante_pago") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Comprobante pago.</span>
                             </a>
                         </div>
                     </div>
@@ -456,7 +467,7 @@
                                 placeholder="Cantidad" required wire:model.lazy="cant"> 
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2"> 
                             <div class="form-group">
                                 <label for="">DIAS</label>
                                 <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"

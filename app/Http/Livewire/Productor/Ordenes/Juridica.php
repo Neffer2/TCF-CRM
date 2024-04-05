@@ -365,7 +365,7 @@ class Juridica extends Component
 
         if ($this->cant < 0){
             $this->cant = 0;
-        }
+        } 
 
         $this->getVTotal();
     }
