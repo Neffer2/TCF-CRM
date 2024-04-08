@@ -453,7 +453,7 @@ class Juridica extends Component
         $this->validate([
             'observaciones_remision' => 'nullable|string|max:1000'
         ]);
-    }
+    } 
     /*****/
     
     public function resetFields(){

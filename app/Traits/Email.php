@@ -231,6 +231,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                $mail->addCC('nicol.riano@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
             
@@ -239,6 +240,7 @@ trait Email
                     $mail->addCC('contadores@bullmarketing.com.co');
                     $mail->addCC('tesoreria@bullmarketing.com.co');    
                     $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                    $mail->addCC('nicol.riano@bullmarketing.com.co');
                 }
             /* *** */
                         
@@ -252,7 +254,7 @@ trait Email
             $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]); 
             $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
@@ -284,6 +286,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                $mail->addCC('nicol.riano@bullmarketing.com.co');
 
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
@@ -300,7 +303,7 @@ trait Email
             $mail->Body    = view('mails.grGenerado', ['orden' => $orden]); 
             $mail->AltBody = "Se ha asignado el GR: {$orden->gr} para la orden de compra {$orden->cod_oc}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
@@ -332,6 +335,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                $mail->addCC('nicol.riano@bullmarketing.com.co');
             /* *** */
                          
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
@@ -346,7 +350,7 @@ trait Email
             $mail->Body    = view('mails.ordenAnulada', ['orden' => $orden]); 
             $mail->AltBody = "Se ha anulado la roden de compra {$orden->cod_oc}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
@@ -378,6 +382,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                $mail->addCC('nicol.riano@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
@@ -396,7 +401,7 @@ trait Email
             $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]); 
             $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
-            $mail->send();
+            // $mail->send();
         } catch (Exception $e) {
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }

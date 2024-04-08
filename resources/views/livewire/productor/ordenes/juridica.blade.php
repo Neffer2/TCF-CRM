@@ -394,7 +394,7 @@
                                 <span class="btn-inner--text">Remisi&oacute;n.</span>
                             </a>
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-md-2">
                         <div class="form-group">
                             <a href="#">
