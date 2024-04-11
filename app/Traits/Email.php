@@ -377,7 +377,7 @@ trait Email
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
 
-            /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
+            /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/ 
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 $mail->addCC('Armando.Espinosa@bullmarketing.com.co');

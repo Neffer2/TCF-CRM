@@ -382,7 +382,7 @@ class Presupuesto extends Component
             ]);
 
             // Indica actualiazcion
-            if ($presto->cod_cc && ($this->valor_total > $item->v_total)){
+            if ($presto->cod_cc && ($this->valor_total > $item->v_total) || $this->valor_total == 0){
                 $item->actualizado = true;
                 $this->setEnEdicion($presto);
             }

@@ -19,7 +19,7 @@
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Centro de Costos:</td>
                                 <td>{{ $presupuesto->cod_cc }}</td> 
-                            </tr>
+                            </tr> 
                             <tr style="height: 35px;">
                                 <td class="font-weight-bold">Ciudad:</td>
                                 <td>{{ $presupuesto->presupuestoItems[0]->ciudad }}</td>
