@@ -142,7 +142,7 @@
                             $cont_otros_oc = 0;
                             $acum_total_oc = 0;
 
-                            $item->consumidos->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc, &$acum_total){
+                            $item->consumidos->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc, &$acum_total_oc){
                                 if (!($item->OrdenCompra->estado_id == 6)){
                                     $cont_cant_oc += $item->cant_oc;
                                     $cont_dias_oc += $item->dias_oc;
