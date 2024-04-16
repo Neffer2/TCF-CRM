@@ -45,8 +45,8 @@ class Juridica extends Component
             'cant' => "required|numeric|max:$this->maxCant",
             'dias' => "required|numeric",
             'otros' => "required|numeric",
-            'vUnit' => "required|numeric|max:$this->maxValor",
-            'vTotal' => 'required|numeric', 
+            'vUnit' => 'required|numeric',
+            'vTotal' => "required|numeric|max:$this->maxValor"
         ]);
             
         $this->getVTotal();  
@@ -177,6 +177,8 @@ class Juridica extends Component
         ]);
 
         $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
+
+        $this->updatedVTotal();
     }
 
     public function enviarAprobacion(){
@@ -319,36 +321,31 @@ class Juridica extends Component
         }
 
         $contCant = 0;
-        $contDias = 0;
-        $contOtros = 0;
+        $acumVTotal = 0;
         foreach ($dbItemPresto->consumidos as $item) {
             if (!($item->OrdenCompra->estado_id == 6)){
                 $contCant += $item->cant_oc;
-                // $contDias += $item->dias_oc;
-                // $contOtros += ($item->otros_oc > 1) ? $item->otros_oc : 0;  
+                $acumVTotal += $item->vtotal_oc;
             }
         }
 
         $this->cant = ($dbItemPresto->cantidad - $contCant);
-        $this->dias = ($dbItemPresto->dia - $contDias);
-        $this->otros = ($dbItemPresto->otros - $contOtros);
+        $this->vTotal = ($dbItemPresto->v_total - $acumVTotal); 
 
-        if ($this->cant == 0){
+        if ($this->cant == 0 || $this->vTotal == 0){
             $this->addError('customError', 'Este item ya fué consumido.');
             $this->resetFields();
             return redirect()->back(); 
         } 
 
         $this->desc = $dbItemPresto->descripcion;
-        $this->cant = $this->cant;
         $this->vUnit = $dbItemPresto->v_unitario;
-        $this->dias = $this->dias;
-        $this->otros = $this->otros;
+        $this->dias = $dbItemPresto->dias;
+        $this->otros = $dbItemPresto->otros;
         
         $this->maxCant = $this->cant;
-        $this->maxDias = $this->dias;
-        $this->maxOtros = $this->otros;
-        $this->maxValor = $this->vUnit;
+        $this->maxValor = $this->vTotal;
+        
         $this->getVTotal();
     }
 
@@ -399,7 +396,7 @@ class Juridica extends Component
         $this->vUnit = str_replace(",",'', $this->vUnit);
 
         $this->validate([
-            'vUnit' => "required|numeric|max:$this->maxValor"
+            'vUnit' => "required|numeric"
         ]);
 
         if ($this->vUnit < 0){
@@ -411,7 +408,7 @@ class Juridica extends Component
  
     public function updatedVTotal(){
         $this->validate([
-            'vTotal' => 'required'
+            'vTotal' => "required|numeric|max:$this->maxValor"
         ]);
     }
 

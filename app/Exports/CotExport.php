@@ -46,7 +46,7 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         $drawing->setCoordinates('A1');
 
         return $drawing;
-    }
+    } 
 
     public function columnFormats(): array 
     {

@@ -140,12 +140,14 @@
                             $cont_cant_oc = 0;
                             $cont_dias_oc = 0;
                             $cont_otros_oc = 0;
+                            $acum_total = 0;
 
-                            $item->consumidos->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc){
+                            $item->consumidos->map(function ($item) use (&$cont_cant_oc, &$cont_dias_oc, &$cont_otros_oc, &$acum_total){
                                 if (!($item->OrdenCompra->estado_id == 6)){
                                     $cont_cant_oc += $item->cant_oc;
                                     $cont_dias_oc += $item->dias_oc;
                                     $cont_otros_oc += $item->otros_oc;
+                                    $acum_total += $item->vtotal_oc;
                                 }
                             });
                         }
@@ -167,7 +169,7 @@
                             @endif
                         </tr>
                     @else
-                        <tr @if (count($item->consumidos) > 0 && $item->cantidad - $cont_cant_oc == 0) style="background-color: #f5365c; color: white;" @endif> 
+                        <tr @if (count($item->consumidos) > 0 && ($item->cantidad - $cont_cant_oc == 0) || ($item->v_total - $acum_total == 0)) style="background-color: #f5365c; color: white;" @endif> 
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
                             </td>

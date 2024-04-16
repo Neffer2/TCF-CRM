@@ -12,7 +12,7 @@
         }
     </style>
 </head>
-<body>
+<body> 
     <table>
         <tr>
             <td colspan="7"></td>
