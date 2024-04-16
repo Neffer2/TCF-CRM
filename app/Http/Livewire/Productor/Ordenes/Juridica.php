@@ -340,7 +340,7 @@ class Juridica extends Component
 
         $this->desc = $dbItemPresto->descripcion;
         $this->vUnit = $dbItemPresto->v_unitario;
-        $this->dias = $dbItemPresto->dias;
+        $this->dias = $dbItemPresto->dia;
         $this->otros = $dbItemPresto->otros;
         
         $this->maxCant = $this->cant;
