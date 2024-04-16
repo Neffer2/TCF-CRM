@@ -154,7 +154,7 @@
                     @endphp
                     @if ($item->evento)
                         <tr>
-                            <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                            <td colspan="13" class="font-weight-bold font-table text-center bg-gradient-info text-white">
                                 {{ $item->descripcion }}
                             </td>
                             @if (Auth::user()->rol != 1)
