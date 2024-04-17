@@ -105,6 +105,11 @@
                     {{ $baseComerciales->links() }}
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn bg-gradient-warning m-2" wire:click="exportar">Exportar</button> 
+                </div>
+            </div>
         </div>
     </div>
 </div>

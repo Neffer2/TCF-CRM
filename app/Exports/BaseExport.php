@@ -1,40 +1,37 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports; 
 
 use App\Models\Base_comercial;
-use App\Models\Asistente;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
-class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMapping
+class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMapping, WithColumnFormatting, WithColumnWidths
 {
+    protected $filtros = [];
+
+    function __construct($filtros) {
+        $this->filtros = $filtros['filtros'];
+    }
+
     /** 
     * @return \Illuminate\Support\Collection
     */ 
     public function collection()
-    {
-        if (Auth::user()->rol == 5){
-            $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();  
-
-            return Base_comercial::select('fecha', 'nom_cliente', 'nom_proyecto', 'cod_cc',
-            'valor_original', 'valor_proyecto', 'com_1', 'com_2', 'id_estado', 'id_cuenta', 'fecha_inicio', 'dura_mes')
-            ->where('id_user', $asistente->comercial_id)->get();
-        } 
-
-        return Base_comercial::select('fecha', 'nom_cliente', 'nom_proyecto', 'cod_cc',
-        'valor_original', 'valor_proyecto', 'com_1', 'com_2', 'id_estado', 'id_cuenta', 'fecha_inicio', 'dura_mes')
-        ->where('id_user', Auth::user()->id)->get();
+    {   
+        $registros_base = Base_comercial::where($this->filtros)->get(); 
+        return $registros_base;
     }
 
     public function headings(): array
     {
-        return ["FECHA", "CLIENTE", "PROYECTO", "COD_CC", "VALOR ORIGINAL", "VALOR", "COM_1", "COM_2", "ESTADO", "CUENTA", "INICIO", "FIN"];
+        return ["FECHA", "CLIENTE", "PROYECTO", "COD_CC", "VALOR ORIGINAL", "VALOR", "COM_1", "COM_2", "ESTADO", "CUENTA", "INICIO", "FIN", "COMERCIAL"];
     }
 
     /** 
@@ -54,7 +51,8 @@ class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMappin
             $invoice->estado_cuenta->description,
             $invoice->cuenta->description, 
             $invoice->fecha_inicio,
-            $invoice->dura_mes
+            $invoice->dura_mes,
+            $invoice->comercial->name
         ];
     }
 
@@ -63,6 +61,34 @@ class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMappin
         return [
             // Style the first row as bold text.
             1 => ['font' => ['bold' => true]]
+        ];
+    }
+
+    
+    public function columnFormats(): array 
+    {
+        return [
+            'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'F' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
+        ];
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 12,
+            'B' => 25,
+            'C' => 15,
+            'D' => 10,
+            'E' => 15,
+            'F' => 15,
+            'G' => 10,
+            'H' => 10,
+            'I' => 10,
+            'J' => 10,
+            'K' => 10,
+            'L' => 10,
+            'M' => 10
         ];
     }
 }

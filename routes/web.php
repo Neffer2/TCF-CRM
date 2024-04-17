@@ -25,7 +25,7 @@ Route::get('/', function () {
     return redirect()->route('login');  
 }); 
 
-/* Home */ 
+/* Home */  
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');    
 /* --- */  
    

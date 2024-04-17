@@ -7,8 +7,6 @@ use App\Models\Helisa;
 use App\Models\Año;
 use App\Models\User;
 use Livewire\WithPagination;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\FromCollection;
  
 class HelisaGeneral extends Component
 {   
@@ -80,5 +78,5 @@ class HelisaGeneral extends Component
         }
  
         return redirect()->route('export-helisa', ['comercial' => $comercial, 'centro' => $centro]);  
-    }    
+    }     
 }

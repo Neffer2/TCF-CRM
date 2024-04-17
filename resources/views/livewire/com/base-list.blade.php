@@ -148,12 +148,12 @@
                 </div>
             </div>
         </div>
-        <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center"> 
-            @csrf
-            <button type="submit" class="btn bg-gradient-warning mt-3">
+        <div class="d-flex justify-content-center"> 
+            <button wire:click="exportar" type="submit" class="btn bg-gradient-warning mt-3">
                 <span class="btn-inner--icon"><i class="ni ni-cloud-download-95 me-1"></i></span>
                 <span class="btn-inner--text">Descargar Base Comercial</span>
             </button>
-        </form>
+            
+        </div>
     </div>
 </div>

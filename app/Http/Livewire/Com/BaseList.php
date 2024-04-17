@@ -8,6 +8,8 @@ use App\Models\Base_comercial;
 use App\Models\EstadoCuenta;
 use App\Models\Año;
 use App\Models\Cuenta;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BaseExport;
 
 class BaseList extends Component   
 {  
@@ -78,6 +80,25 @@ class BaseList extends Component
         ]);
         
         $this->yearInfo = Año::find($this->año);
+    }
+
+    public function exportar(){    
+        $filtros = [['id_user', $this->user_id]];
+
+        if($this->comercial){
+            array_push($filtros, ['id_user', $this->comercial]);
+        }
+
+        if($this->año){
+            array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->first()->f_inicio]);
+            array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->last()->f_fin]);
+        }
+
+        if ($this->estado){
+            array_push($filtros, ['id_estado', $this->estado]);
+        }
+
+        return Excel::download(new BaseExport(['filtros' => $filtros]), 'Reporte Base Comercial.xlsx');
     }
 } 
  
