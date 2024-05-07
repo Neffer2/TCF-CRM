@@ -24,6 +24,10 @@ trait Email
                 array_push($recipients, [
                     'name'=> 'Adriana Trujillo',
                     'email'=> 'adriana.trujillo@bullmarketing.com.co',
+                ]);
+
+                array_push($recipients, [
+                    'name'=> 'Cristian Rodriguez',
                     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
                 ]);
             }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
@@ -79,6 +83,10 @@ trait Email
                 array_push($recipients, [
                     'name'=> 'Adriana Trujillo',
                     'email'=> 'adriana.trujillo@bullmarketing.com.co',
+                ]);
+
+                array_push($recipients, [
+                    'name'=> 'Cristian Rodriguez',
                     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
                 ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
@@ -126,7 +134,11 @@ trait Email
 
                 array_push($recipients, [
                     'name'=> 'Adriana Trujillo',
-                    'email'=> 'adriana.trujillo@bullmarketing.com.co',
+                    'email'=> 'adriana.trujillo@bullmarketing.com.co'
+                ]);
+
+                array_push($recipients, [
+                    'name'=> 'Cristian Rodriguez',
                     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
                 ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
