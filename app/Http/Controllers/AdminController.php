@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Auth;
  
 class AdminController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Controller
+    |--------------------------------------------------------------------------
+    | This controller is reponsible for managing the views and actions of the admin user.
+    | Functions wich start with "show" and index, are for show views, the others functions are for actions.
+    | "exportHelisa" function calls a class named HelisaExport, this class is responsible for exporting the data to an excel file.
+    */
+
     public function index (){
         return view('admin.index');  
     }

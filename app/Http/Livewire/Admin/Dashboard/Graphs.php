@@ -8,10 +8,18 @@ use Illuminate\Support\Facades\DB;
 
 class Graphs extends Component
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Filters
+    |--------------------------------------------------------------------------
+    | This livewire component is reponsible for managing the actions of the admin/dashboard/graphs view.
+    | This component is not being used in the current version of the project.
+    */
+
     //Models
-        //Graph1
-        public $labelsGraph1 = [];
-        public $dataGraph1 = [];
+    //Graph1
+    public $labelsGraph1 = [];
+    public $dataGraph1 = [];
 
     protected $listeners = ['Graphs' => 'graph1'];
 

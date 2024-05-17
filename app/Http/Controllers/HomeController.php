@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 { 
+    /*
+    |--------------------------------------------------------------------------
+    | HomeController
+    |--------------------------------------------------------------------------
+    | This controller is responsible for managing general actions and views.
+    | "dashboard" function is for redirect the user to the correct dashboard according to the user's role.
+    | "showProveedores" function shows the view of the proveedores according to the user's role (each rol has diferent permises on proveedores view).
+    */
+
     public function dashboard (){ 
         if (Auth::user()->rol == 1) {
             return redirect()->route('dashboard-admin');

@@ -19,11 +19,11 @@ use App\Traits\Email;
 
 class Presupuesto extends Component   
 { 
-    use Email; 
+    use Email;  
 
     // Models
     public $cod;  
-    public $concepto; 
+    public $concepto;  
 
     public $cantidad;
     public $dia;
@@ -404,13 +404,14 @@ class Presupuesto extends Component
             });
 
             // $proveedor
-            foreach (@unserialize($item->proveedor) as $proveedor) {
-                if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
-                    $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
-                    return redirect()->back();
+            if ((@unserialize($item->proveedor))){
+                foreach (@unserialize($item->proveedor) as $proveedor) {
+                    if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
+                        $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
+                        return redirect()->back();
+                    }
                 }
             }
-
 
             $item->proveedor = serialize($this->proveedor);
             $item->margen_utilidad = $this->utilidad;

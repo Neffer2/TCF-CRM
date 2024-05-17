@@ -9,6 +9,13 @@ use App\Models\User;
 
 class Filters extends Component
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Filters
+    |--------------------------------------------------------------------------
+    | This livewire component is reponsible for managing the actions of the admin/dashboard/filters view.
+    */
+    
     // Models
     public $mes;
     public $comercial;

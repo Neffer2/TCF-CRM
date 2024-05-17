@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\DB;
  
 class Block1 extends Component
 {   
+    /*
+    |--------------------------------------------------------------------------
+    | Block1
+    |--------------------------------------------------------------------------
+    | This livewire component is reponsible for managing the actions of the admin/dashboard/block1 view.
+    */
+
     protected $listeners = ['Block1' => 'getData'];
 
     // Models

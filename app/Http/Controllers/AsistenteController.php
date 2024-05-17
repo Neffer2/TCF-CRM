@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class AsistenteController extends Controller
 {   
+    /*
+    |--------------------------------------------------------------------------
+    | Asistente Controller
+    |--------------------------------------------------------------------------
+    | This controller was responsible for managing the assistant's actions and views.
+    | Assistant users were disabled from CRM, so this controller is no longer in use.
+    */
+    
     public function showActualizarPerfil(){
         return view('asistente.ajustes.perfil.actualizar');
     }

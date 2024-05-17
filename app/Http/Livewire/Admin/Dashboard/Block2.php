@@ -11,6 +11,13 @@ use App\Models\Presupuesto;
 
 class Block2 extends Component
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Block2
+    |--------------------------------------------------------------------------
+    | This livewire component is reponsible for managing the actions of the admin/dashboard/block2 view.
+    */
+
     protected $listeners = ['Block2' => 'getData'];
 
     // Models

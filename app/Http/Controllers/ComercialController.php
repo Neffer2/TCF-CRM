@@ -21,6 +21,15 @@ use Illuminate\Support\Facades\View;
 
 class ComercialController extends Controller 
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Comercial Controller
+    |--------------------------------------------------------------------------
+    | This controller is responsible for managing the comercial actions and views.
+    | Functions wich start with "show" and index, are for show views, the others functions are for actions.
+    | "cotizacionPdf" function calls a class named Dompdf, this class is responsible for exporting the data to a pdf file.
+    */
+
     public function index(){  
         return view('comercial.index');
     }
@@ -70,7 +79,7 @@ class ComercialController extends Controller
     }
 
     /* Tipo: Interno, cliente */
-    public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
+    public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){ 
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
@@ -89,26 +98,20 @@ class ComercialController extends Controller
         return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx"); 
     }
  
+    // DEPRECATED
     public function pdf(){
-        // instantiate and use the dompdf class
         $dompdf = new Dompdf(array('enable_remote' => true));
-
         $html = View::make('pdf.index')->render();
         $dompdf->loadHtml($html);
-
-        // Render the HTML as PDF
         $dompdf->render();
-        // Output the generated PDF to Browser
         $dompdf->stream();
     } 
 
-    // Hubo que hacer esto porque livewire no es compatible con el datatable
     public function delete_proyecto($user_id){ 
         Base_comercial::destroy($user_id);
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
     }
 
-    // Delete Helisa
     public function delete_registro($centro, $num_doc){ 
         Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete(); 
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
