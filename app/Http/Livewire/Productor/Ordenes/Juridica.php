@@ -32,12 +32,15 @@ class Juridica extends Component
         return view('livewire.productor.ordenes.juridica'); 
     }
  
-    public function mount (){
+    public function mount (){ 
         if ($this->orden_compra){
             $this->getItems();
         }
     }
 
+    /* 
+        * Añade una nueva fila a la lista de items en la orden de compra.
+    */
     public function newItem(){    
         $this->validate([
             'item' => 'required',
@@ -81,12 +84,15 @@ class Juridica extends Component
         }
         $this->resetFields();
     }
-
+ 
     public function delete($id){ 
         unset($this->ocItems[$id]);
         $this->resetFields();
     } 
 
+    /*
+        * Trae la información del item seleccionado para ser editado.
+    */
     public function getSelectedItem($id){
         $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la poscición en el arreglo
 
@@ -135,7 +141,9 @@ class Juridica extends Component
         return $validator;
     }
  
-    // Trae y muestra la orden de compra de la base de datos (si ya está creada).
+    /*
+        * Trae y muestra la orden de compra de la base de datos (si ya está creada).
+    */
     public function getItems(){
         $this->proveedor = $this->orden_compra->proveedor_id;
         $this->file_cot = $this->orden_compra->archivo_cot;
@@ -176,7 +184,8 @@ class Juridica extends Component
             'vUnit' => 'required|numeric'   
         ]);
 
-        $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
+        // $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
+        $this->vTotal = ($this->cant * $this->vUnit * $this->otros);
 
         $this->updatedVTotal();
     }
@@ -329,7 +338,7 @@ class Juridica extends Component
             }
         }
 
-        $this->cant = ($dbItemPresto->cantidad - $contCant);
+        $this->cant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
         $this->vTotal = ($dbItemPresto->v_total - $acumVTotal); 
 
         if ($this->cant == 0 || $this->vTotal == 0){

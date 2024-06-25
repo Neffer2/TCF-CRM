@@ -108,6 +108,12 @@ Route::get('/', function () {
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
     Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
 /* --- */
+
+/* PÚBLICO */
+    Route::get('/metricas', function () { 
+        return view('publico.metricas');
+    })->name('metricas');
+/* --- */
  
 // Route::get('trial-mail', function (){ 
 //     return view('mails.grGenerado');

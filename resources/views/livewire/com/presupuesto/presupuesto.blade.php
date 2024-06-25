@@ -53,6 +53,14 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td class="font-weight-bold font-table">CENTRO DE COSTOS</td>
+                                    <td class="font-table">
+                                        @if ($presupuesto->cod_cc) 
+                                            {{ $presupuesto->cod_cc }}   
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="font-weight-bold font-table">CIUDAD</td>
                                     <td class="font-table">
                                         {{$presupuesto->gestion->contacto->ciudad}}
@@ -317,7 +325,7 @@
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>
                                 @endif
-                                @if (Auth::user()->rol != 1)
+                                @if (Auth::user()->rol == 2)
                                     <td class="font-weight-bold">
                                         <div class="form-check">  
                                             <input wire:change="changeDisponibilidad({{ $item->id }})"
@@ -325,10 +333,12 @@
                                         </div>
                                     </td>
                                     <td class="font-weight-bold font-table">
-                                        <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                                        @if (!$presupuesto->cod_cc)
+                                            <button wire:click="deleteItem({{ $item->id }})">✖️</button>
+                                        @endif
                                     </td>
                                 @endif
-                                @if (Auth::user()->rol != 1)
+                                @if (Auth::user()->rol == 2)
                                     <td class="font-weight-bold font-table">
                                         <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                     </td>
@@ -533,7 +543,7 @@
                             <label for="justificacion">JUSTIFICACI&Oacute;N</label>
                             <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="5" rows="2" class="form-control"
                                 wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
-                                @if($cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
+                                @if($presupuesto->cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
                             @error('justificacion')
                                 <small id="justificacion" class="text-danger">
                                     {{ $message }}
@@ -586,7 +596,7 @@
                                     </button>
                                 <hr class="horizontal dark">                        
                                 <h2 class="fs-5">Documentos Interno</h2>
-                                @if ($cod_cc)
+                                @if ($presupuesto->cod_cc)
                                     <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Interno PDF</span>
@@ -690,7 +700,7 @@
                                                 </button>
                                             <hr class="horizontal dark">                        
                                             <h2 class="fs-5">Documentos Interno</h2>
-                                            @if ($cod_cc)
+                                            @if ($presupuesto->cod_cc)
                                                 <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                     <span class="btn-inner--text">Interno PDF</span>

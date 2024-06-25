@@ -61,7 +61,6 @@ class Presupuesto extends Component
     public $selected_item;
     public $rentabilidadView = false;
     public $estadoValidator;
-    public $cod_cc;
 
     // metricas 
     public $margenGeneral = 0;
@@ -95,11 +94,9 @@ class Presupuesto extends Component
 
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
-            $this->cod_cc = $presupuesto->cod_cc;
         }else { 
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
-            $this->cod_cc = $validator->cod_cc; 
             $this->justificacion = $validator->justificacion;
             $this->justificacion_compras = $validator->justificacion_compras;
             $this->presupuesto = $validator;
@@ -107,7 +104,7 @@ class Presupuesto extends Component
 
 
         // Valida si es actualización. 
-        if ($this->cod_cc){
+        if ($this->presupuesto->cod_cc){
             // $this->showJustificacion = true; 
         }
 
@@ -174,7 +171,7 @@ class Presupuesto extends Component
         $item->v_total_cliente = $this->valor_total_cliente;
 
         // Indica actualiazcion.
-        if ($presto->cod_cc){ 
+        if ($this->presupuesto->cod_c){ 
             $item->actualizado = true;
             $this->setEnEdicion($presto);
         }
@@ -240,7 +237,7 @@ class Presupuesto extends Component
         $presto->margen_bruto = $this->margenBruto;
         $presto->update();
 
-        $this->centroCostos = $presto->cod_cc;  
+        $this->centroCostos = $this->presupuesto->cod_c;  
         $this->imprevistos = $presto->imprevistos;  
         $this->administracion = $presto->administracion;   
         $this->fee = $presto->fee;  
@@ -449,7 +446,7 @@ class Presupuesto extends Component
     // Envía a probacion 
     public function aprobacion(){
         // Valída si es actualización
-        if ($this->cod_cc){
+        if ($this->presupuesto->cod_c){
             $this->validate([
                 'justificacion' => ['required', 'string', 'max:254']
             ]);
@@ -494,7 +491,7 @@ class Presupuesto extends Component
         }
         
         // Default indicacion actualiazcion
-        $itemsPresupuesot = ItemPresupuesto::where('presupuesto_id', $item->id)->get()->map(function ($item){
+        ItemPresupuesto::where('presupuesto_id', $item->id)->get()->map(function ($item){
             $item->actualizado = false;
             $item->update();
         });
