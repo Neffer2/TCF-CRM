@@ -76,7 +76,7 @@
             </div>
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
-          <div class="collapse  show " id="dashboardsExamples">
+          <div class="collapse show " id="dashboardsExamples">
             <ul class="nav ms-4"> 
               <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
@@ -98,7 +98,31 @@
               </li>
             </ul>
           </div>
-        </li> 
+        </li>
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Terceros</span>
+          </a>
+          <div class="collapse" id="dashboardsExamples">
+            <ul class="nav ms-4"> 
+              <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
+                  <span class="sidenav-mini-icon"> O </span>
+                  <span class="sidenav-normal"> Ordene de compra natural</span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
+                  <span class="sidenav-mini-icon"> D </span>
+                  <span class="sidenav-normal"> Terceros </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -108,8 +132,8 @@
           </a>
           <div class="collapse" id="ajustes" style="">
             <ul class="nav ms-4"> 
-              <li class="nav-item ">
-                <a class="nav-link " href="{{ route('actualizar-perfil-adm') }}">  
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('actualizar-perfil-adm') }}">  
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Actualizar perfil </span>
                 </a>
