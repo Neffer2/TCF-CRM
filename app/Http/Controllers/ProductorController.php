@@ -24,8 +24,4 @@ class ProductorController extends Controller
     public function showRemision($orden){
         return view('productor.remision.index', ['orden' => $orden]);
     }
-
-    public function showConsumidos(){ 
-        return view('productor.consumidos.list'); 
-    }
 } 

@@ -43,7 +43,7 @@ Route::get('/', function () {
     Route::get('/actualizaciones', [AdminController::class, 'actualizaciones'])->middleware(['auth'])->name('actualizaciones');    
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');    
 
-    Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');   
+    Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');    
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');     
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   
@@ -95,6 +95,9 @@ Route::get('/', function () {
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
     Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
     Route::get('/consumidos-prod', [ProductorController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['productor'])->name('consumidos-prod'); 
+    Route::get('/orden-compra-natural', [ProductorController::class, 'showOrdenNatural'])->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
+
+    Route::view('/orden-compra-natural', 'productor.terceros.orden-compra-natural')->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
 /* --- */
 
 /* Contabilidad */   
