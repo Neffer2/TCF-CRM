@@ -320,7 +320,7 @@
                                     </td>
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cot) }}
-                                    </td>
+                                    </td> 
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>

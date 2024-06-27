@@ -89,7 +89,7 @@ class Presupuesto extends Component
             $presupuesto = new PresupuestoProyecto;
             $presupuesto->id_gestion = $this->id_gestion; 
             $presupuesto->cod_cot = $this->getLatestCodCot() + 1; 
-            $presupuesto->save();
+            $presupuesto->save(); 
             $this->presupuesto = $presupuesto;
 
             $this->presupuesto_id = $presupuesto->id;
@@ -237,7 +237,7 @@ class Presupuesto extends Component
         $presto->margen_bruto = $this->margenBruto;
         $presto->update();
 
-        $this->centroCostos = $this->presupuesto->cod_c;  
+        $this->centroCostos = $this->presupuesto->cod_cc;  
         $this->imprevistos = $presto->imprevistos;  
         $this->administracion = $presto->administracion;   
         $this->fee = $presto->fee;  
