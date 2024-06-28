@@ -143,7 +143,7 @@
         </li>
       </ul>
     </div>
-  </aside>
+  </aside> 
   <!-- End Barra lateral -->
   
   <main class="main-content position-relative border-radius-lg ">

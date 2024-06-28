@@ -21,7 +21,7 @@ class Presupuesto extends Component
 { 
     use Email;  
 
-    // Models
+    // Models 
     public $cod;  
     public $concepto;  
 
@@ -171,10 +171,10 @@ class Presupuesto extends Component
         $item->v_total_cliente = $this->valor_total_cliente;
 
         // Indica actualiazcion.
-        if ($this->presupuesto->cod_c){ 
+        if ($this->presupuesto->cod_cc){ 
             $item->actualizado = true;
             $this->setEnEdicion($presto);
-        }
+        } 
 
         $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
         $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
@@ -243,7 +243,7 @@ class Presupuesto extends Component
         $this->fee = $presto->fee;  
         $this->tiempoFactura = $presto->tiempo_factura;
         $this->notas = $presto->notas; 
-    }
+    } 
 
     public function getInfoFacturas(){ 
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
@@ -379,7 +379,7 @@ class Presupuesto extends Component
             ]);
 
             // Indica actualiazcion
-            if ($presto->cod_cc && ($this->valor_total > $item->v_total) || $this->valor_total == 0){
+            if ($this->presupuesto->cod_cc && ($this->valor_total > $item->v_total) || $this->valor_total == 0){
                 $item->actualizado = true;
                 $this->setEnEdicion($presto);
             }

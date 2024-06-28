@@ -320,7 +320,7 @@
                                     </td>
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cot) }}
-                                    </td> 
+                                    </td>  
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>
@@ -645,7 +645,7 @@
                                 <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning" data-bs-dismiss="modal">Enviar</button>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div> 
             </div> 
         @elseif (Auth::user()->rol == 1)
