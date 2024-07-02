@@ -21,11 +21,11 @@ class CreateTableTerceros extends Migration
             $table->string('correo');
             $table->string('telefono');
             $table->string('ciudad');
-            $table->string('banco');
-            $table->boolean('rut');
-            $table->string('cert_bancaria');
-            $table->string('firma');
-            $table->boolean('terminos');
+            $table->string('banco')->nullable();
+            $table->boolean('rut')->nullable();
+            $table->string('cert_bancaria')->nullable();
+            $table->string('firma')->nullable();
+            $table->boolean('terminos')->nullable();
             $table->foreignId('estado');
             $table->foreign('estado')->references('id')->on('estados_tercero');        
             $table->timestamps();

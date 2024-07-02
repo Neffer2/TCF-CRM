@@ -98,6 +98,7 @@ Route::get('/', function () {
     Route::get('/orden-compra-natural', [ProductorController::class, 'showOrdenNatural'])->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
 
     Route::view('/orden-compra-natural', 'productor.terceros.orden-compra-natural')->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
+    Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['productor'])->name('personal');
 /* --- */
 
 /* Contabilidad */   

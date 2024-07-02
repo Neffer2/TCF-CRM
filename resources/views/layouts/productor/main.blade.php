@@ -76,7 +76,7 @@
             </div>
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
-          <div class="collapse show " id="dashboardsExamples">
+          <div class="collapse show" id="dashboardsExamples">
             <ul class="nav ms-4"> 
               <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
@@ -106,16 +106,18 @@
             </div>
             <span class="nav-link-text ms-1">Terceros</span>
           </a>
-          <div class="collapse" id="terceros" style="">
+          <div @class([
+            'collapse' => true,
+            'show' => (request()->is('orden-compra-natural') || request()->is('personal'))]) id="terceros">
             <ul class="nav ms-4"> 
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('orden-natural-prod') }}">  
+              <li @class(['active' => request()->is('orden-compra-natural'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('orden-compra-natural'), 'nav-link' => true]) href="{{ route('orden-natural-prod') }}">
                   <span class="sidenav-mini-icon"> O </span>
                   <span class="sidenav-normal"> OC natural </span>
                 </a>
               </li> 
-              <li class="nav-item">
-                <a class="nav-link" href="#">  
+              <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">            
                   <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Personal </span>
                 </a>

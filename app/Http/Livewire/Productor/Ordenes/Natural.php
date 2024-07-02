@@ -11,5 +11,5 @@ class Natural extends Component
         return view('livewire.productor.ordenes.natural');
     }
 
-
+  
 } 
