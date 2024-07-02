@@ -99,7 +99,7 @@
             </ul>
           </div>
         </li>        
-        {{-- <li class="nav-item">
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#terceros" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-single-02 text-info text-sm opacity-10"></i>              
@@ -113,7 +113,7 @@
                   <span class="sidenav-mini-icon"> O </span>
                   <span class="sidenav-normal"> OC natural </span>
                 </a>
-              </li>
+              </li> 
               <li class="nav-item">
                 <a class="nav-link" href="#">  
                   <span class="sidenav-mini-icon"> P </span>
@@ -122,7 +122,7 @@
               </li>
             </ul> 
           </div>
-        </li> --}}
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
