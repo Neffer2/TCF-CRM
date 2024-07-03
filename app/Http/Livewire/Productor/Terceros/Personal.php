@@ -4,20 +4,20 @@ namespace App\Http\Livewire\Productor\Terceros;
 
 use Livewire\Component;
 use App\Models\Tercero;
+use Livewire\WithPagination; 
 
 class Personal extends Component
 {
-    // Useful vars
-    public $tercero;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    // Listener
+    protected $listeners = ['terceroRegistrado' => 'render'];
  
     public function render()
     {
-        return view('livewire.productor.terceros.personal');
-    }
-
-    public function mount()
-    {
-        $this->tercero = Tercero::all();
+        $terceros = Tercero::paginate(15);
+        return view('livewire.productor.terceros.personal', ['terceros' => $terceros]);
     }
 }
  

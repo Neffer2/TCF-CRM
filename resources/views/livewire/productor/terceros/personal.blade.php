@@ -43,106 +43,75 @@
                 <table class="table align-items-center mb-0">
                     <thead> 
                         <tr>
-                            <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                            <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                            <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS PERSONALES Y CONTACTO</th>
+                            <th colspan="3" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">INFORMACI&Oacute;N DE CONTACTO</th>
                             <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                         </tr>
                     </thead> 
-                    <tbody> 
-                        <tr>
-                            <td style="width: 16rem;">
-                                {{-- <div class="d-flex px-2 py-1" title="{{ $presupuesto->gestion->nom_proyecto_cot }}"> --}}
-                                <div class="d-flex px-2 py-1" title="1">
-                                    <div>
-                                        <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center">                                        
-                                        <h6 class="mb-0 text-xs">2</h6>
-                                        <p class="text-xs text-secondary mb-0">1</p>
-                                    </div>
-                                </div>
-                            </td>                            
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Fecha</p>
-                                <p class="text-xs text-secondary mb-0">1</p>
-                            </td> 
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                <p class="text-xs text-secondary mb-0">1</p>
-                            </td>  
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
-                                <textarea disabled rows="1" class="text-xs text-secondary mb-0">1</textarea>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                <p class="text-xs text-secondary mb-0">1</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
-                                <p class="text-xs text-secondary mb-0">$ 1 %</p>
-                            </td> 
-                            <td class="d-flex align-items-center justify-content-center">
-                                {{-- <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">1</a> --}}
-                                <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="">1</a>
-                            </td>
-                        </tr> 
-                        {{-- @foreach ($presupuestos as $presupuesto)
+                    <tbody>                         
+                        @foreach ($terceros as $tercero)
                             <tr>
                                 <td style="width: 16rem;">
-                                    <div class="d-flex px-2 py-1" title="{{ $presupuesto->gestion->nom_proyecto_cot }}">
+                                    <div class="d-flex px-2 py-1" title="{{ $tercero->nombre." ".$tercero->apellido }}">
                                         <div>
                                             <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                         </div>
                                         <div class="d-flex flex-column justify-content-center">                                        
-                                            @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 80)
-                                                <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
-                                            @else
-                                                <h6 class="mb-0 text-xs" >{{ $presupuesto->gestion->nom_proyecto_cot }}</h6>
-                                            @endif
-                                            <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->contacto->empresa }}</p>
+                                            <h6 class="mb-0 text-xs" >{{ $tercero->nombre." ".$tercero->apellido }}</h6>
+                                            <p class="text-xs text-secondary mb-0">{{ $tercero->correo }}</p>
                                         </div>
                                     </div>
                                 </td>                            
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Fecha</p>
-                                    <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
+                                    <p class="text-xs font-weight-bold mb-0">Documento</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $tercero->cedula }}</p>
                                 </td> 
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                    <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->comercial->name }}</p>
-                                </td>  
+                                    <p class="text-xs font-weight-bold mb-0">Tel&eacute;fono</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $tercero->telefono }}</p>
+                                </td> 
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
-                                    <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</textarea>
-                                </td>
+                                    <p class="text-xs font-weight-bold mb-0">Ciudad</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $tercero->ciudad }}</p>
+                                </td>                               
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                    <p class="text-xs text-secondary mb-0">{{ $presupuesto->estado->description }}</p>
+                                    <p class="text-xs text-secondary mb-0">
+                                        @if ($tercero->estado)
+                                            <span class="badge badge-sm badge-success">Activo</span>
+                                        @else
+                                            <span class="badge badge-sm badge-danger">Vetado</span>                                       
+                                        @endif
+                                    </p>
                                 </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
-                                    <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
-                                </td> 
-                                <td class="d-flex align-items-center justify-content-center">
-                                    <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
+                                <td class="text-center">
+                                    <button class="btn bg-gradient-primary m-0 me-1 mb-2" type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ $tercero->id }}">Ver</button>
                                 </td>
-                            </tr> 
-                        @endforeach --}}
+                            </tr>
+  
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editModal{{ $tercero->id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        @livewire('productor.terceros.nuevo-personal', ['tercero' => $tercero])
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
             <div class="row p-2">
                 <div class="col-md-6">
-                    {{-- @php
-                        $presupuestosArray = $presupuestos->toArray();
+                    @php
+                        $presupuestosArray = $terceros->toArray();
                         $registros_page = sizeof($presupuestosArray['data']);
                         $total = $presupuestosArray['total'];
                     @endphp
-                    <span class="text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</span>         --}}
+                    <span class="text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</span>
                 </div>
                 <div class="col-md-12 table-responsive">
-                    {{-- {{ $presupuestos->links() }} --}}
+                    {{ $terceros->links() }}
                 </div>
             </div>
         </div>
