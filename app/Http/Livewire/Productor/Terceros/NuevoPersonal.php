@@ -20,7 +20,7 @@ class NuevoPersonal extends Component
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
 
     // Useful vars
-    public $estados, $ciudades;
+    public $estados, $ciudades, $deleteConfirm = false;
 
     // Filled
     public $tercero;
@@ -125,7 +125,7 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
         }
 
-        $tercero->update();
+        $tercero->update(); 
         $this->emit('terceroRegistrado');
 
         $this->reset_fields([
@@ -140,7 +140,14 @@ class NuevoPersonal extends Component
             'rut',
             'cert_bancaria',
         ]);
+
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
+    }
+
+    public function deletePersonal(){
+        $this->tercero->delete();
+        $this->emit('terceroRegistrado');
+        return redirect()->route('personal')->with('success', 'Personal eliminado con éxito.');
     } 
 
     public function fillForm(){
@@ -152,8 +159,12 @@ class NuevoPersonal extends Component
         $this->ciudad = $this->tercero->ciudad;
         $this->estado = $this->tercero->estado;
         $this->banco = $this->tercero->banco;
-        $this->rut = $this->tercero->rut;
-        $this->cert_bancaria = $this->tercero->cert_bancaria;
+        // $this->rut = $this->tercero->rut;
+        // $this->cert_bancaria = $this->tercero->cert_bancaria;
+    }
+
+    public function toggelConfirm(){
+        $this->deleteConfirm = !$this->deleteConfirm;
     }
 
     /*

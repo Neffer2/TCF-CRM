@@ -93,7 +93,7 @@
                             <div class="modal fade" id="editModal{{ $tercero->id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
-                                        @livewire('productor.terceros.nuevo-personal', ['tercero' => $tercero])
+                                        @livewire('productor.terceros.nuevo-personal', ['tercero' => $tercero], key($tercero->id))
                                     </div>
                                 </div>
                             </div>
@@ -116,4 +116,13 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+            );
+        </script>
+    @endif 
 </div>

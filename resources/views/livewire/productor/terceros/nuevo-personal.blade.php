@@ -139,7 +139,7 @@
         </div>
         <div class="col-md-4 align-content-end">
             <div class="form-group">
-                <button wire:click="nuevoPersonal" class="btn bg-gradient-warning m-0">Registrar</button>
+                <button wire:click="nuevoPersonal" wire:loading.attr="disabled" class="btn bg-gradient-warning m-0">Registrar</button>
             </div>
         </div>
         @if (session('success'))
@@ -154,7 +154,10 @@
     </div>
 @elseif($this->tercero)
     <div>
-        <div class="modal-body">
+        <div class="modal-body pt-1">
+            <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
+                <i class="fa-regular fa-circle-xmark"></i>
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="m-0">Editar personal:</h3>
@@ -305,20 +308,30 @@
                         @enderror
                     </div>
                 </div>
-                @if (session('success'))
-                    <script>
-                        Swal.fire(
-                            'Hecho',
-                            `{{ session('success') }}`,
-                            'success'
-                        );
-                    </script>
-                @endif 
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal">Guardar cambios</button>
+            <div class="row w-100">
+                <div class="col-md-12">
+                    <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <button type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal" wire:loading.attr="disabled">Guardar cambios</button>
+                </div>
+                @if ($deleteConfirm)
+                    <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
+                        <div class="card-body">
+                            <p class="text-center">
+                                <b>¿Estas seguro de eliminar a {{ $nombre }} {{ $apellido }}?</b>
+                            </p>
+                            <div class="d-flex justify-content-center">
+                                <button type="button" wire:click="toggelConfirm" class="btn bg-gradient-secondary me-1">Cancelar</button>
+                                <button type="button" wire:click="deletePersonal" class="btn bg-gradient-danger">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endif
