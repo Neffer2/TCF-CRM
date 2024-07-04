@@ -148,7 +148,7 @@ class NuevoPersonal extends Component
         $this->tercero->delete();
         $this->emit('terceroRegistrado');
         return redirect()->route('personal')->with('success', 'Personal eliminado con éxito.');
-    } 
+    }  
 
     public function fillForm(){
         $this->nombre = $this->tercero->nombre;

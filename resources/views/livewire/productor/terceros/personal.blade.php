@@ -20,20 +20,25 @@
                     <p class="text-sm mb-0">Lista completa de personal disponible.</p>
                 </div>    
                 <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Buscar:</label> 
-                    <input type="text" wire:model="cod_cc" class="form-control" placeholder="C&eacute;dula">
+                    <label for="cedula">Buscar:</label> 
+                    <input id="cedula" type="text" wire:model="cedula" class="form-control" placeholder="C&eacute;dula">
                 </div> 
                 <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Buscar:</label> 
-                    <input type="text" wire:model="nom_proyecto" class="form-control" placeholder="Nombre">
+                    <label for="nombre">Buscar:</label> 
+                    <input id="nombre" type="text" wire:model="nombre" class="form-control" placeholder="Nombre">
                 </div> 
+
                 <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Estado:</label> 
-                    <select wire:model="comercial" class="form-control">
+                    <label for="telefono">Tel&eacute;fono:</label> 
+                    <input id="telefono" type="text" wire:model="telefono" class="form-control" placeholder="Tel&eacute;fono">
+                </div>
+                <div class="form-group col-md-2 mb-0">
+                    <label for="estado">Estado:</label> 
+                    <select id="estado" wire:model="estado" class="form-control">
                         <option value="">Seleccionar</option>
-                        {{-- @foreach ($comerciales as $comercial)
-                            <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>                            
-                        @endforeach --}}
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                            
+                        @endforeach
                     </select>
                 </div> 
             </div>  
@@ -77,7 +82,7 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado</p>
                                     <p class="text-xs text-secondary mb-0">
-                                        @if ($tercero->estado)
+                                        @if ($tercero->estado == 1)
                                             <span class="badge badge-sm badge-success">Activo</span>
                                         @else
                                             <span class="badge badge-sm badge-danger">Vetado</span>                                       

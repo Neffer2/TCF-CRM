@@ -6,7 +6,7 @@
         </div>    
         <div class="col-md-4">
             <div class="form-group">
-                <label for="">Nombre: <span class="text-danger">*</span></label>
+                <label for="">Nombres: <span class="text-danger">*</span></label>
                 <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
                 wire:model.lazy="nombre" placeholder="Nombre">
                 @error('nombre')
@@ -18,7 +18,7 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="">Apellido: <span class="text-danger">*</span></label>
+                <label for="">Apellidos: <span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                 wire:model.change="apellido" placeholder="Apellido">
                 @error('apellido')
