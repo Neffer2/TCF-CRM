@@ -149,17 +149,41 @@
             <table class="table">
                 <thead> 
                     <tr>  
-                        <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">PROYECTO</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">CENTRO DE COSTOS</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">ITEM</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">NOMBRE ITEM</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
-                        <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                         <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    @foreach ($items as $item)
+                        <tr>
+                            <td>{{ $item['proyecto']['nombre'] }}</td>
+                            <td>{{ $item['proyecto']['cod_cc'] }}</td>
+                            <td>{{ $item['item']['nombre'] }}</td>
+                            <td>{{ $item['item']['cod_cc'] }}</td>
+                            <td>{{ $item['cant'] }}</td>
+                            <td>{{ $item['dias'] }}</td>
+                            <td>{{ $item['otros'] }}</td>
+                            <td>{{ $item['valor_unitario'] }}</td>
+                            <td>{{ $item['valor_total'] }}</td>
+                            <td class="d-flex justify-content-center" style="padding: 11px;">
+                                <button class="me-2">
+                                    ✖️
+                                </button>
+                                <button class="">
+                                    📝
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
             </table>
         </div>
     </div>
@@ -167,37 +191,67 @@
         <div class="col-md-3">
             <div class="form-group">
                 <label for="">Proyecto</label>
-                <input type="text" class="form-control"
-                wire:model.change="" placeholder="Nombre">
+                <select class="form-control" wire:model.change="presupuesto">
+                    <option value="">Seleccionar</option> 
+                    @foreach ($presupuestos as $presupuesto)
+                        <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label for="">Item</label>
-                <input type="text" class="form-control"
-                wire:model.change="" placeholder="Nombre">
+                <select class="form-control" wire:model.change="item_presupuesto">
+                    <option value="">Seleccionar</option> 
+                    @foreach ($items_presupuesto as $item_presupuesto)
+                        <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <div class="form-group">
                 <label for="">Cantidad</label>
-                <input type="text" class="form-control"
-                wire:model.change="" placeholder="Nombre">
+                <input type="number" class="form-control"
+                wire:model.lazy="cantidad" placeholder="Nombre">
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <div class="form-group">
-                <label for="">Valor</label>
-                <input type="text" class="form-control"
-                wire:model.change="" placeholder="Nombre">
+                <label for="">Dias</label>
+                <input type="number" class="form-control"
+                wire:model.lazy="dias" placeholder="Nombre">
             </div>
         </div>
-        <div class="col-md-2 align-content-end">
+        <div class="col-md-1">
             <div class="form-group">
-                <button class="btn btn-primary m-0">AGREGAR</button>
+                <label for="">Otro</label>
+                <input type="number" class="form-control"
+                wire:model.lazy="otros" placeholder="Nombre">
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <label for="">Valor unitario</label>
+                <input type="text" class="form-control"
+                wire:model.lazy="valor_unitario" placeholder="Nombre">
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <label for="">Valor Total</label>
+                <input type="text" class="form-control"
+                wire:model.lazy="valor_total" placeholder="Nombre">
+            </div>
+        </div>
+        <div class="col-md-1 justify-content-center align-content-end">
+            <div class="form-group">
+                <button wire:click="newItem" class="btn bg-gradient-primary m-0 ">AGREGAR</button>
             </div>
         </div>
     </div>
+    <hr class="ct-docs-hr">
     @if (session('success'))
         <script>
             Swal.fire(
