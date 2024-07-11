@@ -149,6 +149,7 @@
             <table class="table">
                 <thead> 
                     <tr>  
+                        <th class="font-weight-bold bg-gradient-primary text-white text-center">#</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">PROYECTO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CENTRO DE COSTOS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">ITEM</th>
@@ -162,8 +163,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($items as $item)
+                    @foreach ($items as $key => $item)
                         <tr>
+                            <td class="text-center">{{ $key+=1 }}</td>
                             <td>{{ $item['proyecto']['nombre'] }}</td>
                             <td>{{ $item['proyecto']['cod_cc'] }}</td>
                             <td>{{ $item['item']['nombre'] }}</td>
@@ -174,10 +176,10 @@
                             <td>{{ $item['valor_unitario'] }}</td>
                             <td>{{ $item['valor_total'] }}</td>
                             <td class="d-flex justify-content-center" style="padding: 11px;">
-                                <button class="me-2">
+                                <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
                                     ✖️
                                 </button>
-                                <button class="">
+                                <button class="" wire:click="getItem({{ $key }})">
                                     📝
                                 </button>
                             </td>
@@ -247,7 +249,11 @@
         </div>
         <div class="col-md-1 justify-content-center align-content-end">
             <div class="form-group">
-                <button wire:click="newItem" class="btn bg-gradient-primary m-0 ">AGREGAR</button>
+                @if ($selected_item != null)
+                    <button wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
+                @else
+                    <button wire:click="" class="btn bg-gradient-primary m-0">EDITAR</button>                
+                @endif
             </div>
         </div>
     </div>

@@ -12,7 +12,7 @@ class Natural extends Component
     // Models
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
-            $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0;
+            $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0;
 
     // Useful vars 
     public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [];
@@ -61,6 +61,9 @@ class Natural extends Component
                             ->get();    
     }
 
+    /*
+        * CRUD ITEMS OC
+    */
     public function newItem(){
         $this->validate([
             'presupuesto' => 'required',
@@ -95,11 +98,36 @@ class Natural extends Component
 
         
         array_push($this->items, $newItem);
+        $this->resetFields([
+            'presupuesto',
+            'item_presupuesto',
+            'cantidad',
+            'dias',
+            'otros',
+            'valor_unitario',
+            'valor_total'
+        ]);
     }
 
-    public function store(){
-        dd();
+    public function getItem($itemId){
+        $this->selected_item = $itemId;
+        $item = $this->items[$itemId];
+        $this->presupuesto = $item['proyecto']['id'];
+        $this->item_presupuesto = $item['item']['id'];
+        $this->cantidad = $item['cant'];
+        $this->dias = $item['dias'];
+        $this->otros = $item['otros'];
+        $this->valor_unitario = $item['valor_unitario'];
+        $this->valor_total = $item['valor_total'];
     }
+    
+
+    public function deleteItem($itemId){
+        unset($this->items[$itemId]);
+    }
+    /*
+        * ---------------------
+    */
 
     // UPDATES
     public function updatedTercero(){
@@ -133,6 +161,16 @@ class Natural extends Component
             $this->valor_total = $item_info->v_unitario;
         }else{
             $this->items_presupuesto = [];
+        }
+    }
+
+    /*
+        * RESET FIELDS
+        * @params array $fields
+    */
+    public function resetFields($fields){
+        foreach ($fields as $field){
+            $this->$field = '';
         }
     }
 } 
