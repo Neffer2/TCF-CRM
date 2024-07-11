@@ -249,10 +249,10 @@
         </div>
         <div class="col-md-1 justify-content-center align-content-end">
             <div class="form-group">
-                @if ($selected_item != null)
+                @if (is_null($selected_item))
                     <button wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
                 @else
-                    <button wire:click="" class="btn bg-gradient-primary m-0">EDITAR</button>                
+                    <button wire:click="actionEdit" class="btn bg-gradient-primary m-0">EDITAR</button>                
                 @endif
             </div>
         </div>

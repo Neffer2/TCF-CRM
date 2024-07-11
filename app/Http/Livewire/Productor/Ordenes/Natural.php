@@ -21,13 +21,14 @@ class Natural extends Component
     public $productor;
 
     public function render()
-    {
+    {        
         $this->getTerceros();
         $this->getPresupuestos();
         return view('livewire.productor.ordenes.natural');
     }
 
     public function mount(){
+        $this->items = collect();
         $this->ciudades = app('ciudades');
     }
  
@@ -62,9 +63,12 @@ class Natural extends Component
     }
 
     /*
-        * CRUD ITEMS OC
+        * CRUD ITEMS OC *
     */
     public function newItem(){
+        $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
+        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first(); 
+        
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
@@ -73,10 +77,7 @@ class Natural extends Component
             'otros' => 'required',
             'valor_unitario' => 'required',
             'valor_total' => 'required',
-        ]); 
-
-        $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
-        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first(); 
+        ]);         
 
         $newItem = [
             'proyecto' => [
@@ -96,8 +97,7 @@ class Natural extends Component
             'valor_total' => $this->valor_total,
         ];
 
-        
-        array_push($this->items, $newItem);
+        $this->items->push($newItem);
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -111,6 +111,7 @@ class Natural extends Component
 
     public function getItem($itemId){
         $this->selected_item = $itemId;
+
         $item = $this->items[$itemId];
         $this->presupuesto = $item['proyecto']['id'];
         $this->item_presupuesto = $item['item']['id'];
@@ -120,8 +121,52 @@ class Natural extends Component
         $this->valor_unitario = $item['valor_unitario'];
         $this->valor_total = $item['valor_total'];
     }
-    
 
+    // Elimina el item y crea uno nuevo
+    public function actionEdit(){
+        $this->validate([
+            'presupuesto' => 'required',
+            'item_presupuesto' => 'required',
+            'cantidad' => 'required',
+            'dias' => 'required',
+            'otros' => 'required',
+            'valor_unitario' => 'required',
+            'valor_total' => 'required',
+        ]);
+
+        $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
+        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first(); 
+        $this->items[$this->selected_item] = [
+            'proyecto' => [
+                    'id' => $presupuesto->id,
+                    'nombre' => $presupuesto->gestion->nom_proyecto_cot,
+                    'cod_cc' => $presupuesto->cod_cc
+                ],
+            'item' => [
+                'id' => $item->id,
+                'nombre' => $item->descripcion,
+                'cod_cc' => $presupuesto->cod_cc
+            ],
+            'cant' => $this->cantidad,
+            'dias' => $this->dias,
+            'otros' => $this->otros,
+            'valor_unitario' => $this->valor_unitario,
+            'valor_total' => $this->valor_total,
+        ];
+
+        $this->resetFields([
+            'presupuesto',
+            'item_presupuesto',
+            'cantidad',
+            'dias',
+            'otros',
+            'valor_unitario',
+            'valor_total'
+        ]);
+
+        unset($this->selected_item);
+    }
+    
     public function deleteItem($itemId){
         unset($this->items[$itemId]);
     }
