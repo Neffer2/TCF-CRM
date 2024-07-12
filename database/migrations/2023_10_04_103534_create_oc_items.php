@@ -20,7 +20,7 @@ class CreateOcItems extends Migration
  
             $table->foreignId('item_id');
             $table->foreign('item_id')->references('id')->on('items_presupuesto');
-            $table->string('display_item');
+            $table->string('display_item')->nullable();
 
             $table->string('desc_oc', 2000);
             $table->integer('cant_oc');

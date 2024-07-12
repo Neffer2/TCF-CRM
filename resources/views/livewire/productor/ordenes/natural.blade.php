@@ -10,22 +10,22 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="">Nombre</label>
-                                <input type="text" class="form-control"
+                                <label for="nombre_filtro">Nombre</label>
+                                <input id="nombre_filtro" type="text" class="form-control"
                                 wire:model.change="search_nombre" placeholder="Nombre">
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="">C&eacute;dula</label>
-                                <input type="text" class="form-control"
+                                <label for="cedula_filtro">C&eacute;dula</label>
+                                <input id="cedula_filtro" type="text" class="form-control"
                                 wire:model.change="search_cedula" placeholder="C&eacute;dula">
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="">Tel&eacute;fono</label>
-                                <input type="text" class="form-control"
+                                <label for="telefono_filtro">Tel&eacute;fono</label>
+                                <input id="telefono_filtro" type="text" class="form-control"
                                 wire:model.change="search_telefono" placeholder="Tel&eacute;fono">
                             </div>
                         </div>
@@ -41,6 +41,11 @@
                                         <option value="{{ $tercero->id }}">{{ $tercero->nombre }} {{ $tercero->apellido }} - {{ $tercero->cedula }}</option>
                                     @endforeach
                                 </select>
+                                @error('tercero')
+                                    <div id="invalid-tercero" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div> 
                         </div>
                     </div>
@@ -51,11 +56,11 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Nombres: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
+                        <label for="nombre">Nombres: <span class="text-danger">*</span></label>
+                        <input id="nombre" type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
                         wire:model.lazy="nombre" placeholder="Nombre">
                         @error('nombre')
-                            <div id="nombre" class="invalid-feedback">
+                            <div id="nombre" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -63,11 +68,11 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Apellidos: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
+                        <label for="apellido">Apellidos: <span class="text-danger">*</span></label>
+                        <input id="apellido" type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="apellido" placeholder="Apellido">
                         @error('apellido')
-                            <div id="apellido" class="invalid-feedback">
+                            <div id="apellido" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -75,11 +80,11 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">C&eacute;dula: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
+                        <label for="cedula">C&eacute;dula: <span class="text-danger">*</span></label>
+                        <input id="cedula" type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="cedula" placeholder="C.C">
                         @error('cedula')
-                            <div id="cedula" class="invalid-feedback">
+                            <div id="cedula" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -87,11 +92,11 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Correo: <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
+                        <label for="email">Correo: <span class="text-danger">*</span></label>
+                        <input id="email" type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
                         wire:model.change="correo" placeholder="alguien@ejemplo.com">
                         @error('correo')
-                            <div id="correo" class="invalid-feedback">
+                            <div id="correo" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -99,11 +104,11 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Tel&eacute;fono: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
+                        <label for="telefono">Tel&eacute;fono: <span class="text-danger">*</span></label>
+                        <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
                         wire:model.change="telefono" placeholder="Telefono">
                         @error('telefono')
-                            <div id="telefono" class="invalid-feedback">
+                            <div id="telefono" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -111,8 +116,8 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">                    
-                        <label for="">Ciudad: <span class="text-danger">*</span></label>
-                        <select id="" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
+                        <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>
+                        <select id="ciudad" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                         wire:model.change="ciudad">
                             <option value="">Seleccionar</option>
                             @foreach ($ciudades as $ciudad)
@@ -120,7 +125,7 @@
                             @endforeach
                         </select>
                         @error('ciudad')
-                            <div id="ciudad" class="invalid-feedback">
+                            <div id="ciudad" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -128,14 +133,14 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">                    
-                        <label for="">Banco:</label>
-                        <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
+                        <label for="banco">Banco:</label>
+                        <select id="banco" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                             wire:model.change="banco">
                             <option value="">Seleccionar</option>
                             <option value="Banco 1">Banco 2</option>
                         </select>
                         @error('banco')
-                            <div id="banco" class="invalid-feedback">
+                            <div id="banco" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -192,69 +197,114 @@
     <div class="row">
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Proyecto</label>
-                <select class="form-control" wire:model.change="presupuesto">
+                <label for="proyecto">Proyecto</label>
+                <select id="proyecto" class="form-control" wire:model.change="presupuesto">
                     <option value="">Seleccionar</option> 
                     @foreach ($presupuestos as $presupuesto)
                         <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
                     @endforeach
                 </select>
+                @error('presupuesto')
+                    <div id="invalid-presupuesto" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <label for="">Item</label>
-                <select class="form-control" wire:model.change="item_presupuesto">
+                <label for="item_presupuesto">Item</label>
+                <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
                     <option value="">Seleccionar</option> 
                     @foreach ($items_presupuesto as $item_presupuesto)
                         <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
                     @endforeach
                 </select>
+                @error('item_presupuesto')
+                    <div id="invalid-item_presupuesto" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1">
             <div class="form-group">
-                <label for="">Cantidad</label>
-                <input type="number" class="form-control"
+                <label for="cantidad">Cantidad</label>
+                <input id="cantidad" type="number" class="form-control"
                 wire:model.lazy="cantidad" placeholder="Nombre">
+                @error('cantidad')
+                    <div id="invalid-cantidad" class="text-invalid"> 
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1">
             <div class="form-group">
-                <label for="">Dias</label>
-                <input type="number" class="form-control"
+                <label for="dias">Dias</label>
+                <input id="dias" type="number" class="form-control"
                 wire:model.lazy="dias" placeholder="Nombre">
+                @error('dias')
+                    <div id="invalid-dias" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1">
             <div class="form-group">
-                <label for="">Otro</label>
-                <input type="number" class="form-control"
+                <label for="otros">Otro</label>
+                <input id="otros" type="number" class="form-control"
                 wire:model.lazy="otros" placeholder="Nombre">
+                @error('otros')
+                    <div id="invalid-otros" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1">
             <div class="form-group">
-                <label for="">Valor unitario</label>
-                <input type="text" class="form-control"
+                <label for="valor_unitario">Valor unitario</label>
+                <input id="valor_unitario" type="text" class="form-control"
                 wire:model.lazy="valor_unitario" placeholder="Nombre">
+                @error('valor_unitario')
+                    <div id="invalid-valor_unitario" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1">
             <div class="form-group">
-                <label for="">Valor Total</label>
-                <input type="text" class="form-control"
+                <label for="valor_total">Valor Total</label>
+                <input id="valor_total" type="text" class="form-control"
                 wire:model.lazy="valor_total" placeholder="Nombre">
+                @error('valor_total')
+                    <div id="invalid-valor_total" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
         <div class="col-md-1 justify-content-center align-content-end">
             <div class="form-group">
                 @if (is_null($selected_item))
-                    <button wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
+                    <button type="button" wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
                 @else
-                    <button wire:click="actionEdit" class="btn bg-gradient-primary m-0">EDITAR</button>                
+                    <button type="button" wire:click="actionEdit" class="btn bg-gradient-primary m-0">EDITAR</button>                
                 @endif
             </div>
+        </div>
+        @error('items-error')
+            <div class="text-invalid m-0">
+                {{ $message }}
+            </div>
+        @enderror
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">ENVIAR A APROBACI&Oacute;N</button>
         </div>
     </div>
     <hr class="ct-docs-hr">
@@ -265,6 +315,6 @@
                 `{{ session('success') }}`,
                 'success'
             );
-        </script>
+        </script> 
     @endif 
 </div>

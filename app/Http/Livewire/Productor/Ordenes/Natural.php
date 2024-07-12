@@ -5,7 +5,8 @@ namespace App\Http\Livewire\Productor\Ordenes;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
-use App\Models\OrdenCompra;
+use App\Models\OrdenCompra; 
+use App\Models\OcItem; 
 
 class Natural extends Component
 {
@@ -62,13 +63,10 @@ class Natural extends Component
                             ->get();    
     }
 
-    /*
-        * CRUD ITEMS OC *
-    */
+    /**
+     * CRUD ITEMS OC *
+    **/
     public function newItem(){
-        $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
-        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first(); 
-        
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
@@ -77,7 +75,10 @@ class Natural extends Component
             'otros' => 'required',
             'valor_unitario' => 'required',
             'valor_total' => 'required',
-        ]);         
+        ]);     
+
+        $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
+        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();     
 
         $newItem = [
             'proyecto' => [
@@ -122,7 +123,6 @@ class Natural extends Component
         $this->valor_total = $item['valor_total'];
     }
 
-    // Elimina el item y crea uno nuevo
     public function actionEdit(){
         $this->validate([
             'presupuesto' => 'required',
@@ -170,12 +170,66 @@ class Natural extends Component
     public function deleteItem($itemId){
         unset($this->items[$itemId]);
     }
-    /*
-        * ---------------------
-    */
+    /* * --------------------- * */
 
-    // UPDATES
+    /**
+     *  UPLOAD OC
+    **/
+    public function uploadOC(){
+        if ($this->items->count() <= 0){
+            $this->addError('items-error', 'No se han agregado items a la orden de compra');
+            return back();
+        }
+
+        $this->validate([
+            'tercero' => 'required'
+        ]);
+
+        $tercero = Tercero::where('id', $this->tercero)->first();
+        $tercero->update([
+            'nombre' => $this->nombre,
+            'apellido' => $this->apellido,
+            'cedula' => $this->cedula,
+            'correo' => $this->correo,
+            'telefono' => $this->telefono,
+            'ciudad' => $this->ciudad,
+            'banco' => $this->banco
+        ]);
+
+        $orden = OrdenCompra::create([
+            'tipo_oc' => 2, 
+            'estado_id' => 2,
+            'presupuesto_id' => null, 
+            'proveedor_id' => 3, 
+        ]);
+        
+        $OcItem = new OcItem(); 
+        foreach ($this->items as $item){
+            $OcItem->create([
+                'oc_id' => $orden->id,
+                'item_id' => $item['item']['id'],
+                'desc_oc' => $item['item']['nombre'], 
+                'cant_oc' => $item['cant'],
+                'dias_oc' => $item['dias'],
+                'otros_oc' => $item['otros'],
+                'vunit_oc' => $item['valor_unitario'],
+                'vtotal_oc' => $item['valor_total'] 
+            ]);
+        }
+
+        return back()->with('success', 'Orden de compra creada correctamente');
+    }
+
+    /* * --------------------- * */
+
+    /**
+     *  UPDATES
+    **/
     public function updatedTercero(){
+        $this->validate([
+            'tercero' => 'required'
+        ]);
+
         if ($this->tercero){
             $tercero = $this->terceros->where('id', $this->tercero)->first();
             $this->nombre = $tercero->nombre;
@@ -189,6 +243,10 @@ class Natural extends Component
     }
 
     public function updatedPresupuesto(){
+        $this->validate([
+            'presupuesto' => 'required'
+        ]);
+
         if ($this->presupuesto){
             $this->items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
         }else {
@@ -197,6 +255,10 @@ class Natural extends Component
     }
 
     public function updatedItemPresupuesto(){
+        $this->validate([
+            'item_presupuesto' => 'required'
+        ]);
+
         if ($this->item_presupuesto){
             $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
             $this->cantidad = $item_info->cantidad;
@@ -208,6 +270,7 @@ class Natural extends Component
             $this->items_presupuesto = [];
         }
     }
+    /* * --------------------- * */
 
     /*
         * RESET FIELDS
