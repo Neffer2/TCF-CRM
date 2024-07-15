@@ -6,7 +6,8 @@ use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
 use App\Models\OrdenCompra; 
-use App\Models\OcItem; 
+use App\Models\OcItem;
+use PhpParser\Node\Stmt\Return_;
 
 class Natural extends Component
 {
@@ -16,7 +17,8 @@ class Natural extends Component
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0;
 
     // Useful vars 
-    public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [];
+    public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [],
+            $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal;
 
     // Filled
     public $productor;
@@ -70,11 +72,11 @@ class Natural extends Component
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
-            'cantidad' => 'required',
-            'dias' => 'required',
-            'otros' => 'required',
-            'valor_unitario' => 'required',
-            'valor_total' => 'required',
+            'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
+            'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
+            'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
+            'valor_unitario' => 'required|min: 1numeric|max:'.$this->limiteValorUnitario,
+            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal
         ]);     
 
         $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
@@ -217,6 +219,16 @@ class Natural extends Component
             ]);
         }
 
+        $this->resetFields([
+            'presupuesto',
+            'item_presupuesto',
+            'cantidad',
+            'dias',
+            'otros',
+            'valor_unitario',
+            'valor_total'
+        ]);
+
         return back()->with('success', 'Orden de compra creada correctamente');
     }
 
@@ -240,6 +252,8 @@ class Natural extends Component
             $this->ciudad = $tercero->ciudad;
             $this->banco = $tercero->banco;
         }
+
+        $this->items = collect();
     }
 
     public function updatedPresupuesto(){
@@ -248,7 +262,7 @@ class Natural extends Component
         ]);
 
         if ($this->presupuesto){
-            $this->items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
+            $this->items_presupuesto = $item_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
         }else {
             $this->items_presupuesto = [];
         }
@@ -259,17 +273,76 @@ class Natural extends Component
             'item_presupuesto' => 'required'
         ]);
 
+        foreach ($this->items as $item){
+            if ($item['item']['id'] == $this->item_presupuesto){
+                $this->addError('items-error', 'Este item ya fue agregado en esta orden de compra.');
+                return back();
+            }
+        }
+
         if ($this->item_presupuesto){
             $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
-            $this->cantidad = $item_info->cantidad;
-            $this->dias = $item_info->dia;
-            $this->otros = $item_info->otros;
-            $this->valor_unitario = $item_info->v_unitario;
-            $this->valor_total = $item_info->v_unitario;
+            // Limites
+            $this->limiteCantidad = ($item_info->cantidad - $item_info->consumidos()->get()->sum('cant_oc'));
+            $this->limiteDias = ($item_info->dia - $item_info->consumidos()->get()->sum('dias_oc'));
+            $this->limiteOtros = ($item_info->otros - $item_info->consumidos()->get()->sum('otros_oc'));
+            $this->limiteValorUnitario = ($item_info->v_unitario - $item_info->consumidos()->get()->sum('vunit_oc'));
+            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
+
+            $this->cantidad = $this->limiteCantidad;
+            $this->dias = $this->limiteDias;
+            $this->otros = $this->limiteOtros;
+            $this->valor_unitario = $this->limiteValorUnitario;
+            $this->valor_total = $this->limiteValorTotal;
         }else{
             $this->items_presupuesto = [];
         }
     }
+
+    public function updatedCantidad(){
+        $this->validate([
+            'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad
+        ]);
+
+        $this->getValorTotal();
+    }
+
+    public function updatedDias(){
+        $this->validate([
+            'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias
+        ]);
+
+        $this->getValorTotal();
+    }
+
+    public function updatedOtros(){
+        $this->validate([
+            'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros
+        ]);
+
+        $this->getValorTotal();
+    }
+
+    public function updatedValorUnitario(){
+        $this->validate([
+            'valor_unitario' => 'required|numeric|min: 1|max:'.$this->limiteValorUnitario
+        ]);
+
+        $this->getValorTotal();
+    }
+
+    public function updatedValorTotal(){
+        $this->validate([
+            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal
+        ]);
+
+        $this->getValorTotal();
+    }
+
+    public function getValorTotal(){
+        $this->valor_total = ($this->cantidad * $this->dias * $this->otros) * $this->valor_unitario;
+    }
+
     /* * --------------------- * */
 
     /*

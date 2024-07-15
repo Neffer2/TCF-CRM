@@ -1,4 +1,4 @@
-<div class="card card-body mb-2">
+<div class="card card-body mb-2" x-data>
     <div class="row">
         <div class="col-md-12 mb-3">
             <h3 class="m-0">Orden de compra natural</h3>
@@ -167,7 +167,7 @@
                         <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody> 
                     @foreach ($items as $key => $item)
                         <tr>
                             <td class="text-center">{{ $key+=1 }}</td>
@@ -178,8 +178,8 @@
                             <td>{{ $item['cant'] }}</td>
                             <td>{{ $item['dias'] }}</td>
                             <td>{{ $item['otros'] }}</td>
-                            <td>{{ $item['valor_unitario'] }}</td>
-                            <td>{{ $item['valor_total'] }}</td>
+                            <td>{{ number_format($item['valor_unitario']) }}</td>
+                            <td>{{ number_format($item['valor_total']) }}</td>
                             <td class="d-flex justify-content-center" style="padding: 11px;">
                                 <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
                                     ✖️
@@ -231,7 +231,7 @@
             <div class="form-group">
                 <label for="cantidad">Cantidad</label>
                 <input id="cantidad" type="number" class="form-control"
-                wire:model.lazy="cantidad" placeholder="Nombre">
+                wire:model.lazy="cantidad" placeholder="Nombre" x-mask:dynamic="$money($input)">
                 @error('cantidad')
                     <div id="invalid-cantidad" class="text-invalid"> 
                         {{ $message }}
@@ -243,7 +243,7 @@
             <div class="form-group">
                 <label for="dias">Dias</label>
                 <input id="dias" type="number" class="form-control"
-                wire:model.lazy="dias" placeholder="Nombre">
+                wire:model.lazy="dias" placeholder="Nombre" x-mask:dynamic="$money($input)">
                 @error('dias')
                     <div id="invalid-dias" class="text-invalid">
                         {{ $message }}
@@ -255,7 +255,7 @@
             <div class="form-group">
                 <label for="otros">Otro</label>
                 <input id="otros" type="number" class="form-control"
-                wire:model.lazy="otros" placeholder="Nombre">
+                wire:model.lazy="otros" placeholder="Nombre" x-mask:dynamic="$money($input)">
                 @error('otros')
                     <div id="invalid-otros" class="text-invalid">
                         {{ $message }}
@@ -267,7 +267,7 @@
             <div class="form-group">
                 <label for="valor_unitario">Valor unitario</label>
                 <input id="valor_unitario" type="text" class="form-control"
-                wire:model.lazy="valor_unitario" placeholder="Nombre">
+                wire:model.lazy="valor_unitario" placeholder="Nombre" x-mask:dynamic="$money($input)">
                 @error('valor_unitario')
                     <div id="invalid-valor_unitario" class="text-invalid">
                         {{ $message }}
@@ -279,7 +279,7 @@
             <div class="form-group">
                 <label for="valor_total">Valor Total</label>
                 <input id="valor_total" type="text" class="form-control"
-                wire:model.lazy="valor_total" placeholder="Nombre">
+                wire:model.lazy="valor_total" placeholder="Nombre" x-mask:dynamic="$money($input)">
                 @error('valor_total')
                     <div id="invalid-valor_total" class="text-invalid">
                         {{ $message }}
