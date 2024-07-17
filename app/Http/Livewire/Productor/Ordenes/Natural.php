@@ -226,9 +226,20 @@ class Natural extends Component
             'dias',
             'otros',
             'valor_unitario',
-            'valor_total'
+            'valor_total',
+            'tercero',
+            'nombre',
+            'apellido',
+            'correo',
+            'cedula',
+            'telefono',
+            'ciudad',
+            'banco'
         ]);
 
+        unset($this->tercero);
+        unset($this->selected_item);
+        $this->items = collect();
         return back()->with('success', 'Orden de compra creada correctamente');
     }
 
@@ -262,7 +273,8 @@ class Natural extends Component
         ]);
 
         if ($this->presupuesto){
-            $this->items_presupuesto = $item_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
+            $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
+            $this->items_presupuesto = $items_presupuesto->where('proveedor', 'a:1:{i:0;s:1:"3";}')->where('disponible', 1);
         }else {
             $this->items_presupuesto = [];
         }

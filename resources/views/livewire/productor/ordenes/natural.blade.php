@@ -3,7 +3,7 @@
         <div class="col-md-12 mb-3">
             <h3 class="m-0">Orden de compra natural</h3>
             <p class="text-sm m-0">Selecciona tu personal y asigna los items nesesarios.</p>
-        </div>     
+        </div>      
         <div class="col-md-6" style="border-right: 1px solid #eee;">        
             <div class="row">
                 <div class="col-md-4">
@@ -210,7 +210,7 @@
                     </div>
                 @enderror
             </div>
-        </div>
+        </div> 
         <div class="col-md-3">
             <div class="form-group">
                 <label for="item_presupuesto">Item</label>
@@ -287,7 +287,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-1 justify-content-center align-content-end">
+        <div class="col-md-1">
             <div class="form-group">
                 @if (is_null($selected_item))
                     <button type="button" wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
