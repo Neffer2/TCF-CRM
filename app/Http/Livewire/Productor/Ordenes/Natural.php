@@ -7,6 +7,7 @@ use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
 use App\Models\OrdenCompra; 
 use App\Models\OcItem;
+use App\Models\NaturalInfo;
 use PhpParser\Node\Stmt\Return_;
 
 class Natural extends Component
@@ -202,7 +203,13 @@ class Natural extends Component
             'tipo_oc' => 2, 
             'estado_id' => 2,
             'presupuesto_id' => null, 
-            'proveedor_id' => 3, 
+            'proveedor_id' => 3,  
+        ]);
+        
+        $orden = NaturalInfo::create([
+            'oc_id' => $orden->id,
+            'tercero_id' => $tercero->id,
+            'productor_id' => $this->productor->id
         ]);
         
         $OcItem = new OcItem(); 
@@ -224,7 +231,7 @@ class Natural extends Component
             'item_presupuesto',
             'cantidad',
             'dias',
-            'otros',
+            'otros', 
             'valor_unitario',
             'valor_total',
             'tercero',
@@ -239,13 +246,13 @@ class Natural extends Component
 
         unset($this->tercero);
         unset($this->selected_item);
-        $this->items = collect();
+        $this->items = collect(); 
         return back()->with('success', 'Orden de compra creada correctamente');
     }
 
     /* * --------------------- * */
 
-    /**
+    /** 
      *  UPDATES
     **/
     public function updatedTercero(){

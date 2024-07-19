@@ -35,4 +35,8 @@ class OrdenCompra extends Model
     public function proveedor(){
         return $this->hasOne(Proveedor::class, 'id', 'proveedor_id');
     }
+
+    public function naturalInfo(){
+        return $this->hasOne(NaturalInfo::class, 'oc_id', 'id');
+    }
 }   

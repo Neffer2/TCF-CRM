@@ -6,5 +6,5 @@
     <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
 @endsection
 @section('content')
-    Solicitud de consulta de tercero
-@endsection  
+    @livewire('productor.terceros.consulta-terceros')
+@endsection   

@@ -29,7 +29,7 @@
                                 wire:model.change="search_telefono" placeholder="Tel&eacute;fono">
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
                 <div class="col-md-8">
                     <div class="row">
