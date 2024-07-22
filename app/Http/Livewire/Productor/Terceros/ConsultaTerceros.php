@@ -23,5 +23,8 @@ class ConsultaTerceros extends Component
         return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden]);
     } 
 
-    
+    public function mount()
+    {
+        ($_GET['orden']) ? $this->numOrden = $_GET['orden'] : $this->numOrden = null;
+    }
 }

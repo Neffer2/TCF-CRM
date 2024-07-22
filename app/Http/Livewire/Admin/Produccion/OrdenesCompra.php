@@ -21,7 +21,7 @@ class OrdenesCompra extends Component
 
     // Filled
     public $productor_id;
-
+ 
     public function render(){     
         $filtros = [];  
 
@@ -29,7 +29,7 @@ class OrdenesCompra extends Component
             array_push($filtros, ['estado_id', $this->estado]); 
         }
      
-        if ($this->cod_cc){   
+        if ($this->cod_cc){    
             $ordenes = OrdenCompra::with('presupuesto')
                 ->whereHas('presupuesto', function ($presto) { 
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");

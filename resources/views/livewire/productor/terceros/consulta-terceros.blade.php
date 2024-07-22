@@ -1,4 +1,4 @@
-<div class="row gy-1">            
+<div class="row gy-1">         
     <div class="row m-0 p-0 mb-3">
         <div class="col-md-12 mt-0">
             <h3 class="m-0">Portal trabajadores:</h3>

@@ -117,7 +117,7 @@ Route::get('/', function () {
         return view('publico.metricas');
     })->name('metricas'); 
 
-    Route::view('/consulta-terceros', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
+    Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
 /* --- */
 
  

@@ -144,7 +144,7 @@
                         <tr> 
                             <th colspan="6" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
                             <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
-                        </tr>
+                        </tr> 
                     </thead>
                     <tbody>
                         @foreach ($ordenes as $key => $orden) 
@@ -178,8 +178,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-success m-0 me-1 mb-1"
-                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=
-                                    ¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: [Enlace]. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
+                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
                                     target="_blank">
                                         <i class="fa-brands fa-whatsapp"></i> 
                                     </a>

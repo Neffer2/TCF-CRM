@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Auth;
 class NuevoPersonal extends Component
 {
     use WithFileUploads;
-    // Auth::check()
     /*
         * This component is used to register new personal
         * If thi component have a $tercero, it means that we are going to edit it
     */
 
     // Models
-    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
+    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, 
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
 
     // Useful vars 
     public $estados, $ciudades, $deleteConfirm = false;
@@ -88,7 +88,8 @@ class NuevoPersonal extends Component
             'rut',
             'cert_bancaria',
         ]);
-        return redirect()->back()->with('success', 'Personal registrado con éxito.');
+
+        return redirect()->back();
     } 
 
     public function actualizarPersonal(){
@@ -101,6 +102,13 @@ class NuevoPersonal extends Component
             'ciudad' => 'required|string',            
             'estado' => 'required|numeric|max:1',            
         ]);
+
+        if (!Auth::check()){
+            $this->validate([
+                'banco' => 'required',
+                'terminos' => 'required'
+            ]);            
+        }
 
         $tercero = $this->tercero;
         $tercero->nombre = $this->nombre;
@@ -117,17 +125,29 @@ class NuevoPersonal extends Component
         }
 
         if($this->rut){
+            if (!Auth::check()){
+                $this->validate(['rut' => 'required']);    
+            }
+
             $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
             $tercero->rut = $this->rut->store('public/ruts'); 
         } 
 
         if($this->cert_bancaria){
+            if (!Auth::check()){
+                $this->validate(['cert_bancaria' => 'required']);    
+            }
+
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
         }
 
+        if (!Auth::check()){
+            $tercero->terminos = $this->terminos;
+        }
+
         $tercero->update(); 
-        $this->emit('terceroRegistrado');
+        $this->emit('terceroRegistrado'); 
 
         $this->reset_fields([
             'nombre',
@@ -140,7 +160,12 @@ class NuevoPersonal extends Component
             'banco',
             'rut',
             'cert_bancaria',
+            'terminos'
         ]);
+
+        if (!Auth::check()){
+            return redirect()->back();
+        }
 
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }

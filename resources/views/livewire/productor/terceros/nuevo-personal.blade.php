@@ -10,7 +10,7 @@
                 <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
                 wire:model.lazy="nombre" placeholder="Nombre">
                 @error('nombre')
-                    <div id="nombre" class="invalid-feedback">
+                    <div id="nombre" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -22,7 +22,7 @@
                 <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                 wire:model.change="apellido" placeholder="Apellido">
                 @error('apellido')
-                    <div id="apellido" class="invalid-feedback">
+                    <div id="apellido" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -34,7 +34,7 @@
                 <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                 wire:model.change="cedula" placeholder="C.C">
                 @error('cedula')
-                    <div id="cedula" class="invalid-feedback">
+                    <div id="cedula" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -46,7 +46,7 @@
                 <input type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
                 wire:model.change="correo" placeholder="alguien@ejemplo.com">
                 @error('correo')
-                    <div id="correo" class="invalid-feedback">
+                    <div id="correo" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -58,7 +58,7 @@
                 <input type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
                 wire:model.change="telefono" placeholder="Telefono">
                 @error('telefono')
-                    <div id="telefono" class="invalid-feedback">
+                    <div id="telefono" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -75,7 +75,7 @@
                     @endforeach
                 </select>
                 @error('ciudad')
-                    <div id="ciudad" class="invalid-feedback">
+                    <div id="ciudad" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -90,7 +90,7 @@
                     <option value="Banco 1">Banco 2</option>
                 </select>
                 @error('banco')
-                    <div id="banco" class="invalid-feedback">
+                    <div id="banco" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -102,7 +102,7 @@
                 <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
                 wire:model.change="cert_bancaria">
                 @error('cert_bancaria')
-                    <div id="cert_bancaria" class="invalid-feedback">
+                    <div id="cert_bancaria" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -114,7 +114,7 @@
                 <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
                 wire:model.change="rut">
                 @error('rut')
-                    <div id="rut" class="invalid-feedback">
+                    <div id="rut" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -131,7 +131,7 @@
                     @endforeach
                 </select>
                 @error('estado')
-                    <div id="estado" class="invalid-feedback">
+                    <div id="estado" class="text-invalid">
                         {{ $message }}
                     </div>
                 @enderror
@@ -155,9 +155,11 @@
 @elseif($this->tercero)
     <div>
         <div class="modal-body pt-1">
-            <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
-                <i class="fa-regular fa-circle-xmark"></i>
-            </div>
+            @auth
+                <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                </div>
+            @endauth
             <div class="row">
                 @auth
                     <div class="col-md-12">
@@ -178,7 +180,7 @@
                         <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
                         wire:model.lazy="nombre" placeholder="Nombre">
                         @error('nombre')
-                            <div id="nombre" class="invalid-feedback">
+                            <div id="nombre" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -190,7 +192,7 @@
                         <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="apellido" placeholder="Apellido">
                         @error('apellido')
-                            <div id="apellido" class="invalid-feedback">
+                            <div id="apellido" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -202,7 +204,7 @@
                         <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="cedula" placeholder="C.C">
                         @error('cedula')
-                            <div id="cedula" class="invalid-feedback">
+                            <div id="cedula" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -214,7 +216,7 @@
                         <input type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
                         wire:model.change="correo" placeholder="alguien@ejemplo.com">
                         @error('correo')
-                            <div id="correo" class="invalid-feedback">
+                            <div id="correo" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -226,7 +228,7 @@
                         <input type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
                         wire:model.change="telefono" placeholder="Telefono">
                         @error('telefono')
-                            <div id="telefono" class="invalid-feedback">
+                            <div id="telefono" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -243,7 +245,7 @@
                             @endforeach
                         </select>
                         @error('ciudad')
-                            <div id="ciudad" class="invalid-feedback">
+                            <div id="ciudad" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -251,17 +253,19 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">                            
-                        <label for="">Certificaci&oacute;n bancaria
+                        <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
+                        <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
+                        wire:model.change="cert_bancaria">
+                        <label>
                             @if ($tercero->cert_bancaria)
                                 <a href="{{ asset(str_replace("public", "storage", $tercero->cert_bancaria)) }}" target="_blank">
+                                    Archivo actual:
                                     <i class="fa-regular fa-eye"></i>
                                 </a>                            
                             @endif
                         </label>
-                        <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
-                        wire:model.change="cert_bancaria">
                         @error('cert_bancaria')
-                            <div id="cert_bancaria" class="invalid-feedback">
+                            <div id="cert_bancaria" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -269,17 +273,19 @@
                 </div> 
                 <div class="col-md-6">
                     <div class="form-group">                            
-                        <label for="">RUT 
-                            @if ($tercero->rut)
-                                <a href="{{ asset(str_replace("public", "storage", $tercero->rut)) }}" target="_blank">
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>                            
-                            @endif
-                        </label>
+                        <label for="">RUT: @guest <span class="text-danger">*</span> @endguest</label>
                         <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
                         wire:model.change="rut">
+                        @if ($tercero->rut)
+                                <label>
+                                    <a href="{{ asset(str_replace("public", "storage", $tercero->rut)) }}" target="_blank">
+                                        Archivo actual:
+                                        <i class="fa-regular fa-eye"></i>
+                                    </a>                            
+                                </label>
+                        @endif
                         @error('rut')
-                            <div id="rut" class="invalid-feedback">
+                            <div id="rut" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
@@ -287,33 +293,33 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">                    
-                        <label for="">Banco:</label>
+                        <label for="">Banco: @guest <span class="text-danger">*</span> @endguest</label>
                         <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                         wire:model.change="banco">
                             <option value="">Seleccionar</option>
                             <option value="Banco 1">Banco 2</option>
                         </select>
                         @error('banco')
-                            <div id="banco" class="invalid-feedback">
+                            <div id="banco" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
                 </div>
                 @guest
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="form-group">                    
-                            <label for="">Rut: <span class="text-danger">*</span></label>
-                            <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
-                            wire:model.change="banco">
-                                <option value="">Seleccionar</option>
-                                <option value="Banco 1">Banco 2</option>
-                            </select>
-                            @error('banco')
-                                <div id="banco" class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
+                                <label class="custom-control-label" for="customCheck1">
+                                    T&eacute;rminos: <span class="text-danger">*</span>
+                                </label>
+                                @error('terminos')
+                                    <div id="terminos" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
                 @endguest
@@ -329,7 +335,7 @@
                                 @endforeach
                             </select>
                             @error('estado')
-                                <div id="estado" class="invalid-feedback">
+                                <div id="estado" class="text-invalid">
                                     {{ $message }}
                                 </div>
                             @enderror
@@ -346,7 +352,7 @@
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     @endauth
-                    <button type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal" wire:loading.attr="disabled">Guardar cambios</button>
+                    <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal" wire:loading.attr="disabled">Guardar cambios</button>
                 </div>
                 @if ($deleteConfirm)
                     <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
