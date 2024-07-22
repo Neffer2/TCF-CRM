@@ -177,8 +177,11 @@
                                     <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
                                 </td>
                                 <td>
-                                    <a class="btn btn-success" href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=Tu número de orden es: {{ $orden->id }}." target="_blank">
-                                        <i class="fa-brands fa-whatsapp"></i>
+                                    <a class="btn btn-success m-0 me-1 mb-1"
+                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=
+                                    ¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: [Enlace]. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
+                                    target="_blank">
+                                        <i class="fa-brands fa-whatsapp"></i> 
                                     </a>
                                 </td> 
                                 <td class="d-flex align-items-center justify-content-center">
@@ -186,7 +189,7 @@
                                 </td>
                             </tr>  
                         @endforeach
-                        <tr> 
+                    <tr> 
                             @php
                                 $ordenesArray = $ordenes->toArray();
                                 $registros_page = sizeof($ordenesArray['data']);

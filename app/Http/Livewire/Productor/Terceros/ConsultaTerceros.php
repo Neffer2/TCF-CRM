@@ -21,5 +21,7 @@ class ConsultaTerceros extends Component
         }
 
         return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden]);
-    }
+    } 
+
+    
 }

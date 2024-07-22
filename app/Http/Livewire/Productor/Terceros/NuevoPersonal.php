@@ -6,11 +6,12 @@ use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Auth;
 
 class NuevoPersonal extends Component
 {
     use WithFileUploads;
-
+    // Auth::check()
     /*
         * This component is used to register new personal
         * If thi component have a $tercero, it means that we are going to edit it
@@ -19,7 +20,7 @@ class NuevoPersonal extends Component
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
 
-    // Useful vars
+    // Useful vars 
     public $estados, $ciudades, $deleteConfirm = false;
 
     // Filled

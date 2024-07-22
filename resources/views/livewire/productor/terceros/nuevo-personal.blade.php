@@ -159,10 +159,19 @@
                 <i class="fa-regular fa-circle-xmark"></i>
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    <h3 class="m-0">Editar personal:</h3>
-                    <p class="text-sm m-0">Cambia la información de tu personal. Los campos marcados con * son obligatorios.</p>
-                </div>    
+                @auth
+                    <div class="col-md-12">
+                        <h3 class="m-0">Editar personal:</h3>
+                        <p class="text-sm m-0">Cambia la información de tu personal. Los campos marcados con * son obligatorios.</p>
+                    </div>                        
+                @endauth
+                @guest
+                    <div class="col-md-12">
+                        <h3 class="m-0">Actualiza tu información:</h3>
+                        <p class="text-sm m-0">Vericia tu información y confirma que est&eacute;n correctamente. Los campos marcados con * son obligatorios.</p>
+                    </div>                        
+                @endguest
+
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="">Nombre: <span class="text-danger">*</span></label>
@@ -291,31 +300,52 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="">Estado: <span class="text-danger">*</span></label>
-                        <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
-                        wire:model.change="estado">
-                            <option value="">Seleccionar</option>
-                            @foreach ($estados as $estado)
-                                <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                    
-                            @endforeach
-                        </select>
-                        @error('estado')
-                            <div id="estado" class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                @guest
+                    <div class="col-md-4">
+                        <div class="form-group">                    
+                            <label for="">Rut: <span class="text-danger">*</span></label>
+                            <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
+                            wire:model.change="banco">
+                                <option value="">Seleccionar</option>
+                                <option value="Banco 1">Banco 2</option>
+                            </select>
+                            @error('banco')
+                                <div id="banco" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
-                </div>
+                @endguest
+                @auth
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Estado: <span class="text-danger">*</span></label>
+                            <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
+                            wire:model.change="estado">
+                                <option value="">Seleccionar</option>
+                                @foreach ($estados as $estado)
+                                    <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                    
+                                @endforeach
+                            </select>
+                            @error('estado')
+                                <div id="estado" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div> 
+                @endauth
             </div>
         </div>
         <div class="modal-footer">
             <div class="row w-100">
-                <div class="col-md-12">
-                    <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                <div class="col-md-12 @guest ps-0 @endguest">
+                    @auth
+                        <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    @endauth
                     <button type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal" wire:loading.attr="disabled">Guardar cambios</button>
                 </div>
                 @if ($deleteConfirm)
