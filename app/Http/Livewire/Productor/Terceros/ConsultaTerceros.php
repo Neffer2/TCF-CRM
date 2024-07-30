@@ -25,6 +25,6 @@ class ConsultaTerceros extends Component
 
     public function mount()
     {
-        ($_GET['orden']) ? $this->numOrden = $_GET['orden'] : $this->numOrden = null;
+        (isset($_GET['orden'])) ? $this->numOrden = $_GET['orden'] : $this->numOrden = null;
     }
 }

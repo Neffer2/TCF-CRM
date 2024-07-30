@@ -102,7 +102,7 @@ class NuevoPersonal extends Component
             'ciudad' => 'required|string',            
             'estado' => 'required|numeric|max:1',            
         ]);
-
+ 
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required',
