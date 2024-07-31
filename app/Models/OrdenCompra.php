@@ -13,13 +13,13 @@ class OrdenCompra extends Model
         'tipo_oc',
         'estado_id',
         'presupuesto_id', 
-        'proveedor_id' 
+        'proveedor_id'  
     ];
 
     public function ordenItems(){
         return $this->hasMany(OcItem::class, 'oc_id', 'id'); 
     } 
-
+ 
     public function estado_oc(){ 
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
     }

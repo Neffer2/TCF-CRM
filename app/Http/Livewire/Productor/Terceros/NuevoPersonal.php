@@ -13,7 +13,8 @@ class NuevoPersonal extends Component
     use WithFileUploads;
     /*
         * This component is used to register new personal
-        * If thi component have a $tercero, it means that we are going to edit it
+        * If this component have a $tercero, it means that we are going to edit it
+        * If this component have a $orden, it means that a third party employee is editing
     */
 
     // Models
@@ -24,7 +25,7 @@ class NuevoPersonal extends Component
     public $estados, $ciudades, $deleteConfirm = false;
 
     // Filled
-    public $tercero;
+    public $tercero, $orden;
 
     public function render()
     {
@@ -36,7 +37,7 @@ class NuevoPersonal extends Component
         $this->estados = EstadoTercero::all();
 
         if ($this->tercero){$this->fillForm();}
-    }
+    } 
 
     public function nuevoPersonal(){
         $this->validate([
@@ -96,7 +97,7 @@ class NuevoPersonal extends Component
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric',
+            'cedula' => 'required|numeric', 
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
             'ciudad' => 'required|string',            
@@ -143,7 +144,10 @@ class NuevoPersonal extends Component
         }
 
         if (!Auth::check()){
-            $tercero->terminos = $this->terminos;
+            $this->orden->naturalInfo->terminos = $this->terminos;
+            $this->orden->naturalInfo->update();
+            $this->orden->estado_id = 2;
+            $this->orden->update();
         }
 
         $tercero->update(); 
@@ -164,7 +168,7 @@ class NuevoPersonal extends Component
         ]);
 
         if (!Auth::check()){
-            return redirect()->back();
+            return redirect()->route('consulta-terceros');
         }
 
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');

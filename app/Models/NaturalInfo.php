@@ -12,7 +12,7 @@ class NaturalInfo extends Model
 
     protected $fillable = [
         'oc_id',
-        'tercero_id', 
+        'tercero_id',   
         'productor_id' 
     ];
 

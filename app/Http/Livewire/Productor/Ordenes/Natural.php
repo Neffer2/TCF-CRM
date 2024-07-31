@@ -184,7 +184,7 @@ class Natural extends Component
             return back();
         }
 
-        $this->validate([
+        $this->validate([ 
             'tercero' => 'required'
         ]);
 
@@ -197,16 +197,16 @@ class Natural extends Component
             'telefono' => $this->telefono,
             'ciudad' => $this->ciudad,
             'banco' => $this->banco
-        ]);
+        ]); 
 
         $orden = OrdenCompra::create([
-            'tipo_oc' => 2, 
-            'estado_id' => 2,
+            'tipo_oc' => 2,  
+            'estado_id' => 3, 
             'presupuesto_id' => null, 
             'proveedor_id' => 3,  
         ]);
         
-        $orden = NaturalInfo::create([
+        $natural = NaturalInfo::create([
             'oc_id' => $orden->id,
             'tercero_id' => $tercero->id,
             'productor_id' => $this->productor->id

@@ -300,11 +300,11 @@
             <div class="text-invalid m-0">
                 {{ $message }}
             </div>
-        @enderror
+        @enderror 
     </div>
     <div class="row">
         <div class="col-md-6">
-            <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">ENVIAR A APROBACI&Oacute;N</button>
+            <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
         </div>
     </div>
     <hr class="ct-docs-hr">

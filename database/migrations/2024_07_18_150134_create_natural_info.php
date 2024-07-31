@@ -21,6 +21,8 @@ class CreateNaturalInfo extends Migration
             $table->foreign('tercero_id')->references('id')->on('terceros');
             $table->foreignId('productor_id');
             $table->foreign('productor_id')->references('id')->on('users');
+            $table->string('firma')->nullable();
+            $table->boolean('terminos')->nullable();
             $table->timestamps();
         });
     }

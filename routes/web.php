@@ -92,11 +92,11 @@ Route::get('/', function () {
  
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
-    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
-    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');
+    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');;
     Route::get('/consumidos-prod', [ProductorController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['productor'])->name('consumidos-prod');     
-    Route::view('/orden-compra-natural', 'productor.terceros.orden-compra-natural')->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
     Route::view('/ordenes-compra-prod', 'productor.ordenes.index')->middleware(['auth'])->middleware(['productor'])->name('ordenes-prod');
+    Route::view('/orden-compra-natural', 'productor.terceros.orden-compra-natural')->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
+
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['productor'])->name('personal');
 /* --- */
 

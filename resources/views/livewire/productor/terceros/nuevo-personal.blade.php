@@ -172,7 +172,7 @@
                         <h3 class="m-0">Actualiza tu información:</h3>
                         <p class="text-sm m-0">Vericia tu información y confirma que est&eacute;n correctamente. Los campos marcados con * son obligatorios.</p>
                     </div>                        
-                @endguest
+                @endguest 
 
                 <div class="col-md-4">
                     <div class="form-group">

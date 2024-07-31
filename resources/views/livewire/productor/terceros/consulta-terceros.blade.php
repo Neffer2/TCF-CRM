@@ -11,8 +11,8 @@
     </div>
     <div class="row m-0 p-0">
         @isset($orden)
-            @livewire('productor.terceros.nuevo-personal', ['tercero' => $orden->naturalinfo->tercero], key($orden->id))
-        @endisset
+            @livewire('productor.terceros.nuevo-personal', ['tercero' => $orden->naturalInfo->tercero, 'orden' => $orden], key($orden->id))
+        @endisset 
     </div>
 </div>  
  

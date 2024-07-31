@@ -24,11 +24,9 @@ class CreateTableTerceros extends Migration
             $table->string('banco')->nullable();
             $table->string('rut')->nullable();
             $table->string('cert_bancaria')->nullable();
-            $table->string('firma')->nullable();
-            $table->boolean('terminos')->nullable();
             $table->foreignId('estado');
             $table->foreign('estado')->references('id')->on('estados_tercero');        
-            $table->timestamps();
+            $table->timestamps(); 
         });
     }
 
