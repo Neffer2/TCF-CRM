@@ -19,10 +19,11 @@ class Natural extends Component
 
     // Useful vars 
     public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [],
-            $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal;
+            $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal,
+            $queriedOrden;
 
     // Filled
-    public $productor;
+    public $productor, $orden_id;
 
     public function render()
     {        
@@ -34,6 +35,11 @@ class Natural extends Component
     public function mount(){
         $this->items = collect();
         $this->ciudades = app('ciudades');
+
+        if ($this->orden_id){
+            $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
+            $this->getData();
+        }
     }
  
     public function getTerceros(){  
@@ -248,6 +254,48 @@ class Natural extends Component
         unset($this->selected_item);
         $this->items = collect(); 
         return back()->with('success', 'Orden de compra creada correctamente');
+    }
+    /* * --------------------- * */
+
+    /** 
+     *  Queried Data
+    **/
+    public function getData(){
+        // Productor
+        $this->productor = $this->queriedOrden->naturalInfo->productor;
+        // Tercero
+        $queriedTercero = $this->queriedOrden->naturalInfo->tercero;
+        $this->tercero = $queriedTercero->id;
+        $this->nombre = $queriedTercero->nombre;
+        $this->apellido = $queriedTercero->apellido;
+        $this->correo = $queriedTercero->correo;
+        $this->cedula = $queriedTercero->cedula;
+        $this->telefono = $queriedTercero->telefono;
+        $this->ciudad = $queriedTercero->ciudad;
+        $this->banco = $queriedTercero->banco;
+        // Items
+        $queriedItems = $this->queriedOrden->ordenItems;
+        foreach ($queriedItems as $item){
+            $newItem = [
+                'proyecto' => [
+                        'id' => $item->itemPresupuesto->presto->id,
+                        'nombre' => $item->itemPresupuesto->presto->gestion->nom_proyecto_cot,
+                        'cod_cc' => $item->itemPresupuesto->presto->cod_cc
+                    ],
+                'item' => [
+                    'id' => $item->itemPresupuesto->id,
+                    'nombre' => $item->itemPresupuesto->descripcion,
+                    'cod_cc' => $item->itemPresupuesto->presto->cod_cc
+                ],
+                'cant' => $item->cant_oc,
+                'dias' => $item->dias_oc,
+                'otros' => $item->otros_oc,
+                'valor_unitario' => $item->vunit_oc,
+                'valor_total' => $item->vtotal_oc,
+            ];
+            
+            $this->items->push($newItem);
+        }
     }
 
     /* * --------------------- * */

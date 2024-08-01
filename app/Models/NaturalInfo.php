@@ -23,4 +23,8 @@ class NaturalInfo extends Model
     public function tercero(){
         return $this->hasOne(Tercero::class, 'id', 'tercero_id');
     }
+
+    public function productor(){
+        return $this->hasOne(User::class, 'id', 'productor_id');
+    }
 }

@@ -40,3 +40,4 @@ class OrdenCompra extends Model
         return $this->hasOne(NaturalInfo::class, 'oc_id', 'id');
     }
 }   
+ 

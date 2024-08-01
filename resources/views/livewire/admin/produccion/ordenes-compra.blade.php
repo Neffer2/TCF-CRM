@@ -184,7 +184,7 @@
                                     </a>
                                 </td> 
                                 <td class="d-flex align-items-center justify-content-center">
-                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a> 
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">Ver</a>  
                                 </td>
                             </tr>  
                         @endforeach

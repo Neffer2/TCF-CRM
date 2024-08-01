@@ -9,7 +9,7 @@
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="form-group"> 
                                 <label for="nombre_filtro">Nombre</label>
                                 <input id="nombre_filtro" type="text" class="form-control"
                                 wire:model.change="search_nombre" placeholder="Nombre">
