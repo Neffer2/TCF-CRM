@@ -44,7 +44,7 @@ class OrdenesCompra extends Component
                     })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
 
             return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
-        }
+        } 
         
         return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
     }
