@@ -11,7 +11,7 @@
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4"> 
                         <label for="filtro_fecha">Fecha:</label>
                         <select id="filtro_fecha" class="form-control" wire:model="fecha">
                             <option value="asc">Seleccionar</option>
@@ -114,22 +114,19 @@
                                         <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
-                                    </td> 
-                                    <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
                                     </td>
                                     <td>
-                                        <a class="btn btn-success m-0 me-1 mb-1"
-                                        href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
-                                        target="_blank">
-                                            <i class="fa-brands fa-whatsapp"></i> 
-                                        </a>
+                                        <p class="text-xs font-weight-bold mb-0">Productor</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
+                                    </td>
+                                    <td colspan="2">
+                                        <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
                                     </td> 
                                     <td class="d-flex align-items-center justify-content-center">
-                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">Ver</a>  
+                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural', ['orden_id' => $orden->id]) }}">Ver</a>  
                                     </td>
                                 </tr>  
                             @endif

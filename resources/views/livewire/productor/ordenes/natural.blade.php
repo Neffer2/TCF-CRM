@@ -146,6 +146,24 @@
                         @enderror
                     </div>
                 </div>
+                @if ($queriedOrden->naturalInfo->terminos)
+                    <div class="col-md-4 py-4">
+                        @if ($tercero->cert_bancaria)
+                            <a href="{{ asset(str_replace("public", "storage", $tercero->cert_bancaria)) }}" target="_blank">
+                                Certificaci&oacute;n Bancaria
+                                <i class="fa-regular fa-eye"></i>
+                            </a>                            
+                        @endif
+                    </div>
+                    <div class="col-md-4 py-4">
+                        @if ($tercero->rut)
+                            <a href="{{ asset(str_replace("public", "storage", $tercero->rut)) }}" target="_blank">
+                                RUT
+                                <i class="fa-regular fa-eye"></i>
+                            </a>                            
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>        
     </div>
@@ -180,157 +198,165 @@
                             <td>{{ $item['otros'] }}</td>
                             <td>{{ number_format($item['valor_unitario']) }}</td>
                             <td>{{ number_format($item['valor_total']) }}</td>
-                            <td class="d-flex justify-content-center" style="padding: 11px;">
-                                <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
-                                    ✖️
-                                </button>
-                                <button class="" wire:click="getItem({{ $key }})">
-                                    📝
-                                </button>
-                            </td>
+                            @if (Auth()->user()->rol == 7)
+                                <td class="d-flex justify-content-center" style="padding: 11px;">
+                                        <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
+                                            ✖️
+                                        </button>
+                                        <button class="" wire:click="getItem({{ $key }})">
+                                            📝
+                                        </button>
+                                    </td>
+                                @endif
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="proyecto">Proyecto</label>
-                <select id="proyecto" class="form-control" wire:model.change="presupuesto">
-                    <option value="">Seleccionar</option> 
-                    @foreach ($presupuestos as $presupuesto)
-                        <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
-                    @endforeach
-                </select>
-                @error('presupuesto')
-                    <div id="invalid-presupuesto" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
+
+    @if (Auth()->user()->rol == 7)
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="proyecto">Proyecto</label>
+                    <select id="proyecto" class="form-control" wire:model.change="presupuesto">
+                        <option value="">Seleccionar</option> 
+                        @foreach ($presupuestos as $presupuesto)
+                            <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
+                        @endforeach
+                    </select>
+                    @error('presupuesto')
+                        <div id="invalid-presupuesto" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div> 
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="item_presupuesto">Item</label>
+                    <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
+                        <option value="">Seleccionar</option> 
+                        @foreach ($items_presupuesto as $item_presupuesto)
+                            <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
+                        @endforeach
+                    </select>
+                    @error('item_presupuesto')
+                        <div id="invalid-item_presupuesto" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
             </div>
-        </div> 
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="item_presupuesto">Item</label>
-                <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
-                    <option value="">Seleccionar</option> 
-                    @foreach ($items_presupuesto as $item_presupuesto)
-                        <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
-                    @endforeach
-                </select>
-                @error('item_presupuesto')
-                    <div id="invalid-item_presupuesto" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label for="cantidad">Cantidad</label>
+                    <input id="cantidad" type="number" class="form-control"
+                    wire:model.lazy="cantidad" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    @error('cantidad')
+                        <div id="invalid-cantidad" class="text-invalid"> 
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
             </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label for="dias">Dias</label>
+                    <input id="dias" type="number" class="form-control"
+                    wire:model.lazy="dias" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    @error('dias')
+                        <div id="invalid-dias" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label for="otros">Otro</label>
+                    <input id="otros" type="number" class="form-control"
+                    wire:model.lazy="otros" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    @error('otros')
+                        <div id="invalid-otros" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label for="valor_unitario">Valor unitario</label>
+                    <input id="valor_unitario" type="text" class="form-control"
+                    wire:model.lazy="valor_unitario" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    @error('valor_unitario')
+                        <div id="invalid-valor_unitario" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <label for="valor_total">Valor Total</label>
+                    <input id="valor_total" type="text" class="form-control"
+                    wire:model.lazy="valor_total" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    @error('valor_total')
+                        <div id="invalid-valor_total" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    @if (is_null($selected_item))
+                        <button type="button" wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
+                    @else
+                        <button type="button" wire:click="actionEdit" class="btn bg-gradient-primary m-0">EDITAR</button>                
+                    @endif
+                </div>
+            </div>
+            @error('items-error')
+                <div class="text-invalid m-0">
+                    {{ $message }}
+                </div>
+            @enderror 
         </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="cantidad">Cantidad</label>
-                <input id="cantidad" type="number" class="form-control"
-                wire:model.lazy="cantidad" placeholder="Nombre" x-mask:dynamic="$money($input)">
-                @error('cantidad')
-                    <div id="invalid-cantidad" class="text-invalid"> 
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="dias">Dias</label>
-                <input id="dias" type="number" class="form-control"
-                wire:model.lazy="dias" placeholder="Nombre" x-mask:dynamic="$money($input)">
-                @error('dias')
-                    <div id="invalid-dias" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="otros">Otro</label>
-                <input id="otros" type="number" class="form-control"
-                wire:model.lazy="otros" placeholder="Nombre" x-mask:dynamic="$money($input)">
-                @error('otros')
-                    <div id="invalid-otros" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="valor_unitario">Valor unitario</label>
-                <input id="valor_unitario" type="text" class="form-control"
-                wire:model.lazy="valor_unitario" placeholder="Nombre" x-mask:dynamic="$money($input)">
-                @error('valor_unitario')
-                    <div id="invalid-valor_unitario" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="valor_total">Valor Total</label>
-                <input id="valor_total" type="text" class="form-control"
-                wire:model.lazy="valor_total" placeholder="Nombre" x-mask:dynamic="$money($input)">
-                @error('valor_total')
-                    <div id="invalid-valor_total" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                @if (is_null($selected_item))
-                    <button type="button" wire:click="newItem" class="btn bg-gradient-primary m-0">AGREGAR</button>                
+        <div class="row">
+            <div class="col-md-6">
+                @if(!$orden_id)
+                    <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
                 @else
-                    <button type="button" wire:click="actionEdit" class="btn bg-gradient-primary m-0">EDITAR</button>                
-                @endif
-            </div>
-        </div>
-        @error('items-error')
-            <div class="text-invalid m-0">
-                {{ $message }}
-            </div>
-        @enderror 
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            @if(!$orden_id)
-                <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
-            @else
-                <!-- Button trigger modal -->
-                <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
-  
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Elininar Orden</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ¿Estas seguro de eliminar esta orden?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" wire:click="deleteOrden"  class="btn bg-gradient-danger">Eliminar</button>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
+    
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Elininar Orden</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estas seguro de eliminar esta orden?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" wire:click="deleteOrden"  class="btn bg-gradient-danger">Eliminar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
-    </div>
+    @endif    
+    @if (Auth()->user()->rol == 1)
+        <button></button>
+    @endif
     <hr class="ct-docs-hr">
     @if (session('success'))
         <script>

@@ -44,6 +44,10 @@ Route::get('/', function () {
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');    
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
+    Route::get('/orden-natural/{orden_id?}', function ($orden_id){
+        return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]); 
+    })->middleware(['auth'])->middleware(['admin'])->name('orden-natural');
+    
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');    
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');     
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');   

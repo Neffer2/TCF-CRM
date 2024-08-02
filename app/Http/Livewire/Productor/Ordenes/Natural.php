@@ -58,7 +58,7 @@ class Natural extends Component
             array_push($filtros, ['telefono', 'like', '%' . $this->search_telefono . '%']);
         }
 
-        $this->terceros = Tercero::select('id', 'nombre', 'apellido', 'cedula')->where($filtros)->get();
+        $this->terceros = Tercero::select('id', 'nombre', 'apellido', 'cedula', 'cert_bancaria', 'rut')->where($filtros)->get();
     }
 
     public function getPresupuestos(){
@@ -249,7 +249,7 @@ class Natural extends Component
             'ciudad',
             'banco'
         ]);
-
+ 
         unset($this->tercero);
         unset($this->selected_item);
         $this->items = collect(); 

@@ -19,7 +19,7 @@ class OrdenesCompra extends Component
     // Useful vars
     public $estados = [];   
 
-    // Filled
+    // Filled 
     public $productor_id;
  
     public function render(){     
@@ -50,11 +50,10 @@ class OrdenesCompra extends Component
     }
 
     public function mount(){
-        $this->getEstados();
+        $this->getEstados(); 
     }
 
     public function getEstados(){
         $this->estados = EstadoOrdenesCompra::where('id', '<>', 3)->get();
     } 
 } 
- 
