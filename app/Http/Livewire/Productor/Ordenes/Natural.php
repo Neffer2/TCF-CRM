@@ -298,6 +298,14 @@ class Natural extends Component
         }
     }
 
+    public function deleteOrden(){
+        $this->queriedOrden->ordenItems()->delete();
+        $this->queriedOrden->naturalInfo()->delete();
+        $this->queriedOrden->delete();
+
+        return redirect()->route('ordenes-prod')->with('success', 'Orden de compra eliminada correctamente');
+    }
+
     /* * --------------------- * */
 
     /** 

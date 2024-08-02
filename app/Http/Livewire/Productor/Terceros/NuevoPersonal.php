@@ -125,22 +125,18 @@ class NuevoPersonal extends Component
             $tercero->banco = $this->banco;
         }
 
-        if($this->rut){
-            if (!Auth::check()){
-                $this->validate(['rut' => 'required']);    
-            }
-
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
+        if (!$tercero->rut && !Auth::check()){
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);    
             $tercero->rut = $this->rut->store('public/ruts'); 
-        } 
+        }elseif($this->rut){
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);               
+        }
 
-        if($this->cert_bancaria){
-            if (!Auth::check()){
-                $this->validate(['cert_bancaria' => 'required']);    
-            }
-
-            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
+        if (!$tercero->cert_bancaria && !Auth::check()){
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
+        }elseif($this->cert_bancaria){
+            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!Auth::check()){

@@ -41,56 +41,98 @@
                     </thead>
                     <tbody>
                         @foreach ($ordenes as $orden)
-                            <tr>
-                                <td style="width: 16rem;">
-                                    <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}"> 
-                                        <div>
-                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                            @if ($orden->tipo_oc == 1)
+                                <tr>
+                                    <td style="width: 16rem;">
+                                        <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}"> 
+                                            <div>
+                                                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">                            
+                                                @if (strlen($orden->presupuesto->gestion->nom_proyecto_cot) > 80)
+                                                    <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
+                                                @else 
+                                                    <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}</h6>
+                                                @endif
+                                                <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
+                                            </div>
                                         </div>
-                                        <div class="d-flex flex-column justify-content-center">                            
-                                            @if (strlen($orden->presupuesto->gestion->nom_proyecto_cot) > 80)
-                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Tipo</p> 
+                                        <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                        <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
+                                        <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Comercial</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                    </td>
+                                    <td> 
+                                        <p class="text-xs font-weight-bold mb-0">Productor</p>
+                                        <p class="text-xs text-secondary mb-0">
+                                            @if ($orden->presupuesto->productor_info)
+                                                {{ $orden->presupuesto->productor_info->name }}
                                             @else 
-                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}</h6>
+                                                NO ASIGNADO
                                             @endif
-                                            <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                    </td> 
+                                    <td class="d-flex align-items-center justify-content-center">
+                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a> 
+                                    </td>
+                                </tr>  
+                            @elseif($orden->tipo_oc == 2)
+                                <tr>
+                                    <td style="width: 16rem;">
+                                        <div class="d-flex px-2 py-1" title="Orden #{{ $orden->id }}"> 
+                                            <div>
+                                                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">                            
+                                                <h6 class="mb-0 text-xs" >Orden #{{ $orden->id }}</h6>
+                                                <p class="text-xs text-secondary mb-0">{{ $orden->id }}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Tipo</p> 
-                                    <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
-                                </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Proveedor</p>
-                                    <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
-                                </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
-                                    <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
-                                </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                    <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
-                                </td>
-                                <td> 
-                                    <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                    <p class="text-xs text-secondary mb-0">
-                                        @if ($orden->presupuesto->productor_info)
-                                            {{ $orden->presupuesto->productor_info->name }}
-                                        @else 
-                                            NO ASIGNADO
-                                        @endif
-                                    </p>
-                                </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                    <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
-                                </td> 
-                                <td class="d-flex align-items-center justify-content-center">
-                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a> 
-                                </td>
-                            </tr>  
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Tipo</p> 
+                                        <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Tercero</p> 
+                                        <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                    </td> 
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-success m-0 me-1 mb-1"
+                                        href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
+                                        target="_blank">
+                                            <i class="fa-brands fa-whatsapp"></i> 
+                                        </a>
+                                    </td> 
+                                    <td class="d-flex align-items-center justify-content-center">
+                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">Ver</a>  
+                                    </td>
+                                </tr>  
+                            @endif
                         @endforeach
                         <tr> 
                             @php

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PresupuestoProyecto extends Model
 { 
-    use HasFactory;
+    use HasFactory; 
     protected $table = "presupuesto_proyecto";
  
     public function gestion(){ 

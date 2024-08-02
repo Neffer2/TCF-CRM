@@ -255,7 +255,7 @@
                     <div class="form-group">                            
                         <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
-                        wire:model.change="cert_bancaria">
+                        wire:model.change="cert_bancaria"> 
                         <label>
                             @if ($tercero->cert_bancaria)
                                 <a href="{{ asset(str_replace("public", "storage", $tercero->cert_bancaria)) }}" target="_blank">
