@@ -76,7 +76,7 @@
             </div>
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
-          <div class="collapse show " id="dashboardsExamples">
+          <div class="collapse show" id="dashboardsExamples">
             <ul class="nav ms-4"> 
               <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
@@ -99,30 +99,59 @@
             </ul>
           </div>
         </li>        
-        {{-- <li class="nav-item">
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#terceros" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-single-02 text-info text-sm opacity-10"></i>              
             </div>
             <span class="nav-link-text ms-1">Terceros</span>
-          </a>
-          <div class="collapse" id="terceros" style="">
+          </a>          
+        
+          <div @class([
+            'collapse' => true,
+            'show' => (request()->is('orden-compra-natural') ||
+                        request()->is('personal') ||
+                        request()->is('ordenes-compra-prod'))]) id="terceros">
             <ul class="nav ms-4"> 
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('orden-natural-prod') }}">  
-                  <span class="sidenav-mini-icon"> O </span>
-                  <span class="sidenav-normal"> OC natural </span>
+              <li @class(['nav-item' => true])>
+                <a class="nav-link collapsed" data-bs-toggle="collapse" aria-expanded="false" href="#ordersExample">
+                  <span class="sidenav-mini-icon"> N </span>
+                  <span class="sidenav-normal"> Naturales <b class="caret"></b></span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">  
+              <div @class([
+                'collapse' => true,
+                'show' => (request()->is('orden-compra-natural') ||
+                          request()->is('personal') ||
+                          request()->is('ordenes-compra-prod'))]) id="ordersExample">
+                <ul class="nav nav-sm flex-column">
+                  <li @class(['active' => request()->is('orden-compra-natural'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('orden-compra-natural'),
+                      'nav-link' => true,
+                      'ps-4' => true, 'pe-0' => true]) href="{{ route('orden-natural-prod') }}">
+                      <span class="sidenav-mini-icon"> NO </span>
+                      <span class="sidenav-normal"> Nueva Orden </span>
+                    </a>
+                  </li> 
+                  <li @class(['active' => request()->is('ordenes-compra-prod'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('ordenes-compra-prod'),
+                      'nav-link' => true,
+                      'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-prod') }}">
+                      <span class="sidenav-mini-icon"> Oc's </span>
+                      <span class="sidenav-normal"> Ordenes </span>
+                    </a>
+                  </li> 
+                </ul>
+              </div>
+              <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">            
                   <span class="sidenav-mini-icon"> P </span>
-                  <span class="sidenav-normal"> Personal </span>
+                  <span class="sidenav-normal"> Personal </span> 
                 </a>
               </li>
             </ul> 
           </div>
-        </li> --}}
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">

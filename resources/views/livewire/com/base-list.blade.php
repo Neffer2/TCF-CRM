@@ -124,7 +124,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn bg-gradient-danger">Eliminar</button>
+                                                <button type="submit" class="btn bg-gradient-danger" data-bs-dismiss="modal">Eliminar</button>
                                             </div>
                                         </div> 
                                     </div>

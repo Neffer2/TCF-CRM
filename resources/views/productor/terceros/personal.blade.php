@@ -5,6 +5,6 @@
     </div>
     <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
 @endsection
-@section('content') 
-    @livewire('productor.ordenes.natural', ['productor' => Auth()->user(), 'orden_id' => $orden_id])
-@endsection 
+@section('content')
+    @livewire('productor.terceros.personal')
+@endsection  

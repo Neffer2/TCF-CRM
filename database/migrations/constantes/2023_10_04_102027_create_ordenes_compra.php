@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class CreateOrdenesCompra extends Migration
-{
+{ 
     /**
      * Run the migrations.
      *
@@ -22,14 +22,14 @@ class CreateOrdenesCompra extends Migration
             $table->foreignId('estado_id')->default(2);  
             $table->foreign('estado_id')->references('id')->on('estados_ordenes_compra'); 
             
-            $table->foreignId('presupuesto_id');
+            $table->foreignId('presupuesto_id')->nullable();
             $table->foreign('presupuesto_id')->references('id')->on('presupuesto_proyecto');
 
             $table->foreignId('proveedor_id');
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
 
             $table->string('justificacion_rechazo')->nullable(); 
-            $table->string('archivo_cot'); 
+            $table->string('archivo_cot')->nullable(); 
             $table->string('archivo_orden_helisa')->nullable(); 
             $table->string('cod_causal')->nullable(); 
             $table->string('observacion_causal')->nullable(); 

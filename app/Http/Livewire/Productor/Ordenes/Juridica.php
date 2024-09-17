@@ -337,7 +337,7 @@ class Juridica extends Component
                 $acumVTotal += $item->vtotal_oc;
             }
         }
-
+ 
         $this->cant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
         $this->vTotal = ($dbItemPresto->v_total - $acumVTotal); 
 

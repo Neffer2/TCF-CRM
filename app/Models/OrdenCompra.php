@@ -9,11 +9,17 @@ class OrdenCompra extends Model
 {
     use HasFactory;
     protected $table = "ordenes_compra";
+    protected $fillable = [
+        'tipo_oc',
+        'estado_id',
+        'presupuesto_id', 
+        'proveedor_id'  
+    ];
 
     public function ordenItems(){
         return $this->hasMany(OcItem::class, 'oc_id', 'id'); 
     } 
-
+ 
     public function estado_oc(){ 
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
     }
@@ -29,4 +35,9 @@ class OrdenCompra extends Model
     public function proveedor(){
         return $this->hasOne(Proveedor::class, 'id', 'proveedor_id');
     }
+
+    public function naturalInfo(){
+        return $this->hasOne(NaturalInfo::class, 'oc_id', 'id');
+    }
 }   
+ 
