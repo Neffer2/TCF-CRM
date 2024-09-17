@@ -29,10 +29,10 @@
       border: 2px solid green;
     }
 
-    .font-table { 
+    .font-table {
       font-size: 9px;
-    } 
-    
+    }
+
     .item-table-background-tarifario {
       background-image: linear-gradient(310deg, rgba(17, 113, 239, .1) 0%, rgba(17, 205, 239, .5) 100%)
 
@@ -55,10 +55,10 @@
       background-color: #fbb140 !important;
     }
   </style>
-</head> 
-<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">   
-  @yield('hero-style') 
-  <!-- Barra lateral --> 
+</head>
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
+  @yield('hero-style')
+  <!-- Barra lateral -->
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
@@ -77,42 +77,42 @@
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
           <div class="collapse show" id="dashboardsExamples">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">
               <li @class(['active' => request()->is('dashboard-productor'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">  
+                <a @class(['active' => request()->is('dashboard-productor'), 'nav-link' => true]) href="{{ route('dashboard-productor') }}">
                   <span class="sidenav-mini-icon"> D </span>
                   <span class="sidenav-normal"> Dashboard </span>
                 </a>
               </li>
               <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}"> 
+                <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
                   <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Proveedores </span>
                 </a>
               </li>
               <li @class(['active' => request()->is('consumidos-prod'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('consumidos-prod'), 'nav-link' => true]) href="{{ route('consumidos-prod') }}">    
+                <a @class(['active' => request()->is('consumidos-prod'), 'nav-link' => true]) href="{{ route('consumidos-prod') }}">
                   <span class="sidenav-mini-icon text-xs"> C </span>
                   <span class="sidenav-normal"> Consumidos </span>
                 </a>
               </li>
             </ul>
           </div>
-        </li>        
-        <li class="nav-item">
+        </li>
+        <!-- <li class="nav-item">
           <a data-bs-toggle="collapse" href="#terceros" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-single-02 text-info text-sm opacity-10"></i>              
+              <i class="ni ni-single-02 text-info text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Terceros</span>
-          </a>          
-        
+          </a>
+
           <div @class([
             'collapse' => true,
             'show' => (request()->is('orden-compra-natural') ||
                         request()->is('personal') ||
                         request()->is('ordenes-compra-prod'))]) id="terceros">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">
               <li @class(['nav-item' => true])>
                 <a class="nav-link collapsed" data-bs-toggle="collapse" aria-expanded="false" href="#ordersExample">
                   <span class="sidenav-mini-icon"> N </span>
@@ -132,7 +132,7 @@
                       <span class="sidenav-mini-icon"> NO </span>
                       <span class="sidenav-normal"> Nueva Orden </span>
                     </a>
-                  </li> 
+                  </li>
                   <li @class(['active' => request()->is('ordenes-compra-prod'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('ordenes-compra-prod'),
                       'nav-link' => true,
@@ -140,41 +140,41 @@
                       <span class="sidenav-mini-icon"> Oc's </span>
                       <span class="sidenav-normal"> Ordenes </span>
                     </a>
-                  </li> 
+                  </li>
                 </ul>
               </div>
               <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">            
+                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
                   <span class="sidenav-mini-icon"> P </span>
-                  <span class="sidenav-normal"> Personal </span> 
+                  <span class="sidenav-normal"> Personal </span>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </div>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>              
+              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Ajustes</span>
           </a>
           <div class="collapse" id="ajustes" style="">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">
               <li class="nav-item">
-                <a class="nav-link" href="{{ route('actualizar-perfil-adm') }}">  
+                <a class="nav-link" href="{{ route('actualizar-perfil-adm') }}">
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Actualizar perfil </span>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </div>
         </li>
       </ul>
     </div>
-  </aside> 
+  </aside>
   <!-- End Barra lateral -->
-  
+
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky " id="navbarBlur" data-scroll="false">
@@ -214,8 +214,8 @@
                   <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                     <i class="ni ni-button-power"></i>
                     <span class="d-sm-inline d-none">Salir</span>
-                  </a>  
-                </form>    
+                  </a>
+                </form>
               @endauth
               @guest
                 <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -237,13 +237,13 @@
         </div>
       </div>
     </nav>
-    @yield('profile-card') 
+    @yield('profile-card')
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
         @yield('content')
-      </div> 
-      
+      </div>
+
       <footer class="footer pt-3">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
@@ -285,23 +285,23 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-    @if($errors->any()) 
+    @if($errors->any())
       Swal.fire(
       '!Oppss tenemos un problema',
       `@foreach($errors->all() as $error)
-          {{ $error }} 
+          {{ $error }}
       @endforeach`,
       'error'
       );
-    @endif 
+    @endif
     @if (session('success'))
     Swal.fire(
       'Hecho',
       `{{ session('success') }}`,
       'success'
       );
-    @endif 
-  
+    @endif
+
     // Rounded slider
     const setValue = function(value, active) {
       document.querySelectorAll("round-slider").forEach(function(el) {
