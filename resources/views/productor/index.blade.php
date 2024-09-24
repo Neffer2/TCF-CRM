@@ -5,12 +5,12 @@
         </div>
         <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
     @endsection
-    @section('content')         
+    @section('content')
         <div x-data="proyectos">
-            <div class="card"> 
+            <div class="card">
                 <div class="card-body">
-                    <h3 class="mb-4">Proyectos</h3> 
-                    <div class="row"> 
+                    <h3 class="mb-4">Proyectos</h3>
+                    <div class="row">
                         <div class="col-md-2 mb-3">
                             <div class="list-group">
                                 <select x-on:change="Open" x-model="proyecto" id="proyecto" class="form-control" size="31" style="overflow-x: auto;">
@@ -18,10 +18,10 @@
                                         <option value="{{ $proyecto->id }}">{{ $proyecto->cod_cc }} - {{ $proyecto->gestion->nom_proyecto_cot }}</option>
                                     @endforeach
                                 </select>
-                            </div> 
+                            </div>
                         </div>
                         <div class="col-md-10">
-                            @foreach ($proyectos as $proyecto) 
+                            @foreach ($proyectos as $proyecto)
                                 <div id="show{{ $proyecto->id }}" x-show="false" x-cloak>
                                     <div class="card">
                                         <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
@@ -33,7 +33,7 @@
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            @livewire('productor.solicitar-recursos', ['id_presupuesto' => $proyecto->id])                             
+                                            @livewire('productor.solicitar-recursos', ['id_presupuesto' => $proyecto->id])
                                         </div>
                                     </div>
                                 </div>
@@ -43,10 +43,10 @@
                 </div>
             </div>
         </div>
-    @endsection 
+    @endsection
     @section('scripts')
         <script>
-            function proyectos (){ 
+            function proyectos (){
                 return {
                     proyecto,
                     prevComponente: null,
@@ -54,7 +54,7 @@
                         this.Close(this.prevComponente);
                         let componente = document.getElementById('show'+proyecto.value);
                         this.prevComponente = (componente != this.prevComponente) ? componente : this.prevComponente;
-                        componente.style.display = 'block';                        
+                        componente.style.display = 'block';
                     },
                     Close(compoente){
                         if (compoente){

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers; 
+namespace App\Http\Controllers;
 
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Proveedor;
 
 class ProductorController extends Controller
-{   
-    
+{
+
     /*
     |--------------------------------------------------------------------------
     | ProductorController
@@ -17,11 +17,11 @@ class ProductorController extends Controller
     */
 
     public function index(){
-        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', Auth::id())->get();
+        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', Auth::id())->orderBy('id', 'desc')->get();
         return view('productor.index', ['proyectos' => $proyectos]);
     }
- 
+
     public function showRemision($orden){
         return view('productor.remision.index', ['orden' => $orden]);
     }
-} 
+}
