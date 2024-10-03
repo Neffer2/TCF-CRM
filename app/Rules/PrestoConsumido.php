@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Rules;
- 
+
 use Illuminate\Contracts\Validation\Rule;
 
-class PrestoConsumido implements Rule 
+class PrestoConsumido implements Rule
 {
     protected $item, $cantidadConsumido = 0, $valorTotalConsumido = 0;
     /**
-     * Create a new rule instance. 
+     * Create a new rule instance.
      *
      * @return void
      */
@@ -25,28 +25,30 @@ class PrestoConsumido implements Rule
      * @return bool
      */
     public function passes($attribute, $value)
-    {     
+    {
+        $cantidad = ($this->item->cantidad * $this->item->dia * $this->item->otros);
         if ($attribute == 'cantidad') {
             foreach ($this->item->consumidos as $consumido){
+
                 if ($consumido->OrdenCompra->estado_id != 6){
                     $this->cantidadConsumido += $consumido->cant_oc;
                 }
             }
 
-            if ($value >= $this->cantidadConsumido){
+            if ($cantidad >= $this->cantidadConsumido){
                 return true;
-            }    
+            }
         }elseif ($attribute == 'valor_total'){
             foreach ($this->item->consumidos as $consumido){
                 if ($consumido->OrdenCompra->estado_id != 6){
                     $this->valorTotalConsumido += $consumido->vtotal_oc;
                 }
             }
-            
+
             if ($value >= $this->valorTotalConsumido){
                 return true;
-            } 
-        }    
+            }
+        }
         return false;
     }
 
