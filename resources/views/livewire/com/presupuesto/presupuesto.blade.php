@@ -6,7 +6,7 @@
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table mb-0">
-                                <tr> 
+                                <tr>
                                     <td class="font-weight-bold font-table">MARGEN GENERAL</td>
                                     <td class="font-table">{{ number_format($margenGeneral, 4) }}</td>
                                 </tr>
@@ -25,18 +25,18 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">MARGEN BRUTO (PESOS)</td>
                                     <td class="font-table">{{ number_format($margenBruto) }}</td>
-                                </tr> 
+                                </tr>
                             </table>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <div class="col-md-3">
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">CONTACTO</td>
-                                    <td class="font-table"> 
+                                    <td class="font-table">
                                         {{$presupuesto->gestion->contacto->nombre}}
                                     </td>
                                 </tr>
@@ -55,8 +55,8 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">CENTRO DE COSTOS</td>
                                     <td class="font-table">
-                                        @if ($presupuesto->cod_cc) 
-                                            {{ $presupuesto->cod_cc }}   
+                                        @if ($presupuesto->cod_cc)
+                                            {{ $presupuesto->cod_cc }}
                                         @endif
                                     </td>
                                 </tr>
@@ -100,7 +100,7 @@
                                     <td class="font-table">
                                         <input type="text" wire:model.lazy="tiempoFactura" placeholder="" @if (Auth::user()->rol == 1) disabled @endif
                                         class="@error('tiempoFactura') invalid-input @enderror">
-                                    </td> 
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -116,18 +116,18 @@
                                         <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
                                     </td>
                                 </tr>
-                            </table> 
+                            </table>
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
 
             {{-- Actualizacion --}}
             @if (Auth::user()->rol == 1)
                 <div class="row mt-2">
-                    <div class="col-md-4"> 
+                    <div class="col-md-4">
                         <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12"> 
+                            <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
                                     <div class="col-md-12">
                                         <h3 class="mb-0">Justificaci&oacute;n comercial</h3>
@@ -144,12 +144,12 @@
                                         </small>
                                     @enderror
                                 </div>
-                            </div> 
-                        </div>         
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">  
+                    <div class="col-md-4">
                         <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12"> 
+                            <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
                                     <div class="col-md-12">
                                         <h3 class="mb-0">Justificaci&oacute;n compras</h3>
@@ -168,17 +168,17 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0" wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
-                                </div>                            
+                                </div>
                             </div>
-                        </div>        
+                        </div>
                     </div>
-                </div>            
+                </div>
             @endif
             @if ($justificacion_compras && Auth::user()->rol != 1)
                 <div class="row mt-2">
-                    <div class="col-md-6">  
+                    <div class="col-md-6">
                         <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12"> 
+                            <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
                                     <div class="col-md-12">
                                         <h3 class="mb-0">Justificaci&oacute;n compras</h3>
@@ -196,12 +196,12 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>        
+                        </div>
                     </div>
                 </div>
             @endif
-        </div>             
-        
+        </div>
+
         <div class="table-responsive mt-2 rounded bg-white">
             <table class="table">
                 <thead>
@@ -228,7 +228,7 @@
                         @if ($rentabilidadView)
                             <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO</th>
                             <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL</th>
-                            <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th> 
+                            <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
                         @endif
 
                         @if (Auth::user()->rol != 1)
@@ -237,7 +237,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($items as $key => $item)                
+                    @foreach ($items as $key => $item)
                         @if ($item->evento)
                             <tr class="font-weight-bold font-table bg-gradient-info text-white">
                                 <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
@@ -252,16 +252,16 @@
                                     <td>
                                         <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                     </td>
-                                @endif 
+                                @endif
                             </tr>
-                        @else  
-                            <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif> 
+                        @else
+                            <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->cod }}
                                 </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $key+=1 }}
-                                </td> 
+                                </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->cantidad }}
                                 </td>
@@ -283,21 +283,21 @@
                                 @if ($presupuesto->gestion->claro)
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cliente) }}
-                                    </td> 
-                                @endif  
+                                    </td>
+                                @endif
                                 <td class="font-weight-bold font-table">
                                     @if ($proveedores_item = @unserialize($item->proveedor))
-                                        @foreach ($proveedores_item as $proveedor) 
+                                        @foreach ($proveedores_item as $proveedor)
                                             {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach 
-                                    @else 
+                                        @endforeach
+                                    @else
                                         @if ($proveedores->find($item->proveedor))
                                             {{ $proveedores->find($item->proveedor)->tercero }}
-                                        @else   
+                                        @else
                                             {{ $item->proveedor }}
                                         @endif
                                     @endif
-                                </td> 
+                                </td>
                                 <td class="font-weight-bold font-table">
                                     {{ $item->margen_utilidad }}
                                 </td>
@@ -313,21 +313,21 @@
                                 <td class="font-weight-bold font-table">
                                     {{ $item->ciudad }}
                                 </td>
- 
+
                                 @if ($rentabilidadView)
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_unitario_cot) }}
                                     </td>
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->v_total_cot) }}
-                                    </td>  
+                                    </td>
                                     <td class="font-weight-bold font-table">
                                         $ {{ number_format($item->rentabilidad) }}
                                     </td>
                                 @endif
                                 @if (Auth::user()->rol == 2)
                                     <td class="font-weight-bold">
-                                        <div class="form-check">  
+                                        <div class="form-check">
                                             <input wire:change="changeDisponibilidad({{ $item->id }})"
                                                 class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
                                         </div>
@@ -344,21 +344,21 @@
                                     </td>
                                 @endif
                             </tr>
-                        @endif           
+                        @endif
                     @endforeach
                 </tbody>
             </table>
-        </div>    
+        </div>
 
     <div class="row mt-2">
-        @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)            
-            <div class="col-md-12 p-2"> 
+        @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)
+            <div class="col-md-12 p-2">
                 <div class="row gy-0 mb-3">
                     <div class="col-md-1">
                         <div class="form-group mb-0">
                             <label for="cod">COD</label>
                             <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
-                            placeholder="Cod" required wire:model.lazy="cod"> 
+                            placeholder="Cod" required wire:model.lazy="cod">
                                 <option value="">Seleccionar</option>
                                 <option value="0">---- Sin tarifario ----</option>
                                 @foreach ($tarifario as $item)
@@ -376,7 +376,7 @@
                         <div class="form-group mb-0">
                             <label for="cantidad">CANTIDAD</label>
                             <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
-                            placeholder="Cantidad" required wire:model.lazy="cantidad"> 
+                            placeholder="Cantidad" required wire:model.lazy="cantidad">
                             @error('cantidad')
                                 <div id="cantidad" class="invalid-feedback">
                                     {!! $message !!}
@@ -388,7 +388,7 @@
                         <div class="form-group mb-0">
                             <label for="dia">D&Iacute;A</label>
                             <input type="number" class="form-control @error('dia') is-invalid @elseif(strlen($dia) > 0) is-valid @enderror"
-                            placeholder="D&iacute;a" required wire:model.lazy="dia"> 
+                            placeholder="D&iacute;a" required wire:model.lazy="dia">
                             @error('dia')
                                 <div id="dia" class="invalid-feedback">
                                     {{ $message }}
@@ -419,7 +419,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="valor_unitario">V. UNITARIO</label>
@@ -431,7 +431,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>  
+                    </div>
                     <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="valor_total">V. TOTAL</label>
@@ -469,10 +469,10 @@
                                 </div>
                             @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-1">
                         <div class="form-group mb-0">
-                            <label for="mes">MES</label> 
+                            <label for="mes">MES</label>
                             <select class="form-control @error('mes') is-invalid @elseif(strlen($mes) > 0) is-valid @enderror"
                             placeholder="Mes" required wire:model.lazy="mes" required>
                                 <option value="">Seleccionar</option>
@@ -496,26 +496,26 @@
                                 <div id="dias" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror 
+                            @enderror
                         </div>
                     </div>
-                    <div class="col-md-2">  
+                    <div class="col-md-2">
                         <div class="form-group mb-0">
                             <label for="ciudad">CIUDAD</label>
                             <select type="text" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                             placeholder="Ciudad" required wire:model.lazy="ciudad">
                                 <option selected value="">Seleccionar</option>
-                                @foreach ($ciudades as $ciudad) 
+                                @foreach ($ciudades as $ciudad)
                                     <option value="{{ $ciudad }}">{{ $ciudad }}</option>
                                 @endforeach
                             </select>
-                            @error('ciudad')  
+                            @error('ciudad')
                                 <div id="ciudad" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror 
+                            @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group mb-0">
                             <label for="proveedor">PROVEEDOR</label>
@@ -523,16 +523,16 @@
                             placeholder="Proveedor" required wire:model.lazy="proveedor"> --}}
                             <select class="form-control select-multiple" @error('proveedor') is-invalid @enderror
                                 placeholder="Proveedor" required wire:model.lazy="proveedor" multiple>
-                                @foreach ($categorias_proveedor as $categoria)                                    
+                                @foreach ($categorias_proveedor as $categoria)
                                     <optgroup label="{{ $categoria->description }}">
                                         @foreach ($categoria->proveedores as $proveedor)
                                             <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
                                         @endforeach
                                     </optgroup>
                                 @endforeach
-                            </select> 
+                            </select>
                             @error('proveedor')
-                                <div id="proveedor" class="text-invalid"> 
+                                <div id="proveedor" class="text-invalid">
                                     {{ $message }}
                                 </div>
                             @enderror
@@ -551,19 +551,19 @@
                             @enderror
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
 
             <div class="col-md-8 d-flex p-2">
                 <button wire:click="new_item" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button">
                     <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
                 <span class="btn-inner--text">Item</span>
-                </button>    
-                
+                </button>
+
                 <button wire:click="new_event" class="btn btn-icon btn-3 bg-gradient-info mb-0 me-1" type="button">
                     <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
                 <span class="btn-inner--text">Evento</span>
-                </button>    
+                </button>
 
                 <button wire:click="actionEdit()" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" type="button">
                     <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
@@ -575,7 +575,7 @@
                     <span class="btn-inner--text">Exportar</span>
                 </button>
 
-                <!-- Modal --> 
+                <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -594,14 +594,14 @@
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
                                     </button>
-                                <hr class="horizontal dark">                        
+                                <hr class="horizontal dark">
                                 <h2 class="fs-5">Documentos Interno</h2>
                                 @if ($presupuesto->cod_cc)
                                     <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Interno PDF</span>
                                     </button>
-                                    
+
                                     <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
@@ -614,11 +614,11 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-check form-switch me-1">
                     <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
-                </div> 
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label>
+                </div>
             </div>
 
             <div class="col-md-4 d-flex justify-content-end p-2">
@@ -645,11 +645,11 @@
                                 <button wire:click="aprobacion" type="button" class="btn bg-gradient-warning" data-bs-dismiss="modal">Enviar</button>
                             </div>
                         </div>
-                    </div> 
-                </div> 
-            </div> 
+                    </div>
+                </div>
+            </div>
         @elseif (Auth::user()->rol == 1)
-            <div class="col-md-12 p-2">  
+            <div class="col-md-12 p-2">
                 <div class="row gy-0">
                     <div class="col-md-3">
                         <div class="form-group mb-0">
@@ -660,8 +660,8 @@
                             @error('centroCostos')
                                 <div id="centroCostos" class="invalid-feedback">
                                     {{ $message }}
-                                </div> 
-                            @enderror 
+                                </div>
+                            @enderror
                             <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
                                 <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                                 <span class="btn-inner--text">Guardar</span>
@@ -671,13 +671,13 @@
                     <div class="col-md-6 py-1">
                         <div class="form-check form-switch me-1">
                             <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                            <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label> 
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label>
                         </div>
                         <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
                             <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                             <span class="btn-inner--text">Exportar</span>
                         </button>
-    
+
                         <!-- Modal -->
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -693,19 +693,19 @@
                                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                     <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
                                                 </button>
-    
+
                                                 <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
                                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                     <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
                                                 </button>
-                                            <hr class="horizontal dark">                        
+                                            <hr class="horizontal dark">
                                             <h2 class="fs-5">Documentos Interno</h2>
                                             @if ($presupuesto->cod_cc)
                                                 <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
                                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                     <span class="btn-inner--text">Interno PDF</span>
                                                 </button>
-                                                
+
                                                 <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
                                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                                     <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
@@ -720,12 +720,12 @@
                             </div>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
-        @endif 
+        @endif
     </div>
 
-    @elseif($estadoValidator == 2) 
+    @elseif($estadoValidator == 2)
         <div class="card card-frame p-5">
             <h3 class="text-center">Tu presupuesto est&aacute; siendo validado.</h3>
             <div class="d-flex justify-content-center">
@@ -745,4 +745,3 @@
         </div>
     @endif
 </div>
- 
