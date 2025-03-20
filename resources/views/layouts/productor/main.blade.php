@@ -107,7 +107,7 @@
             <span class="nav-link-text ms-1">Terceros</span>
           </a>
 
-          {{-- <div @class([
+          <div @class([
             'collapse' => true,
             'show' => (request()->is('orden-compra-natural') ||
                         request()->is('personal') ||
@@ -116,7 +116,7 @@
               <li @class(['nav-item' => true])>
                 <a class="nav-link collapsed" data-bs-toggle="collapse" aria-expanded="false" href="#ordersExample">
                   <span class="sidenav-mini-icon"> N </span>
-                  <span class="sidenav-normal"> Naturales <b class="caret"></b></span>
+                  <span class="sidenav-normal"> Ordenes de Compra <b class="caret"></b></span>
                 </a>
               </li>
               <div @class([
@@ -138,7 +138,7 @@
                       'nav-link' => true,
                       'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-prod') }}">
                       <span class="sidenav-mini-icon"> Oc's </span>
-                      <span class="sidenav-normal"> Ordenes </span>
+                      <span class="sidenav-normal"> Mis Ordenes </span>
                     </a>
                   </li>
                 </ul>
@@ -150,7 +150,7 @@
                 </a>
               </li>
             </ul>
-          </div> --}}
+          </div>
         </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">

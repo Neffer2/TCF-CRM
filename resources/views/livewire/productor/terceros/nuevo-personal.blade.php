@@ -1,13 +1,23 @@
 @if (!$this->tercero)
+<div x-data="{ show: true }" x-cloak>
     <div class="row">
+        <div class="col-md-12 mb-2">
+            <h3 class="m-0">Nuevo personal</h3>
+            <div class="form-check form-switch">
+                <input class="form-check-input bg-gradient-warning" type="checkbox" id="flexSwitchCheckDefault" x-on:change="show = ! show">
+                <label x-show="show" class="form-check-label" for="flexSwitchCheckDefault">Subir en bloque</label>
+                <label x-show="!show" class="form-check-label" for="flexSwitchCheckDefault">Subir en formulario</label>
+            </div>
+        </div>
+    </div>
+    <div id="formulario" class="row" x-show="show" x-transition>
         <div class="col-md-12">
-            <h3 class="m-0">Nuevo personal:</h3>
             <p class="text-sm m-0">Registra tu personal. Los campos marcados con * son obligatorios.</p>
-        </div>    
+        </div>
         <div class="col-md-4">
             <div class="form-group">
                 <label for="">Nombres: <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
+                <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror"
                 wire:model.lazy="nombre" placeholder="Nombre">
                 @error('nombre')
                     <div id="nombre" class="text-invalid">
@@ -65,7 +75,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="form-group">                    
+            <div class="form-group">
                 <label for="">Ciudad: <span class="text-danger">*</span></label>
                 <select id="" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                 wire:model.change="ciudad">
@@ -82,7 +92,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="form-group">                    
+            <div class="form-group">
                 <label for="">Banco:</label>
                 <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                     wire:model.change="banco">
@@ -97,7 +107,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="form-group">                            
+            <div class="form-group">
                 <label for="">Certificaci&oacute;n bancaria:</label>
                 <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
                 wire:model.change="cert_bancaria">
@@ -107,9 +117,9 @@
                     </div>
                 @enderror
             </div>
-        </div> 
+        </div>
         <div class="col-md-4">
-            <div class="form-group">                            
+            <div class="form-group">
                 <label for="">RUT:</label>
                 <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
                 wire:model.change="rut">
@@ -127,7 +137,7 @@
                 wire:model.change="estado">
                     <option value="">Seleccionar</option>
                     @foreach ($estados as $estado)
-                        <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                    
+                        <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
                     @endforeach
                 </select>
                 @error('estado')
@@ -150,8 +160,17 @@
                     'success'
                 );
             </script>
-        @endif 
+        @endif
     </div>
+    <div id="masivo" class="row" x-show="!show" x-transition>
+        <div class="col-md-12 mb-2">
+            <p class="text-sm m-0">Con <a href=""><b>este</b></a> formato, puedes subir personal en bloque.</p>
+        </div>
+        <div class="col-md-12">
+            <input type="file">
+        </div>
+    </div>
+</div>
 @elseif($this->tercero)
     <div>
         <div class="modal-body pt-1">
@@ -165,19 +184,19 @@
                     <div class="col-md-12">
                         <h3 class="m-0">Editar personal:</h3>
                         <p class="text-sm m-0">Cambia la información de tu personal. Los campos marcados con * son obligatorios.</p>
-                    </div>                        
+                    </div>
                 @endauth
                 @guest
                     <div class="col-md-12">
                         <h3 class="m-0">Actualiza tu información:</h3>
                         <p class="text-sm m-0">Vericia tu información y confirma que est&eacute;n correctamente. Los campos marcados con * son obligatorios.</p>
-                    </div>                        
-                @endguest 
+                    </div>
+                @endguest
 
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="">Nombre: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" 
+                        <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror"
                         wire:model.lazy="nombre" placeholder="Nombre">
                         @error('nombre')
                             <div id="nombre" class="text-invalid">
@@ -235,7 +254,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group">                    
+                    <div class="form-group">
                         <label for="">Ciudad: <span class="text-danger">*</span></label>
                         <select id="" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
                         wire:model.change="ciudad">
@@ -252,16 +271,16 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group">                            
+                    <div class="form-group">
                         <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
-                        wire:model.change="cert_bancaria"> 
+                        wire:model.change="cert_bancaria">
                         <label>
                             @if ($tercero->cert_bancaria)
                                 <a href="{{ asset(str_replace("public", "storage", $tercero->cert_bancaria)) }}" target="_blank">
                                     Archivo actual:
                                     <i class="fa-regular fa-eye"></i>
-                                </a>                            
+                                </a>
                             @endif
                         </label>
                         @error('cert_bancaria')
@@ -270,9 +289,9 @@
                             </div>
                         @enderror
                     </div>
-                </div> 
+                </div>
                 <div class="col-md-6">
-                    <div class="form-group">                            
+                    <div class="form-group">
                         <label for="">RUT: @guest <span class="text-danger">*</span> @endguest</label>
                         <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
                         wire:model.change="rut">
@@ -281,7 +300,7 @@
                                     <a href="{{ asset(str_replace("public", "storage", $tercero->rut)) }}" target="_blank">
                                         Archivo actual:
                                         <i class="fa-regular fa-eye"></i>
-                                    </a>                            
+                                    </a>
                                 </label>
                         @endif
                         @error('rut')
@@ -292,7 +311,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group">                    
+                    <div class="form-group">
                         <label for="">Banco: @guest <span class="text-danger">*</span> @endguest</label>
                         <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                         wire:model.change="banco">
@@ -308,7 +327,7 @@
                 </div>
                 @guest
                     <div class="col-md-12">
-                        <div class="form-group">                    
+                        <div class="form-group">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
                                 <label class="custom-control-label" for="customCheck1">
@@ -331,7 +350,7 @@
                             wire:model.change="estado">
                                 <option value="">Seleccionar</option>
                                 @foreach ($estados as $estado)
-                                    <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                    
+                                    <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
                                 @endforeach
                             </select>
                             @error('estado')
@@ -340,7 +359,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div> 
+                    </div>
                 @endauth
             </div>
         </div>
