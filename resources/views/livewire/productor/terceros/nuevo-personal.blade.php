@@ -167,9 +167,16 @@
             <p class="text-sm m-0">Con <a href=""><b>este</b></a> formato, puedes subir personal en bloque.</p>
         </div>
         <div class="col-md-12">
-            <input type="file">
-        </div>
-    </div>
+            <input type="file" wire:model="terceroXlsx">
+        </div> 
+        @if ($errors->has('import_error'))
+            <div class="col-md-12 text-danger">
+                @foreach ($errors->get('import_error') as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+    </div> 
 </div>
 @elseif($this->tercero)
     <div>

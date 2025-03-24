@@ -16,6 +16,7 @@ class Tercero extends Model
         'correo',
         'telefono',
         'ciudad',
-        'banco'
+        'banco',
+        'estado'
     ];
 }

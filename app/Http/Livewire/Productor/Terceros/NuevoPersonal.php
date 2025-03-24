@@ -5,8 +5,10 @@ namespace App\Http\Livewire\Productor\Terceros;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
+use App\Imports\TerceroImport;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class NuevoPersonal extends Component
 {
@@ -19,7 +21,7 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, 
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx;
 
     // Useful vars 
     public $estados, $ciudades, $deleteConfirm = false;
@@ -37,7 +39,19 @@ class NuevoPersonal extends Component
         $this->estados = EstadoTercero::all();
 
         if ($this->tercero){$this->fillForm();}
-    } 
+    }
+
+    public function updatedterceroXlsx(){
+        Excel::import(new TerceroImport, $this->terceroXlsx);
+        try {
+        } catch (\Illuminate\Support\Facades\Validator $e) {
+            $failures = $e;
+    
+            foreach ($failures as $failure) {
+                $this->addError('import_error', "Error en la fila {$failure->row()}: {$failure->errors()[0]}");
+            }
+        }
+    }
 
     public function nuevoPersonal(){
         $this->validate([
