@@ -20,10 +20,10 @@ class NuevoPersonal extends Component
     */
 
     // Models
-    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, 
+    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
     $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx;
 
-    // Useful vars 
+    // Useful vars
     public $estados, $ciudades, $deleteConfirm = false;
 
     // Filled
@@ -43,14 +43,6 @@ class NuevoPersonal extends Component
 
     public function updatedterceroXlsx(){
         Excel::import(new TerceroImport, $this->terceroXlsx);
-        try {
-        } catch (\Illuminate\Support\Facades\Validator $e) {
-            $failures = $e;
-    
-            foreach ($failures as $failure) {
-                $this->addError('import_error', "Error en la fila {$failure->row()}: {$failure->errors()[0]}");
-            }
-        }
     }
 
     public function nuevoPersonal(){
@@ -60,8 +52,8 @@ class NuevoPersonal extends Component
             'cedula' => 'required|numeric|unique:terceros',
             'correo' => 'required|email|unique:terceros',
             'telefono' => 'required|numeric|unique:terceros',
-            'ciudad' => 'required|string',            
-            'estado' => 'required|numeric|max:1',            
+            'ciudad' => 'required|string',
+            'estado' => 'required|numeric|max:1',
         ]);
 
         $tercero = new Tercero();
@@ -74,18 +66,18 @@ class NuevoPersonal extends Component
         $tercero->estado = trim($this->estado);
 
         if($this->banco){
-            $this->validate(['banco' => 'string|max:255']);            
+            $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
         if($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
-            $tercero->rut = $this->rut->store('public/ruts'); 
-        } 
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
+        }
 
         if($this->cert_bancaria){
-            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
-            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
+            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
         $tercero->save();
@@ -105,24 +97,24 @@ class NuevoPersonal extends Component
         ]);
 
         return redirect()->back();
-    } 
+    }
 
     public function actualizarPersonal(){
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric', 
+            'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
-            'ciudad' => 'required|string',            
-            'estado' => 'required|numeric|max:1',            
+            'ciudad' => 'required|string',
+            'estado' => 'required|numeric|max:1',
         ]);
- 
+
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required',
                 'terminos' => 'required'
-            ]);            
+            ]);
         }
 
         $tercero = $this->tercero;
@@ -135,20 +127,20 @@ class NuevoPersonal extends Component
         $tercero->estado = trim($this->estado);
 
         if($this->banco){
-            $this->validate(['banco' => 'string|max:255']);            
+            $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
         if (!$tercero->rut && !Auth::check()){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);    
-            $tercero->rut = $this->rut->store('public/ruts'); 
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
         }elseif($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);               
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!$tercero->cert_bancaria && !Auth::check()){
             $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
+            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }elseif($this->cert_bancaria){
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
@@ -160,8 +152,8 @@ class NuevoPersonal extends Component
             $this->orden->update();
         }
 
-        $tercero->update(); 
-        $this->emit('terceroRegistrado'); 
+        $tercero->update();
+        $this->emit('terceroRegistrado');
 
         $this->reset_fields([
             'nombre',
@@ -188,7 +180,7 @@ class NuevoPersonal extends Component
         $this->tercero->delete();
         $this->emit('terceroRegistrado');
         return redirect()->route('personal')->with('success', 'Personal eliminado con éxito.');
-    }  
+    }
 
     public function fillForm(){
         $this->nombre = $this->tercero->nombre;
@@ -217,4 +209,3 @@ class NuevoPersonal extends Component
         }
     }
 }
-  

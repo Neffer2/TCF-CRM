@@ -14,20 +14,20 @@ class ConsultaTerceros extends Component
     public function render()
     {
         $filtro = [];
-        $orden = null; 
+        $orden = null;
 
         if ($this->numOrden) {
             array_push($filtro, ['id', $this->numOrden]);
             array_push($filtro, ['tipo_oc', 2]);
             array_push($filtro, ['estado_id', 3]);
 
-            $orden = OrdenCompra::with('naturalInfo')->where($filtro)->whereHas('naturalInfo', function (Builder $naturalInfo){ 
+            $orden = OrdenCompra::with('naturalInfo')->where($filtro)->whereHas('naturalInfo', function (Builder $naturalInfo){
                 $naturalInfo->where('terminos', NULL);
             })->first();
         }
- 
+
         return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden]);
-    } 
+    }
 
     public function mount()
     {

@@ -168,15 +168,15 @@
         </div>
         <div class="col-md-12">
             <input type="file" wire:model="terceroXlsx">
-        </div> 
-        @if ($errors->has('import_error'))
-            <div class="col-md-12 text-danger">
-                @foreach ($errors->get('import_error') as $error)
-                    <p>{{ $error }}</p>
+        </div>
+        @if (session()->has('import_error'))
+            <div class="col-md-12 text-danger mt-1">
+                @foreach (session()->get('import_error') as $error)
+                    <p style="margin-bottom: .3rem">{{ $error }}</p>
                 @endforeach
             </div>
         @endif
-    </div> 
+    </div>
 </div>
 @elseif($this->tercero)
     <div>
