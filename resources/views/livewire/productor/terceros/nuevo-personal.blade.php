@@ -130,7 +130,7 @@
                 @enderror
             </div>
         </div>
-        <div class="col-md-4">
+        {{-- <div class="col-md-4">
             <div class="form-group">
                 <label for="">Estado: <span class="text-danger">*</span></label>
                 <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
@@ -146,7 +146,7 @@
                     </div>
                 @enderror
             </div>
-        </div>
+        </div> --}}
         <div class="col-md-4 align-content-end">
             <div class="form-group">
                 <button wire:click="nuevoPersonal" wire:loading.attr="disabled" class="btn bg-gradient-warning m-0">Registrar</button>

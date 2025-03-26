@@ -249,6 +249,22 @@
                     @enderror
                 </div>
             </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label for="type_servicio">Tipo de servicio</label>
+                    <select id="type_servicio" class="form-control" wire:model.change="type_servicio">
+                        <option value="">Seleccionar</option>
+                        <option value="servicio 1">servicio 1</option>
+                        <option value="servicio 2">servicio 2</option>
+                        <option value="servicio 3">servicio 3</option>
+                    </select>
+                    @error('type_servicio')
+                        <div id="invalid-cantidad" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
             <div class="col-lg-1">
                 <div class="form-group">
                     <label for="cantidad">Cantidad</label>

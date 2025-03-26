@@ -53,7 +53,7 @@ class NuevoPersonal extends Component
             'correo' => 'required|email|unique:terceros',
             'telefono' => 'required|numeric|unique:terceros',
             'ciudad' => 'required|string',
-            'estado' => 'required|numeric|max:1',
+            // 'estado' => 'required|numeric|max:1',
         ]);
 
         $tercero = new Tercero();
@@ -63,7 +63,7 @@ class NuevoPersonal extends Component
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
         $tercero->ciudad = $this->ciudad;
-        $tercero->estado = trim($this->estado);
+        $tercero->estado = 1;
 
         if($this->banco){
             $this->validate(['banco' => 'string|max:255']);
