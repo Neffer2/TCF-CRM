@@ -164,7 +164,7 @@
     </div>
     <div id="masivo" class="row" x-show="!show" x-transition>
         <div class="col-md-12 mb-2">
-            <p class="text-sm m-0">Con <a href=""><b>este</b></a> formato, puedes subir personal en bloque.</p>
+            <p class="text-sm m-0">Con <a href="{{ asset('formatos/terceros/Formato_subida_de_Terceros.xlsx') }}" target="_blank"><b>este</b></a> formato, puedes subir personal en bloque.</p>
         </div>
         <div class="col-md-12">
             <input type="file" wire:model="terceroXlsx">
