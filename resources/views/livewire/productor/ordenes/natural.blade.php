@@ -28,7 +28,7 @@
                                 <input id="telefono_filtro" type="text" class="form-control"
                                 wire:model.change="search_telefono" placeholder="Tel&eacute;fono">
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -182,6 +182,10 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">HORAS</th>
+                        
                         <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                     </tr>
                 </thead>
@@ -198,6 +202,9 @@
                             <td>{{ $item['otros'] }}</td>
                             <td>{{ number_format($item['valor_unitario']) }}</td>
                             <td>{{ number_format($item['valor_total']) }}</td>
+                            <td>{{ $item['tipo_servicio'] }}</td>
+                            <td>{{ $item['tipo_contrato'] }}</td>
+                            <td>{{ $item['cantidad_horas'] }}</td>
                             @if (Auth()->user()->rol == 7)
                                 <td class="d-flex justify-content-center" style="padding: 11px;">
                                         <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
@@ -249,22 +256,6 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-2">
-                <div class="form-group">
-                    <label for="type_servicio">Tipo de servicio</label>
-                    <select id="type_servicio" class="form-control" wire:model.change="type_servicio">
-                        <option value="">Seleccionar</option>
-                        <option value="servicio 1">servicio 1</option>
-                        <option value="servicio 2">servicio 2</option>
-                        <option value="servicio 3">servicio 3</option>
-                    </select>
-                    @error('type_servicio')
-                        <div id="invalid-cantidad" class="text-invalid">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-            </div>
             <div class="col-lg-1">
                 <div class="form-group">
                     <label for="cantidad">Cantidad</label>
@@ -305,7 +296,7 @@
                 <div class="form-group">
                     <label for="valor_unitario">Valor unitario</label>
                     <input id="valor_unitario" type="text" class="form-control"
-                    wire:model.lazy="valor_unitario" placeholder="Nombre" x-mask:dynamic="$money($input)">
+                    wire:model.lazy="valor_unitario" placeholder="$" x-mask:dynamic="$money($input)">
                     @error('valor_unitario')
                         <div id="invalid-valor_unitario" class="text-invalid">
                             {{ $message }}
@@ -317,7 +308,7 @@
                 <div class="form-group">
                     <label for="valor_total">Valor Total</label>
                     <input id="valor_total" type="text" class="form-control"
-                    wire:model.lazy="valor_total" placeholder="Nombre" x-mask:dynamic="$money($input)" disabled>
+                    wire:model.lazy="valor_total" placeholder="$" x-mask:dynamic="$money($input)" disabled>
                     @error('valor_total')
                         <div id="invalid-valor_total" class="text-invalid">
                             {{ $message }}
@@ -325,6 +316,56 @@
                     @enderror
                 </div>
             </div>
+            <div class="col-lg-1">
+                <div class="form-group">
+                    <label for="tipo_servicio">Tipo de servicio</label>
+                    <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
+                        <option value="">Seleccionar</option>
+                        <option value="Servicio 1">Servicio 1</option>
+                        <option value="Servicio 2">Servicio 2</option>
+                        <option value="Servicio 3">Servicio 3</option>
+                    </select>
+                    @error('tipo_servicio')
+                        <div id="invalid-cantidad" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label for="tipo_contrato">Tipo de contrato</label>
+                    <select id="tipo_contrato" class="form-control" wire:model.change="tipo_contrato">
+                        <option value="">Seleccionar</option>
+                        <option value="Contrato 1">Contrato 1</option>
+                        <option value="Contrato 2">Contrato 2</option>
+                    </select>
+                    @error('tipo_contrato')
+                        <div id="invalid-cantidad" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <div class="form-group">
+                    <label for="cantidad_horas">Cantidad de horas</label>
+                    <input id="cantidad_horas" type="number" class="form-control"
+                    wire:model.lazy="cantidad_horas" placeholder="#" x-mask:dynamic="$money($input)">
+                    @error('cantidad_horas')
+                        <div id="invalid-cantidad" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            @error('items-error')
+                <div class="text-invalid m-0">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="row">
             <div class="col-lg-2">
                 <div class="form-group">
                     @if (is_null($selected_item))
@@ -340,12 +381,7 @@
                     @endif
                 </div>
             </div>
-            @error('items-error')
-                <div class="text-invalid m-0">
-                    {{ $message }}
-                </div>
-            @enderror
-        </div>
+        </div> 
         <div class="row">
             <div class="col-md-6">
                 @if(!$orden_id)

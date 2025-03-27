@@ -27,7 +27,10 @@ class CreateOcItems extends Migration
             $table->integer('dias_oc');
             $table->integer('otros_oc');
             $table->decimal('vunit_oc', 15, 2)->default(0);
-            $table->decimal('vtotal_oc', 15, 2)->default(0);         
+            $table->decimal('vtotal_oc', 15, 2)->default(0);  
+            $table->string('tipo_servicio')->nullable();
+            $table->string('tipo_contrato')->nullable();
+            $table->integer('cantidad_horas')->nullable();
             $table->timestamps(); 
         });
     }
