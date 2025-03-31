@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\Return_;
 
 class Natural extends Component
 {
-    // Models 
+    // Models
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
@@ -251,7 +251,7 @@ class Natural extends Component
                 'dias_oc' => $item['dias'],
                 'otros_oc' => $item['otros'],
                 'vunit_oc' => $item['valor_unitario'],
-                'vtotal_oc' => $item['valor_total'], 
+                'vtotal_oc' => $item['valor_total'],
                 'tipo_servicio' => $item['tipo_servicio'],
                 'tipo_contrato' => $item['tipo_contrato'],
                 'cantidad_horas' => $item['cantidad_horas']

@@ -21,7 +21,7 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx;
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula;
 
     // Useful vars
     public $estados, $ciudades, $deleteConfirm = false;
@@ -99,7 +99,7 @@ class NuevoPersonal extends Component
         return redirect()->back();
     }
 
-    public function actualizarPersonal(){
+    public function actualizarTercero(){
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
@@ -112,8 +112,8 @@ class NuevoPersonal extends Component
 
         if (!Auth::check()){
             $this->validate([
-                'banco' => 'required',
-                'terminos' => 'required'
+                'banco' => 'required|string|max:255',
+                'terminos' => 'required|accepted'
             ]);
         }
 
@@ -131,11 +131,11 @@ class NuevoPersonal extends Component
             $tercero->banco = $this->banco;
         }
 
-        if (!$tercero->rut && !Auth::check()){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->rut = $this->rut->store('public/ruts');
-        }elseif($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+        if (!$tercero->copia_cedula && !Auth::check()){
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
+        }elseif($this->copia_cedula){
+            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!$tercero->cert_bancaria && !Auth::check()){
@@ -143,6 +143,13 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }elseif($this->cert_bancaria){
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if (!$tercero->rut && !Auth::check()){
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
+        }elseif($this->rut){
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!Auth::check()){

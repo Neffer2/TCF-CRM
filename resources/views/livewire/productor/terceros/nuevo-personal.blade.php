@@ -279,6 +279,26 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="">Fotocopia c&eacute;dula: @guest <span class="text-danger">*</span>@endguest</label>
+                        <input type="file" class="form-control @error('copia_cedula') is-invalid @elseif(strlen($copia_cedula) > 0) is-valid @enderror"
+                        wire:model.change="copia_cedula">
+                        <label>
+                            @if ($tercero->copia_cedula)
+                                <a href="{{ asset(str_replace("public", "storage", $tercero->copia_cedula)) }}" target="_blank">
+                                    Archivo actual:
+                                    <i class="fa-regular fa-eye"></i>
+                                </a>
+                            @endif
+                        </label>
+                        @error('copia_cedula')
+                            <div id="copia_cedula" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
                         wire:model.change="cert_bancaria">
@@ -378,7 +398,7 @@
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     @endauth
-                    <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarPersonal" wire:loading.attr="disabled">Guardar cambios</button>
+                    <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
                 </div>
                 @if ($deleteConfirm)
                     <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
