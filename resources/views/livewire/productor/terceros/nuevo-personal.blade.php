@@ -246,7 +246,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div>
+                    </div> 
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
@@ -258,7 +258,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div>
+                    </div> 
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
@@ -352,6 +352,12 @@
                         @enderror
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <button wire:click="generarContrato">
+                        Contrato
+                    </button>                    
+                    <embed src="{{ $contrato }}" width="500" height="375" type="application/pdf">
+                </div> 
                 @guest
                     <div class="col-md-12">
                         <div class="form-group">

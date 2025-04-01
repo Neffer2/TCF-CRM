@@ -9,6 +9,8 @@ use App\Imports\TerceroImport;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class NuevoPersonal extends Component
 {
@@ -24,7 +26,7 @@ class NuevoPersonal extends Component
     $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula;
 
     // Useful vars
-    public $estados, $ciudades, $deleteConfirm = false;
+    public $estados, $ciudades, $deleteConfirm = false, $contrato;
 
     // Filled
     public $tercero, $orden;
@@ -175,12 +177,27 @@ class NuevoPersonal extends Component
             'cert_bancaria',
             'terminos'
         ]);
-
+ 
         if (!Auth::check()){
             return redirect()->route('consulta-terceros');
         }
 
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
+    }
+
+    public function generarContrato(){
+        $dompdf = new Dompdf(array('enable_remote' => true));
+        $html = View::make('exports.contrato')->render(); 
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        
+        // Guardar el PDF en el almacenamiento temporal
+        $output = $dompdf->output();
+        $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
+        file_put_contents($filePath, $output);
+
+        // Generar una URL pública para el archivo
+        $this->contrato = asset('storage/contratos/' . basename($filePath));
     }
 
     public function deletePersonal(){

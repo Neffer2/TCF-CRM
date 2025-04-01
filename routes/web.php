@@ -124,6 +124,10 @@ Route::get('/', function () {
     })->name('metricas');
 
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
+
+    Route::get('pdf', function (){
+        return view('exports.contrato');
+    });
 /* --- */
 
 
