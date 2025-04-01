@@ -277,7 +277,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Fotocopia c&eacute;dula: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('copia_cedula') is-invalid @elseif(strlen($copia_cedula) > 0) is-valid @enderror"
@@ -297,7 +297,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
@@ -317,7 +317,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">RUT: @guest <span class="text-danger">*</span> @endguest</label>
                         <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
@@ -337,7 +337,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Banco: @guest <span class="text-danger">*</span> @endguest</label>
                         <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
@@ -350,6 +350,14 @@
                                 {{ $message }}
                             </div>
                         @enderror
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button wire:click="generarContrato">
+                        Contrato
+                    </button>
+                    <div class="d-flex justify-content-center">
+                        <embed src="{{ $contrato }}" width="900" height="500" type="application/pdf">
                     </div>
                 </div>
                 @guest
@@ -369,33 +377,6 @@
                         </div>
                     </div>
                 @endguest
-                <div class="col-md-12">
-                    <button wire:click="generarContrato">
-                        Contrato
-                    </button>
-                    <div class="d-flex justify-content-center">
-                        <embed src="{{ $contrato }}" width="900" height="500" type="application/pdf">
-                    </div>
-                </div>
-                @auth
-                    {{-- <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Estado: <span class="text-danger">*</span></label>
-                            <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
-                            wire:model.change="estado">
-                                <option value="">Seleccionar</option>
-                                @foreach ($estados as $estado)
-                                    <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
-                                @endforeach
-                            </select>
-                            @error('estado')
-                                <div id="estado" class="text-invalid">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div> --}}
-                @endauth
             </div>
         </div>
         <div class="modal-footer">
