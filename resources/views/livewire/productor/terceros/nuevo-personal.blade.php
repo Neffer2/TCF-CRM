@@ -246,7 +246,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div> 
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
@@ -258,7 +258,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div> 
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
@@ -352,12 +352,6 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <button wire:click="generarContrato">
-                        Contrato
-                    </button>                    
-                    <embed src="{{ $contrato }}" width="500" height="375" type="application/pdf">
-                </div> 
                 @guest
                     <div class="col-md-12">
                         <div class="form-group">
@@ -375,8 +369,16 @@
                         </div>
                     </div>
                 @endguest
+                <div class="col-md-12">
+                    <button wire:click="generarContrato">
+                        Contrato
+                    </button>
+                    <div class="d-flex justify-content-center">
+                        <embed src="{{ $contrato }}" width="900" height="500" type="application/pdf">
+                    </div>
+                </div>
                 @auth
-                    <div class="col-md-4">
+                    {{-- <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Estado: <span class="text-danger">*</span></label>
                             <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
@@ -392,7 +394,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
+                    </div> --}}
                 @endauth
             </div>
         </div>

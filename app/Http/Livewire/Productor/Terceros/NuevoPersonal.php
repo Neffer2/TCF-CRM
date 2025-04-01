@@ -177,7 +177,7 @@ class NuevoPersonal extends Component
             'cert_bancaria',
             'terminos'
         ]);
- 
+
         if (!Auth::check()){
             return redirect()->route('consulta-terceros');
         }
@@ -187,10 +187,10 @@ class NuevoPersonal extends Component
 
     public function generarContrato(){
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('exports.contrato')->render(); 
+        $html = View::make('exports.contrato')->render();
         $dompdf->loadHtml($html);
         $dompdf->render();
-        
+
         // Guardar el PDF en el almacenamiento temporal
         $output = $dompdf->output();
         $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
