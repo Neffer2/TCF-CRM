@@ -44,16 +44,20 @@
             Entre los suscritos a saber: Por una parte, la sociedad <b>BULL MARKETING S.A.S.</b> legalmente constituida
             e inscrita en la Cámara de Comercio de Bogotá e identificada con NIT. 900.298.176-1 y representada
             legalmente según certificado de cámara de comercio y quien para los efectos del presente contrato se
-            denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el (a) Señor (a) ________________________
-            __________________________ mayor de edad, identificado como aparece al pie de su firma y quien se
+            denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el (a) Señor (a) <b>{{ $tercero->nombre }} {{ $tercero->apellido }}</b> mayor de edad, identificado como aparece al pie de su firma y quien se
             denominará <b>EL CONTRATISTA</b>, en adelante “Las Partes” manifestamos que hemos acordado en
             celebrar el presente contrato civil de <b>PRESTACIÓN DE SERVICIOS</b> que se regirá por las siguientes: <br>
         </p>
         <h3 class="title"> CLÁUSULAS: </h3>
         <p>
             <b>Primera: OBJETO.</b> - EL CONTRATISTA se obliga para con LA SOCIEDAD CONTRATANTE a prestar el
-            servicio de ______________________________________________________________________ para
-            la Empresa Contratante. <b>Parágrafo Primero.</b> - No obstante, las partes en uso de su autonomía y sin que
+            servicio de 
+            <b>
+                @foreach ($items as $item)
+                    {{ $item->tipo_servicio }}, 
+                @endforeach
+            </b>
+            para la Empresa Contratante. <b>Parágrafo Primero.</b> - No obstante, las partes en uso de su autonomía y sin que
             exista subordinación, definirán con EL CONTRATISTA los tiempos y sobre los cuales versarán los
             servicios que éste prestará de manera independiente; igualmente EL CONTRATISTA se obliga a realizar
             su actividad independiente bajo el esquema de ROLLES Y FUNCIONES, documento anexo al cual se

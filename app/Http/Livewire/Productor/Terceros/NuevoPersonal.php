@@ -186,8 +186,31 @@ class NuevoPersonal extends Component
     }
 
     public function generarContrato(){
+        $this->validate([
+            'nombre' => 'required|max:255',
+            'apellido' => 'required|max:255',
+            'cedula' => 'required|numeric',
+            'correo' => 'required|email',
+            'telefono' => 'required|numeric',
+            'ciudad' => 'required|string',
+            'estado' => 'required|numeric|max:1',
+            'banco' => 'required|string|max:255',
+        ]);
+
+        if (!$this->copia_cedula && !$this->tercero->copia_cedula && !Auth::check()){
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if (!$this->cert_bancaria && !$this->tercero->cert_bancaria && !Auth::check()){
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if (!$this->tercero->rut && !$this->tercero->rut && !Auth::check()){
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('exports.contrato')->render();
+        $html = View::make('exports.contrato', ['tercero' => $this->tercero, 'items' => $this->orden->ordenItems])->render();
         $dompdf->loadHtml($html);
         $dompdf->render();
 

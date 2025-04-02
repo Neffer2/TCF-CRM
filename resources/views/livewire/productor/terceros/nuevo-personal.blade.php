@@ -196,13 +196,13 @@
                 @guest
                     <div class="col-md-12">
                         <h3 class="m-0">Actualiza tu información:</h3>
-                        <p class="text-sm m-0">Vericia tu información y confirma que est&eacute;n correctamente. Los campos marcados con * son obligatorios.</p>
+                        <p class="text-sm m-0">Verifica tu información y confirma que est&eacute; correctamente diligenciada. Los campos marcados con * son obligatorios.</p>
                     </div>
                 @endguest
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Nombre: <span class="text-danger">*</span></label>
+                        <label for="">Nombres: <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror"
                         wire:model.lazy="nombre" placeholder="Nombre">
                         @error('nombre')
@@ -214,7 +214,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Apellido: <span class="text-danger">*</span></label>
+                        <label for="">Apellidos: <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="apellido" placeholder="Apellido">
                         @error('apellido')
@@ -227,7 +227,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="">C&eacute;dula: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
+                        <input type="text" class="form-control @error('cedula') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
                         wire:model.change="cedula" placeholder="C.C">
                         @error('cedula')
                             <div id="cedula" class="text-invalid">
@@ -353,56 +353,60 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <button wire:click="generarContrato">
-                        Contrato
+                    <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
+                        Confirmar informaci&oacute;n
                     </button>
-                    <div class="d-flex justify-content-center">
-                        <embed src="{{ $contrato }}" width="900" height="500" type="application/pdf">
-                    </div>
-                </div>
-                @guest
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
-                                <label class="custom-control-label" for="customCheck1">
-                                    T&eacute;rminos: <span class="text-danger">*</span>
-                                </label>
-                                @error('terminos')
-                                    <div id="terminos" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                    @if ($contrato)
+                        <div class="d-flex justify-content-center">
+                            <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
+                        </div>
+                        @guest
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
+                                    <label class="custom-control-label" for="customCheck1">
+                                        Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
+                                    </label>
+                                    @error('terminos')
+                                        <div id="terminos" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endguest
+                        @endguest
+                    @endif
+                </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <div class="row w-100">
-                <div class="col-md-12 @guest ps-0 @endguest">
-                    @auth
-                        <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    @endauth
-                    <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
-                </div>
-                @if ($deleteConfirm)
-                    <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
-                        <div class="card-body">
-                            <p class="text-center">
-                                <b>¿Estas seguro de eliminar a {{ $nombre }} {{ $apellido }}?</b>
-                            </p>
-                            <div class="d-flex justify-content-center">
-                                <button type="button" wire:click="toggelConfirm" class="btn bg-gradient-secondary me-1">Cancelar</button>
-                                <button type="button" wire:click="deletePersonal" class="btn bg-gradient-danger">Eliminar</button>
+        @if ($terminos)
+            <div class="modal-footer">
+                <div class="row w-100">
+                    <div class="col-md-12 @guest ps-0 @endguest">
+                        @auth
+                            <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        @endauth
+                        <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
+                    </div>
+                    @if ($deleteConfirm)
+                        <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
+                            <div class="card-body">
+                                <p class="text-center">
+                                    <b>¿Estas seguro de eliminar a {{ $nombre }} {{ $apellido }}?</b>
+                                </p>
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" wire:click="toggelConfirm" class="btn bg-gradient-secondary me-1">Cancelar</button>
+                                    <button type="button" wire:click="deletePersonal" class="btn bg-gradient-danger">Eliminar</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endif
-            </div>
-        </div>
+                    @endif
+                </div>
+            </div>        
+        @endif
     </div>
 @endif
