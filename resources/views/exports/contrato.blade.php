@@ -35,6 +35,12 @@
             font-size: 9px;
             color: black !important;
         }
+
+        .sign {
+            font-family: 'DejaVu Serif'; font-style: italic;
+            font-size: 24px;
+            font-style: italic
+        }
     </style>
 </head>
 <body>
@@ -51,10 +57,10 @@
         <h3 class="title"> CLÁUSULAS: </h3>
         <p>
             <b>Primera: OBJETO.</b> - EL CONTRATISTA se obliga para con LA SOCIEDAD CONTRATANTE a prestar el
-            servicio de 
+            servicio de
             <b>
                 @foreach ($items as $item)
-                    {{ $item->tipo_servicio }}, 
+                    {{ $item->tipo_servicio }},
                 @endforeach
             </b>
             para la Empresa Contratante. <b>Parágrafo Primero.</b> - No obstante, las partes en uso de su autonomía y sin que
@@ -143,18 +149,20 @@
         </p>
         <table class="table">
             <tr>
-                <td style="text-align: left;">
+                <td style="text-align: center;">
                     <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br><br></p>
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign.png'))) }}" alt="Firma">
                     <p class="bold">__________________________</p>
                     <p class="bold">BULL MARKETING S.A.S.</p>
                     <p>Representante Legal</p>
                     <p>NIT. 900.298.176-1</p>
                 </td>
-                <td style="text-align: left;">
+                <td style="text-align: center;">
                     <p class="bold">EL CONTRATISTA. <br><br><br><br></p>
+                    <p class="sign"> {{ $tercero->nombre }} {{ $tercero->apellido }}</p>
                     <p class="bold">__________________________</p>
-                    <p class="bold">Nombre</p>
-                    <p>RUT</p>
+                    <p class="bold">Nombre: {{ $tercero->nombre }} {{ $tercero->apellido }}</p>
+                    <p>RUT. </p>
                     <p><br></p>
                 </td>
             </tr>

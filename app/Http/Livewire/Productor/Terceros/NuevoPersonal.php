@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
+use Carbon\Carbon;
 
 class NuevoPersonal extends Component
 {
@@ -197,17 +198,19 @@ class NuevoPersonal extends Component
             'banco' => 'required|string|max:255',
         ]);
 
-        if (!$this->copia_cedula && !$this->tercero->copia_cedula && !Auth::check()){
+        if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
             $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
-        if (!$this->cert_bancaria && !$this->tercero->cert_bancaria && !Auth::check()){
+        if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()){
             $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
-        if (!$this->tercero->rut && !$this->tercero->rut && !Auth::check()){
+        if ((!$this->rut && !$this->tercero->rut) && !Auth::check()){
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
+
+        dd(Carbon::today()->toDateString());
 
         $dompdf = new Dompdf(array('enable_remote' => true));
         $html = View::make('exports.contrato', ['tercero' => $this->tercero, 'items' => $this->orden->ordenItems])->render();
