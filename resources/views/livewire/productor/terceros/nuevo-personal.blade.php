@@ -236,7 +236,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Correo: <span class="text-danger">*</span></label>
                         <input type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
@@ -248,7 +248,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Tel&eacute;fono: <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
@@ -260,7 +260,19 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="">N&uacute;mero RUT: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('num_rut') is-invalid @elseif(strlen($num_rut) > 0) is-valid @enderror"
+                        wire:model.change="num_rut" placeholder="N&uacute;mero RUT">
+                        @error('num_rut')
+                            <div id="num_rut" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Ciudad: <span class="text-danger">*</span></label>
                         <select id="" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
@@ -319,7 +331,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="">RUT: @guest <span class="text-danger">*</span> @endguest</label>
+                        <label for="">ARCHIVO RUT: @guest <span class="text-danger">*</span> @endguest</label>
                         <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
                         wire:model.change="rut">
                         @if ($tercero->rut)

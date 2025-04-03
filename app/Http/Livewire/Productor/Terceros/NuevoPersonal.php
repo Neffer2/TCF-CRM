@@ -24,7 +24,7 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula;
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut;
 
     // Useful vars
     public $estados, $ciudades, $deleteConfirm = false, $contrato;
@@ -109,6 +109,7 @@ class NuevoPersonal extends Component
             'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
+            'num_rut' => 'required|numeric',
             'ciudad' => 'required|string',
             'estado' => 'required|numeric|max:1',
         ]);
@@ -126,6 +127,7 @@ class NuevoPersonal extends Component
         $tercero->cedula = trim($this->cedula);
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
+        $tercero->num_rut = trim($this->num_rut);
         $tercero->ciudad = $this->ciudad;
         $tercero->estado = trim($this->estado);
 
@@ -193,6 +195,7 @@ class NuevoPersonal extends Component
             'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
+            'num_rut' => 'required|numeric',
             'ciudad' => 'required|string',
             'estado' => 'required|numeric|max:1',
             'banco' => 'required|string|max:255',
@@ -210,10 +213,18 @@ class NuevoPersonal extends Component
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
-        dd(Carbon::today()->toDateString());
+        $contratoInfo = [
+            'items' => $this->orden->ordenItems,
+            'tercero' => $this->tercero,
+            'dia' => Carbon::now()->format('d'),
+            'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
+            'mes' => Carbon::now()->translatedFormat('F'),
+            'ano' => Carbon::now()->format('Y'), 
+            'num_rut' => $this->num_rut
+        ];
 
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('exports.contrato', ['tercero' => $this->tercero, 'items' => $this->orden->ordenItems])->render();
+        $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
         $dompdf->loadHtml($html);
         $dompdf->render();
 
@@ -224,6 +235,21 @@ class NuevoPersonal extends Component
 
         // Generar una URL pública para el archivo
         $this->contrato = asset('storage/contratos/' . basename($filePath));
+    }
+
+    private function getNumberString($numero)
+    {
+        $numerosEnTexto = [
+            1 => 'Uno', 2 => 'Dos', 3 => 'Tres', 4 => 'Cuatro', 5 => 'Cinco',
+            6 => 'Seis', 7 => 'Siete', 8 => 'Ocho', 9 => 'Nueve', 10 => 'Diez',
+            11 => 'Once', 12 => 'Doce', 13 => 'Trece', 14 => 'Catorce', 15 => 'Quince',
+            16 => 'Dieciséis', 17 => 'Diecisiete', 18 => 'Dieciocho', 19 => 'Diecinueve', 20 => 'Veinte',
+            21 => 'Veintiuno', 22 => 'Veintidós', 23 => 'Veintitrés', 24 => 'Veinticuatro', 25 => 'Veinticinco',
+            26 => 'Veintiséis', 27 => 'Veintisiete', 28 => 'Veintiocho', 29 => 'Veintinueve', 30 => 'Treinta',
+            31 => 'Treinta y uno'
+        ];
+
+        return $numerosEnTexto[(int) $numero] ?? $numero;
     }
 
     public function deletePersonal(){

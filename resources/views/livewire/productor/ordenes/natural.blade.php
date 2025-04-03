@@ -333,12 +333,11 @@
                 </div>
             </div>
             <div class="col-lg-2">
-                <div class="form-group">
+                <div class="form-group"> 
                     <label for="tipo_contrato">Tipo de contrato</label>
                     <select id="tipo_contrato" class="form-control" wire:model.change="tipo_contrato">
                         <option value="">Seleccionar</option>
-                        <option value="Contrato 1">Contrato 1</option>
-                        <option value="Contrato 2">Contrato 2</option>
+                        <option value="Contrato de prestación de servicios">Contrato de prestación de servicios</option>
                     </select>
                     @error('tipo_contrato')
                         <div id="invalid-cantidad" class="text-invalid">

@@ -50,7 +50,7 @@
             Entre los suscritos a saber: Por una parte, la sociedad <b>BULL MARKETING S.A.S.</b> legalmente constituida
             e inscrita en la Cámara de Comercio de Bogotá e identificada con NIT. 900.298.176-1 y representada
             legalmente según certificado de cámara de comercio y quien para los efectos del presente contrato se
-            denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el (a) Señor (a) <b>{{ $tercero->nombre }} {{ $tercero->apellido }}</b> mayor de edad, identificado como aparece al pie de su firma y quien se
+            denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el (a) Señor (a) <b>{{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</b> mayor de edad, identificado como aparece al pie de su firma y quien se
             denominará <b>EL CONTRATISTA</b>, en adelante “Las Partes” manifestamos que hemos acordado en
             celebrar el presente contrato civil de <b>PRESTACIÓN DE SERVICIOS</b> que se regirá por las siguientes: <br>
         </p>
@@ -59,7 +59,7 @@
             <b>Primera: OBJETO.</b> - EL CONTRATISTA se obliga para con LA SOCIEDAD CONTRATANTE a prestar el
             servicio de
             <b>
-                @foreach ($items as $item)
+                @foreach ($contratoInfo['items'] as $item)
                     {{ $item->tipo_servicio }},
                 @endforeach
             </b>
@@ -145,7 +145,7 @@
             PERFECCIONAMIENTO.-</b> El presente contrato se perfeccionará con la firma de las partes, para
             - 3 -
             constancia se suscribe en la ciudad de Bogotá, en dos ejemplares del mismo tenor y valor, a los
-            ________________ (___) días del mes de ________________ del año 20_____.
+            <b>{{  $contratoInfo['dia_str'] }} ({{ $contratoInfo['dia'] }}) </b> días del mes de <b>{{ $contratoInfo['mes'] }}</b> del año <b>{{ $contratoInfo['ano'] }}.
         </p>
         <table class="table">
             <tr>
@@ -159,10 +159,10 @@
                 </td>
                 <td style="text-align: center;">
                     <p class="bold">EL CONTRATISTA. <br><br><br><br></p>
-                    <p class="sign"> {{ $tercero->nombre }} {{ $tercero->apellido }}</p>
+                    <p class="sign"> {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
                     <p class="bold">__________________________</p>
-                    <p class="bold">Nombre: {{ $tercero->nombre }} {{ $tercero->apellido }}</p>
-                    <p>RUT. </p>
+                    <p class="bold">Nombre: {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
+                    <p>RUT. {{ $contratoInfo['num_rut'] }}</p>
                     <p><br></p>
                 </td>
             </tr>
