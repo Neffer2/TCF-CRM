@@ -6,6 +6,6 @@
         <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
     @endsection
 
-    @section('content')     
+    @section('content')
         @livewire('admin.gestion-comercial.actualizaciones-presto', ['rol' => Auth::user()->rol])
-    @endsection  
+    @endsection
