@@ -21,15 +21,15 @@ trait Email
             }elseif ($presto->margen_proy < 35 && (!$presto->gestion->claro)){
                 $admin_id = 8;
 
-                array_push($recipients, [
-                    'name'=> 'Adriana Trujillo',
-                    'email'=> 'adriana.trujillo@bullmarketing.com.co',
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Adriana Trujillo',
+                //     'email'=> 'adriana.trujillo@bullmarketing.com.co',
+                // ]);
 
-                array_push($recipients, [
-                    'name'=> 'Cristian Rodriguez',
-                    'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Cristian Rodriguez',
+                //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
+                // ]);
             }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
                 $admin_id = 10;
 
@@ -80,15 +80,15 @@ trait Email
             if ($gestion->presupuesto->margen_proy < 35 && (!$gestion->claro)){
                 $admin_id = 8;
 
-                array_push($recipients, [
-                    'name'=> 'Adriana Trujillo',
-                    'email'=> 'adriana.trujillo@bullmarketing.com.co',
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Adriana Trujillo',
+                //     'email'=> 'adriana.trujillo@bullmarketing.com.co',
+                // ]);
 
-                array_push($recipients, [
-                    'name'=> 'Cristian Rodriguez',
-                    'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Cristian Rodriguez',
+                //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
+                // ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
                 $admin_id = 10;
 
@@ -111,10 +111,10 @@ trait Email
                 'email'=> $user->email
             ]);
 
-            array_push($recipients, [
-                'name'=> 'Líder producción',
-                'email'=> 'Armando.Espinosa@bullmarketing.com.co'
-            ]);
+            // array_push($recipients, [
+            //     'name'=> 'Líder producción',
+            //     'email'=> 'Armando.Espinosa@bullmarketing.com.co'
+            // ]);
 
             $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
         }
@@ -132,15 +132,15 @@ trait Email
             }elseif ($gestion->presupuesto->margen_proy < 35 && !($gestion->claro)){
                 $admin_id = 8;
 
-                array_push($recipients, [
-                    'name'=> 'Adriana Trujillo',
-                    'email'=> 'adriana.trujillo@bullmarketing.com.co'
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Adriana Trujillo',
+                //     'email'=> 'adriana.trujillo@bullmarketing.com.co'
+                // ]);
 
-                array_push($recipients, [
-                    'name'=> 'Cristian Rodriguez',
-                    'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-                ]);
+                // array_push($recipients, [
+                //     'name'=> 'Cristian Rodriguez',
+                //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
+                // ]);
             }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
                 $admin_id = 10;
 
@@ -241,8 +241,8 @@ trait Email
             /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
@@ -251,7 +251,7 @@ trait Email
                 if ($orden->proveedor->anticipo > 0){
                     $mail->addCC('contadores@bullmarketing.com.co');
                     $mail->addCC('tesoreria@bullmarketing.com.co');
-                    $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                    // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                     $mail->addCC('nicol.riano@bullmarketing.com.co');
                 }
             /* *** */
@@ -296,8 +296,8 @@ trait Email
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
 
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
@@ -345,8 +345,8 @@ trait Email
             /* LD PRODUCCION & PROVEEDOR */
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
             /* *** */
 
@@ -386,14 +386,14 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Compras');
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
                 $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
