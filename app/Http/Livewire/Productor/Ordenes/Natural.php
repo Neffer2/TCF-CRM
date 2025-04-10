@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Productor\Ordenes;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
-use App\Models\OrdenCompra; 
+use App\Models\OrdenCompra;
 use App\Models\OcItem;
 use App\Models\NaturalInfo;
 use PhpParser\Node\Stmt\Return_;
@@ -15,9 +15,10 @@ class Natural extends Component
     // Models
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
-            $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0;
+            $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
+            $tipo_servicio, $tipo_contrato, $cantidad_horas;
 
-    // Useful vars 
+    // Useful vars
     public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [],
             $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal,
             $queriedOrden;
@@ -26,7 +27,7 @@ class Natural extends Component
     public $productor, $orden_id;
 
     public function render()
-    {        
+    {
         $this->getTerceros();
         $this->getPresupuestos();
         return view('livewire.productor.ordenes.natural');
@@ -41,8 +42,8 @@ class Natural extends Component
             $this->getData();
         }
     }
- 
-    public function getTerceros(){  
+
+    public function getTerceros(){
         $filtros = [];
         array_push($filtros, ['estado', 1]);
 
@@ -65,11 +66,11 @@ class Natural extends Component
         // Trase solo presupuestos que tengan como proveedor: Cuenta de cobro
         $this->presupuestos = PresupuestoProyecto::with('presupuestoItems')->select('id', 'cod_cc')
                             ->where([['productor', $this->productor->id], ['estado_id', 1]])
-                            ->whereHas('presupuestoItems', function ($item){ 
+                            ->whereHas('presupuestoItems', function ($item){
                                 $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total', 'proveedor')
                                     ->where([['proveedor', 'a:1:{i:0;s:1:"3";}'], ['disponible', 1]]);
                             })
-                            ->get();    
+                            ->get();
     }
 
     /**
@@ -83,11 +84,14 @@ class Natural extends Component
             'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
             'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
             'valor_unitario' => 'required|min: 1numeric|max:'.$this->limiteValorUnitario,
-            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal
-        ]);     
+            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal,
+            'tipo_servicio' => 'required|string',
+            'tipo_contrato' => 'required|string',
+            'cantidad_horas' => 'required|numeric|min: 1|max: 8'
+        ]);
 
         $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
-        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();     
+        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
 
         $newItem = [
             'proyecto' => [
@@ -100,6 +104,9 @@ class Natural extends Component
                 'nombre' => $item->descripcion,
                 'cod_cc' => $presupuesto->cod_cc
             ],
+            'tipo_servicio' => $this->tipo_servicio,
+            'tipo_contrato' => $this->tipo_contrato,
+            'cantidad_horas' => $this->cantidad_horas,
             'cant' => $this->cantidad,
             'dias' => $this->dias,
             'otros' => $this->otros,
@@ -115,7 +122,10 @@ class Natural extends Component
             'dias',
             'otros',
             'valor_unitario',
-            'valor_total'
+            'valor_total',
+            'tipo_servicio',
+            'tipo_contrato',
+            'cantidad_horas'
         ]);
     }
 
@@ -130,6 +140,9 @@ class Natural extends Component
         $this->otros = $item['otros'];
         $this->valor_unitario = $item['valor_unitario'];
         $this->valor_total = $item['valor_total'];
+        $this->tipo_servicio = $item['tipo_servicio'];
+        $this->tipo_contrato = $item['tipo_contrato'];
+        $this->cantidad_horas = $item['cantidad_horas'];
     }
 
     public function actionEdit(){
@@ -141,10 +154,13 @@ class Natural extends Component
             'otros' => 'required',
             'valor_unitario' => 'required',
             'valor_total' => 'required',
+            'tipo_servicio' => 'required|string',
+            'tipo_contrato' => 'required|string',
+            'cantidad_horas' => 'required|numeric|min: 1|max: 8'
         ]);
 
         $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
-        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first(); 
+        $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
         $this->items[$this->selected_item] = [
             'proyecto' => [
                     'id' => $presupuesto->id,
@@ -161,6 +177,9 @@ class Natural extends Component
             'otros' => $this->otros,
             'valor_unitario' => $this->valor_unitario,
             'valor_total' => $this->valor_total,
+            'tipo_servicio' => $this->tipo_servicio,
+            'tipo_contrato' => $this->tipo_contrato,
+            'cantidad_horas' => $this->cantidad_horas
         ];
 
         $this->resetFields([
@@ -170,12 +189,15 @@ class Natural extends Component
             'dias',
             'otros',
             'valor_unitario',
-            'valor_total'
+            'valor_total',
+            'tipo_servicio',
+            'tipo_contrato',
+            'cantidad_horas'
         ]);
 
         unset($this->selected_item);
     }
-    
+
     public function deleteItem($itemId){
         unset($this->items[$itemId]);
     }
@@ -190,7 +212,7 @@ class Natural extends Component
             return back();
         }
 
-        $this->validate([ 
+        $this->validate([
             'tercero' => 'required'
         ]);
 
@@ -203,32 +225,36 @@ class Natural extends Component
             'telefono' => $this->telefono,
             'ciudad' => $this->ciudad,
             'banco' => $this->banco
-        ]); 
-
-        $orden = OrdenCompra::create([
-            'tipo_oc' => 2,  
-            'estado_id' => 3, 
-            'presupuesto_id' => null, 
-            'proveedor_id' => 3,  
         ]);
-        
+
+        // Presupuesto_id null, porque una orden de compra natural tiene varios presupuestos
+        $orden = OrdenCompra::create([
+            'tipo_oc' => 2,
+            'estado_id' => 3,
+            'presupuesto_id' => null,
+            'proveedor_id' => 3,
+        ]);
+
         $natural = NaturalInfo::create([
             'oc_id' => $orden->id,
             'tercero_id' => $tercero->id,
             'productor_id' => $this->productor->id
         ]);
-        
-        $OcItem = new OcItem(); 
+
+        $OcItem = new OcItem();
         foreach ($this->items as $item){
             $OcItem->create([
                 'oc_id' => $orden->id,
                 'item_id' => $item['item']['id'],
-                'desc_oc' => $item['item']['nombre'], 
+                'desc_oc' => $item['item']['nombre'],
                 'cant_oc' => $item['cant'],
                 'dias_oc' => $item['dias'],
                 'otros_oc' => $item['otros'],
                 'vunit_oc' => $item['valor_unitario'],
-                'vtotal_oc' => $item['valor_total'] 
+                'vtotal_oc' => $item['valor_total'],
+                'tipo_servicio' => $item['tipo_servicio'],
+                'tipo_contrato' => $item['tipo_contrato'],
+                'cantidad_horas' => $item['cantidad_horas']
             ]);
         }
 
@@ -237,9 +263,12 @@ class Natural extends Component
             'item_presupuesto',
             'cantidad',
             'dias',
-            'otros', 
+            'otros',
             'valor_unitario',
             'valor_total',
+            'tipo_servicio',
+            'tipo_contrato',
+            'cantidad_horas',
             'tercero',
             'nombre',
             'apellido',
@@ -247,17 +276,17 @@ class Natural extends Component
             'cedula',
             'telefono',
             'ciudad',
-            'banco'
+            'banco',
         ]);
- 
+
         unset($this->tercero);
         unset($this->selected_item);
-        $this->items = collect(); 
+        $this->items = collect();
         return back()->with('success', 'Orden de compra creada correctamente');
     }
     /* * --------------------- * */
 
-    /** 
+    /**
      *  Queried Data
     **/
     public function getData(){
@@ -292,8 +321,11 @@ class Natural extends Component
                 'otros' => $item->otros_oc,
                 'valor_unitario' => $item->vunit_oc,
                 'valor_total' => $item->vtotal_oc,
+                'tipo_servicio' => $item->tipo_servicio,
+                'tipo_contrato' => $item->tipo_contrato,
+                'cantidad_horas' => $item->cantidad_horas
             ];
-            
+
             $this->items->push($newItem);
         }
     }
@@ -308,7 +340,7 @@ class Natural extends Component
 
     /* * --------------------- * */
 
-    /** 
+    /**
      *  UPDATES
     **/
     public function updatedTercero(){
@@ -335,12 +367,15 @@ class Natural extends Component
             'presupuesto' => 'required'
         ]);
 
+
         if ($this->presupuesto){
             $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
             $this->items_presupuesto = $items_presupuesto->where('proveedor', 'a:1:{i:0;s:1:"3";}')->where('disponible', 1);
         }else {
             $this->items_presupuesto = [];
         }
+
+        $this->resetFields(['item_presupuesto', 'cantidad', 'dias', 'otros', 'valor_unitario', 'valor_total']);
     }
 
     public function updatedItemPresupuesto(){
@@ -359,9 +394,12 @@ class Natural extends Component
             $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
             // Limites
             $this->limiteCantidad = ($item_info->cantidad - $item_info->consumidos()->get()->sum('cant_oc'));
-            $this->limiteDias = ($item_info->dia - $item_info->consumidos()->get()->sum('dias_oc'));
-            $this->limiteOtros = ($item_info->otros - $item_info->consumidos()->get()->sum('otros_oc'));
-            $this->limiteValorUnitario = ($item_info->v_unitario - $item_info->consumidos()->get()->sum('vunit_oc'));
+            // $this->limiteDias = ($item_info->dia - $item_info->consumidos()->get()->sum('dias_oc'));
+            // $this->limiteOtros = ($item_info->otros - $item_info->consumidos()->get()->sum('otros_oc'));
+            // $this->limiteValorUnitario = ($item_info->v_unitario - $item_info->consumidos()->get()->sum('vunit_oc'));
+            $this->limiteDias = $item_info->dia;
+            $this->limiteOtros = $item_info->otros;
+            $this->limiteValorUnitario = $item_info->v_unitario;
             $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
 
             $this->cantidad = $this->limiteCantidad;
@@ -375,6 +413,8 @@ class Natural extends Component
     }
 
     public function updatedCantidad(){
+        $this->cantidad = trim($this->cantidad);
+        $this->cantidad = str_replace(",",'', $this->cantidad);
         $this->validate([
             'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad
         ]);
@@ -383,6 +423,8 @@ class Natural extends Component
     }
 
     public function updatedDias(){
+        $this->dias = trim($this->dias);
+        $this->dias = str_replace(",",'', $this->dias);
         $this->validate([
             'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias
         ]);
@@ -391,6 +433,8 @@ class Natural extends Component
     }
 
     public function updatedOtros(){
+        $this->otros = trim($this->otros);
+        $this->otros = str_replace(",",'', $this->otros);
         $this->validate([
             'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros
         ]);
@@ -399,6 +443,8 @@ class Natural extends Component
     }
 
     public function updatedValorUnitario(){
+        $this->valor_unitario = trim($this->valor_unitario);
+        $this->valor_unitario = str_replace(",",'', $this->valor_unitario);
         $this->validate([
             'valor_unitario' => 'required|numeric|min: 1|max:'.$this->limiteValorUnitario
         ]);
@@ -429,5 +475,4 @@ class Natural extends Component
             $this->$field = '';
         }
     }
-} 
- 
+}

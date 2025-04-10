@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Productor\Terceros;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
-use Livewire\WithPagination; 
+use Livewire\WithPagination;
 
 class Personal extends Component
 {
@@ -14,12 +14,12 @@ class Personal extends Component
     // Models
     public $cedula, $nombre, $estado, $telefono;
 
-    // Useful vars 
+    // Useful vars
     public $estados;
 
     // Listener
     protected $listeners = ['terceroRegistrado' => 'render'];
- 
+
     public function render()
     {
         $filtros = [];
@@ -41,10 +41,9 @@ class Personal extends Component
 
         $terceros = Tercero::where($filtros)->paginate(15);
         return view('livewire.productor.terceros.personal', ['terceros' => $terceros]);
-    }    
+    }
 
     public function mount(){
         $this->estados = EstadoTercero::select('id', 'descripcion')->get();
     }
 }
-  

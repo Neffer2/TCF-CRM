@@ -5,8 +5,13 @@ namespace App\Http\Livewire\Productor\Terceros;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
+use App\Imports\TerceroImport;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
+use Carbon\Carbon;
 
 class NuevoPersonal extends Component
 {
@@ -18,11 +23,11 @@ class NuevoPersonal extends Component
     */
 
     // Models
-    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad, 
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1;
+    public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut;
 
-    // Useful vars 
-    public $estados, $ciudades, $deleteConfirm = false;
+    // Useful vars
+    public $estados, $ciudades, $deleteConfirm = false, $contrato;
 
     // Filled
     public $tercero, $orden;
@@ -37,7 +42,11 @@ class NuevoPersonal extends Component
         $this->estados = EstadoTercero::all();
 
         if ($this->tercero){$this->fillForm();}
-    } 
+    }
+
+    public function updatedterceroXlsx(){
+        Excel::import(new TerceroImport, $this->terceroXlsx);
+    }
 
     public function nuevoPersonal(){
         $this->validate([
@@ -46,8 +55,8 @@ class NuevoPersonal extends Component
             'cedula' => 'required|numeric|unique:terceros',
             'correo' => 'required|email|unique:terceros',
             'telefono' => 'required|numeric|unique:terceros',
-            'ciudad' => 'required|string',            
-            'estado' => 'required|numeric|max:1',            
+            'ciudad' => 'required|string',
+            // 'estado' => 'required|numeric|max:1',
         ]);
 
         $tercero = new Tercero();
@@ -57,21 +66,21 @@ class NuevoPersonal extends Component
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
         $tercero->ciudad = $this->ciudad;
-        $tercero->estado = trim($this->estado);
+        $tercero->estado = 1;
 
         if($this->banco){
-            $this->validate(['banco' => 'string|max:255']);            
+            $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
         if($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
-            $tercero->rut = $this->rut->store('public/ruts'); 
-        } 
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
+        }
 
         if($this->cert_bancaria){
-            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);             
-            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
+            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
         $tercero->save();
@@ -91,24 +100,25 @@ class NuevoPersonal extends Component
         ]);
 
         return redirect()->back();
-    } 
+    }
 
-    public function actualizarPersonal(){
+    public function actualizarTercero(){
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric', 
+            'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
-            'ciudad' => 'required|string',            
-            'estado' => 'required|numeric|max:1',            
+            'num_rut' => 'required|numeric',
+            'ciudad' => 'required|string',
+            'estado' => 'required|numeric|max:1',
         ]);
- 
+
         if (!Auth::check()){
             $this->validate([
-                'banco' => 'required',
-                'terminos' => 'required'
-            ]);            
+                'banco' => 'required|string|max:255',
+                'terminos' => 'required|accepted'
+            ]);
         }
 
         $tercero = $this->tercero;
@@ -117,26 +127,34 @@ class NuevoPersonal extends Component
         $tercero->cedula = trim($this->cedula);
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
+        $tercero->num_rut = trim($this->num_rut);
         $tercero->ciudad = $this->ciudad;
         $tercero->estado = trim($this->estado);
 
         if($this->banco){
-            $this->validate(['banco' => 'string|max:255']);            
+            $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
-        if (!$tercero->rut && !Auth::check()){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);    
-            $tercero->rut = $this->rut->store('public/ruts'); 
-        }elseif($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);               
+        if (!$tercero->copia_cedula && !Auth::check()){
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
+        }elseif($this->copia_cedula){
+            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!$tercero->cert_bancaria && !Auth::check()){
             $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias'); 
+            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }elseif($this->cert_bancaria){
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if (!$tercero->rut && !Auth::check()){
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
+        }elseif($this->rut){
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
         if (!Auth::check()){
@@ -146,8 +164,8 @@ class NuevoPersonal extends Component
             $this->orden->update();
         }
 
-        $tercero->update(); 
-        $this->emit('terceroRegistrado'); 
+        $tercero->update();
+        $this->emit('terceroRegistrado');
 
         $this->reset_fields([
             'nombre',
@@ -170,11 +188,75 @@ class NuevoPersonal extends Component
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }
 
+    public function generarContrato(){
+        $this->validate([
+            'nombre' => 'required|max:255',
+            'apellido' => 'required|max:255',
+            'cedula' => 'required|numeric',
+            'correo' => 'required|email',
+            'telefono' => 'required|numeric',
+            'num_rut' => 'required|numeric',
+            'ciudad' => 'required|string',
+            'estado' => 'required|numeric|max:1',
+            'banco' => 'required|string|max:255',
+        ]);
+
+        if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()){
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        if ((!$this->rut && !$this->tercero->rut) && !Auth::check()){
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
+
+        $contratoInfo = [
+            'items' => $this->orden->ordenItems,
+            'tercero' => $this->tercero,
+            'dia' => Carbon::now()->format('d'),
+            'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
+            'mes' => Carbon::now()->translatedFormat('F'),
+            'ano' => Carbon::now()->format('Y'), 
+            'num_rut' => $this->num_rut
+        ];
+
+        $dompdf = new Dompdf(array('enable_remote' => true));
+        $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+
+        // Guardar el PDF en el almacenamiento temporal
+        $output = $dompdf->output();
+        $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
+        file_put_contents($filePath, $output);
+
+        // Generar una URL pública para el archivo
+        $this->contrato = asset('storage/contratos/' . basename($filePath));
+    }
+
+    private function getNumberString($numero)
+    {
+        $numerosEnTexto = [
+            1 => 'Uno', 2 => 'Dos', 3 => 'Tres', 4 => 'Cuatro', 5 => 'Cinco',
+            6 => 'Seis', 7 => 'Siete', 8 => 'Ocho', 9 => 'Nueve', 10 => 'Diez',
+            11 => 'Once', 12 => 'Doce', 13 => 'Trece', 14 => 'Catorce', 15 => 'Quince',
+            16 => 'Dieciséis', 17 => 'Diecisiete', 18 => 'Dieciocho', 19 => 'Diecinueve', 20 => 'Veinte',
+            21 => 'Veintiuno', 22 => 'Veintidós', 23 => 'Veintitrés', 24 => 'Veinticuatro', 25 => 'Veinticinco',
+            26 => 'Veintiséis', 27 => 'Veintisiete', 28 => 'Veintiocho', 29 => 'Veintinueve', 30 => 'Treinta',
+            31 => 'Treinta y uno'
+        ];
+
+        return $numerosEnTexto[(int) $numero] ?? $numero;
+    }
+
     public function deletePersonal(){
         $this->tercero->delete();
         $this->emit('terceroRegistrado');
         return redirect()->route('personal')->with('success', 'Personal eliminado con éxito.');
-    }  
+    }
 
     public function fillForm(){
         $this->nombre = $this->tercero->nombre;
@@ -203,4 +285,3 @@ class NuevoPersonal extends Component
         }
     }
 }
-  

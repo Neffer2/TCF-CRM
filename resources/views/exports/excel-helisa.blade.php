@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>I need</title>
-</head> 
+    <title></title>
+</head>
 <body>
     <table>
         <thead>
@@ -29,21 +29,21 @@
         </thead>
         <tbody>
             @foreach ($registros_helisa as $registro_helisa)
-            <tr> 
-                    <td>{{ $registro_helisa->fecha }}</td>   
-                    <td>{{ $registro_helisa->num_doc }}</td>   
-                    <td>{{ $registro_helisa->identidad }}</td>   
-                    <td>{{ $registro_helisa->nom_tercero }}</td>   
-                    <td>{{ $registro_helisa->centro }}</td>   
-                    <td>{{ $registro_helisa->nom_centro_costo }}</td>   
-                    <td>{{ $registro_helisa->debito }}</td>   
-                    <td>{{ $registro_helisa->credito }}</td>   
-                    <td>{{ $registro_helisa->comercial_user->name }}</td>   
-                    <td>{{ $registro_helisa->cuenta->description }}</td>   
-                    <td>{{ $registro_helisa->porcentaje }}</td>   
-                    <td>{{ $registro_helisa->base_factura }}</td>   
-                    <td>{{ $registro_helisa->mes }}</td>   
-                    <td>{{ $registro_helisa->año }}</td>   
+            <tr>
+                    <td>{{ $registro_helisa->fecha }}</td>
+                    <td>{{ $registro_helisa->num_doc }}</td>
+                    <td>{{ $registro_helisa->identidad }}</td>
+                    <td>{{ $registro_helisa->nom_tercero }}</td>
+                    <td>{{ $registro_helisa->centro }}</td>
+                    <td>{{ $registro_helisa->nom_centro_costo }}</td>
+                    <td>{{ $registro_helisa->debito }}</td>
+                    <td>{{ $registro_helisa->credito }}</td>
+                    <td>{{ $registro_helisa->comercial_user->name }}</td>
+                    <td>{{ $registro_helisa->cuenta->description }}</td>
+                    <td>{{ $registro_helisa->porcentaje }}</td>
+                    <td>{{ $registro_helisa->base_factura }}</td>
+                    <td>{{ $registro_helisa->mes }}</td>
+                    <td>{{ $registro_helisa->año }}</td>
                     <td>{{ $registro_helisa->comision }}</td>
             </tr>
             @endforeach

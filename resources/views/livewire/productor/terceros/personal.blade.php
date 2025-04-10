@@ -5,55 +5,55 @@
               <button class="btn bg-gradient-warning me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" x-on:click="collapse = !collapse">
                 <i class="fas fa-plus text-white" aria-hidden="true" x-show="collapse"></i>
                 <i class="fa-solid fa-minus text-white" aria-hidden="true" x-cloak x-show="!collapse"></i>
-              </button> 
+              </button>
               <h5><b>Registrar personal</b></h5>
             </div>
             <div class="collapse" id="collapseExample">
                 <div class="card card-body mb-2">
                     @livewire('productor.terceros.nuevo-personal')
-              </div>          
+              </div>
             </div>
 
-            <div class="row gy-1">            
+            <div class="row gy-1">
                 <div class="col-md-12">
                     <h3 class="mb-0">Personal</h3>
                     <p class="text-sm mb-0">Lista completa de personal disponible.</p>
-                </div>    
+                </div>
                 <div class="form-group col-md-2 mb-0">
-                    <label for="cedula">Buscar:</label> 
+                    <label for="cedula">Buscar:</label>
                     <input id="cedula" type="text" wire:model="cedula" class="form-control" placeholder="C&eacute;dula">
-                </div> 
+                </div>
                 <div class="form-group col-md-2 mb-0">
-                    <label for="nombre">Buscar:</label> 
+                    <label for="nombre">Buscar:</label>
                     <input id="nombre" type="text" wire:model="nombre" class="form-control" placeholder="Nombre">
-                </div> 
+                </div>
 
                 <div class="form-group col-md-2 mb-0">
-                    <label for="telefono">Tel&eacute;fono:</label> 
+                    <label for="telefono">Tel&eacute;fono:</label>
                     <input id="telefono" type="text" wire:model="telefono" class="form-control" placeholder="Tel&eacute;fono">
                 </div>
                 <div class="form-group col-md-2 mb-0">
-                    <label for="estado">Estado:</label> 
+                    <label for="estado">Estado:</label>
                     <select id="estado" wire:model="estado" class="form-control">
                         <option value="">Seleccionar</option>
                         @foreach ($estados as $estado)
-                            <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>                            
+                            <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
                         @endforeach
                     </select>
-                </div> 
-            </div>  
+                </div>
+            </div>
         </div>
         <div class="card-body p-0 pt-1">
-            <div class="table-responsive"> 
+            <div class="table-responsive">
                 <table class="table align-items-center mb-0">
-                    <thead> 
+                    <thead>
                         <tr>
                             <th colspan="2" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS PERSONALES Y CONTACTO</th>
                             <th colspan="3" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">INFORMACI&Oacute;N DE CONTACTO</th>
                             <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                         </tr>
-                    </thead> 
-                    <tbody>                         
+                    </thead>
+                    <tbody>
                         @foreach ($terceros as $tercero)
                             <tr>
                                 <td style="width: 16rem;">
@@ -61,31 +61,31 @@
                                         <div>
                                             <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                         </div>
-                                        <div class="d-flex flex-column justify-content-center">                                        
+                                        <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-xs" >{{ $tercero->nombre." ".$tercero->apellido }}</h6>
                                             <p class="text-xs text-secondary mb-0">{{ $tercero->correo }}</p>
                                         </div>
                                     </div>
-                                </td>                            
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Documento</p>
                                     <p class="text-xs text-secondary mb-0">{{ $tercero->cedula }}</p>
-                                </td> 
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Tel&eacute;fono</p>
                                     <p class="text-xs text-secondary mb-0">{{ $tercero->telefono }}</p>
-                                </td> 
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Ciudad</p>
                                     <p class="text-xs text-secondary mb-0">{{ $tercero->ciudad }}</p>
-                                </td>                               
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado</p>
                                     <p class="text-xs text-secondary mb-0">
                                         @if ($tercero->estado == 1)
                                             <span class="badge badge-sm badge-success">Activo</span>
                                         @else
-                                            <span class="badge badge-sm badge-danger">Vetado</span>                                       
+                                            <span class="badge badge-sm badge-danger">Vetado</span>
                                         @endif
                                     </p>
                                 </td>
@@ -93,7 +93,7 @@
                                     <button class="btn bg-gradient-primary m-0 me-1 mb-2" type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ $tercero->id }}">Ver</button>
                                 </td>
                             </tr>
-  
+
                             <!-- Edit Modal -->
                             <div class="modal fade" id="editModal{{ $tercero->id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -129,5 +129,5 @@
                 'success'
             );
         </script>
-    @endif 
+    @endif
 </div>

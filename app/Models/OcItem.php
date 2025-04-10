@@ -9,7 +9,7 @@ class OcItem extends Model
 {
     use HasFactory;
     protected $table = "oc_items";
-    protected $fillable = ['oc_id', 'item_id', 'display_item', 'desc_oc', 'cant_oc', 'dias_oc', 'otros_oc', 'vunit_oc', 'vtotal_oc'];
+    protected $fillable = ['oc_id', 'item_id', 'display_item', 'desc_oc', 'cant_oc', 'dias_oc', 'otros_oc', 'vunit_oc', 'vtotal_oc', 'tipo_servicio', 'tipo_contrato', 'cantidad_horas',];
 
     public function itemPresupuesto(){ 
         return $this->hasOne(ItemPresupuesto::class, 'id', 'item_id');
@@ -19,3 +19,4 @@ class OcItem extends Model
         return $this->hasOne(OrdenCompra::class, 'id', 'oc_id');
     }
 } 
+ 
