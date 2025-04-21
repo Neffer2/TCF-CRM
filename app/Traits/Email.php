@@ -244,6 +244,7 @@ trait Email
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
+                $mail->addCC('katherine.galvis@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
@@ -253,6 +254,7 @@ trait Email
                     $mail->addCC('tesoreria@bullmarketing.com.co');
                     // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                     $mail->addCC('nicol.riano@bullmarketing.com.co');
+                    $mail->addCC('katherine.galvis@bullmarketing.com.co');
                 }
             /* *** */
 
@@ -299,6 +301,7 @@ trait Email
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
+                $mail->addCC('katherine.galvis@bullmarketing.com.co');
 
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
@@ -348,6 +351,7 @@ trait Email
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
+                $mail->addCC('katherine.galvis@bullmarketing.com.co');
             /* *** */
 
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
@@ -395,6 +399,7 @@ trait Email
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
+                $mail->addCC('katherine.galvis@bullmarketing.com.co');
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
