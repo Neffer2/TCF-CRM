@@ -355,7 +355,26 @@
                         <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                         wire:model.change="banco">
                             <option value="">Seleccionar</option>
-                            <option value="Banco 1">Banco 2</option>
+                            <option value="BANCO AGRARIO DE COLOMBIA">BANCO AGRARIO DE COLOMBIA</option>
+                            <option value="BANCO AV VILLAS">BANCO AV VILLAS</option>
+                            <option value="BANCO CAJA SOCIAL">BANCO CAJA SOCIAL</option>
+                            <option value="BANCO DAVIVIENDA S.A.">BANCO DAVIVIENDA S.A.</option>
+                            <option value="BANCO DE BOGOTÁ">BANCO DE BOGOTÁ</option>
+                            <option value="BANCO DE OCCIDENTE">BANCO DE OCCIDENTE</option>
+                            <option value="BANCO FALABELLA S.A.">BANCO FALABELLA S.A.</option>
+                            <option value="BANCOOMEVA">BANCOOMEVA</option>
+                            <option value="BANCOLOMBIA">BANCOLOMBIA</option>
+                            <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
+                            <option value="BANCO POPULAR">BANCO POPULAR</option>
+                            <option value="BBVA COLOMBIA">BBVA COLOMBIA</option>
+                            <option value="DAVIPLATA">DAVIPLATA</option>
+                            <option value="FINANCIERA JURISCOOP">FINANCIERA JURISCOOP</option>
+                            <option value="ITAU">ITAU</option>
+                            <option value="LINK">LINK</option>
+                            <option value="LULO BANK">LULO BANK</option>
+                            <option value="NEQUI">NEQUI</option>
+                            <option value="NU BANK">NU BANK</option>
+                            <option value="SCOTIABANCK COLPATRIA">SCOTIABANCK COLPATRIA</option>
                         </select>
                         @error('banco')
                             <div id="banco" class="text-invalid">
