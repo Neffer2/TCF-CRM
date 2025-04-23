@@ -143,12 +143,6 @@
                   </li>
                 </ul>
               </div>
-              <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
-                  <span class="sidenav-mini-icon"> P </span>
-                  <span class="sidenav-normal"> Personal </span>
-                </a>
-              </li>
             </ul>
           </div>
         </li>

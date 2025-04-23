@@ -52,6 +52,8 @@ Route::get('/', function () {
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');
     Route::get('/proveedores', [HomeController::class, 'showProveedores'])->middleware(['auth'])->name('proveedores');
+
+    Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
 /* --- */
 
 /* commercial */
@@ -103,7 +105,6 @@ Route::get('/', function () {
         return view('productor.terceros.orden-compra-natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
 
-    Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['productor'])->name('personal');
 /* --- */
 
 /* Contabilidad */

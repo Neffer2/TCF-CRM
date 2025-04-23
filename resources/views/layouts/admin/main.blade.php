@@ -11,7 +11,7 @@
   </title>
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" /> 
+  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
@@ -21,9 +21,9 @@
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
 </head>
-<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">    
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
   @yield('hero-style')
-  <!-- Barra lateral --> 
+  <!-- Barra lateral -->
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
@@ -45,7 +45,7 @@
             'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
             'collapse' => true
             ]) id="dashboardsExamples">
-            <ul class="nav ms-4">  
+            <ul class="nav ms-4">
               <li @class(['active' => request()->is('dashboard-admin'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('dashboard-admin'), 'nav-link' => true]) href="{{ route('dashboard-admin') }}">
                   <span class="sidenav-mini-icon"> D </span>
@@ -62,10 +62,10 @@
                 <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
                   <span class="sidenav-mini-icon"> B </span>
                   <span class="sidenav-normal"> Base comercial general </span>
-                </a> 
+                </a>
               </li>
               <li @class(['active' => request()->is('helisa-general'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">  
+                <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">
                   <span class="sidenav-mini-icon"> B </span>
                   <span class="sidenav-normal"> Helisa general </span>
                 </a>
@@ -73,7 +73,7 @@
             </ul>
           </div>
         </li>
-        <li class="nav-item">  
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link" aria-controls="dashboardsGestion" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-badge text-primary text-sm opacity-10"></i>
@@ -90,17 +90,17 @@
                   <span class="sidenav-mini-icon text-xs"> P </span>
                   <span class="sidenav-normal"> Presupuestos </span>
                 </a>
-              </li> 
+              </li>
               <li @class(['active' => request()->is('actualizaciones'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('actualizaciones'), 'nav-link' => true]) href="{{ route('actualizaciones') }}">
                   <span class="sidenav-mini-icon text-xs"> A </span>
                   <span class="sidenav-normal"> Actualizaciones </span>
-                </a> 
-              </li>            
-            </ul>  
+                </a>
+              </li>
+            </ul>
           </div>
-        </li> 
-        <li class="nav-item"> 
+        </li>
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link" aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
@@ -108,31 +108,37 @@
             <span class="nav-link-text ms-1">Producci&oacute;n</span>
           </a>
           <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra')|| request()->is('consumidos')),
+            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal')),
             'collapse' => true
             ]) id="dashboardsProduccion">
             <ul class="nav ms-4">
-              <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">  
-                  <span class="sidenav-mini-icon text-xs"> AN </span>
-                  <span class="sidenav-normal"> Proveedores </span> 
-                </a>
-              </li>
-              <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">  
-                  <span class="sidenav-mini-icon text-xs"> OC </span>
-                  <span class="sidenav-normal"> Ordenes de compra </span>
-                </a>  
-              </li>
-              <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">   
-                  <span class="sidenav-mini-icon text-xs"> C </span>
-                  <span class="sidenav-normal"> Consumidos </span>
-                </a>
-              </li>
+                <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
+                        <span class="sidenav-mini-icon text-xs"> AN </span>
+                        <span class="sidenav-normal"> Proveedores </span>
+                    </a>
+                </li>
+                <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
+                        <span class="sidenav-mini-icon text-xs"> OC </span>
+                        <span class="sidenav-normal"> Ordenes de compra </span>
+                    </a>
+                </li>
+                <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
+                        <span class="sidenav-mini-icon text-xs"> C </span>
+                        <span class="sidenav-normal"> Consumidos </span>
+                    </a>
+                </li>
+                <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
+                        <span class="sidenav-mini-icon"> P </span>
+                        <span class="sidenav-normal"> Personal </span>
+                    </a>
+                </li>
             </ul>
-          </div> 
-        </li>  
+          </div>
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -146,7 +152,7 @@
             ]) id="acciones" style="">
             <ul class="nav ms-4">
               <li @class(['active' => request()->is('presupuesto'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuesto') }}"> 
+                <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuesto') }}">
                   <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Presupuesto </span>
                 </a>
@@ -157,13 +163,13 @@
                   <span class="sidenav-normal"> Mi equipo </span>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </div>
         </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>              
+              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Ajustes</span>
           </a>
@@ -171,21 +177,21 @@
             'show' => (request()->is('actualizar-perfil-adm')),
             'collapse' => true
             ]) id="ajustes" style="">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">
               <li @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">  
+                <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Actualizar perfil </span>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </div>
         </li>
       </ul>
     </div>
   </aside>
   <!-- End Barra lateral -->
-  
+
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky " id="navbarBlur" data-scroll="false">
@@ -225,8 +231,8 @@
                   <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                     <i class="ni ni-button-power"></i>
                     <span class="d-sm-inline d-none">Salir</span>
-                  </a>  
-                </form>    
+                  </a>
+                </form>
               @endauth
               @guest
                 <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -248,13 +254,13 @@
         </div>
       </div>
     </nav>
-    @yield('profile-card') 
+    @yield('profile-card')
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
         @yield('content')
-      </div> 
-      
+      </div>
+
       <footer class="footer pt-3">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
@@ -298,23 +304,23 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-    @if($errors->any()) 
+    @if($errors->any())
       Swal.fire(
       '!Oppss tenemos un problema',
       `@foreach($errors->all() as $error)
-          {{ $error }} 
+          {{ $error }}
       @endforeach`,
       'error'
       );
-    @endif 
+    @endif
     @if (session('success'))
     Swal.fire(
       'Hecho',
       `{{ session('success') }}`,
       'success'
       );
-    @endif 
-  
+    @endif
+
     // Rounded slider
     const setValue = function(value, active) {
       document.querySelectorAll("round-slider").forEach(function(el) {
