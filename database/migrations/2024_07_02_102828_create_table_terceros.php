@@ -20,6 +20,7 @@ class CreateTableTerceros extends Migration
             $table->string('cedula');
             $table->string('correo');
             $table->string('telefono');
+            $table->string('servicio')->nullable();
             $table->string('ciudad');
             $table->string('banco')->nullable();
             $table->string('num_rut')->nullable();

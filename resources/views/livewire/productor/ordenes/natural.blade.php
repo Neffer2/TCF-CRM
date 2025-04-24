@@ -137,26 +137,9 @@
                         <select id="banco" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
                             wire:model.change="banco">
                             <option value="">Seleccionar</option>
-                            <option value="BANCO AGRARIO DE COLOMBIA">BANCO AGRARIO DE COLOMBIA</option>
-                            <option value="BANCO AV VILLAS">BANCO AV VILLAS</option>
-                            <option value="BANCO CAJA SOCIAL">BANCO CAJA SOCIAL</option>
-                            <option value="BANCO DAVIVIENDA S.A.">BANCO DAVIVIENDA S.A.</option>
-                            <option value="BANCO DE BOGOTÁ">BANCO DE BOGOTÁ</option>
-                            <option value="BANCO DE OCCIDENTE">BANCO DE OCCIDENTE</option>
-                            <option value="BANCO FALABELLA S.A.">BANCO FALABELLA S.A.</option>
-                            <option value="BANCOOMEVA">BANCOOMEVA</option>
-                            <option value="BANCOLOMBIA">BANCOLOMBIA</option>
-                            <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
-                            <option value="BANCO POPULAR">BANCO POPULAR</option>
-                            <option value="BBVA COLOMBIA">BBVA COLOMBIA</option>
-                            <option value="DAVIPLATA">DAVIPLATA</option>
-                            <option value="FINANCIERA JURISCOOP">FINANCIERA JURISCOOP</option>
-                            <option value="ITAU">ITAU</option>
-                            <option value="LINK">LINK</option>
-                            <option value="LULO BANK">LULO BANK</option>
-                            <option value="NEQUI">NEQUI</option>
-                            <option value="NU BANK">NU BANK</option>
-                            <option value="SCOTIABANCK COLPATRIA">SCOTIABANCK COLPATRIA</option>
+                            @foreach ($bancos as $item)
+                                <option value="{{ $item }}">{{ $item }}</option>
+                            @endforeach
                         </select>
                         @error('banco')
                             <div id="banco" class="text-invalid">
@@ -340,14 +323,9 @@
                     <label for="tipo_servicio">Tipo de servicio</label>
                     <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
                         <option value="">Seleccionar</option>
-                        <option value="TRANSPORTE">TRANSPORTE</option>
-                        <option value="COORDINADOR">COORDINADOR</option>
-                        <option value="LOGISTICO">LOGISTICO</option>
-                        <option value="BRANDING">BRANDING</option>
-                        <option value="PROMOTORIA">PROMOTORIA</option>
-                        <option value="ANIMADOR">ANIMADOR</option>
-                        <option value="COMPRA">COMPRA</option>
-                        <option value="ALQUILER">ALQUILER</option>
+                        @foreach ($servicios as $item)
+                            <option value="{{ $item }}">{{ $item }}</option>
+                        @endforeach
                     </select>
                     @error('tipo_servicio')
                         <div id="invalid-cantidad" class="text-invalid">

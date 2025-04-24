@@ -24,10 +24,10 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut;
+    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio;
 
     // Useful vars
-    public $estados, $ciudades, $deleteConfirm = false, $contrato;
+    public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [];
 
     // Filled
     public $tercero, $orden;
@@ -39,6 +39,9 @@ class NuevoPersonal extends Component
 
     public function mount(){
         $this->ciudades = app('ciudades');
+        $this->servicios = app('servicios');
+        $this->bancos = app('bancos');
+
         $this->estados = EstadoTercero::all();
 
         if ($this->tercero){$this->fillForm();}
@@ -56,6 +59,7 @@ class NuevoPersonal extends Component
             'correo' => 'required|email|unique:terceros',
             'telefono' => 'required|numeric|unique:terceros',
             'ciudad' => 'required|string',
+            'servicio' => 'required|string',
             // 'estado' => 'required|numeric|max:1',
         ]);
 
@@ -66,6 +70,7 @@ class NuevoPersonal extends Component
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
         $tercero->ciudad = $this->ciudad;
+        $tercero->servicio = $this->servicio;
         $tercero->estado = 1;
 
         if($this->banco){
@@ -95,6 +100,7 @@ class NuevoPersonal extends Component
             'ciudad',
             'estado',
             'banco',
+            'servicio',
             'rut',
             'cert_bancaria',
         ]);
@@ -219,7 +225,7 @@ class NuevoPersonal extends Component
             'dia' => Carbon::now()->format('d'),
             'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
             'mes' => Carbon::now()->translatedFormat('F'),
-            'ano' => Carbon::now()->format('Y'), 
+            'ano' => Carbon::now()->format('Y'),
             'num_rut' => $this->num_rut
         ];
 

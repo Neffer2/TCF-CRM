@@ -19,7 +19,7 @@ class Natural extends Component
             $tipo_servicio, $tipo_contrato, $cantidad_horas;
 
     // Useful vars
-    public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [],
+    public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
             $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal,
             $queriedOrden;
 
@@ -36,6 +36,8 @@ class Natural extends Component
     public function mount(){
         $this->items = collect();
         $this->ciudades = app('ciudades');
+        $this->servicios = app('servicios');
+        $this->bancos = app('bancos');
 
         if ($this->orden_id){
             $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
