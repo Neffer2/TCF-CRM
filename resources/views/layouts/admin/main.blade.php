@@ -130,12 +130,12 @@
                         <span class="sidenav-normal"> Consumidos </span>
                     </a>
                 </li>
-                {{-- <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
+                <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
                         <span class="sidenav-mini-icon"> P </span>
                         <span class="sidenav-normal"> Personal </span>
                     </a>
-                </li> --}}
+                </li>
             </ul>
           </div>
         </li>

@@ -148,24 +148,6 @@
                         @enderror
                     </div>
                 </div>
-                @if ($queriedOrden && $queriedOrden->naturalInfo->terminos)
-                    <div class="col-md-4 py-4">
-                        @if ($tercero->cert_bancaria)
-                            <a href="{{ asset(str_replace("public", "storage", $tercero->cert_bancaria)) }}" target="_blank">
-                                Certificaci&oacute;n Bancaria
-                                <i class="fa-regular fa-eye"></i>
-                            </a>
-                        @endif
-                    </div>
-                    <div class="col-md-4 py-4">
-                        @if ($tercero->rut)
-                            <a href="{{ asset(str_replace("public", "storage", $tercero->rut)) }}" target="_blank">
-                                RUT
-                                <i class="fa-regular fa-eye"></i>
-                            </a>
-                        @endif
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -186,7 +168,6 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
-                        <th class="font-weight-bold bg-gradient-primary text-white">HORAS</th>
 
                         <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                     </tr>
@@ -206,17 +187,18 @@
                             <td>{{ number_format($item['valor_total']) }}</td>
                             <td>{{ $item['tipo_servicio'] }}</td>
                             <td>{{ $item['tipo_contrato'] }}</td>
-                            <td>{{ $item['cantidad_horas'] }}</td>
                             @if (Auth()->user()->rol == 7)
                                 <td class="d-flex justify-content-center" style="padding: 11px;">
-                                        <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
-                                            ✖️
-                                        </button>
+                                    <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
+                                        ✖️
+                                    </button>
+                                    @if (!$this->queriedOrden->naturalInfo->contrato)
                                         <button class="" wire:click="getItem({{ $key }})">
                                             📝
                                         </button>
-                                    </td>
-                                @endif
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -249,6 +231,10 @@
                         <option value="">Seleccionar</option>
                         @foreach ($items_presupuesto as $item_presupuesto)
                             <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
+                        @endforeach
+
+                        @foreach ($this->items as $item)
+                            <option value="{{ $item['item']['id'] }}">{{ $item['item']['nombre'] }}</option>
                         @endforeach
                     </select>
                     @error('item_presupuesto')
@@ -348,18 +334,6 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-1">
-                <div class="form-group">
-                    <label for="cantidad_horas">Cantidad de horas</label>
-                    <input id="cantidad_horas" type="number" class="form-control"
-                    wire:model.lazy="cantidad_horas" placeholder="#" x-mask:dynamic="$money($input)">
-                    @error('cantidad_horas')
-                        <div id="invalid-cantidad" class="text-invalid">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-            </div>
             @error('items-error')
                 <div class="text-invalid m-0">
                     {{ $message }}
@@ -389,6 +363,8 @@
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
                 @else
                     <!-- Button trigger modal -->
+                    <button wire:click="uploadOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&oacute;N</button>
+
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
 
                     <!-- Modal -->

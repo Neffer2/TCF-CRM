@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Illuminate\Validation\Rule;
 
 class TerceroImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, WithMultipleSheets
 {
@@ -31,7 +32,8 @@ class TerceroImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
                 '*.cedula' => 'required|numeric|unique:terceros',
                 '*.correo' => 'required|email|unique:terceros',
                 '*.telefono' => 'required|numeric|unique:terceros',
-                '*.ciudad' => 'required|string'
+                '*.servicio' => ['required', 'string', Rule::in(app('servicios'))],
+                '*.ciudad' => ['required', 'string', Rule::in(app('ciudades'))],
             ])->validate();
 
             foreach ($rows as $row)
@@ -42,6 +44,7 @@ class TerceroImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
                     'cedula' => $row['cedula'],
                     'correo' => $row['correo'],
                     'telefono' => $row['telefono'],
+                    'servicio' => $row['servicio'],
                     'ciudad' => $row['ciudad'],
                     'estado' => 1
                 ]);

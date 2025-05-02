@@ -15,6 +15,7 @@ class Tercero extends Model
         'cedula',
         'correo',
         'telefono',
+        'servicio',
         'ciudad',
         'banco',
         'estado'

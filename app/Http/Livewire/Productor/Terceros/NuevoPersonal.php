@@ -24,7 +24,7 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $firma, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio;
+    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio;
 
     // Useful vars
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [];
@@ -117,12 +117,14 @@ class NuevoPersonal extends Component
             'telefono' => 'required|numeric',
             'num_rut' => 'required|numeric',
             'ciudad' => 'required|string',
+            'servicio' => 'required|string',
             'estado' => 'required|numeric|max:1',
         ]);
 
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required|string|max:255',
+                'contrato' => 'required|string',
                 'terminos' => 'required|accepted'
             ]);
         }
@@ -135,6 +137,7 @@ class NuevoPersonal extends Component
         $tercero->telefono = trim($this->telefono);
         $tercero->num_rut = trim($this->num_rut);
         $tercero->ciudad = $this->ciudad;
+        $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
 
         if($this->banco){
@@ -147,6 +150,7 @@ class NuevoPersonal extends Component
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }elseif($this->copia_cedula){
             $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }
 
         if (!$tercero->cert_bancaria && !Auth::check()){
@@ -154,6 +158,7 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }elseif($this->cert_bancaria){
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
         if (!$tercero->rut && !Auth::check()){
@@ -161,11 +166,14 @@ class NuevoPersonal extends Component
             $tercero->rut = $this->rut->store('public/ruts');
         }elseif($this->rut){
             $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->rut = $this->rut->store('public/ruts');
         }
 
         if (!Auth::check()){
+            $this->orden->naturalInfo->contrato = $this->contrato;
             $this->orden->naturalInfo->terminos = $this->terminos;
             $this->orden->naturalInfo->update();
+
             $this->orden->estado_id = 2;
             $this->orden->update();
         }
@@ -183,6 +191,7 @@ class NuevoPersonal extends Component
             'estado',
             'banco',
             'rut',
+            'num_rut',
             'cert_bancaria',
             'terminos'
         ]);
@@ -234,7 +243,7 @@ class NuevoPersonal extends Component
         $dompdf->loadHtml($html);
         $dompdf->render();
 
-        // Guardar el PDF en el almacenamiento temporal
+        // Guardar el PDF en el almacenamiento
         $output = $dompdf->output();
         $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
         file_put_contents($filePath, $output);
@@ -273,6 +282,8 @@ class NuevoPersonal extends Component
         $this->ciudad = $this->tercero->ciudad;
         $this->estado = $this->tercero->estado;
         $this->banco = $this->tercero->banco;
+        $this->servicio = $this->tercero->servicio;
+        $this->num_rut = $this->tercero->num_rut;
         // $this->rut = $this->tercero->rut;
         // $this->cert_bancaria = $this->tercero->cert_bancaria;
     }

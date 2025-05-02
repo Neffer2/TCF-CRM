@@ -257,7 +257,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="correo">Correo: <span class="text-danger">*</span></label>
                         <input id="correo" type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
@@ -269,7 +269,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="telefono">Tel&eacute;fono: <span class="text-danger">*</span></label>
                         <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
@@ -281,7 +281,24 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="servicio">Servicio: <span class="text-danger">* </span></label>
+                        <select id="servicio" class="form-control @error('servicio') is-invalid @elseif(strlen($servicio) > 0) is-valid @enderror"
+                            wire:model.change="servicio">
+                            <option value="">Seleccionar</option>
+                            @foreach ($servicios as $item)
+                                <option value="{{ $item }}">{{ $item}}</option>
+                            @endforeach
+                        </select>
+                        @error('servicio')
+                            <div id="servicio" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="num_rut">N&uacute;mero RUT: <span class="text-danger">*</span></label>
                         <input id="num_rut" type="text" class="form-control @error('num_rut') is-invalid @elseif(strlen($num_rut) > 0) is-valid @enderror"
@@ -293,7 +310,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>
                         <select id="ciudad" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
@@ -310,7 +327,24 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="banco">Banco: @guest <span class="text-danger">*</span> @endguest</label>
+                        <select id="banco" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
+                            wire:model.change="banco">
+                            <option value="">Seleccionar</option>
+                            @foreach ($bancos as $item)
+                                <option value="{{ $item }}">{{ $item }}</option>
+                            @endforeach
+                        </select>
+                        @error('banco')
+                            <div id="banco" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="">Fotocopia c&eacute;dula: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('copia_cedula') is-invalid @elseif(strlen($copia_cedula) > 0) is-valid @enderror"
@@ -330,7 +364,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="">Certificaci&oacute;n bancaria: @guest <span class="text-danger">*</span>@endguest</label>
                         <input type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
@@ -350,7 +384,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="">ARCHIVO RUT: @guest <span class="text-danger">*</span> @endguest</label>
                         <input type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
@@ -370,95 +404,73 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="">Banco: @guest <span class="text-danger">*</span> @endguest</label>
-                        <select id="" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
-                        wire:model.change="banco">
-                            <option value="">Seleccionar</option>
-                            <option value="BANCO AGRARIO DE COLOMBIA">BANCO AGRARIO DE COLOMBIA</option>
-                            <option value="BANCO AV VILLAS">BANCO AV VILLAS</option>
-                            <option value="BANCO CAJA SOCIAL">BANCO CAJA SOCIAL</option>
-                            <option value="BANCO DAVIVIENDA S.A.">BANCO DAVIVIENDA S.A.</option>
-                            <option value="BANCO DE BOGOTÁ">BANCO DE BOGOTÁ</option>
-                            <option value="BANCO DE OCCIDENTE">BANCO DE OCCIDENTE</option>
-                            <option value="BANCO FALABELLA S.A.">BANCO FALABELLA S.A.</option>
-                            <option value="BANCOOMEVA">BANCOOMEVA</option>
-                            <option value="BANCOLOMBIA">BANCOLOMBIA</option>
-                            <option value="BANCO PICHINCHA">BANCO PICHINCHA</option>
-                            <option value="BANCO POPULAR">BANCO POPULAR</option>
-                            <option value="BBVA COLOMBIA">BBVA COLOMBIA</option>
-                            <option value="DAVIPLATA">DAVIPLATA</option>
-                            <option value="FINANCIERA JURISCOOP">FINANCIERA JURISCOOP</option>
-                            <option value="ITAU">ITAU</option>
-                            <option value="LINK">LINK</option>
-                            <option value="LULO BANK">LULO BANK</option>
-                            <option value="NEQUI">NEQUI</option>
-                            <option value="NU BANK">NU BANK</option>
-                            <option value="SCOTIABANCK COLPATRIA">SCOTIABANCK COLPATRIA</option>
-                        </select>
-                        @error('banco')
-                            <div id="banco" class="text-invalid">
-                                {{ $message }}
+                @guest
+                    <div class="col-md-12">
+                        <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
+                            Confirmar informaci&oacute;n
+                        </button>
+                        @if ($contrato)
+                            <div class="d-flex justify-content-center">
+                                <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
                             </div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
-                        Confirmar informaci&oacute;n
-                    </button>
-                    @if ($contrato)
-                        <div class="d-flex justify-content-center">
-                            <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
-                        </div>
-                        @guest
-                        <div class="col-md-12 mt-3">
-                            <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
-                                    <label class="custom-control-label" for="customCheck1">
-                                        Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
-                                    </label>
-                                    @error('terminos')
-                                        <div id="terminos" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
+
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
+                                        <label class="custom-control-label" for="customCheck1">
+                                            Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
+                                        </label>
+                                        @error('terminos')
+                                            <div id="terminos" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        @endguest
-                    @endif
-                </div>
+                        @endif
+                    </div>
+                @endguest
             </div>
         </div>
-        @if ($terminos)
-            <div class="modal-footer">
-                <div class="row w-100">
-                    <div class="col-md-12 @guest ps-0 @endguest">
-                        @auth
+        @auth
+            @if (Auth::user()->rol == 1)
+                <div class="modal-footer">
+                    <div class="row w-100">
+                        <div class="col-md-12">
                             <button type="button" class="btn bg-gradient-danger" wire:click.prefetch="toggelConfirm">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
-                        @endauth
-                        <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
-                    </div>
-                    @if ($deleteConfirm)
-                        <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
-                            <div class="card-body">
-                                <p class="text-center">
-                                    <b>¿Estas seguro de eliminar a {{ $nombre }} {{ $apellido }}?</b>
-                                </p>
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" wire:click="toggelConfirm" class="btn bg-gradient-secondary me-1">Cancelar</button>
-                                    <button type="button" wire:click="deletePersonal" class="btn bg-gradient-danger">Eliminar</button>
+                            <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
+                        </div>
+                        @if ($deleteConfirm)
+                            <div class="card shadow-lg" style="position: absolute; left: 0%; top: 35%;">
+                                <div class="card-body">
+                                    <p class="text-center">
+                                        <b>¿Estas seguro de eliminar a {{ $nombre }} {{ $apellido }}?</b>
+                                    </p>
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" wire:click="toggelConfirm" class="btn bg-gradient-secondary me-1">Cancelar</button>
+                                        <button type="button" wire:click="deletePersonal" class="btn bg-gradient-danger">Eliminar</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
+        @endauth
+        @guest
+            @if ($terminos)
+                <div class="modal-footer">
+                    <div class="row w-100">
+                        <div class="col-md-12 @guest ps-0 @endguest">
+                            <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endguest
     </div>
 @endif

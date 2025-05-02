@@ -99,7 +99,7 @@
             </ul>
           </div>
         </li>
-        {{-- <li class="nav-item">
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#terceros" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-single-02 text-info text-sm opacity-10"></i>
@@ -112,40 +112,26 @@
             'show' => (request()->is('orden-compra-natural') ||
                         request()->is('personal') ||
                         request()->is('ordenes-compra-prod'))]) id="terceros">
-            <ul class="nav ms-4">
-              <li @class(['nav-item' => true])>
-                <a class="nav-link collapsed" data-bs-toggle="collapse" aria-expanded="false" href="#ordersExample">
-                  <span class="sidenav-mini-icon"> N </span>
-                  <span class="sidenav-normal"> Ordenes de Compra <b class="caret"></b></span>
-                </a>
-              </li>
-              <div @class([
-                'collapse' => true,
-                'show' => (request()->is('orden-compra-natural') ||
-                          request()->is('personal') ||
-                          request()->is('ordenes-compra-prod'))]) id="ordersExample">
                 <ul class="nav nav-sm flex-column">
-                  <li @class(['active' => request()->is('orden-compra-natural'), 'nav-item' => true])>
+                    <li @class(['active' => request()->is('orden-compra-natural'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('orden-compra-natural'),
-                      'nav-link' => true,
-                      'ps-4' => true, 'pe-0' => true]) href="{{ route('orden-natural-prod') }}">
-                      <span class="sidenav-mini-icon"> NO </span>
-                      <span class="sidenav-normal"> Nueva Orden </span>
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('orden-natural-prod') }}">
+                        <span class="sidenav-mini-icon"> NO </span>
+                        <span class="sidenav-normal"> Nueva Orden </span>
                     </a>
-                  </li>
-                  <li @class(['active' => request()->is('ordenes-compra-prod'), 'nav-item' => true])>
+                    </li>
+                    <li @class(['active' => request()->is('ordenes-compra-prod'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('ordenes-compra-prod'),
-                      'nav-link' => true,
-                      'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-prod') }}">
-                      <span class="sidenav-mini-icon"> Oc's </span>
-                      <span class="sidenav-normal"> Mis Ordenes </span>
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-prod') }}">
+                        <span class="sidenav-mini-icon"> Oc's </span>
+                        <span class="sidenav-normal"> Mis Ordenes </span>
                     </a>
-                  </li>
+                    </li>
                 </ul>
-              </div>
-            </ul>
-          </div>
-        </li> --}}
+            </div>
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
