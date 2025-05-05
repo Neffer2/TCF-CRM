@@ -192,11 +192,9 @@
                                     <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
                                         ✖️
                                     </button>
-                                    @if (!$this->queriedOrden->naturalInfo->contrato)
-                                        <button class="" wire:click="getItem({{ $key }})">
-                                            📝
-                                        </button>
-                                    @endif
+                                    <button class="" wire:click="getItem({{ $key }})">
+                                        📝
+                                    </button>
                                 </td>
                             @endif
                         </tr>
@@ -363,7 +361,7 @@
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
                 @else
                     <!-- Button trigger modal -->
-                    <button wire:click="uploadOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&oacute;N</button>
+                    <button wire:click="uploadOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
 
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
 

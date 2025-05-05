@@ -133,6 +133,8 @@ class Natural extends Component
         $item = $this->items[$itemId];
 
         $this->presupuesto = $item['proyecto']['id'];
+        $this->updatedPresupuesto();
+
         $this->item_presupuesto = $item['item']['id'];
         $this->cantidad = $item['cant'];
         $this->dias = $item['dias'];
@@ -330,6 +332,24 @@ class Natural extends Component
         return redirect()->route('ordenes-prod')->with('success', 'Orden de compra eliminada correctamente');
     }
 
+    public function getItemLimite(){
+        // Trae información del item seleccionado
+        $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
+
+        /* LIMITES: LOS LIMITES OMITEN LOS ITEMS DE LA OC ACTUAL SI ES ACTUALIZACIÓN */
+        if($this->queriedOrden){
+            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('cant_oc'));
+            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('vtotal_oc'));
+        }else {
+            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->get()->sum('cant_oc'));
+            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
+        }
+
+        $this->limiteDias = $item_info->dia;
+        $this->limiteOtros = $item_info->otros;
+        $this->limiteValorUnitario = $item_info->v_unitario;
+    }
+
     /* * --------------------- * */
 
     /**
@@ -359,7 +379,6 @@ class Natural extends Component
             'presupuesto' => 'required'
         ]);
 
-
         if ($this->presupuesto){
             $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
             $this->items_presupuesto = $items_presupuesto->where('proveedor', 'a:1:{i:0;s:1:"3";}')->where('disponible', 1);
@@ -383,16 +402,7 @@ class Natural extends Component
         }
 
         if ($this->item_presupuesto){
-            $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
-            // Limites
-            $this->limiteCantidad = ($item_info->cantidad - $item_info->consumidos()->get()->sum('cant_oc'));
-            // $this->limiteDias = ($item_info->dia - $item_info->consumidos()->get()->sum('dias_oc'));
-            // $this->limiteOtros = ($item_info->otros - $item_info->consumidos()->get()->sum('otros_oc'));
-            // $this->limiteValorUnitario = ($item_info->v_unitario - $item_info->consumidos()->get()->sum('vunit_oc'));
-            $this->limiteDias = $item_info->dia;
-            $this->limiteOtros = $item_info->otros;
-            $this->limiteValorUnitario = $item_info->v_unitario;
-            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
+            $this->getItemLimite();
 
             $this->cantidad = $this->limiteCantidad;
             $this->dias = $this->limiteDias;
@@ -407,6 +417,9 @@ class Natural extends Component
     public function updatedCantidad(){
         $this->cantidad = trim($this->cantidad);
         $this->cantidad = str_replace(",",'', $this->cantidad);
+
+        $this->getItemLimite();
+
         $this->validate([
             'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad
         ]);
@@ -453,7 +466,7 @@ class Natural extends Component
     }
 
     public function getValorTotal(){
-        $this->valor_total = ($this->cantidad * $this->dias * $this->otros) * $this->valor_unitario;
+        $this->valor_total = ($this->cantidad  * $this->valor_unitario);
     }
 
     /* * --------------------- * */
