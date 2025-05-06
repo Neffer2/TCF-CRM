@@ -230,10 +230,6 @@
                         @foreach ($items_presupuesto as $item_presupuesto)
                             <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
                         @endforeach
-
-                        @foreach ($this->items as $item)
-                            <option value="{{ $item['item']['id'] }}">{{ $item['item']['nombre'] }}</option>
-                        @endforeach
                     </select>
                     @error('item_presupuesto')
                         <div id="invalid-item_presupuesto" class="text-invalid">
@@ -336,7 +332,7 @@
                 <div class="text-invalid m-0">
                     {{ $message }}
                 </div>
-            @enderror
+            @enderror 
         </div>
         <div class="row">
             <div class="col-lg-2">
@@ -361,7 +357,7 @@
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
                 @else
                     <!-- Button trigger modal -->
-                    <button wire:click="uploadOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
+                    <button wire:click="updateOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
 
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
 

@@ -284,6 +284,77 @@ class Natural extends Component
     /**
      *  Queried Data
     **/
+    public function updateOC(){ 
+        if ($this->items->count() <= 0){
+            $this->addError('items-error', 'No se han agregado items a la orden de compra');
+            return back();
+        }
+
+        $this->validate([
+            'tercero' => 'required'
+        ]);
+
+        // Presupuesto_id null, porque una orden de compra natural tiene varios presupuestos
+        // TODO: Condición editar con y sin contrato. Con contrato = estado 2
+
+        if ($this->queriedOrden->naturalInfo->contrato){
+            $this->queriedOrden->update([
+                'estado_id' => 2,
+            ]);
+        }
+
+        // Elimina los items de la OC actual y crea los nuevos
+        foreach ($this->queriedOrden->ordenItems as $item){
+            $item->delete();
+        }
+
+        $OcItem = new OcItem();
+        foreach ($this->items as $item){
+            $OcItem->create([
+                'oc_id' => $this->queriedOrden->id,
+                'item_id' => $item['item']['id'],
+                'desc_oc' => $item['item']['nombre'],
+                'cant_oc' => $item['cant'],
+                'dias_oc' => $item['dias'],
+                'otros_oc' => $item['otros'],
+                'vunit_oc' => $item['valor_unitario'],
+                'vtotal_oc' => $item['valor_total'],
+                'tipo_servicio' => $item['tipo_servicio'],
+                'tipo_contrato' => $item['tipo_contrato'],
+            ]);
+        }
+
+        $this->resetFields([
+            'presupuesto',
+            'item_presupuesto',
+            'cantidad',
+            'dias',
+            'otros',
+            'valor_unitario',
+            'valor_total',
+            'tipo_servicio',
+            'tipo_contrato',
+            'tercero',
+            'nombre',
+            'apellido',
+            'correo',
+            'cedula',
+            'telefono',
+            'ciudad',
+            'banco',
+        ]);
+
+        unset($this->tercero);
+        unset($this->selected_item);
+        $this->items = collect();
+        return redirect()->route('ordenes-prod')->with('success', 'Información guardada correctamente');
+    }
+
+    /* * --------------------- * */
+    
+    /**
+     *  Queried Data
+    **/
     public function getData(){
         // Productor
         $this->productor = $this->queriedOrden->naturalInfo->productor;
