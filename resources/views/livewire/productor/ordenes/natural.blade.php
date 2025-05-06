@@ -168,8 +168,9 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
-
-                        <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
+                        @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
+                            <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -187,7 +188,7 @@
                             <td>{{ number_format($item['valor_total']) }}</td>
                             <td>{{ $item['tipo_servicio'] }}</td>
                             <td>{{ $item['tipo_contrato'] }}</td>
-                            @if (Auth()->user()->rol == 7)
+                            @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
                                 <td class="d-flex justify-content-center" style="padding: 11px;">
                                     <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
                                         ✖️
@@ -204,7 +205,7 @@
         </div>
     </div>
 
-    @if (Auth()->user()->rol == 7)
+    @if ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
         <div class="row">
             <div class="col-lg-2">
                 <div class="form-group">
@@ -332,7 +333,7 @@
                 <div class="text-invalid m-0">
                     {{ $message }}
                 </div>
-            @enderror 
+            @enderror
         </div>
         <div class="row">
             <div class="col-lg-2">
@@ -382,10 +383,31 @@
                 @endif
             </div>
         </div>
+
+    @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 7)))
+        <div class="container">
+            <div class="card-frame p-5">
+                <h3 class="text-center">El tercero est&aacute; subiendo sus evidencias.</h3>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-warning" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-info" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
-    @if (Auth()->user()->rol == 1)
+    {{-- @if (Auth()->user()->rol == 1)
         <button></button>
-    @endif
+    @endif --}}
     <hr class="ct-docs-hr">
     @if (session('success'))
         <script>

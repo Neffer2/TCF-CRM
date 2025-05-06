@@ -284,7 +284,7 @@ class Natural extends Component
     /**
      *  Queried Data
     **/
-    public function updateOC(){ 
+    public function updateOC(){
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
             return back();
@@ -299,7 +299,7 @@ class Natural extends Component
 
         if ($this->queriedOrden->naturalInfo->contrato){
             $this->queriedOrden->update([
-                'estado_id' => 2,
+                'estado_id' => 7,
             ]);
         }
 
@@ -351,7 +351,7 @@ class Natural extends Component
     }
 
     /* * --------------------- * */
-    
+
     /**
      *  Queried Data
     **/

@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class NuevoPersonal extends Component
 {
@@ -32,6 +33,16 @@ class NuevoPersonal extends Component
     // Filled
     public $tercero, $orden;
 
+    /*
+        * EVIDENCIAS
+    */
+
+    // Models
+    public $fechaEvidencia, $fotoEvidencia, $observacionEvidencia;
+
+    // Useful vars
+    public $evidencias = [];
+
     public function render()
     {
         return view('livewire.productor.terceros.nuevo-personal');
@@ -41,6 +52,7 @@ class NuevoPersonal extends Component
         $this->ciudades = app('ciudades');
         $this->servicios = app('servicios');
         $this->bancos = app('bancos');
+        $this->evidencias = collect();
 
         $this->estados = EstadoTercero::all();
 
@@ -174,7 +186,8 @@ class NuevoPersonal extends Component
             $this->orden->naturalInfo->terminos = $this->terminos;
             $this->orden->naturalInfo->update();
 
-            $this->orden->estado_id = 2;
+            // La orden continúa editable, pero con contrato adjunto
+            $this->orden->estado_id = 3;
             $this->orden->update();
         }
 
@@ -252,8 +265,7 @@ class NuevoPersonal extends Component
         $this->contrato = asset('storage/contratos/' . basename($filePath));
     }
 
-    private function getNumberString($numero)
-    {
+    private function getNumberString($numero){
         $numerosEnTexto = [
             1 => 'Uno', 2 => 'Dos', 3 => 'Tres', 4 => 'Cuatro', 5 => 'Cinco',
             6 => 'Seis', 7 => 'Siete', 8 => 'Ocho', 9 => 'Nueve', 10 => 'Diez',
@@ -290,6 +302,37 @@ class NuevoPersonal extends Component
 
     public function toggelConfirm(){
         $this->deleteConfirm = !$this->deleteConfirm;
+    }
+
+    /*
+        * EVIDENCIAS
+    */
+    public function newEvidencia(){
+        $this->validate([
+            'fechaEvidencia' => 'required|date',
+            'fotoEvidencia' => 'required|file|mimes:jpg,jpeg,png|max:10000',
+            'observacionEvidencia' => 'nullable|string|max:255'
+        ]);
+
+        $evidencia = [
+            'fecha' => $this->fechaEvidencia,
+            'foto' => $this->fotoEvidencia->store('public/evidencias'),
+            'observacion' => $this->observacionEvidencia
+        ];
+
+        $this->evidencias->push($evidencia);
+        $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
+    }
+
+    public function deleteItem($itemId){
+        $filePath = $this->evidencias[$itemId]['foto'];
+        Storage::delete($filePath);
+
+        unset($this->evidencias[$itemId]);
+    }
+
+    public function saveEvidencia(){
+
     }
 
     /*
