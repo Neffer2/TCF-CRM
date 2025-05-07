@@ -89,7 +89,7 @@
                                         <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
                                     </td>
                                     <td class="d-flex align-items-center justify-content-center">
-                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}">Ver</a>
+                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}" target="_blank">Ver</a>
                                     </td>
                                 </tr>
                             @elseif($orden->tipo_oc == 2)
@@ -126,7 +126,7 @@
                                         <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
                                     </td>
                                     <td class="d-flex align-items-center justify-content-center">
-                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural', ['orden_id' => $orden->id]) }}">Ver</a>
+                                        <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural', ['orden_id' => $orden->id]) }}" target="_blank">Ver</a>
                                     </td>
                                 </tr>
                             @endif
@@ -138,10 +138,12 @@
                                 $total = $ordenesArray['total'];
                             @endphp
                             <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
-                            <td colspan="5" class="d-flex pt-0">{{ $ordenes->links() }}</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="mb-3 ms-2">
+                {{ $ordenes->links() }}
             </div>
         </div>
     </div>
@@ -240,48 +242,86 @@
                                     <td colspan="8">
                                         <div class="collapse" id="collapse{{ $orden->naturalInfo->id }}">
                                             <div class="card card-body px-3 py-0">
-                                                <table class="table align-items-center mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cédula</th>
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tel&eacute;fono</th>
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Documentos</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colspan="1">
-                                                                <p class="text-xs text-secondary mb-0">
-                                                                    {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}
-                                                                </p>
-                                                            </td>
-                                                            <td>
-                                                                <p class="text-xs text-secondary mb-0">
-                                                                    {{ $orden->naturalInfo->tercero->cedula }}
-                                                                </p>
-                                                            </td>
-                                                            <td>
-                                                                <p class="text-xs text-secondary mb-0">
-                                                                    {{ $orden->naturalInfo->tercero->correo }}
-                                                                </p>
-                                                            </td>
-                                                            <td>
-                                                                <p class="text-xs text-secondary mb-0">
-                                                                    {{ $orden->naturalInfo->tercero->telefono }}
-                                                                </p>
-                                                            </td>
-                                                            <td>
-                                                                <p class="text-xs text-secondary mb-0">
-                                                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
-                                                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
-                                                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
-                                                                </p>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                                <div class="table-responsive">
+                                                    <table class="table align-items-center mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cédula</th>
+                                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
+                                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tel&eacute;fono</th>
+                                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Documentos</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td colspan="1">
+                                                                    <p class="text-xs text-secondary mb-0">
+                                                                        {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="text-xs text-secondary mb-0">
+                                                                        {{ $orden->naturalInfo->tercero->cedula }}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="text-xs text-secondary mb-0">
+                                                                        {{ $orden->naturalInfo->tercero->correo }}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="text-xs text-secondary mb-0">
+                                                                        {{ $orden->naturalInfo->tercero->telefono }}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="text-xs text-secondary mb-0">
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                @if ($orden->evidencias)
+                                                    <div class="table-responsive">
+                                                        <table class="table align-items-center mb-0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($orden->evidencias as $evidencia)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p class="text-xs text-secondary mb-0">
+                                                                                {{ $evidencia->fecha_evidencia }}
+                                                                            </p>
+                                                                        </td>
+                                                                        <td>
+                                                                            <p class="text-xs text-secondary mb-0">
+                                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                                </a>
+                                                                            </p>
+                                                                        </td>
+                                                                        <td>
+                                                                            <p class="text-xs text-secondary mb-0">
+                                                                                {{ $evidencia->observacion_evidencia }}
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

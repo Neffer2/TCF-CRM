@@ -384,10 +384,16 @@
             </div>
         </div>
 
-    @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 7)))
+    @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
         <div class="container">
             <div class="card-frame p-5">
-                <h3 class="text-center">El tercero est&aacute; subiendo sus evidencias.</h3>
+                <h3 class="text-center">
+                    @if ($queriedOrden->estado_id == 7)
+                        El tercero est&aacute; subiendo sus evidencias.
+                    @elseif ($queriedOrden->estado_id == 2)
+                        Orden de compra en revisi&oacute;n.
+                    @endif
+                </h3>
                 <div class="d-flex justify-content-center">
                     <div class="spinner-grow text-primary" role="status">
                         <span class="sr-only">Loading...</span>
