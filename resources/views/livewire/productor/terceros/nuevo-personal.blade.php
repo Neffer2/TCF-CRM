@@ -311,7 +311,7 @@
                                     </div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>

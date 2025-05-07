@@ -39,5 +39,9 @@ class OrdenCompra extends Model
     public function naturalInfo(){
         return $this->hasOne(NaturalInfo::class, 'oc_id', 'id');
     }
+
+    public function evidencias(){
+        return $this->hasMany(Evidencia::class, 'oc_id', 'id');
+    }
 }   
  

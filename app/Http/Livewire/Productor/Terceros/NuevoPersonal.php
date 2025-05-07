@@ -32,7 +32,7 @@ class NuevoPersonal extends Component
 
     // Filled
     public $tercero, $orden;
-
+ 
     /*
         * EVIDENCIAS
     */
@@ -212,7 +212,7 @@ class NuevoPersonal extends Component
         if (!Auth::check()){
             return redirect()->route('consulta-terceros');
         }
-
+ 
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }
 
@@ -327,12 +327,27 @@ class NuevoPersonal extends Component
     public function deleteItem($itemId){
         $filePath = $this->evidencias[$itemId]['foto'];
         Storage::delete($filePath);
-
         unset($this->evidencias[$itemId]);
     }
 
-    public function saveEvidencia(){
+    public function saveEvidencia(){ 
+        foreach($this->evidencias as $evidencia){
+            $this->orden->evidencias()->create([
+                'fecha_evidencia' => $evidencia['fecha'],
+                'foto_evidencia' => $evidencia['foto'],
+                'observacion_evidencia' => $evidencia['observacion'],
+                'tercero_id' => $this->orden->naturalInfo->tercero_id
+            ]);
+        }
 
+        $this->orden->estado_id = 2;
+        $this->orden->update();
+
+        $this->reset_fields([
+            'fechaEvidencia',
+            'fotoEvidencia',
+            'observacionEvidencia'
+        ]);
     }
 
     /*
