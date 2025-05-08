@@ -384,31 +384,215 @@
             </div>
         </div>
 
-    @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
+    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
+        <div>
+            @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
+                <div class="card mt-3">
+                    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="mb-0">Evidencias</h3>
+                                <p class="text-sm mb-0">
+                                    <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($queriedOrden->evidencias as $evidencia)
+                                                <tr>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->fecha_evidencia }}
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                            </a>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->observacion_evidencia }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> Aprobar </button>
+                                <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal"> Rechazar </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estas seguro de eliminar esta orden?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn bg-gradient-success" wire:click="validateEvidencia(5)">Aprobar</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="deleteModalLabel">Elininar Orden</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estas seguro de eliminar esta orden?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn bg-gradient-danger" wire:click="validateEvidencia(7)">Rechazar</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
         <div class="container">
             <div class="card-frame p-5">
                 <h3 class="text-center">
                     @if ($queriedOrden->estado_id == 7)
                         El tercero est&aacute; subiendo sus evidencias.
-                    @elseif ($queriedOrden->estado_id == 2)
+                    @elseif (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2)
                         Orden de compra en revisi&oacute;n.
                     @endif
                 </h3>
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-grow text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+
+                @if (($queriedOrden->estado_id == 7) || (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2))
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-grow text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="spinner-grow text-success" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="spinner-grow text-warning" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="spinner-grow text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-                    <div class="spinner-grow text-success" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <div class="spinner-grow text-warning" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <div class="spinner-grow text-info" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
+                @endif
             </div>
+        </div>
+    @elseif ($queriedOrden->estado_id == 5)
+        <div class="card card-body px-3 py-0">
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cédula</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tel&eacute;fono</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Documentos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="1">
+                                <p class="text-xs text-secondary mb-0">
+                                    {{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-xs text-secondary mb-0">
+                                    {{ $queriedOrden->naturalInfo->tercero->cedula }}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-xs text-secondary mb-0">
+                                    {{ $queriedOrden->naturalInfo->tercero->correo }}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-xs text-secondary mb-0">
+                                    {{ $queriedOrden->naturalInfo->tercero->telefono }}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-xs text-secondary mb-0">
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            @if ($queriedOrden->evidencias)
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($queriedOrden->evidencias as $evidencia)
+                                <tr>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">
+                                            {{ $evidencia->fecha_evidencia }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">
+                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                            </a>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">
+                                            {{ $evidencia->observacion_evidencia }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     @endif
     {{-- @if (Auth()->user()->rol == 1)

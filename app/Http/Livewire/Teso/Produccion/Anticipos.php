@@ -1,64 +1,94 @@
 <?php
 
-namespace App\Http\Livewire\Teso\Produccion; 
+namespace App\Http\Livewire\Teso\Produccion;
 
 use Livewire\Component;
-use App\Models\EstadoOrdenesCompra;   
+use App\Models\EstadoOrdenesCompra;
 use App\Models\OrdenCompra;
-use Livewire\WithPagination;  
-  
-class Anticipos extends Component 
-{    
+use Livewire\WithPagination;
+
+class Anticipos extends Component
+{
     // Models
     public $fecha = 'desc', $estado = 1, $cod_cc;
 
-    use WithPagination;  
-    protected $paginationTheme = 'bootstrap';   
-    
-    public function render()   
-    {   
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public function render()
+    {
         /*  ESTADOS
             * 1: Pendiente.
             * 2: Pagado.
         */
+
         if ($this->estado == 1){
             if ($this->cod_cc){
-                // WhereHas busca dentro de la colleccion el campo 'proveedor'
-                $ordenes = OrdenCompra::with('proveedor')->with('presupuesto')
-                    ->whereHas('proveedor', function ($proveedor){ 
-                        $proveedor->where('anticipo', '>', 0);
-                    })
-                    ->whereHas('presupuesto', function ($presto) { 
-                        $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
-                    })
-                ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
-            }else {
-                $ordenes = OrdenCompra::with('proveedor')
-                    ->whereHas('proveedor', function ($proveedor){ 
-                        $proveedor->where('anticipo', '>', 0);
-                    })
-                ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15); 
-            }
+                $ordenes = OrdenCompra::with('presupuesto')
+                            ->whereHas('presupuesto', function ($presto) {
+                                $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
+                            })->orderBy('created_at', $this->fecha)
+                            ->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)
+                            ->paginate(15);
+                }else {
+                    $ordenes = OrdenCompra::where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+                }
         }else {
             if ($this->cod_cc){
                 $ordenes = OrdenCompra::with('proveedor')->with('presupuesto')
-                    ->whereHas('proveedor', function ($proveedor){ 
+                    ->whereHas('proveedor', function ($proveedor){
                         $proveedor->where('anticipo', '>', 0);
                     })
-                    ->whereHas('presupuesto', function ($presto) { 
+                    ->whereHas('presupuesto', function ($presto) {
                         $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                     })
                 ->where('estado_id', 1)->where('archivo_comprobante_pago', '<>', 'NULL')->orderBy('created_at', $this->fecha)->paginate(15);
             }else{
                 $ordenes = OrdenCompra::with('proveedor')
-                    ->whereHas('proveedor', function ($proveedor){ 
+                    ->whereHas('proveedor', function ($proveedor){
                         $proveedor->where('anticipo', '>', 0);
                     })
                 ->where('estado_id', 1)->where('archivo_comprobante_pago', '<>', 'NULL')->orderBy('created_at', $this->fecha)->paginate(15);
             }
         }
-        
+
+        // if ($this->estado == 1){
+        //     if ($this->cod_cc){
+        //         // WhereHas busca dentro de la colleccion el campo 'proveedor'
+        //         $ordenes = OrdenCompra::with('proveedor')->with('presupuesto')
+        //             ->whereHas('proveedor', function ($proveedor){
+        //                 $proveedor->where('anticipo', '>', 0);
+        //             })
+        //             ->whereHas('presupuesto', function ($presto) {
+        //                 $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
+        //             })
+        //         ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+        //     }else {
+        //         $ordenes = OrdenCompra::with('proveedor')
+        //             ->whereHas('proveedor', function ($proveedor){
+        //                 $proveedor->where('anticipo', '>', 0);
+        //             })
+        //         ->where('estado_id', 1)->where('cod_causal', '<>', 'NULL')->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+        //     }
+        // }else {
+        //     if ($this->cod_cc){
+        //         $ordenes = OrdenCompra::with('proveedor')->with('presupuesto')
+        //             ->whereHas('proveedor', function ($proveedor){
+        //                 $proveedor->where('anticipo', '>', 0);
+        //             })
+        //             ->whereHas('presupuesto', function ($presto) {
+        //                 $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
+        //             })
+        //         ->where('estado_id', 1)->where('archivo_comprobante_pago', '<>', 'NULL')->orderBy('created_at', $this->fecha)->paginate(15);
+        //     }else{
+        //         $ordenes = OrdenCompra::with('proveedor')
+        //             ->whereHas('proveedor', function ($proveedor){
+        //                 $proveedor->where('anticipo', '>', 0);
+        //             })
+        //         ->where('estado_id', 1)->where('archivo_comprobante_pago', '<>', 'NULL')->orderBy('created_at', $this->fecha)->paginate(15);
+        //     }
+        // }
+
         return view('livewire.teso.produccion.anticipos', ['ordenes' => $ordenes]);
     }
 }
- 

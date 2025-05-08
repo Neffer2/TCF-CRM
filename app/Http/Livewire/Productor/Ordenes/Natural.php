@@ -26,6 +26,10 @@ class Natural extends Component
     // Filled
     public $productor, $orden_id;
 
+    /*
+        * EVIDENCIAS
+    */
+
     public function render()
     {
         $this->getTerceros();
@@ -422,6 +426,16 @@ class Natural extends Component
     }
 
     /* * --------------------- * */
+
+    /*
+        * EVIDENCIAS
+    */
+    public function validateEvidencia($estado){
+        $this->queriedOrden->estado_id = $estado;
+        $this->queriedOrden->update();
+
+        return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
+    }
 
     /**
      *  UPDATES

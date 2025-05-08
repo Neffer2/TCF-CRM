@@ -201,7 +201,7 @@
 </div>
 @elseif($this->tercero)
     <div>
-        @if ($orden->estado_id == 3)
+        @if ($orden && $orden->estado_id == 3)
             <div>
                 <div class="modal-body pt-1">
                     @auth
@@ -311,7 +311,7 @@
                                     </div>
                                 @enderror
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>
@@ -475,7 +475,7 @@
                     @endif
                 @endguest
             </div>
-        @elseif ($orden->estado_id == 7)
+        @elseif ($orden && $orden->estado_id == 7)
             <div class="modal-body pt-1">
                 <div class="row">
                     <div class="col-md-12 mb-2">

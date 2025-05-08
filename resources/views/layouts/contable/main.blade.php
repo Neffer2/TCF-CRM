@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
-  <meta charset="utf-8" /> 
+<head>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   @livewireStyles
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
     Contable - {{ Auth::user()->name}}
-  </title> 
+  </title>
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -33,7 +33,7 @@
         <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0 d-flex flex-column" href="{{ route('dashboard') }}">
           <img src="{{ asset('assets/img/bull-logo.png') }}" class="navbar-brand-img h-100" alt="main_logo">
-        </a> 
+        </a>
       </div>
       <hr class="horizontal dark mt-0">
       <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
@@ -61,7 +61,7 @@
                 </li> --}}
                 <li class="nav-item active">
                   <a class="nav-link active" href="{{ route('dashboard-con') }}">
-                    <span class="sidenav-mini-icon"> S </span>
+                    <span class="sidenav-mini-icon"> D </span>
                     <span class="sidenav-normal"> Dashboard </span>
                   </a>
                 </li>
@@ -84,7 +84,7 @@
                           <span class="sidenav-normal"> VR Info </span>
                         </a>
                       </li>
-                    </ul> 
+                    </ul>
                   </div>
                 </li> --}}
                 {{-- <li class="nav-item ">
@@ -95,7 +95,7 @@
                 </li> --}}
               </ul>
             </div>
-          </li>   
+          </li>
           <li class="nav-item">
             <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="true">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -104,14 +104,14 @@
               <span class="nav-link-text ms-1">Ajustes</span>
             </a>
             <div class="collapse show" id="applicationsExamples" style="">
-              <ul class="nav ms-4"> 
+              <ul class="nav ms-4">
                 <li class="nav-item ">
-                  <a class="nav-link " href="{{ route('actualizar-perfil-con') }}"> 
-                    <span class="sidenav-mini-icon"> K </span>
+                  <a class="nav-link " href="{{ route('actualizar-perfil-con') }}">
+                    <span class="sidenav-mini-icon"> AP </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>
                 </li>
-              </ul> 
+              </ul>
             </div>
           </li>
         </ul>
@@ -153,8 +153,8 @@
                     <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                       <i class="ni ni-button-power"></i>
                       <span class="d-sm-inline d-none">Salir</span>
-                    </a>  
-                  </form>    
+                    </a>
+                  </form>
                 @endauth
                 @guest
                   <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -256,9 +256,9 @@
       </nav>
       <!-- End Navbar -->
       @yield('profile-card')
-      <div class="container-fluid py-4"> 
+      <div class="container-fluid py-4">
         @yield('content')
-        
+
         <footer class="footer pt-3  ">
           <div class="container-fluid">
             <div class="row align-items-center justify-content-lg-between">
@@ -289,7 +289,7 @@
               </div> --}}
             </div>
           </div>
-        </footer>  
+        </footer>
       </div>
     </div>
     <div class="fixed-plugin">
@@ -395,19 +395,19 @@
       @if($errors->any())
         Swal.fire(
         '!Oppss tenemos un problema',
-        `@foreach($errors->all() as $error) 
+        `@foreach($errors->all() as $error)
             {{ $error }}
         @endforeach`,
         'error'
         );
-      @endif 
+      @endif
       @if (session('success'))
       Swal.fire(
         'Hecho',
         `{{ session('success') }}`,
         'success'
         );
-      @endif 
+      @endif
     </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

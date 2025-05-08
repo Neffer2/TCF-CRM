@@ -12,7 +12,7 @@ class Anticipo extends Component
 {
     use WithFileUploads, Email;
 
-    // Models 
+    // Models
     public $causa_cod, $observacion_causacion;
 
     // Useful vars
@@ -27,23 +27,23 @@ class Anticipo extends Component
         return view('livewire.cont.produccion.anticipo');
     }
 
-    public function store(){      
+    public function store(){
         if ($this->orden->archivo_comprobante_pago){
             $this->addError('error', 'Este anticipo ya fué pagado');
             return redirect()->back();
         }
 
-        $this->validate([ 
+        $this->validate([
             'causa_cod' => 'required|numeric',
             'observacion_causacion' => 'nullable|string'
-        ]);  
+        ]);
 
-        $this->orden->cod_causal = $this->causa_cod; 
-        $this->orden->observacion_causal = $this->observacion_causacion; 
+        $this->orden->cod_causal = $this->causa_cod;
+        $this->orden->observacion_causal = $this->observacion_causacion;
         $this->orden->update();
 
         // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
-        return redirect()->route('anticipos-contabilidad')->with('success', 'Anticipo causado exitósamente.');
+        return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
     }
 
     public function mount(){
@@ -54,7 +54,7 @@ class Anticipo extends Component
     public function updatedCausaCod(){
         $this->validate([
             'causa_cod' => 'required|numeric'
-        ]); 
+        ]);
     }
 
     public function updatedObservacionCausacion(){

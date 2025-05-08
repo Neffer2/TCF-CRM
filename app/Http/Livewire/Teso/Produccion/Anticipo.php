@@ -6,26 +6,26 @@ use Livewire\Component;
 use App\Models\OrdenCompra;
 use Livewire\WithFileUploads;
 use App\Traits\Email;
- 
+
 class Anticipo extends Component
 {
     use WithFileUploads, Email;
 
-    // Models 
+    // Models
     public $comprobante, $observacion_anticipo;
 
     // Useful vars
-    public $orden; 
- 
+    public $orden;
+
     // Filled
     public $orden_id;
 
-    public function render() 
+    public function render()
     {
-        return view('livewire.teso.produccion.anticipo'); 
-    } 
+        return view('livewire.teso.produccion.anticipo');
+    }
 
-    public function store(){      
+    public function store(){
         if ($this->orden->archivo_comprobante_pago){
             $this->addError('error', 'Este anticipo ya fué pagado');
             return redirect()->back();
@@ -34,10 +34,10 @@ class Anticipo extends Component
         $this->validate([
             'comprobante' => 'required|file|mimes:pdf|max:10000',
             'observacion_anticipo' => 'nullable|string'
-        ]);  
+        ]);
 
-        
-        $this->orden->archivo_comprobante_pago = $this->comprobante->store('public/ordenes_juridicas/anticipos'); 
+
+        $this->orden->archivo_comprobante_pago = $this->comprobante->store('public/ordenes_juridicas/anticipos');
         $this->orden->update();
 
         $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
@@ -52,7 +52,7 @@ class Anticipo extends Component
     public function updatedComprobante(){
         $this->validate([
             'comprobante' => 'required|file|mimes:pdf|max:10000'
-        ]); 
+        ]);
     }
 
     public function updatedObservacionAnticipo(){
