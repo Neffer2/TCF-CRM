@@ -436,6 +436,30 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="cod_oc">C&oacute;digo de orden de compra</label>
+                                    <input id="cod_oc" type="text" class="form-control @error('cod_oc') is-invalid @elseif(strlen($cod_oc) > 0) is-valid @enderror"
+                                    wire:model.change="cod_oc" placeholder="C&oacute;digo de orden de compra">
+                                    @error('cod_oc')
+                                        <div id="cod_oc" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="oc_helisa">Orden de compra Helisa</label>
+                                    <input type="file" class="form-control @error('oc_helisa') is-invalid @elseif(strlen($oc_helisa) > 0) is-valid @enderror"
+                                    wire:model.change="oc_helisa">
+                                    @error('oc_helisa')
+                                        <div id="oc_helisa" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> Aprobar </button>
                                 <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal"> Rechazar </button>

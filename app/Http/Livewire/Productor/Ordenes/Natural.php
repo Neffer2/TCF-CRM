@@ -9,14 +9,17 @@ use App\Models\OrdenCompra;
 use App\Models\OcItem;
 use App\Models\NaturalInfo;
 use PhpParser\Node\Stmt\Return_;
+use Livewire\WithFileUploads;
 
 class Natural extends Component
 {
+    use WithFileUploads;
+
     // Models
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
-            $tipo_servicio, $tipo_contrato;
+            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa;
 
     // Useful vars
     public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -433,6 +436,8 @@ class Natural extends Component
     public function validateEvidencia($estado){
         $this->queriedOrden->estado_id = $estado;
         $this->queriedOrden->update();
+
+
 
         return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
     }
