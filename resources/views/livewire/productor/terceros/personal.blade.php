@@ -54,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($terceros as $tercero)
+                        @foreach ($terceros as $key => $tercero)
                             <tr>
                                 <td style="width: 16rem;">
                                     <div class="d-flex px-2 py-1" title="{{ $tercero->nombre." ".$tercero->apellido }}">

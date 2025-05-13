@@ -201,7 +201,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table> 
+            </table>
         </div>
     </div>
 
@@ -358,7 +358,9 @@
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
                 @else
                     <!-- Button trigger modal -->
-                    <button wire:click="updateOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
+                    @if ($queriedOrden->naturalInfo->terminos == 1)
+                        <button wire:click="updateOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
+                    @endif
 
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
 

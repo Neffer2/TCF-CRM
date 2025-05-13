@@ -28,11 +28,11 @@ class NuevoPersonal extends Component
     $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio;
 
     // Useful vars
-    public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [];
+    public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
 
     // Filled
     public $tercero, $orden;
- 
+
     /*
         * EVIDENCIAS
     */
@@ -93,6 +93,7 @@ class NuevoPersonal extends Component
         if($this->rut){
             $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->rut = $this->rut->store('public/ruts');
+            $tercero->rut = $this->rut->store('public/ruts');
         }
 
         if($this->cert_bancaria){
@@ -121,13 +122,18 @@ class NuevoPersonal extends Component
     }
 
     public function actualizarTercero(){
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+            $this->validate([
+                'num_rut' => 'required|numeric'
+            ]);
+        }
+
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
             'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
-            'num_rut' => 'required|numeric',
             'ciudad' => 'required|string',
             'servicio' => 'required|string',
             'estado' => 'required|numeric|max:1',
@@ -147,7 +153,7 @@ class NuevoPersonal extends Component
         $tercero->cedula = trim($this->cedula);
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
-        $tercero->num_rut = trim($this->num_rut);
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){ $tercero->num_rut = trim($this->num_rut); }
         $tercero->ciudad = $this->ciudad;
         $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
@@ -173,12 +179,15 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
-        if (!$tercero->rut && !Auth::check()){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->rut = $this->rut->store('public/ruts');
-        }elseif($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->rut = $this->rut->store('public/ruts');
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+            //
+            if (!$tercero->rut && !Auth::check()){
+                $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+                $tercero->rut = $this->rut->store('public/ruts');
+            }elseif($this->rut){
+                $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+                $tercero->rut = $this->rut->store('public/ruts');
+            }
         }
 
         if (!Auth::check()){
@@ -212,18 +221,23 @@ class NuevoPersonal extends Component
         if (!Auth::check()){
             return redirect()->route('consulta-terceros');
         }
- 
+
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }
 
     public function generarContrato(){
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+            $this->validate([
+                'num_rut' => 'required|numeric'
+            ]);
+        }
+
         $this->validate([
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
             'cedula' => 'required|numeric',
             'correo' => 'required|email',
             'telefono' => 'required|numeric',
-            'num_rut' => 'required|numeric',
             'ciudad' => 'required|string',
             'estado' => 'required|numeric|max:1',
             'banco' => 'required|string|max:255',
@@ -237,7 +251,7 @@ class NuevoPersonal extends Component
             $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
-        if ((!$this->rut && !$this->tercero->rut) && !Auth::check()){
+        if (((!$this->rut && !$this->tercero->rut) && !Auth::check()) && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
@@ -330,7 +344,7 @@ class NuevoPersonal extends Component
         unset($this->evidencias[$itemId]);
     }
 
-    public function saveEvidencia(){ 
+    public function saveEvidencia(){
         foreach($this->evidencias as $evidencia){
             $this->orden->evidencias()->create([
                 'fecha_evidencia' => $evidencia['fecha'],
