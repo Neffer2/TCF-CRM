@@ -20,7 +20,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div>
+                        </div> 
                         <div class="form-group">
                             <h6 style="margin: 0">Observaciones (opcional):</h6>
                             <div style="font-size: 9px;">
@@ -44,6 +44,13 @@
                                 {{ $message }}
                             </div>
                         @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">                    
+                        <a href="{{ asset(str_replace('public', 'storage', $orden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a>
                     </div>
                 </div>
             </div>

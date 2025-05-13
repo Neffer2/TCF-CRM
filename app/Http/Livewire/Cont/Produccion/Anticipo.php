@@ -12,7 +12,7 @@ class Anticipo extends Component
 {
     use WithFileUploads, Email;
 
-    // Models
+    // Models 
     public $causa_cod, $observacion_causacion;
 
     // Useful vars

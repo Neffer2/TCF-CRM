@@ -201,7 +201,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table> 
         </div>
     </div>
 
@@ -476,7 +476,7 @@
                                                 ¿Estas seguro de eliminar esta orden?
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-success" wire:click="validateEvidencia(5)">Aprobar</button>
+                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(5)">Aprobar</button>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             </div>
                                         </div>
@@ -492,10 +492,10 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                ¿Estas seguro de eliminar esta orden?
+                                                ¿Estas seguro de rechazar esta orden?
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-danger" wire:click="validateEvidencia(7)">Rechazar</button>
+                                                <button type="button" class="btn bg-gradient-danger" data-bs-dismiss="modal" wire:click="validateEvidencia(7)">Rechazar</button>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             </div>
                                         </div>

@@ -227,7 +227,7 @@ class Natural extends Component
             'cedula' => $this->cedula,
             'correo' => $this->correo,
             'telefono' => $this->telefono,
-            'ciudad' => $this->ciudad,
+            'ciudad' => $this->ciudad, 
             'banco' => $this->banco
         ]);
 
@@ -434,10 +434,18 @@ class Natural extends Component
         * EVIDENCIAS
     */
     public function validateEvidencia($estado){
+        if ($estado == 5) {
+            $this->validate([
+                'cod_oc' => 'required|string',
+                'oc_helisa' => 'required|file|mimes:pdf|max:2048'
+            ]);
+            
+            $this->queriedOrden->cod_oc = $this->cod_oc;
+            $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
+        }
+        
         $this->queriedOrden->estado_id = $estado;
         $this->queriedOrden->update();
-
-
 
         return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
     }
