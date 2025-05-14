@@ -362,6 +362,8 @@ class NuevoPersonal extends Component
             'fotoEvidencia',
             'observacionEvidencia'
         ]);
+
+        return redirect()->route('consulta-terceros');
     }
 
     /*

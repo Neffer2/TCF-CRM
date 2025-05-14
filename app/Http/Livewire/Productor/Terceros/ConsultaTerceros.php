@@ -21,7 +21,15 @@ class ConsultaTerceros extends Component
             array_push($filtro, ['tipo_oc', 2]);
 
             // Trae ordenes con estado Editable o Evidencias
-            $orden = OrdenCompra::where($filtro)->whereIn('estado_id', [3, 7])->first();
+            $query = OrdenCompra::where($filtro)->whereIn('estado_id', [3, 7])->first();
+
+            if ($query && (!$query->naturalInfo->terminos && $query->estado_id == 3)) {
+                $orden = $query;
+            }elseif ($query && ($query->naturalInfo->terminos && $query->estado_id == 7)) {
+                $orden = $query;
+            }else {
+                $orden = null;
+            }
         }
 
         return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden]);
