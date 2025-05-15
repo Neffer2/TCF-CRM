@@ -416,8 +416,14 @@
                                     Confirmar informaci&oacute;n
                                 </button>
                                 @if ($contrato)
-                                    <div class="d-flex justify-content-center">
+                                    <div class="d-none d-md-block" style="width:100%;">
                                         <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
+                                    </div>
+
+                                    <div class="d-block d-md-none text-center w-100">
+                                        <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
+                                            Ver contrato (abrir PDF)
+                                        </a>
                                     </div>
 
                                     <div class="col-md-12 mt-3">
@@ -791,13 +797,21 @@
                             </div>
                         </div>
                         @guest
-                            <div class="col-md-12">
+                            {{-- <div class="col-md-12">
                                 <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
                                     Confirmar informaci&oacute;n
                                 </button>
                                 @if ($contrato)
                                     <div class="d-flex justify-content-center">
-                                        <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
+                                        <div class="d-none d-md-block" style="width:100%;">
+                                            <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
+                                        </div>
+
+                                        <div class="d-block text-center w-100">
+                                            <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
+                                                Ver contrato (abrir PDF)
+                                            </a>
+                                        </div>
                                     </div>
 
                                     <div class="col-md-12 mt-3">
@@ -816,7 +830,7 @@
                                         </div>
                                     </div>
                                 @endif
-                            </div>
+                            </div> --}}
                         @endguest
                     </div>
                 </div>
