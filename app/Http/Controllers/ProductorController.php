@@ -6,7 +6,6 @@ use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Año;
 
-
 class ProductorController extends Controller
 {
 
@@ -20,8 +19,7 @@ class ProductorController extends Controller
     public function index(){
         // id_estado =  1 CERRADO
         $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->whereHas('baseComercial', function($query){
-            // return $query->where('id_estado', '!=', 1);
-            return true;
+            return $query->where('id_estado', '!=', 1);
         })
         ->where([
             ['productor', Auth::id()],
