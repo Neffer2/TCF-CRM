@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Proveedor;
+use App\Models\Año;
+
 
 class ProductorController extends Controller
 {
@@ -17,7 +18,16 @@ class ProductorController extends Controller
     */
 
     public function index(){
-        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', Auth::id())->orderBy('id', 'desc')->get();
+        // id_estado =  1 CERRADO
+        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->whereHas('baseComercial', function($query){
+            return $query->where('id_estado', '!=', 1);
+        })
+        ->where([
+            ['productor', Auth::id()],
+            ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
+        ])->orderBy('id', 'desc')
+        ->paginate(15);
+
         return view('productor.index', ['proyectos' => $proyectos]);
     }
 

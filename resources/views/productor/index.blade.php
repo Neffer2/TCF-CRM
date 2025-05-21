@@ -12,12 +12,19 @@
                     <h3 class="mb-4">Proyectos</h3>
                     <div class="row">
                         <div class="col-md-2 mb-3">
-                            <div class="list-group">
-                                <select x-on:change="Open" x-model="proyecto" id="proyecto" class="form-control" size="31" style="overflow-x: auto;">
-                                    @foreach ($proyectos as $proyecto)
-                                        <option value="{{ $proyecto->id }}">{{ $proyecto->cod_cc }} - {{ $proyecto->gestion->nom_proyecto_cot }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="list-group">
+                                        <select x-on:change="Open" x-model="proyecto" id="proyecto" class="form-control" size="18" style="overflow-x: auto;">
+                                            @foreach ($proyectos as $proyecto)
+                                                <option value="{{ $proyecto->id }}">{{ $proyecto->cod_cc }} - {{ $proyecto->gestion->nom_proyecto_cot }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="overflow-x: auto;">
+                                    {{ $proyectos->links() }}
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-10">
