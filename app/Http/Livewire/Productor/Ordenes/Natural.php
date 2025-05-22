@@ -10,10 +10,11 @@ use App\Models\OcItem;
 use App\Models\NaturalInfo;
 use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Natural extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     // Models
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
@@ -22,7 +23,7 @@ class Natural extends Component
             $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa;
 
     // Useful vars
-    public $terceros, $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
+    public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
             $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal,
             $queriedOrden;
 
@@ -68,7 +69,7 @@ class Natural extends Component
             array_push($filtros, ['telefono', 'like', '%' . $this->search_telefono . '%']);
         }
 
-        $this->terceros = Tercero::select('id', 'nombre', 'apellido', 'cedula', 'cert_bancaria', 'rut')->where($filtros)->get();
+        return $this->terceros = Tercero::select('id', 'nombre', 'apellido', 'cedula', 'cert_bancaria', 'rut')->where($filtros)->limit(50)->get();
     }
 
     public function getPresupuestos(){
@@ -227,7 +228,7 @@ class Natural extends Component
             'cedula' => $this->cedula,
             'correo' => $this->correo,
             'telefono' => $this->telefono,
-            'ciudad' => $this->ciudad, 
+            'ciudad' => $this->ciudad,
             'banco' => $this->banco
         ]);
 
@@ -439,11 +440,11 @@ class Natural extends Component
                 'cod_oc' => 'required|string',
                 'oc_helisa' => 'required|file|mimes:pdf|max:2048'
             ]);
-            
+
             $this->queriedOrden->cod_oc = $this->cod_oc;
             $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
         }
-        
+
         $this->queriedOrden->estado_id = $estado;
         $this->queriedOrden->update();
 

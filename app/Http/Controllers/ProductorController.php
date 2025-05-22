@@ -26,7 +26,7 @@ class ProductorController extends Controller
             ['productor', Auth::id()],
             ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
         ])->orderBy('id', 'desc')
-        ->paginate(15);
+        ->paginate(17);
 
         return view('productor.index', ['proyectos' => $proyectos]);
     }

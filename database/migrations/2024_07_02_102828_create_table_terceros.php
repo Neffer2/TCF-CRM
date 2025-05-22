@@ -15,19 +15,19 @@ class CreateTableTerceros extends Migration
     {
         Schema::create('terceros', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('apellido');
-            $table->string('cedula');
-            $table->string('correo');
-            $table->string('telefono');
+            $table->string('nombre')->nullable();
+            $table->string('apellido')->nullable();
+            $table->string('cedula')->nullable();
+            $table->string('correo')->nullable();
+            $table->string('telefono')->nullable();
             $table->string('servicio')->nullable();
-            $table->string('ciudad');
+            $table->string('ciudad')->nullable();
             $table->string('banco')->nullable();
             $table->string('num_rut')->nullable();
             $table->string('rut')->nullable();
             $table->string('cert_bancaria')->nullable();
             $table->string('copia_cedula')->nullable();
-            $table->foreignId('estado');
+            $table->foreignId('estado')->default(1);
             $table->foreign('estado')->references('id')->on('estados_tercero');
             $table->timestamps();
         });
