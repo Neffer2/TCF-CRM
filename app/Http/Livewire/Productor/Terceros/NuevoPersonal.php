@@ -122,7 +122,7 @@ class NuevoPersonal extends Component
     }
 
     public function actualizarTercero(){
-        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             $this->validate([
                 'num_rut' => 'required|numeric'
             ]);
@@ -153,7 +153,7 @@ class NuevoPersonal extends Component
         $tercero->cedula = trim($this->cedula);
         $tercero->correo = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
-        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){ $tercero->num_rut = trim($this->num_rut); }
+        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){ $tercero->num_rut = trim($this->num_rut); }
         $tercero->ciudad = $this->ciudad;
         $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
@@ -179,7 +179,7 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
-        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             //
             if (!$tercero->rut && !Auth::check()){
                 $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
