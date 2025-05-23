@@ -160,7 +160,7 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">PROYECTO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CENTRO DE COSTOS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">ITEM</th>
-                        <th class="font-weight-bold bg-gradient-primary text-white">NOMBRE ITEM</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">NUM ITEM</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
@@ -180,7 +180,7 @@
                             <td>{{ $item['proyecto']['nombre'] }}</td>
                             <td>{{ $item['proyecto']['cod_cc'] }}</td>
                             <td>{{ $item['item']['nombre'] }}</td>
-                            <td>{{ $item['item']['cod_cc'] }}</td>
+                            <td>{{ $item['item']['display_item'] }}</td>
                             <td>{{ $item['cant'] }}</td>
                             <td>{{ $item['dias'] }}</td>
                             <td>{{ $item['otros'] }}</td>
@@ -229,7 +229,7 @@
                     <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
                         <option value="">Seleccionar</option>
                         @foreach ($items_presupuesto as $item_presupuesto)
-                            <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }}</option>
+                            <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
                         @endforeach
                     </select>
                     @error('item_presupuesto')
@@ -475,7 +475,7 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                ¿Estas seguro de eliminar esta orden?
+                                                ¿Estas seguro de aprobar esta orden?
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(5)">Aprobar</button>

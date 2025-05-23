@@ -6,9 +6,13 @@
         }
 
         .table {
-            margin-top: 2rem;
+            margin-top: 1rem;
             color: black !important;
             width: 100%;
+        }
+
+        .table-list {
+            margin: .5rem 3rem;
         }
 
         p {
@@ -45,112 +49,173 @@
 </head>
 <body>
     <div class="container">
-        <h3 class="title">CONTRATO DE PRESTACIÓN DE SERVICIOS TÉCNICOS ESPECIALIZADOS O PROFESIONALES</h3> <br>
+        <h3 class="title">CONTRATO DE PRESTACION DE SERVICIOS.</h3> <br>
         <p>
-            Entre los suscritos a saber: Por una parte, la sociedad <b>BULL MARKETING S.A.S.</b> legalmente constituida
-            e inscrita en la Cámara de Comercio de Bogotá e identificada con NIT. 900.298.176-1 y representada
-            legalmente según certificado de cámara de comercio y quien para los efectos del presente contrato se
-            denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el (a) Señor (a) <b>{{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</b> mayor de edad, identificado como aparece al pie de su firma y quien se
-            denominará <b>EL CONTRATISTA</b>, en adelante “Las Partes” manifestamos que hemos acordado en
-            celebrar el presente contrato civil de <b>PRESTACIÓN DE SERVICIOS</b> que se regirá por las siguientes: <br>
+            Entre los suscritos a saber, <b>BULL MARKETING SAS</b>, sociedad legalmente constituida e identificada con
+            el NIT. 900.298.176-1 y con domicilio principal en la ciudad de Bogotá D.C., y representada por el Sr.
+            LUIS ALEJANDRO RODRÍGUEZ MENDOZA identificado como aparece al pie de su firma quien en lo
+            sucesivo se denominará <b>LA SOCIEDAD CONTRATANTE</b>, y por la otra el Sr. <b>{{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</b>,
+            persona mayor de edad e identificado con la cédula de ciudadanía No. {{ $contratoInfo['tercero']->cedula }} y quien, para los
+            efectos del presente contrato, se identificará con su número de RUT. Nº {{ $contratoInfo['num_rut'] }}, y quien actuará
+            en calidad de <b>EL CONTRATISTA</b>, en adelante “Las Partes” han decidido y acordar celebrar el presente
+            <b>CONTRATO DE PRESTACION DE SERVICIOS</b>, que se regirá por las siguientes: <br>
         </p>
         <h3 class="title"> CLÁUSULAS: </h3>
         <p>
-            <b>Primera: OBJETO.</b> - EL CONTRATISTA se obliga para con LA SOCIEDAD CONTRATANTE a prestar el
-            servicio de
-            <b>
-                @foreach ($contratoInfo['items'] as $item)
-                    {{ $item->tipo_servicio }},
-                @endforeach
-            </b>
-            para la Empresa Contratante. <b>Parágrafo Primero.</b> - No obstante, las partes en uso de su autonomía y sin que
-            exista subordinación, definirán con EL CONTRATISTA los tiempos y sobre los cuales versarán los
-            servicios que éste prestará de manera independiente; igualmente EL CONTRATISTA se obliga a realizar
-            su actividad independiente bajo el esquema de ROLLES Y FUNCIONES, documento anexo al cual se
-            obliga EL CONTRATISTA; es decir, de no cumplir las expectativas LA SOCIEDAD CONTRATANTE,
-            podrá dar por finalizado el presente contrato, sin que medie indemnización alguna. <b>Segunda. - NATURALEZA JURÍDICA.</b>
-            - El presente contrato es de orden mercantil, y no conlleva para EL
+            <b>PRIMERA.- OBJETO DEL CONTRATO:</b> El objeto del contrato será la prestación por parte de EL
+            CONTRATISTA de la actividad de <b> @foreach ($contratoInfo['items'] as $item) {{ $item->tipo_servicio }}, @endforeach</b>
+            quien para el presente contrato es profesional en el procedimiento de extensión de pestañas semipermanentes, por esta razón EL
+            CONTRATISTA asumirá la responsabilidad de todos las obligaciones emanadas del presente contrato,
+            dada la índole profesional y especializada que ostenta, características del EL CONTRATISTA necesarias
+            para poder cumplir con el objeto del presente contrato.
+        </p>
+        <br>
+        <p>
+            <b>SEGUNDA.- NATURALEZA JURÍDICA:</b> El presente contrato es de orden mercantil, y no conlleva para EL
             CONTRATISTA relaciones de subordinación o dependencia laboral, técnica o administrativa.
-            Consecuentemente, EL CONTRATISTA utilizará sus propios medios, conocimientos, técnicas y
+            Consecuentemente EL CONTRATISTA utilizará sus propios medios, conocimientos, técnicas y
             capacidades para prestar el servicio independiente contratado. El presente contrato tampoco genera
             relación laboral de ninguna naturaleza con Empleados o Dependientes contratados al servicio de EL
             CONTRATISTA ya que no se ampara en supuestos de subordinación jurídica ni dependencia jerárquica.
-            <b>Parágrafo Primero. -</b> Es entendido que EL CONTRATISTA asume como obligación la prestación de los
-            servicios dando estricto cumplimiento a todas las normas y reglamentaciones vigentes tributaria y tanto
-            de carácter ético como reglamentario, contempladas en la Legislación Nacional. Igualmente asume la
-            responsabilidad de carácter civil, penal o administrativa que pueda derivarse por la consumación de
-            infracciones a las disposiciones vigentes, o por perjuicios ocasionados a terceros, tanto de carácter
-            jurídico como económico. <b>Tercera. – CONTRAPRESTACIÓN:</b> LA SOCIEDAD CONTRATANTE
-            reconocerá y pagará a EL CONTRATISTA una contraprestación a titulo de honorarios en cuantía y en los
-            plazos establecidos en cada una de las ÓRDENES DE SERVICIOS semanales o quincenales, que las
-            partes acuerden, y que estarán sujetas a las actividades previamente acordadas con EL CONTRATISTA,
-            ordenes que haran parte anexa al presente contrato y de las cuales se determina el valor del servicio por
-            cada actividad desarrollada efectivamente por EL CONTRATISTA. <b>Cuarta. – DURACIÓN:</b> El presente
-            contrato tendrá la duración que fijen las partes en cada uno de los anexos ordenes de servicios o
-            propuestas comerciales, según las actividades contratadas y que desarrolle efectivamente EL
-            CONTRATISTA. No obstante, lo expresado, LA SOCIEDAD CONTRATANTE podrá revocar en cualquier
-            tiempo, durante la ejecución del presente contrato y cuando a juicio de esta o de la asamblea de
-            accionistas así lo determinen, el presente acuerdo o revocar un servicio o actividad de acuerdo con cada
-            propuesta. <b>Quinta. - OBLIGACIONES DE LAS PARTES:</b> 1.- DEL CONTRATISTA. - a) A prestar sus
-            servicios técnicos y/o profesionales en las condiciones y bajo los lineamientos que establezca LA
-            SOCIEDAD CONTRATANTE. b) Realizar sus servicios atendiendo las directrices de LA SOCIEDAD
-            CONTRATANTE, sin que este acatamiento se asemeje a subordinación laboral, pues se trata de un
-            servicio especializado e independiente, con plena autonomía por parte de EL CONTRATISTA. c) Será
-            - 2 -
-            una obligación principal de EL CONTRATISTA, afiliarse y pagar las cotizaciones a la seguridad social
-            integral como contratista independiente, y deberá allegar con cada cuenta de cobro los comprobantes
-            que acrediten mensualmente o por todo el tiempo del contrato de conformidad con la cuantía de los
-            servicios pactados y en los términos de Ley. 2.- DE LA SOCIEDAD CONTRATANTE: d) Disponer al
-            CONTRATISTA de todos los medios necesarios para que pueda ejercer sus servicios de manera libre e
-            independiente en los términos acordados y fijados en este contrato y en cada uno de los anexos
-            específicos por cada servicio. e) Exigir al CONTRATISTA periódicamente el pago a la Seguridad Social
-            Integral, para poder cancelar los honorarios por los servicios causados f). Pagar los honorarios
-            acordados, en las fechas establecidas y durante la vigencia del contrato, según cada orden de servicios.
-            <b>Sexta.- CAUSALES DE TERMINACIÓN.-</b> Acuerdan las partes que el presente contrato finalizará por una
-            de las siguientes circunstancias: a) Por decisión unilateral de cualquiera de las partes: b) Por que EL
-            CONTRATISTA no cumpla con sus obligaciones, en los términos aquí pactados. c) Por que EL
-            CONTRATISTA no cumpla con la obligación legal de afiliación y cotización al Sistema de Seguridad
-            Social Integral para los riesgos de salud, pensión y ARL a que este obligado como trabajador
-            independiente, de acuerdo con las estipulaciones legales que sobre el particular exija la legislación civil,
-            comercial y de Seguridad social Integral. d) Por mutuo acuerdo entre las partes. e) Por que no se generen
-            servicios por más de treinta (30) días, o no se acuerde con el CONTRATISTA órdenes de servicios o no
-            se disponga de los servicios del CONTRATISTA. En todos los casos, la parte que quiera dar por
-            terminado el servicio aquí pactado, notificará a la otra por escrito y con una anticipación no menor de
-            cinco (5) días; sin que por tal circunstancia se genere indemnización para EL CONTRATISTA. <b>Séptima:
-            PROTECCIÓN DE DATOS O HABEAS DATA.-</b> EL CONTRATISTA, como consecuencia del presente
-            contrato autoriza expresamente a LA SOCIEDAD CONTRATANTE a suministrar u ofrecer información
-            relacionada con el presente contrato y/o con sus datos personales en los casos en que con ocasión de su
-            actividad como PUBLICISTA, sean necesarios dar a conocer, por su actividad profesional o como
-            consecuencia de la información suministrada ante las entidades competentes, según solicitud, expresa o
-            de autoridad, exceptuando la información “sensible”, conforme al decreto 1377 del 27 de junio de 2.013,
-            que reglamenta la ley 1581 del 2.012. <b>Octava:- CONFIDENCIALIDAD:</b> Las Partes reconocen y aceptan
-            que toda la información relacionada con el manejo de la información es confidencial. En consecuencia, se
-            obligan en estricto cumplimiento del presente contrato, a no revelar esta información durante el término
-            del mismo, ni una vez terminado el Contrato por cualquier causa. Para tal efecto, las Partes se obligan a
-            utilizar esta información confidencial únicamente para los fines para los cuales les fue proporcionada, la
-            mantendrán en estricta reserva y no la usarán ni revelarán a ninguna persona, natural o jurídica, salvo
-            que cuente con autorización expresa y escrita de la otra parte. El incumplimiento a lo establecido en esta
-            cláusula por cualquiera de las Partes implica un incumplimiento de las obligaciones contractuales y dará
-            derecho a la terminación del presente Contrato, sin perjuicio de las demás acciones que pueda tomar la
-            parte cumplida derivadas de la violación a la confidencialidad pactada. <b>Novena:- PROHIBICIÓN DE
-            CESIÓN.-</b> El presente contrato se realiza teniendo en cuenta la calidad, conocimientos técnicos y
-            habilidades profesionales del CONTRATISTA y por lo tanto no puede ser cedido ni en todo ni en parte.
-            <b>Décima:- LEY APLICABLE.-</b> El presente Contrato y la relación comercial que surja ente las Partes en
-            virtud del mismo, se regirá por la ley de la República de Colombia y cualquier diferencia que surja entre
-            las Partes como consecuencia de este Contrato deberá ser puesta primeramente en conocimiento de las
-            partes, con el fin de agotar el arreglo directo, que podrá ser a través de una conciliación o transacción,
-            para ello se fija un término de cinco (5) días hábiles; en caso de fracasar esta etapa; las partes acudirán a
-            un Tribunal de Arbitramento, ante una entidad competentes y se seguirán las reglas allí establecidas,
-            para todos los efectos legales el domicilio contractual será la ciudad de Bogotá D.C.. <b>Décima Primera.
-            PERFECCIONAMIENTO.-</b> El presente contrato se perfeccionará con la firma de las partes, para
-            - 3 -
-            constancia se suscribe en la ciudad de Bogotá, en dos ejemplares del mismo tenor y valor, a los
-            <b>{{  $contratoInfo['dia_str'] }} ({{ $contratoInfo['dia'] }}) </b> días del mes de <b>{{ $contratoInfo['mes'] }}</b> del año <b>{{ $contratoInfo['ano'] }}.
+            Parágrafo Primero: Igualmente podrá LA SOCIEDAD CONTRATANTE señalar a EL CONTRATISTA
+            variaciones en la programación, así como definir políticas y filosofías propias de la entidad
+            CONTRATANTE a las cuales debe sujetarse EL CONTRATISTA en desarrollo de su gestión, sin que por
+            ello signifique subordinación de ningún tipo. Parágrafo Segundo: EL CONTRATISTA se obliga a mantener
+            indemne a LA SOCIEDAD CONTRATANTE ante cualquier reclamación que se pueda presentar en virtud
+            del desarrollo del presente contrato, o como consecuencia del mismo. Así mismo, EL CONTRATISTA
+            deberá cumplir en forma eficiente y oportuna su labor y las demás obligaciones que se generen de
+            acuerdo con la naturaleza del servicio que presta y especialmente se obliga a dar cumplimiento a lo
+            estipulado en el Art. 15 de la Ley 100/93, modificado por el Art. 3º. de la Ley 707/2003 y el Art. 1º.
+            del D.R. 510/2003 y demás normas concordantes, en lo que se refiere a la obligatoriedad de su
+            afiliación y/o la de sus empleados o trabajadores al Sistema General de Seguridad Social y Riesgos
+            Laborales (Pensiones, Salud y ARL),cuando ello fuere legalmente obligatorio. Su incumplimiento dará
+            lugar a la terminación del contrato suscrito entre las partes. Parágrafo Tercero: Así mismo, LA
+            SOCIEDAD CONTRATISTA se obliga a pres
         </p>
+        <br>
+        <p>
+            <b>TERCERA.- REQUISITOS PARA EL PAGO:</b> LA SOCIEDAD CONTRATANTE, realizara los pagos durante la
+            vigencia de la relación profesional y por servicios, y dentro de los cinco (5) días siguientes a la
+            presentación de la cuenta de cobro, pago que se podrá hacer mediante transferencia electrónica de
+            fondos a la cuenta previamente indicada por EL CONTRATISTA, siempre y cuando se cumpla y alleguen
+            los siguientes documentos:
+        </p>
+        <table class="table-list">
+            <tr>
+                <td><b>a)</b> Cuenta de cobro.</td>
+            </tr>
+            <tr>
+                <td><b>b)</b> RUT.</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>c)</b> Copia de la planilla de liquidación de aportes a la Seguridad Social Integral con soporte de pago,
+                    realizado durante los primeros <br> cinco (5) días hábiles de cada mes; de no hacerlo en el tiempo
+                    estipulado el contrato se dará por terminado. Esto en los términos <br> del Art.18 de la ley 1122 de
+                    enero de 2007 y el Decreto 1273 de 2018.
+                </td>
+            </tr>
+        </table>
+        <p>
+            <b>CUARTA.- LUGAR y VIGILANCIA DEL CONTRATO:</b> Para todos los efectos legales el lugar de ejecución
+            del presente contrato será la ciudad de {{ $contratoInfo['ciudad'] }}, LA SOCIEDAD CONTRATANTE o su representante
+            podrán supervisar la ejecución de las actividades que debe realizar EL CONTRATISTA durante la vigencia
+            del presente Contrato. LA SOCIEDAD CONTRATANTE Y El CONTRATISTA conviene que este Contrato
+            entrará en vigencia a partir del día {{ $contratoInfo['dia_str'] }} ({{ $contratoInfo['dia'] }}) de {{ $contratoInfo['mes'] }}
+            del año {{ $contratoInfo['ano'] }}; No obstante, el presente contrato
+            finalizará por voluntad de una de las partes, para lo cual se fija un aviso previo de cinco (05) días hábiles,
+            para que la parte interesada en no continuar con el servicio le comunique a la otra por escrito, sin que
+            el hecho de la terminación unilateral dé lugar a pago alguno de indemnización.
+        </p>
+        <br>
+        <p>
+            <b>QUINTA.- OBLIGACIONES DE LAS PARTES:</b> a) LA SOCIEDAD CONTRATANTE deberá facilitar lo necesario
+            para la debida ejecución objeto del contrato y estará obligada a cumplir lo estipulado en las demás
+            cláusulas y condiciones previstas en este documento, entre ellas el pago oportuno de los HONORARIOS
+            a favor de EL CONTRATISTA; b) EL CONTRATISTA pondrá todo su empeño, cuidado, capacidad y
+            profesionalismo para el desarrollo del objeto pactado en la cláusula PRIMERA y SEGUNDA de éste
+            contrato y a fin de evitar la causación de perjuicios para sí o para LA SOCIEDAD CONTRATANTE.
+        </p>
+        <br>
+        <p>
+            <b>SEXTA.- AUDITORIA:</b> LA SOCIEDAD CONTRATANTE estará en libertad de realizar auditorías totales o
+            parciales en cualquier tiempo, con el fin de revisar que EL CONTRATISTA este desarrollando el objeto del
+            contrato de acuerdo a las condiciones establecidas. EL CONTRATISTA deberá permitir que se realicen
+            dichas auditorias, además de atender en debida forma los requerimientos o ajustes que se puedan
+            generar por dichas auditorias, siempre en procura de prestar un excelente servicio profesional.
+        </p>
+        <br>
+        <p>
+            <b>SÉPTIMA.- TERMINACIÓN ANTICIPADA:</b> Las partes acuerdan que podrán dar por terminado de común
+            acuerdo el presente contrato antes de su vencimiento, mediante comunicación por escrita con un
+            preaviso de cinco (05) días, previa presentación del paz y salvo, que deberá expedir LA SOCIEDAD
+            CONTRATANTE, donde advierta que EL CONTRATISTA no tiene pendientes de ningún tipo ni bajo ningún
+            concepto. Los Honorarios pactados se cancelarán a prorrata de acuerdo a las actividades y ejecutada
+            por EL CONTRATISTA, y durante la vigencia del contrato.
+        </p>
+        <br>
+        <p>
+            <b>OCTAVA.- CAUSALES DE TERMINACIÓN.</b> El contrato terminará por las siguientes causas:
+        </p>
+        <table class="table-list">
+            <tr>
+                <td><b>a)</b> Vencimiento del término inicialmente pactado.</td>
+            </tr>
+            <tr>
+                <td><b>b)</b> Por incumplimiento de las obligaciones pactadas en el contrato, para lo cual bastará
+                    comunicación por escrito indicando <br> los motivos que conllevan a la terminación.</td>
+            </tr>
+            <tr>
+                <td><b>c)</b> Por mutuo acuerdo entre las partes. En este caso, se deberá aplicar dentro de lo pactado la
+                    terminación anticipada establecida <br>en la cláusula anterior del presente contrato.</td>
+            </tr>
+            <tr>
+                <td><b>d)</b> Por decisión unilateral de una de las partes, para lo cual se deberá de cumplir con el preaviso
+                    pactado en este contrato.</td>
+            </tr>
+            <tr>
+                <td><b>e)</b> Por que el CONTRATISTA no cumpla con la obligación legal de estar afiliado a la seguridad social
+                    como contratista <br> independiente en los términos Decreto 1273 de 2018 y la Ley 2381 de 2024.</td>
+            </tr>
+        </table>
+        <p>
+            <b>NOVENA.- CONFIDENCIALIDAD:</b> El CONTRATISTA queda obligado a guardar reserva absoluta sobre la
+            información del negocio de LA SOCIEDAD CONTRATANTE a la cual tenga acceso, conozca, analice,
+            cualifique y cuantifique con ocasión de la ejecución del presente contrato.
+        </p>
+        <br>
+        <p>
+            <b>DÉCIMA.- PROPIEDAD INTELECTUAL:</b> EL CONTRATISTA reconoce que la información, documentos,
+            informes, estudios, diseños, programas, bases de datos y demás productos que se generen en virtud del
+            presente contrato son de propiedad exclusiva de LA SOCIEDAD CONTRATANTE y no podrá hacer uso de
+            ellos sin la autorización previa y escrita de LA SOCIEDAD CONTRATANTE.
+        </p>
+        <table class="table" style="padding: 0 3rem;">
+            <tr>
+                <td>
+                    <p class="bold">LA SOCIEDAD CONTRATANTE:<br></p>
+                    <p><b>DIRECCIÓN:</b> carrera 53 c #127 d 23. <br></p>
+                    <p><b>TELÉFONO:</b> (+57) 318 3723773. <br></p>
+                    <p><b>EMAIL:</b> info@bullmarketing.com.co <br></p>
+                </td>
+                <td>
+                    <p class="bold">EL CONTRATISTA:<br></p>
+                    <p><b>TELÉFONO:</b> (+57) {{ $contratoInfo['telefono'] }}. <br></p>
+                    <p><b>EMAIL:</b> info@bullmarketing.com.co <br></p>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <p>
+            Para constancia y aceptación de lo anterior, se firma el presente contrato en la ciudad de Bogotá D.C.,
+            en dos ejemplares del mismo tenor, a los {{ $contratoInfo['dia_str'] }} ({{ $contratoInfo['dia'] }}) días del mes de {{ $contratoInfo['mes'] }} de {{ $contratoInfo['ano'] }} por las
+            partes que en el intervienen.
+        </p>
+        <br>
         <table class="table">
             <tr>
                 <td style="text-align: center;">
-                    <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br><br></p>
+                    <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br></p>
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign.png'))) }}" alt="Firma">
                     <p class="bold">__________________________</p>
                     <p class="bold">BULL MARKETING S.A.S.</p>
@@ -158,21 +223,22 @@
                     <p>NIT. 900.298.176-1</p>
                 </td>
                 <td style="text-align: center;">
-                    <p class="bold">EL CONTRATISTA. <br><br><br><br></p>
+                    <p class="bold">EL CONTRATISTA. <br><br><br></p>
                     <p class="sign"> {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
                     <p class="bold">__________________________</p>
                     <p class="bold">Nombre: {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
-                    <p>RUT. {{ $contratoInfo['num_rut'] }}</p>
+                    <p>CEDULA. {{ $contratoInfo['num_rut'] }}</p>
                     <p><br></p>
                 </td>
             </tr>
         </table>
+        <br><br><br>
         <table class="table legal">
             <tr>
                 <td>
                     <p>
                         Vo. Bo. <br>
-                        Líder Legal – 01-09-2024
+                        Líder Legal – 13-05-2025
                     </p>
                 </td>
             </tr>

@@ -26,4 +26,13 @@ class ItemPresupuesto extends Model
     public function proveedorInfo(){
         return $this->hasOne(Proveedor::class, 'id', 'proveedor');
     }
+
+    // Obtiene el item que reconocen los productores
+    public function displayItem(){
+        foreach ($this->presto->presupuestoItems as $key => $item) {
+            if ($this->id == $item->id){
+                return $key+1;
+            }
+        }
+    }
 }

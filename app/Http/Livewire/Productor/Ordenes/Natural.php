@@ -16,7 +16,7 @@ class Natural extends Component
 {
     use WithFileUploads, WithPagination;
 
-    // Models
+    // Modelsv
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
@@ -111,7 +111,8 @@ class Natural extends Component
             'item' => [
                 'id' => $item->id,
                 'nombre' => $item->descripcion,
-                'cod_cc' => $presupuesto->cod_cc
+                'cod_cc' => $presupuesto->cod_cc,
+                'display_item' => $item->displayItem()
             ],
             'tipo_servicio' => $this->tipo_servicio,
             'tipo_contrato' => $this->tipo_contrato,
@@ -388,7 +389,8 @@ class Natural extends Component
                 'item' => [
                     'id' => $item->itemPresupuesto->id,
                     'nombre' => $item->itemPresupuesto->descripcion,
-                    'cod_cc' => $item->itemPresupuesto->presto->cod_cc
+                    'cod_cc' => $item->itemPresupuesto->presto->cod_cc,
+                    'display_item' => $item->itemPresupuesto->displayItem()
                 ],
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
