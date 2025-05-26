@@ -258,6 +258,8 @@ class NuevoPersonal extends Component
         $contratoInfo = [
             'items' => $this->orden->ordenItems,
             'tercero' => $this->tercero,
+            'ciudad' => $this->ciudad,
+            'telefono' => $this->telefono,
             'dia' => Carbon::now()->format('d'),
             'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
             'mes' => Carbon::now()->translatedFormat('F'),
