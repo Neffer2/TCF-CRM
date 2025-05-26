@@ -18,10 +18,7 @@ class ProductorController extends Controller
 
     public function index(){
         // id_estado =  1 CERRADO
-        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->whereHas('baseComercial', function($query){
-            // return $query->where('id_estado', '!=', 1);
-            return true;
-        })
+        $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')
         ->where([
             ['productor', Auth::id()],
             ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
