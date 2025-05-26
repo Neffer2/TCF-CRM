@@ -178,7 +178,8 @@ class Natural extends Component
             'item' => [
                 'id' => $item->id,
                 'nombre' => $item->descripcion,
-                'cod_cc' => $presupuesto->cod_cc
+                'cod_cc' => $presupuesto->cod_cc,
+                'display_item' => $item->displayItem()
             ],
             'cant' => $this->cantidad,
             'dias' => $this->dias,

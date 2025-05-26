@@ -20,7 +20,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div> 
+                        </div>
                         <div class="form-group">
                             <h6 style="margin: 0">Observaciones (opcional):</h6>
                             <div style="font-size: 9px;">
@@ -49,39 +49,31 @@
             </div>
             <div class="col-md-6">
                 <div class="row">
-                    <div class="col-md-12">                    
-                        <a href="{{ asset(str_replace('public', 'storage', $orden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            @if ($orden->tipo_oc == 1)
-                <div class="col-md-6">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                @php
-                                    $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
-                                @endphp
-                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
-                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                    <span class="btn-inner--text">Orden de compra.</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                @php
-                                    $archivo_cot = str_replace('public/', '', $orden->archivo_cot);
-                                @endphp
-                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
-                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @elseif($orden->tipo_oc == 2)
+            @if($orden->tipo_oc == 2)
                 @if ($orden->naturalInfo->contrato)
                     <div class="card card-body px-3 py-0 mt-3">
                         <div class="table-responsive">

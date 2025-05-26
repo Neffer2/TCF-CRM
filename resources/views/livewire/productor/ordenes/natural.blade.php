@@ -359,7 +359,25 @@
                 @else
                     <!-- Button trigger modal -->
                     @if ($queriedOrden->naturalInfo->terminos == 1)
-                        <button wire:click="updateOC" class="btn bg-gradient-success mt-2 mb-0">CONFIRMAR INFORMACI&Oacute;N</button>
+                        <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
+
+                        <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar información</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Al confirmar la informaci&oacute;n, se solicitarán evidencias al Tercero.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button"wire:click="updateOC" data-bs-dismiss="modal" class="btn bg-gradient-success">Confirmar informaci&oacute;n</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     @endif
 
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
@@ -369,7 +387,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Elininar Orden</h1>
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Orden</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -390,13 +408,86 @@
         <div>
             @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
                 <div class="card mt-3">
-                    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-4">
+                    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 mb-2">
                                 <h3 class="mb-0">Evidencias</h3>
                                 <p class="text-sm mb-0">
                                     <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
                                 </p>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">C&eacute;dula</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tel&eacute;fono</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Servicio</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ciudad</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Banco</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">RUT</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificación Bancaria</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Copia c&eacute;dula</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->cedula }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->correo }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->telefono }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->servicio }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->ciudad }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->banco }}
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        {{ $queriedOrden->naturalInfo->tercero->num_rut }}
+                                                    </p>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Ver</a>
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->copia_cedula)) }}" target="_blank">Ver</a>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -577,6 +668,8 @@
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a>
                                 </p>
                             </td>
                         </tr>

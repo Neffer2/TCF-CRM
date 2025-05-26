@@ -233,13 +233,10 @@
             </tr>
         </table>
         <br><br><br>
-        <table class="table legal">
+        <table class="table legal" style="padding: 0 2.5rem;">
             <tr>
                 <td>
-                    <p>
-                        Vo. Bo. <br>
-                        Líder Legal – 13-05-2025
-                    </p>
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign_2.png'))) }}" alt="Firma" height="90">
                 </td>
             </tr>
         </table>

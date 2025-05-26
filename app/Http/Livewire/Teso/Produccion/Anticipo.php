@@ -36,7 +36,6 @@ class Anticipo extends Component
             'observacion_anticipo' => 'nullable|string'
         ]);
 
-
         $this->orden->archivo_comprobante_pago = $this->comprobante->store('public/ordenes_juridicas/anticipos');
         $this->orden->update();
 
