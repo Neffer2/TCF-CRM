@@ -515,7 +515,7 @@
                                         <tr>
                                             <td>
                                                 {{ $key+=1 }}
-                                            </td>
+                                            </td> 
                                             <td>
                                                 {{ $evidencia['fecha'] }}
                                             </td>
@@ -528,7 +528,7 @@
                                                 {{ $evidencia['observacion'] }}
                                             </td>
                                             <td>
-                                                <Button class="btn btn-danger" wire:click="deleteItem({{ $key-=1 }})">Eliminar</Button>
+                                                <Button class="btn btn-danger" wire:click="deleteEvidencia({{ $key-=1 }})">Eliminar</Button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -566,7 +566,7 @@
                         <div class="form-group">
                             <label for="observacionEvidencia">Observaciones: </label>
                             <textarea id="observacionEvidencia" type="text" class="form-control form-control @error('observacionEvidencia') is-invalid @elseif(strlen($observacionEvidencia) > 0) is-valid @enderror"
-                            wire:model.lazy="observacionEvidencia" placeholder="Observaciones"></textarea>
+                            wire:model.lazy="observacionEvidencia" placeholder="Indica el proyecto y el servicio que prestaste"></textarea>
                             @error('observacionEvidencia')
                                 <div id="observacionEvidencia" class="text-invalid">
                                     {{ $message }}

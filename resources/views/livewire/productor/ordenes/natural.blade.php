@@ -410,12 +410,16 @@
                 <div class="card mt-3">
                     <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
                         <div class="row">
-                            <div class="col-md-12 mb-2">
+                            <div class="col-md-12">
                                 <h3 class="mb-0">Evidencias</h3>
                                 <p class="text-sm mb-0">
                                     <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table align-items-center mb-0">
@@ -428,7 +432,8 @@
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Servicio</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ciudad</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Banco</th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">RUT</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Num RUT</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Archivo RUT</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificación Bancaria</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Copia c&eacute;dula</th>
                                             </tr>
@@ -474,6 +479,12 @@
                                                     <p class="text-xs text-secondary mb-0">
                                                         {{ $queriedOrden->naturalInfo->tercero->num_rut }}
                                                     </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">Ver</a>
+                                                    </p>
+                                                </td>
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
                                                         <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Ver</a>
@@ -489,22 +500,18 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 border-top mt-4 pt-4">
                                 <div class="table-responsive">
                                     <table class="table align-items-center mb-0">
                                         <thead>
-                                            <tr>
+                                            <tr> 
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($queriedOrden->evidencias as $evidencia)
+                                            @foreach ($queriedOrden->evidencias as $evidencia) 
                                                 <tr>
                                                     <td>
                                                         <p class="text-xs text-secondary mb-0">
@@ -667,8 +674,8 @@
                                 <p class="text-xs text-secondary mb-0">
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
-                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
-                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a>
                                 </p>
                             </td>

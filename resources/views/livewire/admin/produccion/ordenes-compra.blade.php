@@ -1,17 +1,28 @@
 @if (Auth::user()->rol == 1)
     <div>
         <div class="card">
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-4">
+            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
                 <div class="row">
                     <div class="col-md-12">
                         <h3 class="mb-0">Ordenes de compra</h3>
                         <p class="text-sm mb-0">Lista de ordenes de compra por revisar.</p>
                     </div>
-                    <div class="col-md-4">
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="año">Año:</label>
+                        <select wire:model="año" class="form-control">
+                            <option value="">Seleccionar</option>
+                            @foreach ($años as $año)
+                                <option value="{{ $año->id }}">{{ $año->description }}</option>
+                            @endforeach
+                        </select>
+                    </div>  
+                    <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <label for="filtro_fecha">Fecha:</label>
                         <select id="filtro_fecha" class="form-control" wire:model="fecha">
                             <option value="asc">Seleccionar</option>
@@ -19,12 +30,21 @@
                             <option value="desc">M&aacute;s recientes</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <label for="estado">Estados:</label>
                         <select id="estado" class="form-control" wire:model="estado">
                             <option value="">Seleccionar</option>
                             @foreach ($estados as $estado)
                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="Tipo">Tipo:</label>
+                        <select id="Tipo" class="form-control" wire:model="tipo">
+                            <option value="">Seleccionar</option>
+                            @foreach ($tipos as $tipo)
+                                <option value="{{ $tipo->id }}">{{ $tipo->description }}</option>
                             @endforeach
                         </select>
                     </div>

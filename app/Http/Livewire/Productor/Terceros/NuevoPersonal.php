@@ -327,20 +327,20 @@ class NuevoPersonal extends Component
         $this->validate([
             'fechaEvidencia' => 'required|date',
             'fotoEvidencia' => 'required|file|mimes:jpg,jpeg,png|max:10000',
-            'observacionEvidencia' => 'nullable|string|max:255'
+            'observacionEvidencia' => 'required|string|max:255'
         ]);
 
         $evidencia = [
             'fecha' => $this->fechaEvidencia,
             'foto' => $this->fotoEvidencia->store('public/evidencias'),
             'observacion' => $this->observacionEvidencia
-        ];
+        ]; 
 
         $this->evidencias->push($evidencia);
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
     }
 
-    public function deleteItem($itemId){
+    public function deleteEvidencia($itemId){
         $filePath = $this->evidencias[$itemId]['foto'];
         Storage::delete($filePath);
         unset($this->evidencias[$itemId]);

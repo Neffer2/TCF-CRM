@@ -7,6 +7,8 @@ use App\Models\OrdenCompra;
 use App\Models\EstadoOrdenesCompra;
 use App\Models\NaturalInfo;
 use Livewire\WithPagination;
+use App\Models\Año;
+use App\Models\TipoOrdenCompra;
 
 class OrdenesCompra extends Component
 {
@@ -14,10 +16,10 @@ class OrdenesCompra extends Component
     protected $paginationTheme = 'bootstrap'; 
 
     // Models
-    public $cod_cc, $fecha = 'desc', $estado; 
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo; 
      
     // Useful vars
-    public $estados = [];   
+    public $estados = [], $años = [], $tipos = [];    
 
     // Filled 
     public $productor_id;
@@ -28,6 +30,15 @@ class OrdenesCompra extends Component
         if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]); 
         }
+
+        if($this->año){
+            array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
+            array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
+        }  
+
+        if($this->tipo){
+            array_push($filtros, ['tipo_oc', $this->tipo]);
+        }  
      
         if ($this->cod_cc){    
             $ordenes = OrdenCompra::with('presupuesto')
@@ -51,9 +62,30 @@ class OrdenesCompra extends Component
 
     public function mount(){
         $this->getEstados(); 
+        $this->getAños();
+        $this->getTipos();
     }
+
+    public function getTipos(){
+        $this->tipos = TipoOrdenCompra::all();
+    } 
 
     public function getEstados(){
         $this->estados = EstadoOrdenesCompra::where('id', '<>', 3)->get();
     } 
+
+    public function getAños(){
+        $this->años = Año::all();
+        /* CURRENT YEAR */
+        $this->año = $this->años->sortByDesc('description')->first()->id;
+        $this->updatedAño();
+    }
+
+    public function updatedAño(){
+        $this->validate([
+            'año' => 'required'
+        ]);
+        
+        $this->yearInfo = Año::find($this->año);
+    }
 } 
