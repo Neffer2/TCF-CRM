@@ -8,13 +8,14 @@ use App\Models\PresupuestoProyecto;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
 use App\Models\NaturalInfo;
+use App\Traits\SMS;
 use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Natural extends Component
 {
-    use WithFileUploads, WithPagination;
+    use WithFileUploads, WithPagination, SMS;
 
     // Modelsv
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
@@ -52,6 +53,11 @@ class Natural extends Component
             $this->getData();
         }
     }
+
+    // public function sendMessage(){
+    //     $response = $this->saludo();
+    //     return redirect()->back()->with('success', $response);
+    // }
 
     public function getTerceros(){
         $filtros = [];

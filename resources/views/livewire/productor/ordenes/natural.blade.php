@@ -1,4 +1,5 @@
 <div class="card card-body mb-2" x-data>
+    {{-- <button wire:click="sendMessage">Mensaje</button> --}}
     <div class="row">
         <div class="col-md-12 mb-3">
             <h3 class="m-0">Orden de compra natural</h3>
@@ -36,7 +37,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="tercero">Tercero: <span class="text-danger">*</span></label>
-                                <select id="tercero" size="12" class="form-control" wire:model.change="tercero">
+                                <select @if (Auth()->user()->rol == 1) disabled @endif id="tercero" size="12" class="form-control" wire:model.change="tercero">
                                     @foreach ($terceros as $tercero)
                                         <option value="{{ $tercero->id }}">{{ $tercero->nombre }} {{ $tercero->apellido }} - {{ $tercero->cedula }}</option>
                                     @endforeach
@@ -416,6 +417,17 @@
                                     <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
                                 </p>
                             </div>
+                            @if ($queriedOrden->observacion_causal)
+                                <div class="col-md-12">
+                                    <h3 class="mb-0">Observaciones</h3>
+                                    <p class="text-sm mb-0">
+                                        <b>El equipo de contabilidad realizó las siguientes observaciones.
+                                    </p>
+                                    <div class="pe-5">
+                                        <textarea class="form-control" disabled cols="15" rows="5">{{ $queriedOrden->observacion_causal }}</textarea>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="card-body">
@@ -504,14 +516,14 @@
                                 <div class="table-responsive">
                                     <table class="table align-items-center mb-0">
                                         <thead>
-                                            <tr> 
+                                            <tr>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($queriedOrden->evidencias as $evidencia) 
+                                            @foreach ($queriedOrden->evidencias as $evidencia)
                                                 <tr>
                                                     <td>
                                                         <p class="text-xs text-secondary mb-0">

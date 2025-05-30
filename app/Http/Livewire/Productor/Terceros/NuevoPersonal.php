@@ -260,6 +260,7 @@ class NuevoPersonal extends Component
             'tercero' => $this->tercero,
             'ciudad' => $this->ciudad,
             'telefono' => $this->telefono,
+            'correo' => $this->correo,
             'dia' => Carbon::now()->format('d'),
             'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
             'mes' => Carbon::now()->translatedFormat('F'),
@@ -334,7 +335,7 @@ class NuevoPersonal extends Component
             'fecha' => $this->fechaEvidencia,
             'foto' => $this->fotoEvidencia->store('public/evidencias'),
             'observacion' => $this->observacionEvidencia
-        ]; 
+        ];
 
         $this->evidencias->push($evidencia);
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);

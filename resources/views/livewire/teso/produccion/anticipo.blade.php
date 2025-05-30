@@ -2,8 +2,8 @@
     <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
         <div class="row">
             <div class="col-md-12">
-                <h3 class="mb-0">Pago anticipo</h3>
-                <p class="text-sm mb-0">Adjunta el comprobante de pago para marcar el anticipo como pagado.</p>
+                <h3 class="mb-0">Pago orden de compra {{ $orden->proveedor->tercero }}</h3>
+                <p class="text-sm mb-0">Adjunta el comprobante de pago para la orden como pagada.</p>
             </div>
         </div>
     </div>
@@ -25,7 +25,7 @@
                         <div class="form-group">
                             <h6 style="margin: 0">Comprobante:</h6>
                             <div style="font-size: 9px;">
-                                Adjunta el comprobante de pago del {{ $orden->proveedor->anticipo }}% de anticipo para el proveedor {{ $orden->proveedor->tercero }}.
+                                Adjunta el comprobante de pago para el proveedor {{ $orden->proveedor->tercero }}.
                             </div>
                             <input id="comprobante" wire:model="comprobante" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                             @error('comprobante')
@@ -37,7 +37,7 @@
                         <div class="form-group">
                             <h6 style="margin: 0">Observaciones (opcional):</h6>
                             <div style="font-size: 9px;">
-                                Notif&iacute;ca si existe alguna novedad en el anticipo.
+                                Notif&iacute;ca si existe alguna novedad en el pago.
                             </div>
                             <textarea id="observacion_anticipo" wire:model="observacion_anticipo" class="form-control"></textarea>
                             @error('observacion_anticipo')
@@ -74,6 +74,13 @@
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Orden de compra.</span>
                             </a>
+                            <br>
+                            @if ($orden->tipo_oc == 2)
+                                <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Certificación bancaria.</span>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

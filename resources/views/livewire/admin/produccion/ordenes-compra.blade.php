@@ -17,7 +17,7 @@
                                 <option value="{{ $año->id }}">{{ $año->description }}</option>
                             @endforeach
                         </select>
-                    </div>  
+                    </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
@@ -56,7 +56,7 @@
                         <tr>
                             <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
                             <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
-                            <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                            <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,8 +134,12 @@
                                         <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Fecha</p>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha Evidencias</p>
+                                        @if ($orden->evidencias) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
@@ -143,7 +147,19 @@
                                     </td>
                                     <td colspan="2">
                                         <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}
+                                            @if ($orden->estado_oc->id == 2)
+                                                <span class="badge badge-sm bg-gradient-warning">CONTROLLER</span>
+                                            @elseif ($orden->estado_oc->id == 7)
+                                                <span class="badge badge-sm bg-gradient-warning">TERCERO</span>
+                                            @elseif ($orden->estado_oc->id == 5 && !($orden->cod_causal))
+                                                <span class="badge badge-sm bg-gradient-warning">CONTABILIDAD</span>
+                                            @elseif ($orden->estado_oc->id == 5 && $orden->cod_causal && !($orden->archivo_comprobante_pago))
+                                                <span class="badge badge-sm bg-gradient-warning">TESORER&Iacute;A</span>
+                                            @elseif ($orden->archivo_comprobante_pago)
+                                                <span class="badge badge-sm bg-gradient-success">PAGADA</span>
+                                            @endif
+                                        </p>
                                     </td>
                                     <td class="d-flex align-items-center justify-content-center">
                                         <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural', ['orden_id' => $orden->id]) }}" target="_blank">Ver</a>

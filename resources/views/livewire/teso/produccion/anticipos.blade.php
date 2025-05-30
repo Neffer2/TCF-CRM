@@ -3,8 +3,8 @@
         <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-4">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="mb-0">Anticipos</h3>
-                    <p class="text-sm mb-0">Lista de ordenes de compra <b>APROBADAS</b> con anticipos.</p>
+                    <h3 class="mb-0">Ordenes de compra</h3>
+                    <p class="text-sm mb-0">Lista de ordenes de compra <b>COMPROBADAS</b>.</p>
                 </div>
                 <div class="col-md-4">
                     <label for="comercial">Buscar:</label>

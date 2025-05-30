@@ -95,7 +95,7 @@
         <br>
         <p>
             <b>TERCERA.- REQUISITOS PARA EL PAGO:</b> LA SOCIEDAD CONTRATANTE, realizara los pagos durante la
-            vigencia de la relación profesional y por servicios, y dentro de los cinco (5) días siguientes a la
+            vigencia de la relación profesional y por servicios, y dentro de los diez (10) días hábiles siguientes a la
             presentación de la cuenta de cobro, pago que se podrá hacer mediante transferencia electrónica de
             fondos a la cuenta previamente indicada por EL CONTRATISTA, siempre y cuando se cumpla y alleguen
             los siguientes documentos:
@@ -201,7 +201,7 @@
                 <td>
                     <p class="bold">EL CONTRATISTA:<br></p>
                     <p><b>TELÉFONO:</b> (+57) {{ $contratoInfo['telefono'] }}. <br></p>
-                    <p><b>EMAIL:</b> info@bullmarketing.com.co <br></p>
+                    <p><b>EMAIL:</b> {{ $contratoInfo['correo'] }} <br></p>
                 </td>
             </tr>
         </table>
@@ -227,7 +227,7 @@
                     <p class="sign"> {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
                     <p class="bold">__________________________</p>
                     <p class="bold">Nombre: {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
-                    <p>CEDULA. {{ $contratoInfo['num_rut'] }}</p>
+                    <p>CEDULA. {{ $contratoInfo['tercero']->cedula }}</p>
                     <p><br></p>
                 </td>
             </tr>

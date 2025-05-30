@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h3 class="mb-0">Causaci&oacute;n</h3>
-                <p class="text-sm mb-0">Digita el n&uacute;mero de causaci&oacute;n para este anticipo.</p>
+                <p class="text-sm mb-0">Digita el n&uacute;mero de causaci&oacute;n para esta Orden de compra.</p>
             </div>
         </div>
     </div>
@@ -35,7 +35,47 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="store"wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como causado</button>
+                        <button wire:loading.attr="disabled" class="btn bg-gradient-success" data-bs-toggle="modal" data-bs-target="#causado">Marcar como causado</button>
+                        <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"> Rechazar </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="dangerModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="successModalLabel">Rechazar oden de compra</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estas seguro de rechazar esta orden?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn bg-gradient-danger" data-bs-dismiss="modal" wire:click="rechazar">Rechazar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="causado" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="successModalLabel">Marcar como causado</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estas seguro de marcar como causada esta orden?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button wire:click="store" wire:loading.attr="disabled"  data-bs-dismiss="modal" class="btn bg-gradient-success">Marcar como causado</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>

@@ -28,7 +28,10 @@ class Anticipos extends Component
                                 $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                             })->orderBy('created_at', $this->fecha)->paginate(15);
                 }else {
-                    $ordenes = OrdenCompra::where('cod_causal', NULL)->orderBy('created_at', $this->fecha)->paginate(15);
+                    $ordenes = OrdenCompra::where([
+                        ['cod_causal', NULL],
+                        ['estado_id', 5]
+                    ])->orderBy('created_at', $this->fecha)->paginate(15);
                 }
 
             // if ($this->cod_cc){

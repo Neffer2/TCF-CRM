@@ -12,7 +12,7 @@ class Anticipo extends Component
 {
     use WithFileUploads, Email;
 
-    // Models 
+    // Models
     public $causa_cod, $observacion_causacion;
 
     // Useful vars
@@ -46,6 +46,20 @@ class Anticipo extends Component
         return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
     }
 
+    public function rechazar(){
+        $this->validate([
+            'observacion_causacion' => 'required|string'
+        ]);
+
+        $this->orden->cod_causal = null;
+        $this->orden->observacion_causal = $this->observacion_causacion;
+        $this->orden->estado_id = 2; // Revision
+        $this->orden->update();
+
+        // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
+        return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
+    }
+
     public function mount(){
         $this->orden = OrdenCompra::find($this->orden_id);
     }
@@ -62,5 +76,7 @@ class Anticipo extends Component
             'observacion_causacion' => 'nullable|string'
         ]);
     }
+
+
     /* *** */
 }
