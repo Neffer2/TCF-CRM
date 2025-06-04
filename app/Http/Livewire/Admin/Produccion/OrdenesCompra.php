@@ -61,7 +61,7 @@ class OrdenesCompra extends Component
             })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
-        // Filtro para usuario producto
+        // Filtro para usuario productor
         if ($this->productor_id){
             $ordenes = OrdenCompra::whereHas('naturalInfo', function ($natural) {
                         $natural->where('productor_id', $this->productor_id);
