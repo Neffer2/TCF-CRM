@@ -8,6 +8,7 @@ use App\Models\EstadoOrdenesCompra;
 use App\Models\NaturalInfo;
 use Livewire\WithPagination;
 use App\Models\Año;
+use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
 class OrdenesCompra extends Component
@@ -16,10 +17,10 @@ class OrdenesCompra extends Component
     protected $paginationTheme = 'bootstrap';
 
     // Models
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo;
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
 
     // Useful vars
-    public $estados = [], $años = [], $tipos = [];
+    public $estados = [], $años = [], $tipos = [], $productores = [];
 
     // Filled
     public $productor_id;
@@ -49,12 +50,22 @@ class OrdenesCompra extends Component
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
+        if ($this->productor) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->whereHas('presupuesto', function ($presupuesto) {
+                    $presupuesto->where('productor', $this->productor);
+                })
+                ->orWhereHas('naturalInfo', function ($natural) {
+                    $natural->where('productor_id', $this->productor);
+                });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
+        // Filtro para usuario producto
         if ($this->productor_id){
             $ordenes = OrdenCompra::whereHas('naturalInfo', function ($natural) {
                         $natural->where('productor_id', $this->productor_id);
                     })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
-
-            return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
         }
 
         return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
@@ -64,6 +75,11 @@ class OrdenesCompra extends Component
         $this->getEstados();
         $this->getAños();
         $this->getTipos();
+        $this->getProductores();
+    }
+
+    public function getProductores(){
+        $this->productores = User::select('id', 'name')->where('rol', 7)->get();
     }
 
     public function getTipos(){

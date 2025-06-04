@@ -23,11 +23,12 @@
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                     </div>
                     <div class="col-md-2">
-                        <label for="filtro_fecha">Fecha:</label>
-                        <select id="filtro_fecha" class="form-control" wire:model="fecha">
-                            <option value="asc">Seleccionar</option>
-                            <option value="asc">M&aacute;s antiguos</option>
-                            <option value="desc">M&aacute;s recientes</option>
+                        <label for="productor">Productor:</label>
+                        <select id="productor" class="form-control" wire:model="productor">
+                            <option value="">Seleccionar</option>
+                            @foreach ($productores as $productor)
+                                <option value="{{ $productor->id }}">{{ $productor->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -39,7 +40,15 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
+                        <label for="filtro_fecha">Fecha:</label>
+                        <select id="filtro_fecha" class="form-control" wire:model="fecha">
+                            <option value="asc">Seleccionar</option>
+                            <option value="asc">M&aacute;s antiguos</option>
+                            <option value="desc">M&aacute;s recientes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
                         <label for="Tipo">Tipo:</label>
                         <select id="Tipo" class="form-control" wire:model="tipo">
                             <option value="">Seleccionar</option>
