@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Admin\Produccion;
 use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Models\EstadoOrdenesCompra;
-use App\Models\NaturalInfo;
 use Livewire\WithPagination;
 use App\Models\Año;
 use App\Models\User;

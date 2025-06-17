@@ -80,6 +80,13 @@
                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                     <span class="btn-inner--text">Certificación bancaria.</span>
                                 </a>
+                                @if ($orden->naturalInfo->tercero->art383)
+                                    <br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Certificación Art. 383.</span>
+                                    </a>
+                                @endif
                             @endif
                         </div>
                     </div>

@@ -1,208 +1,209 @@
 @if (!$this->tercero)
-<div x-data="{ show: true }" x-cloak>
-    <div class="row">
-        <div class="col-md-12 mb-2">
-            <h3 class="m-0">Nuevo personal</h3>
-            <div class="form-check form-switch">
-                <input class="form-check-input bg-gradient-warning" type="checkbox" id="flexSwitchCheckDefault" x-on:change="show = ! show">
-                <label x-show="show" class="form-check-label" for="flexSwitchCheckDefault">Subir en bloque</label>
-                <label x-show="!show" class="form-check-label" for="flexSwitchCheckDefault">Subir en formulario</label>
+    <div x-data="{ show: true }" x-cloak>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <h3 class="m-0">Nuevo personal</h3>
+                <div class="form-check form-switch">
+                    <input class="form-check-input bg-gradient-warning" type="checkbox" id="flexSwitchCheckDefault" x-on:change="show = ! show">
+                    <label x-show="show" class="form-check-label" for="flexSwitchCheckDefault">Subir en bloque</label>
+                    <label x-show="!show" class="form-check-label" for="flexSwitchCheckDefault">Subir en formulario</label>
+                </div>
             </div>
+        </div>
+        <div id="formulario" class="row" x-show="show" x-transition>
+            <div class="col-md-12">
+                <p class="text-sm m-0">Registra tu personal. Los campos marcados con * son obligatorios.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="nombre">Nombres: <span class="text-danger">*</span></label>
+                    <input id="nombre" type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror"
+                    wire:model.lazy="nombre" placeholder="Nombre">
+                    @error('nombre')
+                        <div id="nombre" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="apellido">Apellidos: <span class="text-danger">*</span></label>
+                    <input id="apellido" type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
+                    wire:model.change="apellido" placeholder="Apellido">
+                    @error('apellido')
+                        <div id="apellido" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="cedula">C&eacute;dula: <span class="text-danger">*</span></label>
+                    <input id="cedula" type="text" class="form-control @error('cedula') is-invalid @elseif(strlen($cedula) > 0) is-valid @enderror"
+                    wire:model.change="cedula" placeholder="C.C">
+                    @error('cedula')
+                        <div id="cedula" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="email">Correo: <span class="text-danger">*</span></label>
+                    <input id="email" type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
+                    wire:model.change="correo" placeholder="alguien@ejemplo.com">
+                    @error('correo')
+                        <div id="correo" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="telefono">Tel&eacute;fono: <span class="text-danger">*</span></label>
+                    <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
+                    wire:model.change="telefono" placeholder="Telefono">
+                    @error('telefono')
+                        <div id="telefono" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>
+                    <select id="ciudad" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
+                    wire:model.change="ciudad">
+                        <option value="">Seleccionar</option>
+                        @foreach ($ciudades as $ciudad)
+                            <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                        @endforeach
+                    </select>
+                    @error('ciudad')
+                        <div id="ciudad" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="banco">Banco:</label>
+                    <select id="banco" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
+                        wire:model.change="banco">
+                        <option value="">Seleccionar</option>
+                        @foreach ($bancos as $item)
+                            <option value="{{ $item }}">{{ $item }}</option>
+                        @endforeach
+                    </select>
+                    @error('banco')
+                        <div id="banco" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            @auth
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="servicio">Servicio: <span class="text-danger">* </span></label>
+                    <select id="servicio" class="form-control @error('servicio') is-invalid @elseif(strlen($servicio) > 0) is-valid @enderror"
+                        wire:model.change="servicio">
+                        <option value="">Seleccionar</option>
+                        @foreach ($servicios as $item)
+                            <option value="{{ $item }}">{{ $item}}</option>
+                        @endforeach
+                    </select>
+                    @error('servicio')
+                        <div id="servicio" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            @endauth
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="cert_bancaria">Certificaci&oacute;n bancaria:</label>
+                    <input id="cert_bancaria" type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
+                    wire:model.change="cert_bancaria">
+                    @error('cert_bancaria')
+                        <div id="cert_bancaria" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="rut">RUT:</label>
+                    <input id="rut" type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
+                    wire:model.change="rut">
+                    @error('rut')
+                        <div id="rut" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            {{-- <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Estado: <span class="text-danger">*</span></label>
+                    <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
+                    wire:model.change="estado">
+                        <option value="">Seleccionar</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
+                        @endforeach
+                    </select>
+                    @error('estado')
+                        <div id="estado" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div> --}}
+            <div class="col-md-4 align-content-end">
+                <div class="form-group">
+                    <button wire:click="nuevoPersonal" wire:loading.attr="disabled" class="btn bg-gradient-warning m-0">Registrar</button>
+                </div>
+            </div>
+            @if (session('success'))
+                <script>
+                    Swal.fire(
+                        'Hecho',
+                        `{{ session('success') }}`,
+                        'success'
+                    );
+                </script>
+            @endif
+        </div>
+        <div id="masivo" class="row" x-show="!show" x-transition>
+            <div class="col-md-12 mb-2">
+                <p class="text-sm m-0">Con <a href="{{ asset('formatos/terceros/Formato_subida_de_Terceros.xlsx') }}" target="_blank"><b>este</b></a> formato, puedes subir personal en bloque.</p>
+            </div>
+            <div class="col-md-12">
+                <input type="file" wire:model="terceroXlsx">
+            </div>
+            @if (session()->has('import_error'))
+                <div class="col-md-12 text-danger mt-1">
+                    @foreach (session()->get('import_error') as $error)
+                        <p style="margin-bottom: .3rem">{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
-    <div id="formulario" class="row" x-show="show" x-transition>
-        <div class="col-md-12">
-            <p class="text-sm m-0">Registra tu personal. Los campos marcados con * son obligatorios.</p>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="nombre">Nombres: <span class="text-danger">*</span></label>
-                <input id="nombre" type="text" class="form-control form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror"
-                wire:model.lazy="nombre" placeholder="Nombre">
-                @error('nombre')
-                    <div id="nombre" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="apellido">Apellidos: <span class="text-danger">*</span></label>
-                <input id="apellido" type="text" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror"
-                wire:model.change="apellido" placeholder="Apellido">
-                @error('apellido')
-                    <div id="apellido" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="cedula">C&eacute;dula: <span class="text-danger">*</span></label>
-                <input id="cedula" type="text" class="form-control @error('cedula') is-invalid @elseif(strlen($cedula) > 0) is-valid @enderror"
-                wire:model.change="cedula" placeholder="C.C">
-                @error('cedula')
-                    <div id="cedula" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="email">Correo: <span class="text-danger">*</span></label>
-                <input id="email" type="email" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror"
-                wire:model.change="correo" placeholder="alguien@ejemplo.com">
-                @error('correo')
-                    <div id="correo" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="telefono">Tel&eacute;fono: <span class="text-danger">*</span></label>
-                <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @elseif(strlen($telefono) > 0) is-valid @enderror"
-                wire:model.change="telefono" placeholder="Telefono">
-                @error('telefono')
-                    <div id="telefono" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="ciudad">Ciudad: <span class="text-danger">*</span></label>
-                <select id="ciudad" class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror"
-                wire:model.change="ciudad">
-                    <option value="">Seleccionar</option>
-                    @foreach ($ciudades as $ciudad)
-                        <option value="{{ $ciudad }}">{{ $ciudad }}</option>
-                    @endforeach
-                </select>
-                @error('ciudad')
-                    <div id="ciudad" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="banco">Banco:</label>
-                <select id="banco" class="form-control @error('banco') is-invalid @elseif(strlen($banco) > 0) is-valid @enderror"
-                    wire:model.change="banco">
-                    <option value="">Seleccionar</option>
-                    @foreach ($bancos as $item)
-                        <option value="{{ $item }}">{{ $item }}</option>
-                    @endforeach
-                </select>
-                @error('banco')
-                    <div id="banco" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        @auth
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="servicio">Servicio: <span class="text-danger">* </span></label>
-                <select id="servicio" class="form-control @error('servicio') is-invalid @elseif(strlen($servicio) > 0) is-valid @enderror"
-                    wire:model.change="servicio">
-                    <option value="">Seleccionar</option>
-                    @foreach ($servicios as $item)
-                        <option value="{{ $item }}">{{ $item}}</option>
-                    @endforeach
-                </select>
-                @error('servicio')
-                    <div id="servicio" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        @endauth
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="cert_bancaria">Certificaci&oacute;n bancaria:</label>
-                <input id="cert_bancaria" type="file" class="form-control @error('cert_bancaria') is-invalid @elseif(strlen($cert_bancaria) > 0) is-valid @enderror"
-                wire:model.change="cert_bancaria">
-                @error('cert_bancaria')
-                    <div id="cert_bancaria" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="rut">RUT:</label>
-                <input id="rut" type="file" class="form-control @error('rut') is-invalid @elseif(strlen($rut) > 0) is-valid @enderror"
-                wire:model.change="rut">
-                @error('rut')
-                    <div id="rut" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        {{-- <div class="col-md-4">
-            <div class="form-group">
-                <label for="">Estado: <span class="text-danger">*</span></label>
-                <select name="" id="" class="form-control @error('estado') is-invalid @elseif(strlen($estado) > 0) is-valid @enderror"
-                wire:model.change="estado">
-                    <option value="">Seleccionar</option>
-                    @foreach ($estados as $estado)
-                        <option value="{{ $estado->id }}">{{ $estado->descripcion }}</option>
-                    @endforeach
-                </select>
-                @error('estado')
-                    <div id="estado" class="text-invalid">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div> --}}
-        <div class="col-md-4 align-content-end">
-            <div class="form-group">
-                <button wire:click="nuevoPersonal" wire:loading.attr="disabled" class="btn bg-gradient-warning m-0">Registrar</button>
-            </div>
-        </div>
-        @if (session('success'))
-            <script>
-                Swal.fire(
-                    'Hecho',
-                    `{{ session('success') }}`,
-                    'success'
-                );
-            </script>
-        @endif
-    </div>
-    <div id="masivo" class="row" x-show="!show" x-transition>
-        <div class="col-md-12 mb-2">
-            <p class="text-sm m-0">Con <a href="{{ asset('formatos/terceros/Formato_subida_de_Terceros.xlsx') }}" target="_blank"><b>este</b></a> formato, puedes subir personal en bloque.</p>
-        </div>
-        <div class="col-md-12">
-            <input type="file" wire:model="terceroXlsx">
-        </div>
-        @if (session()->has('import_error'))
-            <div class="col-md-12 text-danger mt-1">
-                @foreach (session()->get('import_error') as $error)
-                    <p style="margin-bottom: .3rem">{{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-    </div>
-</div>
 @elseif($this->tercero)
     <div>
         @if ($orden && $orden->estado_id == 3)
             <div>
+
                 <div class="modal-body pt-1">
                     @auth
                         <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
@@ -388,6 +389,34 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input bg-gradient-warning" data-bs-toggle="collapse" type="checkbox" role="switch" id="switch" data-bs-target="#collapse383" aria-expanded="false" aria-controls="collapse383">
+                                    <label class="form-check-label" for="switch">¿Cuentas con el Art&iacute;culo 383?</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 collapse" id="collapse383">
+                            <div class="form-group">
+                                <label for="art383">Adjunta el documento con el Art&iacute;culo 383: @guest <span class="text-danger">*</span>@endguest</label>
+                                <input type="file" class="form-control @error('art383') is-invalid @elseif(strlen($art383) > 0) is-valid @enderror"
+                                wire:model="art383">
+                                <label>
+                                    @if ($tercero->art383)
+                                        <a href="{{ asset(str_replace("public", "storage", $tercero->art383)) }}" target="_blank">
+                                            Archivo actual:
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                    @endif
+                                </label>
+                                @error('art383')
+                                    <div id="art383" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
                         @if ($orden->ordenItems->sum('vtotal_oc') > $min_rut)
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -411,7 +440,7 @@
                             </div>
                         @endif
                         @guest
-                            <div class="col-md-12">
+                            <div class="col-md-12 mt-3">
                                 <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
                                     Confirmar informaci&oacute;n
                                 </button>
@@ -515,7 +544,7 @@
                                         <tr>
                                             <td>
                                                 {{ $key+=1 }}
-                                            </td> 
+                                            </td>
                                             <td>
                                                 {{ $evidencia['fecha'] }}
                                             </td>

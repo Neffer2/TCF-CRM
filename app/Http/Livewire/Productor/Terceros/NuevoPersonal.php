@@ -25,7 +25,7 @@ class NuevoPersonal extends Component
 
     // Models
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio;
+    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383;
 
     // Useful vars
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -179,6 +179,14 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
+        if (!$tercero->art383 && !Auth::check()){
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->art383 = $this->art383->store('public/cert_bancarias');
+        }elseif($this->art383){
+            $this->validate(['art383' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $tercero->art383 = $this->art383->store('public/cert_bancarias');
+        }
+
         if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             //
             if (!$tercero->rut && !Auth::check()){
@@ -242,6 +250,10 @@ class NuevoPersonal extends Component
             'estado' => 'required|numeric|max:1',
             'banco' => 'required|string|max:255',
         ]);
+
+        if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
+        }
 
         if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
             $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
@@ -313,8 +325,7 @@ class NuevoPersonal extends Component
         $this->banco = $this->tercero->banco;
         $this->servicio = $this->tercero->servicio;
         $this->num_rut = $this->tercero->num_rut;
-        // $this->rut = $this->tercero->rut;
-        // $this->cert_bancaria = $this->tercero->cert_bancaria;
+        $this->art383 = $this->tercero->art383;
     }
 
     public function toggelConfirm(){
