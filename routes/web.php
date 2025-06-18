@@ -9,6 +9,7 @@ use App\Http\Controllers\LiderProduccionController;
 use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ContabilidadController;
 use App\Http\Controllers\TesoreriaController;
+use App\Traits\SMS;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,15 +121,7 @@ Route::get('/', function () {
 /* --- */
 
 /* PÚBLICO */
-    Route::get('/metricas', function () {
-        return view('publico.metricas');
-    })->name('metricas');
-
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
-
-    Route::get('pdf', function (){
-        return view('exports.contrato');
-    });
 /* --- */
 
 

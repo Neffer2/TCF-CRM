@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class HomeController extends Controller
-{ 
+{
     /*
     |--------------------------------------------------------------------------
     | HomeController
@@ -16,7 +15,7 @@ class HomeController extends Controller
     | "showProveedores" function shows the view of the proveedores according to the user's role (each rol has diferent permises on proveedores view).
     */
 
-    public function dashboard (){ 
+    public function dashboard (){
         if (Auth::user()->rol == 1) {
             return redirect()->route('dashboard-admin');
         }elseif (Auth::user()->rol == 2){
@@ -24,15 +23,15 @@ class HomeController extends Controller
         }elseif (Auth::user()->rol == 3){
             return redirect()->route('dashboard-con');
         }elseif (Auth::user()->rol == 5){
-            return redirect()->route('dashboard-asis');  
+            return redirect()->route('dashboard-asis');
         }elseif (Auth::user()->rol == 6){
-            return redirect()->route('dashboard-lider-produccion');  
+            return redirect()->route('dashboard-lider-produccion');
         }elseif (Auth::user()->rol == 7){
-            return redirect()->route('dashboard-productor');  
+            return redirect()->route('dashboard-productor');
         }elseif (Auth::user()->rol == 8){
-            return redirect()->route('dashboard-tesoreria');   
+            return redirect()->route('dashboard-tesoreria');
         }elseif (Auth::user()->rol == 9){
-            return redirect()->route('dashboard-contabilidad');   
+            return redirect()->route('dashboard-contabilidad');
         }
     }
 
@@ -42,8 +41,7 @@ class HomeController extends Controller
         }elseif (Auth::user()->rol == 2){
             return view('comercial.produccion.proveedores.index');
         }elseif (Auth::user()->rol == 7){
-            return view('productor.proveedores.index'); 
-        }  
+            return view('productor.proveedores.index');
+        }
     }
-}  
- 
+}

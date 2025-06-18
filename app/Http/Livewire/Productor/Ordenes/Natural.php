@@ -54,11 +54,6 @@ class Natural extends Component
         }
     }
 
-    // public function sendMessage(){
-    //     $response = $this->saludo();
-    //     return redirect()->back()->with('success', $response);
-    // }
-
     public function getTerceros(){
         $filtros = [];
         array_push($filtros, ['estado', 1]);
@@ -270,6 +265,9 @@ class Natural extends Component
             ]);
         }
 
+        // Enviar mensaje al tercero
+        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
+
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -317,6 +315,10 @@ class Natural extends Component
             $this->queriedOrden->update([
                 'estado_id' => 7,
             ]);
+
+            if ($this->queriedOrden->naturalInfo->tercero->telefono){
+                $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
+            }
         }
 
         // Elimina los items de la OC actual y crea los nuevos
