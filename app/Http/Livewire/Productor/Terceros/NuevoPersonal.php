@@ -179,11 +179,8 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
-        if (!$tercero->art383 && !Auth::check()){
+        if($this->art383 && !Auth::check()){
             $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
-            $tercero->art383 = $this->art383->store('public/cert_bancarias');
-        }elseif($this->art383){
-            $this->validate(['art383' => 'file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
 

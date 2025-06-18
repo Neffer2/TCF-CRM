@@ -148,7 +148,7 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha Evidencias</p>
-                                        @if ($orden->evidencias) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
+                                        @if (!$orden->evidencias->isEmpty()) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
