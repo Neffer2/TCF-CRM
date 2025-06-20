@@ -12,6 +12,7 @@ use App\Traits\SMS;
 use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Illuminate\Support\Str;
 
 class Natural extends Component
 {
@@ -491,7 +492,9 @@ class Natural extends Component
 
         if ($this->presupuesto){
             $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
-            $this->items_presupuesto = $items_presupuesto->where('proveedor', 'LIKE', '%s:1:"3"%')->where('disponible', 1);
+            $this->items_presupuesto = $items_presupuesto->filter(function($item) {
+                return Str::contains($item->proveedor, 's:1:"3"') && $item->disponible == 1;
+            });
         }else {
             $this->items_presupuesto = [];
         }
