@@ -491,7 +491,7 @@ class Natural extends Component
 
         if ($this->presupuesto){
             $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
-            $this->items_presupuesto = $items_presupuesto->where('proveedor', 'a:1:{i:0;s:1:"3";}')->where('disponible', 1);
+            $this->items_presupuesto = $items_presupuesto->where('proveedor', 'LIKE', '%s:1:"3"%')->where('disponible', 1);
         }else {
             $this->items_presupuesto = [];
         }
