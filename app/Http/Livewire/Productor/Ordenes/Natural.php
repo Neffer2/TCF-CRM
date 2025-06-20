@@ -79,7 +79,7 @@ class Natural extends Component
                             ->where([['productor', $this->productor->id], ['estado_id', 1]])
                             ->whereHas('presupuestoItems', function ($item){
                                 $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total', 'proveedor')
-                                    ->where([['proveedor', 'a:1:{i:0;s:1:"3";}'], ['disponible', 1]]);
+                                    ->where([['proveedor', 'LIKE', '%s:1:"3"%'], ['disponible', 1]]);
                             })
                             ->get();
     }
