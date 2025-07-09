@@ -21,7 +21,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
             ['estado_id', '!=', '6'],
             ['estado_id', '!=', '2'],
             ['estado_id', '!=', '3']
-        ])->orderBy('created_at', 'desc')->limit(10)->get();
+        ])->orderBy('created_at', 'desc')->get();
     }
 
     /**
