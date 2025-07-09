@@ -152,7 +152,7 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
     public function reporteConsumidos(){
-        return Excel::download(new ConsumidosExport(), "reporte.xlsx");
+        return Excel::download(new ConsumidosExport(), "reporte_consumidos.xlsx");
     }
 
     /**

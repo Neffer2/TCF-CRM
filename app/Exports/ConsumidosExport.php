@@ -15,7 +15,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
     protected $ordenes = [];
 
     function __construct() {
-        $hourFilter = Carbon::now()->subHours(12);
+        $hourFilter = Carbon::now()->subDay(); // 24 hours ago
         $this->ordenes = OrdenCompra::where([
             ['created_at', '=>', $hourFilter],
             ['estado_id', '!=', '6'],
