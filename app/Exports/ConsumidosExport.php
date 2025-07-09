@@ -16,7 +16,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
 
     function __construct() {
         $hace12Horas = Carbon::now()->subHours(12);
-
+        dd($hace12Horas);
         $this->ordenes = OrdenCompra::where([
             ['estado_id', '!=', '6'],
             ['estado_id', '!=', '2'],
