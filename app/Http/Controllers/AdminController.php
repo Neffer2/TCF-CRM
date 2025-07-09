@@ -9,100 +9,199 @@ use App\Models\Proveedor;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HelisaExport;
-
+use App\Http\Livewire\Com\Presupuesto\Presupuesto;
 use Illuminate\Support\Facades\Auth;
- 
+use App\Exports\ConsumidosExport;
+
 class AdminController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
     | Admin Controller
     |--------------------------------------------------------------------------
-    | This controller is reponsible for managing the views and actions of the admin user.
-    | Functions wich start with "show" and index, are for show views, the others functions are for actions.
-    | "exportHelisa" function calls a class named HelisaExport, this class is responsible for exporting the data to an excel file.
+    | Este controlador es responsable de manejar las vistas y acciones del usuario administrador.
+    | Las funciones que comienzan con "show" e "index" son para mostrar vistas, las otras funciones son para acciones.
+    | La función "exportHelisa" llama a una clase llamada HelisaExport, esta clase es responsable de exportar los datos a un archivo excel.
     */
 
+    /**
+     * Muestra la página principal del panel de administración
+     *
+     * @return \Illuminate\View\View
+     */
     public function index (){
-        return view('admin.index');  
+        return view('admin.index');
     }
- 
+
+    /**
+     * Muestra la página del equipo con la lista de todos los usuarios
+     *
+     * @return \Illuminate\View\View
+     */
     public function show_team (){
-        $listUsers = User::all(); 
-        return view('admin.team.index', ['listUsers' => $listUsers]);  
+        // Obtener todos los usuarios de la base de datos
+        $listUsers = User::all();
+        return view('admin.team.index', ['listUsers' => $listUsers]);
     }
 
-    public function showActualizarPerfil (){ 
+    /**
+     * Muestra la página para actualizar el perfil del administrador
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showActualizarPerfil (){
         return view('admin.ajustes.perfil.actualizar');
-    } 
+    }
 
+    /**
+     * Muestra la página de base comercial general con filtros aplicados
+     *
+     * @param Request $request - Contiene los filtros: año, mes, comercial, estado
+     * @return \Illuminate\View\View
+     */
     public function showBaseComercialGeneral (Request $request){
+        // Crear array con los filtros recibidos del request
         $filtro = ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial, 'estado' => $request->estado];
         return view('admin.data.base-comercial', ['filtros' => $filtro]);
     }
 
+    /**
+     * Muestra la página general de Helisa
+     *
+     * @return \Illuminate\View\View
+     */
     public function showHelisaGeneral() {
         return view('admin.generales.helisa');
     }
 
+    /**
+     * Muestra la página de presupuestos (acciones)
+     *
+     * @return \Illuminate\View\View
+     */
     public function showPresupuestos (){
         return view('admin.acciones.presupuesto');
     }
 
-    public function estadoFacturacion(Request $request){ 
-        return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]); 
-    }  
+    /**
+     * Muestra la página del estado de facturación con filtros aplicados
+     *
+     * @param Request $request - Contiene los filtros: año, mes, comercial
+     * @return \Illuminate\View\View
+     */
+    public function estadoFacturacion(Request $request){
+        return view('admin.data.estado-facturacion', ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial]);
+    }
 
-    public function showPresupuestosProyecto(){ 
+    /**
+     * Muestra la página de presupuestos de proyecto (gestión)
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showPresupuestosProyecto(){
         return view('admin.gestion.presupuestos');
     }
 
-    public function actualizaciones(){ 
-        return view('admin.gestion.actualizaciones');  
+    /**
+     * Muestra la página de actualizaciones del sistema
+     *
+     * @return \Illuminate\View\View
+     */
+    public function actualizaciones(){
+        return view('admin.gestion.actualizaciones');
     }
 
+    /**
+     * Muestra la página principal de órdenes de compra (producción)
+     *
+     * @return \Illuminate\View\View
+     */
     public function showOrdenesCompra(){
-        return view('admin.produccion.index');  
-    } 
+        return view('admin.produccion.index');
+    }
 
-    public function showOrdenJuridica($orden_id){ 
-        $orden = OrdenCompra::find($orden_id); 
-        $presupuesto = $orden->presupuesto; 
+    /**
+     * Muestra la página de orden jurídica específica
+     *
+     * @param int $orden_id - ID de la orden de compra
+     * @return \Illuminate\View\View
+     */
+    public function showOrdenJuridica($orden_id){
+        // Buscar la orden de compra por ID
+        $orden = OrdenCompra::find($orden_id);
+        // Obtener el presupuesto relacionado con la orden
+        $presupuesto = $orden->presupuesto;
+        // Obtener todos los proveedores (solo ID y tercero)
         $proveedores = Proveedor::select('id', 'tercero')->get();
 
-        return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);  
+        return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
     }
 
-    public function showConsumidos(){ 
+    /**
+     * Muestra la página de lista de consumidos
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showConsumidos(){
         return view('admin.produccion.consumidos.list');
     }
 
+    /**
+     * Reporte de consumidos (cada 12 horas)
+     *
+     * @return \Illuminate\View\View
+     */
+    public function reporteConsumidos(){
+        return Excel::download(new ConsumidosExport(), "reporte.xlsx");
+    }
+
+    /**
+     * Muestra la página de un consumido específico basado en el presupuesto
+     * También determina el rol del usuario autenticado
+     *
+     * @param int $presupuesto_id - ID del presupuesto
+     * @return \Illuminate\View\View
+     */
     public function showConsumido($presupuesto_id){
+        // Determinar el rol del usuario autenticado
         if (Auth::user()->rol == 1){
             $rol = 'admin';
-        }else {            
+        }else {
+            // Si el rol es 2 es comercial, si no es productor
             $rol = (Auth::user()->rol == 2) ? 'comercial' : 'productor';
         }
 
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id, 'rol' => $rol]);
-    } 
+    }
 
-    public function exportHelisa($comercial = null, $centro = null){     
-        $this->filtros = [];
+    /**
+     * Exporta los datos de Helisa a un archivo Excel con filtros opcionales
+     *
+     * @param string|null $comercial - ID del comercial para filtrar (opcional)
+     * @param string|null $centro - Centro para filtrar (opcional)
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse - Descarga del archivo Excel
+     */
+    public function exportHelisa($comercial = null, $centro = null){
+        // Inicializar array de filtros como variable local
+        $filtros = [];
 
+        // Si se especifica un comercial, agregar al filtro y personalizar el título
         if ($comercial != 'none'){
             $title = "Reporte Helisa - ".User::find($comercial)->name.".xlsx";
-            array_push($this->filtros, ['comercial', $comercial]);
+            array_push($filtros, ['comercial', $comercial]);
         }else {
             $title = "Reporte Helisa.xlsx";
         }
 
+        // Si se especifica un centro, agregar al filtro usando LIKE para búsqueda parcial
         if($centro != 'none'){
-            array_push($this->filtros, ['centro', 'LIKE', "%{$centro}%"]);
+            array_push($filtros, ['centro', 'LIKE', "%{$centro}%"]);
         }
 
-        $registros_helisa = Helisa::where($this->filtros)->get(); 
+        // Obtener registros de Helisa aplicando los filtros
+        $registros_helisa = Helisa::where($filtros)->get();
 
-        return Excel::download(new HelisaExport(['registros_helisa' => $registros_helisa]), $title); 
+        // Generar y descargar el archivo Excel usando la clase HelisaExport
+        return Excel::download(new HelisaExport(['registros_helisa' => $registros_helisa]), $title);
     }
 }

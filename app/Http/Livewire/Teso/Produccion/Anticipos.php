@@ -12,43 +12,51 @@ use App\Models\TipoOrdenCompra;
 
 class Anticipos extends Component
 {
-    // Models
+    // Modelos para los filtros y campos del formulario
     public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
 
-    // Useful vars
+    // Variables útiles para los selectores y catálogos
     public $estados = [], $años = [], $tipos = [], $productores = [];
 
-    use WithPagination;
-    protected $paginationTheme = 'bootstrap';
+    use WithPagination; // Habilita la paginación de Livewire
+    protected $paginationTheme = 'bootstrap'; // Usa el tema bootstrap para la paginación
 
+    // Renderiza la vista principal del componente y filtra las órdenes según los filtros seleccionados
     public function render()
     {
-        $filtros = [];
+        $filtros = []; // Arreglo de filtros para la consulta
 
+        // Filtra por estado si está seleccionado
         if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]);
         }
 
+        // Filtra por año si está seleccionado (rango de fechas del año)
         if($this->año){
             array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
+        // Filtra por tipo de orden si está seleccionado
         if($this->tipo){
             array_push($filtros, ['tipo_oc', $this->tipo]);
         }
 
+        // Solo muestra órdenes con causal (anticipo)
         array_push($filtros, ['cod_causal', '<>', 'NULL']);
 
+        // Si se ingresa código de centro de costos, filtra por ese código
         if ($this->cod_cc){
             $ordenes = OrdenCompra::with('presupuesto')
                 ->whereHas('presupuesto', function ($presto) {
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                 })->where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
         }else {
+            // Si no hay filtro de centro de costos, consulta normal
             $ordenes = OrdenCompra::where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
+        // Si se selecciona un productor, filtra por productor (en presupuesto o naturalInfo)
         if ($this->productor) {
             $ordenes = OrdenCompra::where(function($query) {
                 $query->whereHas('presupuesto', function ($presupuesto) {
@@ -60,9 +68,11 @@ class Anticipos extends Component
             })->where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
+        // Retorna la vista con las órdenes filtradas y paginadas
         return view('livewire.teso.produccion.anticipos', ['ordenes' => $ordenes]);
     }
 
+    // Método que se ejecuta al montar el componente, carga los catálogos y valores iniciales
     public function mount(){
         $this->getEstados();
         $this->getAños();
@@ -70,18 +80,22 @@ class Anticipos extends Component
         $this->getProductores();
     }
 
+    // Obtiene la lista de productores con rol 7
     public function getProductores(){
         $this->productores = User::select('id', 'name')->where('rol', 7)->get();
     }
 
+    // Obtiene todos los tipos de orden de compra
     public function getTipos(){
         $this->tipos = TipoOrdenCompra::all();
     }
 
+    // Obtiene todos los estados de orden de compra excepto el id 3
     public function getEstados(){
         $this->estados = EstadoOrdenesCompra::where('id', '<>', 3)->get();
     }
 
+    // Obtiene todos los años y selecciona el año actual por defecto
     public function getAños(){
         $this->años = Año::all();
         /* CURRENT YEAR */
@@ -89,6 +103,7 @@ class Anticipos extends Component
         $this->updatedAño();
     }
 
+    // Cuando se actualiza el año, valida y carga la información del año seleccionado
     public function updatedAño(){
         $this->validate([
             'año' => 'required'

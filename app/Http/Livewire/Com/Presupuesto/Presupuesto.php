@@ -19,12 +19,12 @@ use App\Traits\Email;
 
 class Presupuesto extends Component
 {
+    // Habilita el trait para envío de emails
     use Email;
 
-    // Models
+    // Variables del modelo y del formulario
     public $cod;
     public $concepto;
-
     public $cantidad;
     public $dia;
     public $otros;
@@ -49,7 +49,7 @@ class Presupuesto extends Component
     public $justificacion;
     public $justificacion_compras;
 
-    // Useful vars
+    // Variables útiles para lógica y vistas
     public $presupuesto;
     public $items = [];
     public $presupuesto_id;
@@ -62,30 +62,33 @@ class Presupuesto extends Component
     public $rentabilidadView = false;
     public $estadoValidator;
 
-    // metricas
+    // Métricas del proyecto
     public $margenGeneral = 0;
     public $costosProyecto = 0;
     public $ventaProyecto = 0;
     public $margenProyecto = 0;
     public $margenBruto = 0;
 
-    // Contacto
+    // Datos de contacto
     public $nombre;
     public $cliente;
     public $nomProyecto;
     public $ciudadContacto;
 
-    // globals
+    // Variable global para la gestión
     public $id_gestion;
 
+    // Renderiza la vista principal del presupuesto
     public function render()
     {
         return view('livewire.com.presupuesto.presupuesto');
     }
 
+    // Inicializa el componente y carga datos principales
     public function mount(){
         $validator = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         if (is_null($validator)){
+            // Si no existe presupuesto, lo crea
             $presupuesto = new PresupuestoProyecto;
             $presupuesto->id_gestion = $this->id_gestion;
             $presupuesto->cod_cot = $this->getLatestCodCot() + 1;
@@ -95,6 +98,7 @@ class Presupuesto extends Component
             $this->presupuesto_id = $presupuesto->id;
             $this->estadoValidator = $presupuesto->estado_id;
         }else {
+            // Si ya existe, carga los datos
             $this->presupuesto_id = $validator->id;
             $this->estadoValidator = $validator->estado_id;
             $this->justificacion = $validator->justificacion;
@@ -102,11 +106,10 @@ class Presupuesto extends Component
             $this->presupuesto = $validator;
         }
 
-
-        // Valida si es actualización.
-        if ($this->presupuesto->cod_cc){
-            // $this->showJustificacion = true;
-        }
+        // Si es actualización, puedes mostrar justificación (comentado)
+        // if ($this->presupuesto->cod_cc){
+        //     $this->showJustificacion = true;
+        // }
 
         $this->refresh();
         $this->getCiudades();
@@ -115,6 +118,7 @@ class Presupuesto extends Component
         $this->getTarifario();
     }
 
+    // Obtiene el último código de cotización registrado
     public function getLatestCodCot(){
         $results = PresupuestoProyecto::select('cod_cot')->orderBy('id', 'desc')->limit(1)->first();
         if (is_null($results)){
@@ -123,9 +127,11 @@ class Presupuesto extends Component
         return $results->cod_cot;
     }
 
+    // Agrega un nuevo ítem al presupuesto
     public function new_item(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
+        // Valida los campos requeridos
         $this->validate([
             'cod' => ['required'],
             'cantidad' => ['required'],
@@ -140,42 +146,42 @@ class Presupuesto extends Component
             'mes' => ['required'],
             'dias' => ['required'],
             'ciudad' => ['required'],
-
             'imprevistos' => ['required', 'numeric'],
             'administracion' => ['required', 'numeric'],
             'fee' => ['required', 'numeric'],
         ]);
 
+        // Validación adicional si el cliente es "claro"
         if ($this->presupuesto->gestion->claro){
             $this->validate([
                 'valor_total_cliente' => ['numeric', 'required']
             ]);
         }
 
+        // Crea el nuevo ítem
         $item = new ItemPresupuesto;
         $item->cod = $this->cod;
         $item->presupuesto_id = $this->presupuesto_id;
         $item->cantidad = $this->cantidad;
         $item->dia = $this->dia;
         $item->otros = $this->otros;
-
         $item->descripcion = $this->descripcion;
         $item->v_unitario = $this->valor_unitario;
         $item->v_total = $this->valor_total;
         $item->proveedor = serialize($this->proveedor);
         $item->margen_utilidad = $this->utilidad;
-
         $item->mes = $this->mes;
         $item->dias = $this->dias;
         $item->ciudad = $this->ciudad;
         $item->v_total_cliente = $this->valor_total_cliente;
 
-        // Indica actualiazcion.
+        // Si el presupuesto ya tiene centro de costos, marca como actualizado
         if ($this->presupuesto->cod_cc){
             $item->actualizado = true;
             $this->setEnEdicion($presto);
         }
 
+        // Calcula valores de cotización y rentabilidad
         $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
         $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
         $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
@@ -185,6 +191,7 @@ class Presupuesto extends Component
         $this->limpiar();
     }
 
+    // Agrega un nuevo evento al presupuesto (ítem especial)
     public function new_event(){
         $this->validate([
             'descripcion' => ['required']
@@ -205,30 +212,33 @@ class Presupuesto extends Component
         $item->mes = 0;
         $item->dias = 0;
         $item->ciudad = 0;
-
         $item->v_unitario_cot = 0;
         $item->v_total_cot = 0;
         $item->rentabilidad = 0;
-
         $item->save();
 
         $this->refresh();
         $this->limpiar();
     }
 
+    // Obtiene los ítems del presupuesto actual
     public function getItems(){
         $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
     }
 
+    // Calcula y actualiza las métricas del presupuesto
     public function getMetricas(){
         $this->getInfoFacturas();
         (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
         $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos/100)) + ($this->ventaProyecto * ($this->administracion/100)) + ($this->ventaProyecto * ($this->fee/100));
         $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
-        if ($this->ventaProyecto > 0){ $this->margenProyecto =  (($this->ventaProyecto - $this->costosProyecto)/$this->ventaProyecto)*100;}
+        if ($this->ventaProyecto > 0){
+            $this->margenProyecto =  (($this->ventaProyecto - $this->costosProyecto)/$this->ventaProyecto)*100;
+        }
         $this->margenBruto = $this->ventaProyecto - $this->costosProyecto;
 
+        // Actualiza los valores en el modelo de presupuesto
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->margen_general = $this->margenGeneral;
         $presto->venta_proy = $this->ventaProyecto;
@@ -245,6 +255,7 @@ class Presupuesto extends Component
         $this->notas = $presto->notas;
     }
 
+    // Obtiene información de facturación del presupuesto
     public function getInfoFacturas(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $this->imprevistos = $presto->imprevistos;
@@ -254,6 +265,7 @@ class Presupuesto extends Component
         $this->notas = $presto->notas;
     }
 
+    // Actualiza la información de facturación y recarga métricas
     public function updateInfoFactura(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->imprevistos = $this->imprevistos;
@@ -266,24 +278,29 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
+    // Obtiene la lista de ciudades disponibles
     public function getCiudades(){
         $this->ciudades = app('ciudades');
     }
 
+    // Obtiene la lista de proveedores y categorías
     public function getProveedores(){
         $this->categorias_proveedor = CategoriaProveedor::select('id', 'description')->orderBy('id','desc')->get();
         $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 
+    // Obtiene la lista de meses del año actual
     public function getMeses(){
         $año = Año::select('id', 'description')->where('description', date('Y'))->first();
         $this->meses = Mes::select('id', 'description')->where('ano_id', $año->id)->get();
     }
 
+    // Obtiene el tarifario de conceptos y valores
     public function getTarifario(){
         $this->tarifario = Tarifario::select('id', 'concepto', 'caso', 'v_unidad')->get();
     }
 
+    // Cambia la disponibilidad de un ítem
     public function changeDisponibilidad($id){
         $item = ItemPresupuesto::find($id);
         $item->disponible = !$item->disponible;
@@ -291,16 +308,19 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
+    // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
         $this->refresh();
     }
 
+    // Refresca métricas e ítems del presupuesto
     public function refresh(){
         $this->getMetricas();
         $this->getItems();
     }
 
+    // Carga los datos de un ítem para edición
     public function getDataEdit($id){
         $this->selected_item = [];
         foreach ($this->items as $item) {
@@ -323,6 +343,7 @@ class Presupuesto extends Component
         $this->ciudad = $this->selected_item->ciudad;
     }
 
+    // Guarda los cambios al editar un ítem
     public function actionEdit(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
@@ -330,6 +351,7 @@ class Presupuesto extends Component
             return redirect()->back()->withErrors('Ningún elemento seleccionado')->withInput();
         }
 
+        // Si es un evento, solo actualiza la descripción
         if ($this->selected_item->evento){
             $this->validate([
                 'descripcion' => ['required'],
@@ -352,6 +374,7 @@ class Presupuesto extends Component
             $item->ciudad = 0;
             $item->update();
         }else{
+            // Validaciones para ítem normal
             $this->validate([
                 'cod' => ['required'],
                 'dia' => ['required'],
@@ -378,8 +401,7 @@ class Presupuesto extends Component
                 'valor_total' => ['required', (new PrestoConsumido($item))],
             ]);
 
-            // Indica actualiazcion
-            // if ($this->presupuesto->cod_cc && ($this->valor_total > $item->v_total) || $this->valor_total == 0){
+            // Marca como actualizado y pone en edición el presupuesto
             $item->actualizado = true;
             $this->setEnEdicion($presto);
 
@@ -395,11 +417,11 @@ class Presupuesto extends Component
                 $item->v_total_cliente = $this->valor_total_cliente;
             }
 
+            // Valida que no se cambie un proveedor ya consumido
             $proveedores_consumidos = $item->consumidos->map(function ($orden){
                 return $orden->OrdenCompra->proveedor_id;
             });
 
-            // $proveedor
             if ((@unserialize($item->proveedor))){
                 foreach (@unserialize($item->proveedor) as $proveedor) {
                     if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
@@ -425,8 +447,8 @@ class Presupuesto extends Component
         $this->limpiar();
     }
 
+    // Redirecciones para exportar cotizaciones y presupuestos
     public function cotizacionPdf(){
-
         return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 1]);
     }
 
@@ -442,9 +464,9 @@ class Presupuesto extends Component
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
     }
 
-    // Envía a probacion
+    // Envía el presupuesto a aprobación
     public function aprobacion(){
-        // Valída si es actualización
+        // Si es actualización, justificación es obligatoria
         if ($this->presupuesto->cod_c){
             $this->validate([
                 'justificacion' => ['required', 'string', 'max:254']
@@ -457,12 +479,12 @@ class Presupuesto extends Component
         $presto->update();
         $this->estadoValidator = $presto->estado_id;
 
-        // EMAIL
+        // Envía email de aprobación
         $this->presupuestoAprobacion($presto, Auth::user());
         return redirect()->route('presupuesto', $this->id_gestion);
     }
 
-    // Convierte en editable
+    // Marca el presupuesto como editable
     public function setEnEdicion($presto){
         if ($presto->estado_id != 3){
             $presto->estado_id = 3;
@@ -470,6 +492,7 @@ class Presupuesto extends Component
         }
     }
 
+    // Actualiza el centro de costos y recalcula valores
     public function updateCentro(){
         if (!$this->presupuesto->cod_cc){
             $this->validate([
@@ -483,18 +506,20 @@ class Presupuesto extends Component
 
         $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
+        // Si es la primera vez que se asigna centro de costos, cambia el estado de la gestión comercial
         if (is_null($item->cod_cc)){
             $gestion = GestionComercial::find($this->id_gestion);
             $gestion->id_estado = 4;
             $gestion->update();
         }
 
-        // Default indicacion actualiazcion
+        // Marca todos los ítems como no actualizados
         ItemPresupuesto::where('presupuesto_id', $item->id)->get()->map(function ($item){
             $item->actualizado = false;
             $item->update();
         });
 
+        // Actualiza datos del presupuesto
         $item->cod_cc = $this->centroCostos;
         $item->fecha_cc = date("Y-m-d");
         $item->estado_id = 1;
@@ -502,30 +527,30 @@ class Presupuesto extends Component
         $item->justificacion = null;
         $item->update();
 
-
-        // Re-calcula los valores de la base y gestion comercial
+        // Recalcula valores de la base y gestión comercial
         $this->reCalculate($item);
 
-        // EMAIL
+        // Envía email de aprobación
         $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, null, $item->cod_cc);
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');
     }
 
+    // Recalcula los valores de la base comercial y gestión comercial
     public function reCalculate($presupuesto){
         $prestosCom = [];
 
-        // Update Gestion
+        // Actualiza el valor de la gestión comercial
         $presupuesto->gestion->presto_cot = $presupuesto->venta_proy;
         $presupuesto->gestion->update();
 
-        // Toma el presupuesto y id del usuario creador de la gestión
+        // Calcula el presupuesto para el usuario creador de la gestión
         array_push($prestosCom, [
             'comercial_id' => $presupuesto->gestion->id_user,
             'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->porcentaje)/100
         ]);
 
-        // Toma el presupuesto y id de los usuarios partiipantes en la gestion
+        // Calcula el presupuesto para los usuarios participantes en la gestión
         $i = 2;
         while($i < 5){
             array_push($prestosCom, [
@@ -535,7 +560,7 @@ class Presupuesto extends Component
             $i++;
         }
 
-        // Update Base
+        // Actualiza los valores en la base comercial
         foreach ($presupuesto->gestion->baseComercial as $key => $base){
             if ($base->id_user == $prestosCom[$key]['comercial_id']){
                 $base->valor_original = $presupuesto->venta_proy;
@@ -545,6 +570,7 @@ class Presupuesto extends Component
         }
     }
 
+    // Rechaza el presupuesto y guarda la justificación
     public function rechazar(){
         $this->validate([
             'justificacion_compras' => ['required', 'string']
@@ -555,19 +581,19 @@ class Presupuesto extends Component
         $presupuesto->estado_id = 3;
         $presupuesto->update();
 
-        // EMAIL
+        // Envía email de rechazo
         $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, $presupuesto->justificacion_compras, $presupuesto->cod_cc);
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
     }
 
-    // VALIDATIONS
+    // VALIDACIONES EN TIEMPO REAL DE LOS CAMPOS DEL FORMULARIO
+
     public function updatedCod(){
         $this->cod = trim($this->cod);
         $this->validate([
             'cod' => ['required']
         ]);
-
         $this->setDataTarifario($this->cod);
         $this->getValorTotal();
     }
@@ -577,7 +603,6 @@ class Presupuesto extends Component
         $this->validate([
             'cantidad' => ['required']
         ]);
-
         $this->getValorTotal();
     }
 
@@ -586,7 +611,6 @@ class Presupuesto extends Component
         $this->validate([
             'dia' => ['required']
         ]);
-
         $this->getValorTotal();
     }
 
@@ -595,7 +619,6 @@ class Presupuesto extends Component
         $this->validate([
             'otros' => ['required']
         ]);
-
         $this->getValorTotal();
     }
 
@@ -612,7 +635,6 @@ class Presupuesto extends Component
         $this->validate([
             'valor_unitario' => ['required', 'numeric']
         ]);
-
         $this->getValorTotal();
     }
 
@@ -630,7 +652,6 @@ class Presupuesto extends Component
         $this->validate([
             'valor_total_cliente' => ['numeric', 'required']
         ]);
-
         if ($this->valor_total != 0){
             $this->getUtilidad();
         }
@@ -712,16 +733,17 @@ class Presupuesto extends Component
         $this->updateInfoFactura();
     }
 
+    // Calcula el valor total del ítem
     public function getValorTotal(){
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->otros) && !is_null($this->valor_unitario)){
             $this->valor_total = $this->cantidad * $this->dia * $this->otros * $this->valor_unitario;
         }
-
         if ($this->valor_total_cliente != 0){
             $this->getUtilidad();
         }
     }
 
+    // Calcula la utilidad del ítem
     public function getUtilidad(){
         if ($this->valor_total_cliente > 0){
             $this->utilidad = $this->valor_total / $this->valor_total_cliente;
@@ -731,6 +753,7 @@ class Presupuesto extends Component
         }
     }
 
+    // Asigna datos del tarifario al ítem seleccionado
     public function setDataTarifario($cod_tarifario){
         if ($cod_tarifario == 0){
             $this->descripcion = "";
@@ -742,9 +765,9 @@ class Presupuesto extends Component
         $this->valor_unitario = $tarifario->v_unidad;
     }
 
+    // Limpia los campos del formulario
     public function limpiar(){
         $this->cod = "";
-
         $this->cantidad = null;
         $this->dia = null;
         $this->otros = null;
@@ -754,16 +777,14 @@ class Presupuesto extends Component
         $this->proveedor = [];
         $this->utilidad = "";
         $this->valor_total_cliente = 0;
-
         $this->mes = "";
         $this->dias = "";
         $this->ciudad = "";
-
         $this->selected_item = null;
     }
 
+    // Alterna la vista de rentabilidad
     public function toggelRentabilidad(){
         $this->rentabilidadView = !$this->rentabilidadView;
     }
-    // -----------
 }

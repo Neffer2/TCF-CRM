@@ -11,27 +11,30 @@ use Livewire\WithFileUploads;
 
 class Juridica extends Component
 {
+    // Traits para subir archivos y enviar emails
     use WithFileUploads, Email;
 
-    // Models
+    // Variables para los datos del formulario y modelos
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
     public $observaciones_remision, $observaciones_anulacion;
 
-    // Filled
+    // Variables para la orden y presupuesto seleccionados
     public $presupuesto, $orden_compra;
 
-    // Useful vars
+    // Variables útiles para la gestión de items y proveedores
     public $ocItems = [], $selectedItem, $maxCant, $maxValor, $maxDias, $maxOtros, $items = [], $proveedores = [];
 
     public $edit = false;
 
+    // Renderiza la vista y carga proveedores
     public function render()
     {
         $this->getProveedores();
         return view('livewire.productor.ordenes.juridica');
     }
 
+    // Inicializa items si hay una orden de compra existente
     public function mount (){
         if ($this->orden_compra){
             $this->getItems();
@@ -42,6 +45,7 @@ class Juridica extends Component
         * Añade una nueva fila a la lista de items en la orden de compra.
     */
     public function newItem(){
+        // Valida los datos del formulario antes de agregar el item
         $this->validate([
             'item' => 'required',
             'desc' => 'required',
@@ -55,16 +59,17 @@ class Juridica extends Component
         $this->getVTotal();
 
         if (is_null($this->selectedItem)){
-            // Valida item repetido
+            // Valida que el item no esté repetido
             if (!$this->validateItems($this->item)){
                 $this->resetFields();
                 $this->addError('customError', 'Este item ya fué registrado.');
                 return redirect()->back();
             }
 
+            // Agrega el nuevo item al arreglo de items de la OC
             array_push($this->ocItems, [
                 'id' => count($this->ocItems),
-                'item' => $this->item, // $this->item contiene el id del item en DB
+                'item' => $this->item, // id del item en DB
                 'displayItem' => $this->getDisplayItem($this->item),
                 'desc' => $this->desc,
                 'cant' => $this->cant,
@@ -74,6 +79,7 @@ class Juridica extends Component
                 'vTotal' => $this->vTotal
             ]);
         }else {
+            // Edita el item seleccionado
             $this->ocItems[$this->selectedItem]['displayItem'] = $this->getDisplayItem($this->item);
             $this->ocItems[$this->selectedItem]['desc'] = $this->desc;
             $this->ocItems[$this->selectedItem]['cant'] = $this->cant;
@@ -85,6 +91,7 @@ class Juridica extends Component
         $this->resetFields();
     }
 
+    // Elimina un item de la lista de items de la OC
     public function delete($id){
         unset($this->ocItems[$id]);
         $this->resetFields();
@@ -94,9 +101,10 @@ class Juridica extends Component
         * Trae la información del item seleccionado para ser editado.
     */
     public function getSelectedItem($id){
-        $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la poscición en el arreglo
+        $this->selectedItem = $this->ocItems[$id]['id']; //Guarda la posición en el arreglo
 
-        $this->item = $this->ocItems[$id]['item']; // El select está con el ID de la DB.
+        // Carga los datos del item seleccionado en el formulario
+        $this->item = $this->ocItems[$id]['item'];
         $this->desc = $this->ocItems[$id]['desc'];
         $this->cant = $this->ocItems[$id]['cant'];
         $this->dias = $this->ocItems[$id]['dias'];
@@ -104,6 +112,7 @@ class Juridica extends Component
         $this->vUnit = $this->ocItems[$id]['vUnit'];
         $this->vTotal = $this->ocItems[$id]['vTotal'];
 
+        // Establece los máximos permitidos para el item
         $this->presupuesto->presupuestoItems->map(function ($item){
             if ($this->item == $item->id){
                 $this->maxCant = $item->cantidad;
@@ -114,10 +123,12 @@ class Juridica extends Component
         })->first();
     }
 
+    // Obtiene los proveedores disponibles para el presupuesto
     public function getProveedores(){
         $proveedores_presupuesto = [];
         $proveedores_db = Proveedor::select('id', 'tercero')->get();
 
+        // Recorre los items únicos del presupuesto para obtener proveedores
         foreach ($this->presupuesto->presupuestoItems->unique('proveedor') as $item){
             if ($proveedores_id = @unserialize($item->proveedor)){
                 foreach ($proveedores_id as $proveedor_id) {
@@ -131,6 +142,7 @@ class Juridica extends Component
         $this->proveedores = collect($proveedores_presupuesto);
     }
 
+    // Valida que el item no esté repetido en la OC
     public function validateItems($itemDB){
         $validator = true;
         foreach ($this->ocItems as $key => $item) {
@@ -145,15 +157,17 @@ class Juridica extends Component
         * Trae y muestra la orden de compra de la base de datos (si ya está creada).
     */
     public function getItems(){
+        // Carga datos generales de la OC
         $this->proveedor = $this->orden_compra->proveedor_id;
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
         $this->observaciones_remision = $this->orden_compra->observacion_remision;
 
+        // Carga los items de la OC
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
                 'id' => count($this->ocItems),
-                'item' => $item->item_id, // $this->item contiene el id del item en DB
+                'item' => $item->item_id,
                 'displayItem' => $this->getDisplayItem($item->item_id),
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
@@ -165,7 +179,7 @@ class Juridica extends Component
         }
     }
 
-    // Obtiene el item que reconocen los productores
+    // Obtiene el número de item para mostrar al usuario
     public function getDisplayItem($id){
         foreach ($this->presupuesto->presupuestoItems as $key => $item) {
             if ($id == $item->id){
@@ -174,7 +188,7 @@ class Juridica extends Component
         }
     }
 
-    // Valida si el item tiene aún disponibilidades en la base de datos.
+    // Calcula el valor total del item
     public function getVTotal(){
         $this->vUnit = trim($this->vUnit);
         $this->vUnit = str_replace(",",'', $this->vUnit);
@@ -184,13 +198,13 @@ class Juridica extends Component
             'vUnit' => 'required|numeric'
         ]);
 
-        // $this->vTotal = ($this->cant * $this->vUnit * $this->dias * $this->otros);
-        // $this->vTotal = ($this->cant * $this->vUnit * $this->otros);
+        // Calcula el valor total del item
         $this->vTotal = ($this->cant * $this->vUnit);
 
         $this->updatedVTotal();
     }
 
+    // Envía la orden de compra para aprobación (crea o actualiza)
     public function enviarAprobacion(){
         $this->validate([
             'proveedor' => 'required',
@@ -202,7 +216,7 @@ class Juridica extends Component
             return redirect()->back();
         }
 
-        // Si la orden está creada, entonces edita
+        // Si la orden está creada, actualiza
         if ($this->orden_compra){
             $this->orden_compra->estado_id = 2;
             $this->orden_compra->proveedor_id = $this->proveedor;
@@ -212,6 +226,7 @@ class Juridica extends Component
             $this->deleteItems($this->orden_compra->id);
             $this->storeItems($this->orden_compra->id);
         }else{
+            // Si no existe, crea una nueva OC
             $orden = new OrdenCompra;
             $orden->tipo_oc = 1;
             $orden->presupuesto_id = $this->presupuesto->id;
@@ -229,6 +244,7 @@ class Juridica extends Component
         return redirect()->back()->with('success', 'Orden de compra enviada a aprobación.');
     }
 
+    // Guarda los items de la OC en la base de datos
     public function storeItems($orden_id){
         foreach ($this->ocItems as $item) {
             $itemsOrden = new OcItem;
@@ -245,7 +261,7 @@ class Juridica extends Component
         }
     }
 
-    // Elimina los items de la orden de compra en la DB.
+    // Elimina los items de la OC en la base de datos
     public function deleteItems($orden_id){
         $items = OcItem::where('oc_id', $orden_id)->get();
 
@@ -254,6 +270,7 @@ class Juridica extends Component
         });
     }
 
+    // Cambia el estado de la orden de compra (aprobada, rechazada, GR, anulada)
     public function cambioEstado($estado){
         $messaje = '';
 
@@ -305,6 +322,7 @@ class Juridica extends Component
         return redirect()->route('ordenes-compra')->with('success', $messaje);
     }
 
+    // Elimina la orden de compra y sus items
     public function deleteOrden(){
         $this->orden_compra->ordenItems->map(function ($item){
             $item->delete();
@@ -315,7 +333,9 @@ class Juridica extends Component
         return redirect()->back()->with('success', 'Orden de compra eliminada.');
     }
 
-    /* UPDATES */
+    /* UPDATES: Métodos que se ejecutan al actualizar campos del formulario */
+
+    // Al actualizar el item seleccionado
     public function updatedItem(){
         $this->validate([
             'item' => 'required'
@@ -323,13 +343,14 @@ class Juridica extends Component
 
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
 
-        // Valida dispinibilidad
+        // Valida disponibilidad
         if (!$dbItemPresto->disponible){
             $this->addError('customError', 'Este item no está disponible para ser consumido.');
             $this->resetFields();
             return redirect()->back();
         }
 
+        // Calcula cantidades y valores disponibles
         $contCant = 0;
         $acumVTotal = 0;
         foreach ($dbItemPresto->consumidos as $item) {
@@ -348,6 +369,7 @@ class Juridica extends Component
             return redirect()->back();
         }
 
+        // Carga datos del item
         $this->desc = $dbItemPresto->descripcion;
         $this->vUnit = $dbItemPresto->v_unitario;
         $this->dias = $dbItemPresto->dia;
@@ -359,12 +381,14 @@ class Juridica extends Component
         $this->getVTotal();
     }
 
+    // Al actualizar la descripción
     public function updatedDesc(){
         $this->validate([
             'desc' => 'required'
         ]);
     }
 
+    // Al actualizar la cantidad
     public function updatedCant(){
         $this->validate([
             'cant' => "required|numeric|max:$this->maxCant",
@@ -377,6 +401,7 @@ class Juridica extends Component
         $this->getVTotal();
     }
 
+    // Al actualizar los días
     public function updatedDias(){
         $this->validate([
             'dias' => "required|numeric|max:$this->maxDias",
@@ -389,6 +414,7 @@ class Juridica extends Component
         $this->getVTotal();
     }
 
+    // Al actualizar otros valores
     public function updatedOtros(){
         $this->validate([
             'otros' => "required|numeric|max:$this->maxOtros",
@@ -401,6 +427,7 @@ class Juridica extends Component
         $this->getVTotal();
     }
 
+    // Al actualizar el valor unitario
     public function updatedVUnit(){
         $this->vUnit = trim($this->vUnit);
         $this->vUnit = str_replace(",",'', $this->vUnit);
@@ -416,12 +443,14 @@ class Juridica extends Component
         $this->getVTotal();
     }
 
+    // Al actualizar el valor total
     public function updatedVTotal(){
         $this->validate([
             'vTotal' => "required|numeric|max:$this->maxValor"
         ]);
     }
 
+    // Al actualizar el proveedor
     public function updatedProveedor(){
         $this->validate([
             'proveedor' => 'required|numeric',
@@ -432,30 +461,35 @@ class Juridica extends Component
         $this->resetFields();
     }
 
+    // Al actualizar la justificación de rechazo
     public function updatedJustificacionRechazo(){
         $this->validate([
             'justificacion_rechazo' => 'required|string|max:1000',
         ]);
     }
 
+    // Al actualizar el archivo de cotización
     public function updatedFile_cot(){
         $this->validate([
             'file_cot' => 'required|file|mimes:pdf|max:10000'
         ]);
     }
 
+    // Al actualizar el archivo de Helisa
     public function updatedOc_helisa(){
         $this->validate([
             'oc_helisa' => 'required|file|mimes:pdf|max:10000',
         ]);
     }
 
+    // Al actualizar el GR
     public function updatedGr(){
         $this->validate([
             'gr' => 'required|string'
         ]);
     }
 
+    // Al actualizar las observaciones de remisión
     public function updatedObservacionesRemision(){
         $this->validate([
             'observaciones_remision' => 'nullable|string|max:1000'
@@ -463,6 +497,7 @@ class Juridica extends Component
     }
     /*****/
 
+    // Limpia los campos del formulario de items
     public function resetFields(){
         $this->item = "";
         $this->desc = "";
@@ -475,6 +510,7 @@ class Juridica extends Component
         $this->selectedItem = null;
     }
 
+    // Limpia los campos generales de la OC
     public function resetOcInfo(){
         $this->proveedor = "";
         $this->file_cot = null;

@@ -2,20 +2,15 @@
 
 namespace App\Exports;
 
-use App\Models\User;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithMapping;
 
 class CotExport implements FromView, WithDrawings, WithColumnFormatting
-{   
+{
 
     protected $info = [];
 
@@ -27,12 +22,12 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
     * @return \Illuminate\Support\Collection
     */
     public function view(): View
-    {   
+    {
         return view('exports.excel', [
             'items' => $this->info['items'],
             'presto' => $this->info['presto'],
             'tipo' => $this->info['tipo'],
-            'proveedores' => $this->info['proveedores'] 
+            'proveedores' => $this->info['proveedores']
         ]);
     }
 
@@ -46,11 +41,11 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
         $drawing->setCoordinates('A1');
 
         return $drawing;
-    } 
+    }
 
-    public function columnFormats(): array 
+    public function columnFormats(): array
     {
-        return [ 
+        return [
             // 'I' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
             'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,

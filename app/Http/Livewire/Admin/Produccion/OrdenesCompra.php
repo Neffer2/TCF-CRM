@@ -10,45 +10,70 @@ use App\Models\Año;
 use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
+/**
+ * Componente Livewire para gestionar órdenes de compra de producción
+ * Permite filtrar, paginar y visualizar las órdenes con múltiples criterios
+ */
 class OrdenesCompra extends Component
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
 
-    // Models
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
+    // PROPIEDADES DE FILTROS
+    public $cod_cc;                // Código de centro de costo para filtrar por presupuesto
+    public $fecha = 'desc';        // Orden de fecha (asc/desc)
+    public $estado;                // ID del estado de la orden de compra
+    public $año;                   // ID del año para filtrar por rango de fechas
+    public $tipo;                  // ID del tipo de orden de compra
+    public $productor;             // ID del productor para filtrar órdenes
 
-    // Useful vars
-    public $estados = [], $años = [], $tipos = [], $productores = [];
+    // COLECCIONES PARA OPCIONES DE FILTROS
+    public $estados = [];          // Lista de estados disponibles
+    public $años = [];             // Lista de años disponibles
+    public $tipos = [];            // Lista de tipos de órdenes de compra
+    public $productores = [];      // Lista de usuarios productores
 
-    // Filled
-    public $productor_id;
+    // PROPIEDADES ADICIONALES
+    public $productor_id;          // ID específico del productor autenticado
+    public $yearInfo;              // Información del año seleccionado
 
+    /**
+     * Renderiza la vista del componente con las órdenes filtradas
+     * Aplica todos los filtros disponibles y retorna la vista paginada
+     * @return \Illuminate\View\View
+     */
     public function render(){
+        // Array para almacenar todos los filtros aplicados
         $filtros = [];
 
+        // Filtro por estado de la orden de compra
         if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]);
         }
 
+        // Filtro por año: aplica rango de fechas del año seleccionado
         if($this->año){
             array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
+        // Filtro por tipo de orden de compra
         if($this->tipo){
             array_push($filtros, ['tipo_oc', $this->tipo]);
         }
 
+        // Filtro por código de centro de costo del presupuesto
         if ($this->cod_cc){
             $ordenes = OrdenCompra::with('presupuesto')
                 ->whereHas('presupuesto', function ($presto) {
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                 })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }else {
+            // Sin filtro de código, consulta básica
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
+        // Filtro por productor: busca en presupuesto o información natural
         if ($this->productor) {
             $ordenes = OrdenCompra::where(function($query) {
                 $query->whereHas('presupuesto', function ($presupuesto) {
@@ -60,7 +85,7 @@ class OrdenesCompra extends Component
             })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
-        // Filtro para usuario productor
+        // Filtro específico para usuario productor autenticado
         if ($this->productor_id){
             $ordenes = OrdenCompra::whereHas('naturalInfo', function ($natural) {
                         $natural->where('productor_id', $this->productor_id);
@@ -70,6 +95,10 @@ class OrdenesCompra extends Component
         return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
     }
 
+    /**
+     * Inicializa el componente cuando se monta
+     * Carga todas las opciones disponibles para los filtros
+     */
     public function mount(){
         $this->getEstados();
         $this->getAños();
@@ -77,25 +106,46 @@ class OrdenesCompra extends Component
         $this->getProductores();
     }
 
+    /**
+     * Obtiene la lista de usuarios productores (rol 7)
+     * Carga solo ID y nombre para optimizar la consulta
+     */
     public function getProductores(){
         $this->productores = User::select('id', 'name')->where('rol', 7)->get();
     }
 
+    /**
+     * Obtiene todos los tipos de órdenes de compra disponibles
+     */
     public function getTipos(){
         $this->tipos = TipoOrdenCompra::all();
     }
 
+    /**
+     * Obtiene los estados de órdenes de compra excluyendo el estado 3
+     */
     public function getEstados(){
         $this->estados = EstadoOrdenesCompra::where('id', '<>', 3)->get();
     }
 
+    /**
+     * Obtiene la lista de años disponibles y establece el año actual por defecto
+     * Automáticamente selecciona el año más reciente como filtro inicial
+     */
     public function getAños(){
         $this->años = Año::all();
-        /* CURRENT YEAR */
-        $this->año = $this->años->sortByDesc('description')->first()->id;
-        $this->updatedAño();
+        // Establece el año más reciente como predeterminado
+        $añoMasReciente = collect($this->años)->sortByDesc('description')->first();
+        if ($añoMasReciente) {
+            $this->año = $añoMasReciente->id;
+            $this->updatedAño();
+        }
     }
 
+    /**
+     * Se ejecuta cuando se actualiza el filtro de año
+     * Valida la selección y carga la información completa del año
+     */
     public function updatedAño(){
         $this->validate([
             'año' => 'required'

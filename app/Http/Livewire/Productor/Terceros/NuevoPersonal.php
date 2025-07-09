@@ -17,37 +17,39 @@ use Illuminate\Support\Facades\Storage;
 class NuevoPersonal extends Component
 {
     use WithFileUploads;
+
     /*
-        * This component is used to register new personal
-        * If this component have a $tercero, it means that we are going to edit it
-        * If this component have a $orden, it means that a third party employee is editing
+        * Este componente se utiliza para registrar o editar personal.
+        * Si tiene $tercero, es edición; si tiene $orden, es edición por parte de un tercero.
     */
 
-    // Models
+    // Modelos y campos del formulario
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
     $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383;
 
-    // Useful vars
+    // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
 
-    // Filled
+    // Modelos cargados
     public $tercero, $orden;
 
     /*
         * EVIDENCIAS
     */
 
-    // Models
+    // Campos para evidencias
     public $fechaEvidencia, $fotoEvidencia, $observacionEvidencia;
 
-    // Useful vars
+    // Colección de evidencias
     public $evidencias = [];
 
+    // Renderiza la vista principal del componente
     public function render()
     {
         return view('livewire.productor.terceros.nuevo-personal');
     }
 
+    // Inicializa variables y carga catálogos
     public function mount(){
         $this->ciudades = app('ciudades');
         $this->servicios = app('servicios');
@@ -59,10 +61,12 @@ class NuevoPersonal extends Component
         if ($this->tercero){$this->fillForm();}
     }
 
+    // Importa terceros desde archivo Excel
     public function updatedterceroXlsx(){
         Excel::import(new TerceroImport, $this->terceroXlsx);
     }
 
+    // Registra un nuevo personal
     public function nuevoPersonal(){
         $this->validate([
             'nombre' => 'required|max:255',
@@ -85,17 +89,20 @@ class NuevoPersonal extends Component
         $tercero->servicio = $this->servicio;
         $tercero->estado = 1;
 
+        // Si se diligenció banco
         if($this->banco){
             $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
+        // Si se adjuntó RUT
         if($this->rut){
             $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->rut = $this->rut->store('public/ruts');
             $tercero->rut = $this->rut->store('public/ruts');
         }
 
+        // Si se adjuntó certificación bancaria
         if($this->cert_bancaria){
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
@@ -104,6 +111,7 @@ class NuevoPersonal extends Component
         $tercero->save();
         $this->emit('terceroRegistrado');
 
+        // Limpia los campos del formulario
         $this->reset_fields([
             'nombre',
             'apellido',
@@ -121,7 +129,9 @@ class NuevoPersonal extends Component
         return redirect()->back();
     }
 
+    // Actualiza un tercero existente
     public function actualizarTercero(){
+        // Si el valor supera el mínimo, exige número de RUT
         if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             $this->validate([
                 'num_rut' => 'required|numeric'
@@ -139,6 +149,7 @@ class NuevoPersonal extends Component
             'estado' => 'required|numeric|max:1',
         ]);
 
+        // Si no está autenticado, exige más campos
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required|string|max:255',
@@ -158,11 +169,13 @@ class NuevoPersonal extends Component
         $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
 
+        // Banco
         if($this->banco){
             $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
+        // Copia de cédula
         if (!$tercero->copia_cedula && !Auth::check()){
             $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
@@ -171,6 +184,7 @@ class NuevoPersonal extends Component
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }
 
+        // Certificación bancaria
         if (!$tercero->cert_bancaria && !Auth::check()){
             $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
@@ -179,13 +193,14 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
+        // Artículo 383
         if($this->art383 && !Auth::check()){
             $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
 
+        // RUT si aplica
         if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
-            //
             if (!$tercero->rut && !Auth::check()){
                 $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
                 $tercero->rut = $this->rut->store('public/ruts');
@@ -195,6 +210,7 @@ class NuevoPersonal extends Component
             }
         }
 
+        // Si no está autenticado, actualiza contrato y términos en la orden
         if (!Auth::check()){
             $this->orden->naturalInfo->contrato = $this->contrato;
             $this->orden->naturalInfo->terminos = $this->terminos;
@@ -208,6 +224,7 @@ class NuevoPersonal extends Component
         $tercero->update();
         $this->emit('terceroRegistrado');
 
+        // Limpia los campos del formulario
         $this->reset_fields([
             'nombre',
             'apellido',
@@ -230,6 +247,7 @@ class NuevoPersonal extends Component
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }
 
+    // Genera el contrato en PDF y lo almacena
     public function generarContrato(){
         if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             $this->validate([
@@ -248,6 +266,7 @@ class NuevoPersonal extends Component
             'banco' => 'required|string|max:255',
         ]);
 
+        // Validaciones de archivos requeridos
         if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
             $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
         }
@@ -264,6 +283,7 @@ class NuevoPersonal extends Component
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
         }
 
+        // Información para el contrato
         $contratoInfo = [
             'items' => $this->orden->ordenItems,
             'tercero' => $this->tercero,
@@ -277,6 +297,7 @@ class NuevoPersonal extends Component
             'num_rut' => $this->num_rut
         ];
 
+        // Genera el PDF y lo guarda en storage
         $dompdf = new Dompdf(array('enable_remote' => true));
         $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
         $dompdf->loadHtml($html);
@@ -291,6 +312,7 @@ class NuevoPersonal extends Component
         $this->contrato = asset('storage/contratos/' . basename($filePath));
     }
 
+    // Convierte un número a texto (para el contrato)
     private function getNumberString($numero){
         $numerosEnTexto = [
             1 => 'Uno', 2 => 'Dos', 3 => 'Tres', 4 => 'Cuatro', 5 => 'Cinco',
@@ -305,12 +327,14 @@ class NuevoPersonal extends Component
         return $numerosEnTexto[(int) $numero] ?? $numero;
     }
 
+    // Elimina un personal
     public function deletePersonal(){
         $this->tercero->delete();
         $this->emit('terceroRegistrado');
         return redirect()->route('personal')->with('success', 'Personal eliminado con éxito.');
     }
 
+    // Llena el formulario con los datos del tercero
     public function fillForm(){
         $this->nombre = $this->tercero->nombre;
         $this->apellido = $this->tercero->apellido;
@@ -325,6 +349,7 @@ class NuevoPersonal extends Component
         $this->art383 = $this->tercero->art383;
     }
 
+    // Alterna la confirmación de eliminación
     public function toggelConfirm(){
         $this->deleteConfirm = !$this->deleteConfirm;
     }
@@ -332,6 +357,8 @@ class NuevoPersonal extends Component
     /*
         * EVIDENCIAS
     */
+
+    // Agrega una nueva evidencia a la colección
     public function newEvidencia(){
         $this->validate([
             'fechaEvidencia' => 'required|date',
@@ -349,12 +376,14 @@ class NuevoPersonal extends Component
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
     }
 
+    // Elimina una evidencia de la colección y borra el archivo
     public function deleteEvidencia($itemId){
         $filePath = $this->evidencias[$itemId]['foto'];
         Storage::delete($filePath);
         unset($this->evidencias[$itemId]);
     }
 
+    // Guarda todas las evidencias en la base de datos
     public function saveEvidencia(){
         foreach($this->evidencias as $evidencia){
             $this->orden->evidencias()->create([
@@ -378,7 +407,7 @@ class NuevoPersonal extends Component
     }
 
     /*
-        * Reset de los campos
+        * Limpia los campos especificados del formulario
         * @param array $fields
     */
     public function reset_fields($fields = null){

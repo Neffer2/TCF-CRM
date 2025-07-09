@@ -13,32 +13,35 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Block1 extends Component
-{   
-    protected $listeners = ['Block1' => 'getData'];
+{
+    protected $listeners = ['Block1' => 'getData']; // Escucha el evento 'Block1' para recargar los datos del dashboard
 
     // Models
-    public $venta_facturada = 0;
-    public $venta_consolidada = 0;
-    public $presto_mensual = 0; 
-    public $presto_acumulado = 0;
+    public $venta_facturada = 0;      // Total de venta facturada en el periodo
+    public $venta_consolidada = 0;    // Total de venta consolidada en el periodo
+    public $presto_mensual = 0;       // Presupuesto mensual
+    public $presto_acumulado = 0;     // Presupuesto acumulado
 
-    public $cumpli_venta_men = 0;
-    public $cumpli_acum_venta_men = 0;
-    public $presto_x_cumplir = 0;
+    public $cumpli_venta_men = 0;         // % de cumplimiento de venta mensual
+    public $cumpli_acum_venta_men = 0;    // % de cumplimiento acumulado
+    public $presto_x_cumplir = 0;         // % de presupuesto por cumplir
 
     // Useful vars
-    public $latest_year;
-    public $latest_month;
+    public $latest_year;   // Último año cargado
+    public $latest_month;  // Último mes cargado
 
-    public function render() 
+    // Renderiza la vista principal del bloque de dashboard
+    public function render()
     {
         return view('livewire.com.dashboard.block1');
-    } 
- 
+    }
+
+    // Al montar el componente, carga los datos por defecto
     public function mount(){
         $this->default();
-    } 
+    }
 
+    // Carga los datos por defecto del dashboard (último año, mes actual, usuario autenticado)
     public function default(){
         // Obtiene el último año cargado
         $this->latest_year = Año::select('id', 'description')->orderBy('created_at', 'DESC')->first();
@@ -46,15 +49,16 @@ class Block1 extends Component
         $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
         if ($this->latest_year){
             $this->getData(['año' => $this->latest_year->description, 'mes' => null, 'comercial' => Auth::id(), 'cuenta' => $cuenta->id]);
-        } 
+        }
     }
 
+    // Obtiene y actualiza todos los datos del dashboard según los filtros recibidos
     public function getData($filters = null) {
         if ($filters == null){
             return $this->default();
         }
 
-        $mes = $this->getMes($filters['mes']); 
+        $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
 
         $this->getVentaFacturada($año->description, $mes, $filters['comercial'], $filters['cuenta']);
@@ -68,27 +72,30 @@ class Block1 extends Component
         $this->updatePresto_x_cumplir();
     }
 
-    /* Trae datos almacenados del mes */
+    /* Trae el mes actual del año más reciente */
     public function getCurrentMes ($latest_year){
-        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('identifier', number_format(date("m")))->where('ano_id', $latest_year->id)->first();
+        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')
+            ->where('identifier', number_format(date("m")))
+            ->where('ano_id', $latest_year->id)
+            ->first();
         return $mes;
     }
 
-    /* Trae datos almacenados del mes */
+    /* Trae los datos de un mes específico por id */
     public function getMes ($mes){
         $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('id', $mes)->first();
         return $mes;
     }
 
-    /* Trae datos almacenados del año */
+    /* Trae los datos de un año específico por descripción */
     public function getAño ($año){
         $año = Año::select('id', 'description')->where('description', $año)->first();
         return $año;
     }
 
-    /* Obtiene y filtra las ventas facturadas */
+    /* Obtiene y filtra las ventas facturadas según los filtros */
     public function getVentaFacturada($año, $mes, $comercial, $cuenta) {
-        /* Creo 2 arreglos que contendrán los filtros necesarios para la consulta */
+        // Arreglos para filtros de consulta
         $filters_array = [];
         $date_filters_array = [];
 
@@ -109,7 +116,8 @@ class Block1 extends Component
         if ($cuenta){
             array_push($filters_array, ['id_cuenta', $cuenta]);
         }
-    
+
+        // Consulta las ventas facturadas en Helisa
         $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
                     ->where($filters_array)
                     ->whereBetween('fecha', $date_filters_array)
@@ -121,6 +129,7 @@ class Block1 extends Component
         }
     }
 
+    /* Obtiene y filtra las ventas consolidadas acumuladas */
     public function getVentaConsolidada($año_id, $año_desc, $mes, $comercial, $cuenta) {
         $first_month = Mes::select('id', 'description', 'f_inicio')->where([['identifier', 1], ['ano_id', $año_id]])->first();
         $last_month = Mes::select('id', 'description', 'f_fin')->where([['identifier', 12], ['ano_id', $año_id]])->first();
@@ -138,8 +147,8 @@ class Block1 extends Component
         if ($cuenta){
             array_push($filters_array, ['id_cuenta', $cuenta]);
         }
-        
-        // Si no hay mes no hay venta consolidada, hace la sumatoria de todos los meses
+
+        // Si hay mes, suma hasta ese mes; si no, suma todo el año
         if ($mes){
             $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
                         ->where($filters_array)
@@ -156,9 +165,9 @@ class Block1 extends Component
         foreach ($helisa_results as $helisa_result){
             $this->venta_consolidada += $helisa_result->base_factura;
         }
-
     }
 
+    /* Obtiene el presupuesto mensual según los filtros */
     public function getPresupuesto($mes, $comercial, $año) {
         $filters_array = [];
 
@@ -172,33 +181,33 @@ class Block1 extends Component
 
         if ($mes){
             array_push($filters_array, ['mes_id', $mes->id]);
-        }    
-        
-        // Si el mes es nulo pero el comercual no, muestra el presupuyesto mensual acumlado a la fecha
+        }
+
+        // Si el mes es nulo pero el comercial no, muestra el presupuesto mensual acumulado a la fecha
         if (is_null($mes) && $comercial != ""){
-            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."' AND id_user = $comercial"));            
-            // Si el mes y comercial son nulos, presupuesto es cero
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."' AND id_user = $comercial"));
         }else {
             $presupuestos = Presupuesto::select('id', 'valor')
                                 ->where($filters_array)
                                 ->get();
         }
-        
+
         $this->presto_mensual = 0;
         foreach ($presupuestos as $presupuesto){
             $this->presto_mensual += $presupuesto->valor;
-        }                                   
+        }
     }
 
+    /* Obtiene el presupuesto acumulado hasta el mes seleccionado */
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial){
-        // Si no hay mes, hace el conteo de todos los meses
+        // Si hay mes, suma hasta ese mes; si no, suma todo el año
         if ($mes) {
             if ($comercial){
                 $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
             }else {
                 $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
             }
-        }else { 
+        }else {
             if ($comercial){
                 $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE id_user = $comercial AND ano_id = $año_id"));
             }else {
@@ -206,21 +215,22 @@ class Block1 extends Component
             }
         }
 
-        // dd($presupuestos);
         $this->presto_acumulado = 0;
         foreach ($presupuestos as $value) {
             $this->presto_acumulado += $value->valor;
         }
-    } 
+    }
 
+    // Calcula el % de cumplimiento de venta mensual
     public function updateCumpli_venta_men (){
         if ($this->presto_mensual > 0){
             $this->cumpli_venta_men = ($this->venta_facturada/$this->presto_mensual)*100;
         }else{
             $this->cumpli_venta_men = 0;
         }
-    } 
+    }
 
+    // Calcula el % de cumplimiento acumulado
     public function updateCumpli_acum_venta_men (){
         if ($this->presto_acumulado > 0){
             $this->cumpli_acum_venta_men = ($this->venta_consolidada/$this->presto_acumulado)*100;
@@ -229,6 +239,7 @@ class Block1 extends Component
         }
     }
 
+    // Calcula el % de presupuesto por cumplir
     public function updatePresto_x_cumplir (){
         $this->presto_x_cumplir = 0;
         if ($this->presto_acumulado){

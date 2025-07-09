@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Block2 extends Component
-{   
+{
     protected $listeners = ['Block2' => 'getData'];
 
     // Models
@@ -23,7 +23,7 @@ class Block2 extends Component
     public $venta_facturada = 0;
     public $ventatotal = 0;
     public $presto_mensual = 0;
-    
+
     //Filtros
     public $año;
     public $mes;
@@ -45,11 +45,11 @@ class Block2 extends Component
         return view('livewire.com.dashboard.block2');
     }
 
-    public function mount(){ 
+    public function mount(){
         $this->default();
     }
 
-    public function default(){ 
+    public function default(){
         // Obtiene el último año cargado
         $latest_year = Año::select('id','description')->orderBy('created_at', 'DESC')->first();
         $cuenta = Cuenta::select('id', 'description')->where('id', 1)->first();
@@ -58,8 +58,8 @@ class Block2 extends Component
         }
     }
 
-    /* 
-        Obtiene datos cuando sólo hay año en los filtros 
+    /*
+        Obtiene datos cuando sólo hay año en los filtros
         @Params int
     */
 
@@ -74,7 +74,7 @@ class Block2 extends Component
             $this->comercial = $filters['comercial'];
         /* --- */
 
-        $mes = $this->getMes($filters['mes']); 
+        $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
 
         $this->xfacturar = $this->getXfacturar($filters['comercial'], $mes, $año, $filters['cuenta']);
@@ -234,7 +234,7 @@ class Block2 extends Component
         if ($cuenta){
             array_push($filters_array, ['id_cuenta', $cuenta]);
         }
-        
+
         $this->venta_facturada = 0;
         $helisa_results = Helisa::select('base_factura')
                     ->where($filters_array)
@@ -242,7 +242,7 @@ class Block2 extends Component
                     ->sum('base_factura');
 
         $this->venta_facturada = $helisa_results;
-        
+
         return ($this->venta_facturada + $this->xfacturar +$this->ventaejecucion);
     }
 
@@ -252,7 +252,7 @@ class Block2 extends Component
         $this->sum_3 = $this->sum_2 + $this->venta;
     }
 
-    
+
     public function getPers($comercial_id, $mes, $año) {
         $filters_array = [];
 
@@ -262,11 +262,11 @@ class Block2 extends Component
 
         if ($mes){
             array_push($filters_array, ['mes_id', $mes->id]);
-        } 
+        }
 
         if ($comercial_id){
             array_push($filters_array, ['id_user', $comercial_id]);
-        }  
+        }
 
         $presupuesto = Presupuesto::select('id', 'valor')
                                     ->where($filters_array)

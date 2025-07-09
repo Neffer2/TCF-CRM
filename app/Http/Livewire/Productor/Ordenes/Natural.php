@@ -16,26 +16,28 @@ use Illuminate\Support\Str;
 
 class Natural extends Component
 {
+    // Incluye traits para subir archivos, paginación y SMS personalizados
     use WithFileUploads, WithPagination, SMS;
 
-    // Modelsv
+    // Variables públicas para modelos y datos del formulario
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
             $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa;
 
-    // Useful vars
+    // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
             $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal,
             $queriedOrden;
 
-    // Filled
+    // Variables para identificar el productor y la orden actual
     public $productor, $orden_id;
 
     /*
         * EVIDENCIAS
     */
 
+    // Renderiza la vista y carga terceros y presupuestos
     public function render()
     {
         $this->getTerceros();
@@ -43,6 +45,7 @@ class Natural extends Component
         return view('livewire.productor.ordenes.natural');
     }
 
+    // Inicializa variables y carga datos si hay una orden existente
     public function mount(){
         $this->items = collect();
         $this->ciudades = app('ciudades');
@@ -55,6 +58,7 @@ class Natural extends Component
         }
     }
 
+    // Obtiene la lista de terceros filtrando por estado y búsqueda
     public function getTerceros(){
         $filtros = [];
         array_push($filtros, ['estado', 1]);
@@ -74,8 +78,8 @@ class Natural extends Component
         return $this->terceros = Tercero::select('id', 'nombre', 'apellido', 'cedula', 'cert_bancaria', 'rut')->where($filtros)->limit(50)->get();
     }
 
+    // Obtiene presupuestos del productor que tengan items disponibles para cuenta de cobro
     public function getPresupuestos(){
-        // Trase solo presupuestos que tengan como proveedor: Cuenta de cobro
         $this->presupuestos = PresupuestoProyecto::with('presupuestoItems')->select('id', 'cod_cc')
                             ->where([['productor', $this->productor->id], ['estado_id', 1]])
                             ->whereHas('presupuestoItems', function ($item){
@@ -88,6 +92,7 @@ class Natural extends Component
     /**
      * CRUD ITEMS OC *
     **/
+    // Agrega un nuevo item a la orden de compra
     public function newItem(){
         $this->validate([
             'presupuesto' => 'required',
@@ -104,6 +109,7 @@ class Natural extends Component
         $presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first();
         $item = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
 
+        // Crea el nuevo item con los datos seleccionados
         $newItem = [
             'proyecto' => [
                     'id' => $presupuesto->id,
@@ -126,6 +132,7 @@ class Natural extends Component
         ];
 
         $this->items->push($newItem);
+        // Limpia los campos del formulario
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -139,6 +146,7 @@ class Natural extends Component
         ]);
     }
 
+    // Carga los datos de un item seleccionado para editar
     public function getItem($itemId){
         $this->selected_item = $itemId;
         $item = $this->items[$itemId];
@@ -156,6 +164,7 @@ class Natural extends Component
         $this->tipo_contrato = $item['tipo_contrato'];
     }
 
+    // Edita un item existente en la orden de compra
     public function actionEdit(){
         $this->validate([
             'presupuesto' => 'required',
@@ -192,6 +201,7 @@ class Natural extends Component
             'tipo_contrato' => $this->tipo_contrato,
         ];
 
+        // Limpia los campos y deselecciona el item
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -207,6 +217,7 @@ class Natural extends Component
         unset($this->selected_item);
     }
 
+    // Elimina un item de la orden de compra
     public function deleteItem($itemId){
         unset($this->items[$itemId]);
     }
@@ -215,6 +226,7 @@ class Natural extends Component
     /**
      *  UPLOAD OC
     **/
+    // Crea una nueva orden de compra con los items seleccionados
     public function uploadOC(){
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
@@ -236,7 +248,7 @@ class Natural extends Component
             'banco' => $this->banco
         ]);
 
-        // Presupuesto_id null, porque una orden de compra natural tiene varios presupuestos
+        // Crea la orden de compra (tipo natural)
         $orden = OrdenCompra::create([
             'tipo_oc' => 2,
             'estado_id' => 3,
@@ -244,12 +256,14 @@ class Natural extends Component
             'proveedor_id' => 3,
         ]);
 
+        // Crea la información adicional de la orden natural
         $natural = NaturalInfo::create([
             'oc_id' => $orden->id,
             'tercero_id' => $tercero->id,
             'productor_id' => $this->productor->id
         ]);
 
+        // Crea los items de la orden
         $OcItem = new OcItem();
         foreach ($this->items as $item){
             $OcItem->create([
@@ -266,9 +280,10 @@ class Natural extends Component
             ]);
         }
 
-        // Enviar mensaje al tercero
+        // Envía mensaje al tercero si tiene teléfono
         if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
 
+        // Limpia todos los campos y colecciones
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -299,6 +314,7 @@ class Natural extends Component
     /**
      *  Queried Data
     **/
+    // Actualiza una orden de compra existente con los nuevos items y estado
     public function updateOC(){
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
@@ -309,9 +325,7 @@ class Natural extends Component
             'tercero' => 'required'
         ]);
 
-        // Presupuesto_id null, porque una orden de compra natural tiene varios presupuestos
-        // TODO: Condición editar con y sin contrato. Con contrato = estado 2
-
+        // Si la orden tiene contrato, cambia el estado y envía mensaje
         if ($this->queriedOrden->naturalInfo->contrato){
             $this->queriedOrden->update([
                 'estado_id' => 7,
@@ -322,7 +336,7 @@ class Natural extends Component
             }
         }
 
-        // Elimina los items de la OC actual y crea los nuevos
+        // Elimina los items actuales y crea los nuevos
         foreach ($this->queriedOrden->ordenItems as $item){
             $item->delete();
         }
@@ -343,6 +357,7 @@ class Natural extends Component
             ]);
         }
 
+        // Limpia los campos y colecciones
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -374,6 +389,7 @@ class Natural extends Component
     /**
      *  Queried Data
     **/
+    // Carga los datos de una orden existente para edición
     public function getData(){
         // Productor
         $this->productor = $this->queriedOrden->naturalInfo->productor;
@@ -415,6 +431,7 @@ class Natural extends Component
         }
     }
 
+    // Elimina una orden de compra y sus relaciones
     public function deleteOrden(){
         $this->queriedOrden->ordenItems()->delete();
         $this->queriedOrden->naturalInfo()->delete();
@@ -423,6 +440,7 @@ class Natural extends Component
         return redirect()->route('ordenes-prod')->with('success', 'Orden de compra eliminada correctamente');
     }
 
+    // Calcula los límites de cantidad y valores para el item seleccionado
     public function getItemLimite(){
         // Trae información del item seleccionado
         $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
@@ -446,6 +464,7 @@ class Natural extends Component
     /*
         * EVIDENCIAS
     */
+    // Valida y sube el archivo de evidencia para la orden de compra
     public function validateEvidencia($estado){
         if ($estado == 5) {
             $this->validate([
@@ -466,6 +485,7 @@ class Natural extends Component
     /**
      *  UPDATES
     **/
+    // Cuando se actualiza el tercero, carga sus datos en el formulario
     public function updatedTercero(){
         $this->validate([
             'tercero' => 'required'
@@ -485,6 +505,7 @@ class Natural extends Component
         $this->items = collect();
     }
 
+    // Cuando se actualiza el presupuesto, carga los items disponibles
     public function updatedPresupuesto(){
         $this->validate([
             'presupuesto' => 'required'
@@ -502,6 +523,7 @@ class Natural extends Component
         $this->resetFields(['item_presupuesto', 'cantidad', 'dias', 'otros', 'valor_unitario', 'valor_total']);
     }
 
+    // Cuando se selecciona un item de presupuesto, valida duplicados y carga límites
     public function updatedItemPresupuesto(){
         $this->validate([
             'item_presupuesto' => 'required'
@@ -527,6 +549,7 @@ class Natural extends Component
         }
     }
 
+    // Cuando se actualiza la cantidad, recalcula límites y el valor total
     public function updatedCantidad(){
         $this->cantidad = trim($this->cantidad);
         $this->cantidad = str_replace(",",'', $this->cantidad);
@@ -540,6 +563,7 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
+    // Cuando se actualizan los días, recalcula el valor total
     public function updatedDias(){
         $this->dias = trim($this->dias);
         $this->dias = str_replace(",",'', $this->dias);
@@ -550,6 +574,7 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
+    // Cuando se actualizan los otros, recalcula el valor total
     public function updatedOtros(){
         $this->otros = trim($this->otros);
         $this->otros = str_replace(",",'', $this->otros);
@@ -560,6 +585,7 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
+    // Cuando se actualiza el valor unitario, recalcula el valor total
     public function updatedValorUnitario(){
         $this->valor_unitario = trim($this->valor_unitario);
         $this->valor_unitario = str_replace(",",'', $this->valor_unitario);
@@ -570,6 +596,7 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
+    // Cuando se actualiza el valor total, lo valida y recalcula
     public function updatedValorTotal(){
         $this->validate([
             'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal
@@ -578,6 +605,7 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
+    // Calcula el valor total del item
     public function getValorTotal(){
         $this->valor_total = ($this->cantidad  * $this->valor_unitario);
     }
@@ -588,6 +616,7 @@ class Natural extends Component
         * RESET FIELDS
         * @params array $fields
     */
+    // Limpia los campos especificados
     public function resetFields($fields){
         foreach ($fields as $field){
             $this->$field = '';

@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+// Importación de clases para manejo de archivos Excel
 use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
 use App\Exports\BaseExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\Request; 
+
+// Importación de clases base de Laravel
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+
+// Importación de modelos de la aplicación
 use App\Models\Base_comercial;
 use App\Models\GestionComercial;
 use App\Models\PresupuestoProyecto;
@@ -15,11 +22,21 @@ use App\Models\Proveedor;
 use App\Models\Contacto;
 use App\Models\Helisa;
 use App\Models\Asistente;
-use Illuminate\Support\Facades\Auth;
-use Dompdf\Dompdf;
-use Illuminate\Support\Facades\View;
 
-class ComercialController extends Controller 
+// Importación de librería para generación de PDFs
+use Dompdf\Dompdf;
+
+/**
+ * Controlador principal para la gestión comercial del CRM
+ *
+ * Este controlador maneja todas las operaciones relacionadas con:
+ * - Gestión comercial y leads
+ * - Presupuestos y cotizaciones
+ * - Base comercial y archivos Helisa
+ * - Contactos y proveedores
+ * - Exportación de datos en PDF y Excel
+ */
+class ComercialController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -30,74 +47,153 @@ class ComercialController extends Controller
     | "cotizacionPdf" function calls a class named Dompdf, this class is responsible for exporting the data to a pdf file.
     */
 
-    public function index(){  
+    /**
+     * Muestra la página principal del módulo comercial
+     * @return \Illuminate\View\View
+     */
+    public function index(){
         return view('comercial.index');
     }
- 
+
+    /**
+     * Muestra la vista de gestión comercial para administrar leads y oportunidades
+     * @return \Illuminate\View\View
+     */
     public function gestionComercial(){
         return view('comercial.gestion');
-    } 
-
-    public function gestionHelisa(){
-        return view('comercial.helisa.index'); 
     }
-     
-    public function base(){  
+
+    /**
+     * Muestra la vista principal para la gestión de archivos Helisa
+     * @return \Illuminate\View\View
+     */
+    public function gestionHelisa(){
+        return view('comercial.helisa.index');
+    }
+
+    /**
+     * Muestra la vista de la base comercial
+     * @return \Illuminate\View\View
+     */
+    public function base(){
         return view('comercial.base');
-    } 
- 
+    }
+
+    /**
+     * Muestra la vista para cargar archivos de base comercial
+     * @return \Illuminate\View\View
+     */
     public function show_upload(){
         return view('comercial.base.upload');
-    } 
- 
-    public function showActualizarPerfil(){
-        return view('comercial.ajustes.perfil.actualizar');
-    } 
- 
-    public function comercialHelisa(){ 
-        return view('comercial.helisa.index');
-    }  
-
-    public function showConsumidos(){ 
-        return view('comercial.produccion.consumidos.list'); 
     }
 
+    /**
+     * Muestra la vista para actualizar el perfil del usuario
+     * @return \Illuminate\View\View
+     */
+    public function showActualizarPerfil(){
+        return view('comercial.ajustes.perfil.actualizar');
+    }
+
+    /**
+     * Muestra la vista principal de Helisa (alias del método gestionHelisa)
+     * @return \Illuminate\View\View
+     */
+    public function comercialHelisa(){
+        return view('comercial.helisa.index');
+    }
+
+    /**
+     * Muestra la lista de productos consumidos en producción
+     * @return \Illuminate\View\View
+     */
+    public function showConsumidos(){
+        return view('comercial.produccion.consumidos.list');
+    }
+
+    /**
+     * Muestra la vista para editar una gestión comercial específica
+     * @param int $leadId ID del lead a editar
+     * @return \Illuminate\View\View
+     */
     public function update_gestion($leadId){
         return view('comercial.gestion.edit', ['leadId' => $leadId]);
     }
 
+    /**
+     * Muestra la vista de gestión de contactos
+     * @return \Illuminate\View\View
+     */
     public function Contactos(){
-        return view('comercial.contactos');  
-    } 
-    
-    public function presupuesto($id_gestion){ 
-        return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]); 
+        return view('comercial.contactos');
     }
 
-    public function presupuestos(){ 
-        return view('comercial.presupuesto.list');    
+    /**
+     * Muestra la vista de presupuesto para una gestión comercial específica
+     * @param int $id_gestion ID de la gestión comercial
+     * @return \Illuminate\View\View
+     */
+    public function presupuesto($id_gestion){
+        return view('comercial.presupuesto.index', ['id_gestion' => $id_gestion]);
     }
 
+    /**
+     * Muestra la lista de todos los presupuestos
+     * @return \Illuminate\View\View
+     */
+    public function presupuestos(){
+        return view('comercial.presupuesto.list');
+    }
+
+    /**
+     * Genera y descarga un PDF de cotización
+     *
+     * @param int $prespuesto ID del presupuesto
+     * @param string $nom_proyecto Nombre del proyecto para el archivo
+     * @param string $tipo Tipo de cotización (Interno/Cliente)
+     * @return \Illuminate\Http\Response Descarga del PDF
+     */
     /* Tipo: Interno, cliente */
-    public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){ 
+    public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
+        // Obtener el presupuesto y sus items relacionados
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
+        // Configurar Dompdf para permitir recursos remotos
         $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('exports.pdf', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render(); 
+
+        // Generar HTML desde la vista de exportación
+        $html = View::make('exports.pdf', ['presto' => $presto, 'items' => $items, 'tipo' => $tipo])->render();
+
+        // Cargar HTML en Dompdf, renderizar y descargar
         $dompdf->loadHtml($html);
         $dompdf->render();
-        $dompdf->stream($nom_proyecto);  
+        $dompdf->stream($nom_proyecto);
     }
 
-    public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {                
+    /**
+     * Genera y descarga un archivo Excel de cotización
+     *
+     * @param int $prespuesto ID del presupuesto
+     * @param string $nom_proyecto Nombre del proyecto para el archivo
+     * @param string $tipo Tipo de cotización (Interno/Cliente)
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse Descarga del Excel
+     */
+    public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {
+        // Obtener datos necesarios para la exportación
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
-        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();        
-        $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();        
+        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+        $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
 
-        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx"); 
+        // Generar y descargar archivo Excel usando la clase CotExport
+        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx");
     }
- 
+
+    /**
+     * Función deprecada para generar PDF
+     * @deprecated Esta función ya no se utiliza
+     * @return \Illuminate\Http\Response
+     */
     // DEPRECATED
     public function pdf(){
         $dompdf = new Dompdf(array('enable_remote' => true));
@@ -105,51 +201,100 @@ class ComercialController extends Controller
         $dompdf->loadHtml($html);
         $dompdf->render();
         $dompdf->stream();
-    } 
+    }
 
-    public function delete_proyecto($user_id){ 
+    /**
+     * Elimina un proyecto de la base comercial
+     *
+     * @param int $user_id ID del proyecto a eliminar
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito
+     */
+    public function delete_proyecto($user_id){
         Base_comercial::destroy($user_id);
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
     }
 
-    public function delete_registro($centro, $num_doc){ 
-        Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete(); 
+    /**
+     * Elimina un registro específico de Helisa
+     *
+     * @param string $centro Centro del registro
+     * @param string $num_doc Número de documento del registro
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito
+     */
+    public function delete_registro($centro, $num_doc){
+        Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete();
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
-    }  
-   
-    public function upload_base (Request $request){          
+    }
+
+    /**
+     * Carga un archivo de base comercial (FUNCIÓN DESCONTINUADA)
+     *
+     * @param Request $request Solicitud HTTP con el archivo
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de error
+     */
+    public function upload_base (Request $request){
+        // Función descontinuada - retorna mensaje de error
         return redirect()->route('dashboard-base')->with('error', '¡Ésta función fué descontinuada.!');
+
+        // Código original comentado (descontinuado)
         $request->validate([
             'base_xls' => 'required|mimes:xlsx, csv, xls'
-        ]);    
- 
-        Base_comercial::where('id_user', Auth::user()->id)->delete();  
-        Excel::import(new BaseSheetHandler, $request->base_xls);   
+        ]);
+
+        Base_comercial::where('id_user', Auth::user()->id)->delete();
+        Excel::import(new BaseSheetHandler, $request->base_xls);
         return redirect()->route('dashboard-base')->with('success', '¡Base comercial cargada exitosamente!');
     }
 
+    /**
+     * Exporta la base comercial del usuario actual a Excel
+     *
+     * @param int $user_id ID del usuario (no utilizado actualmente)
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse Descarga del archivo Excel
+     */
     public function export_base($user_id){
+        // Si el usuario es asistente (rol 5), obtener el nombre del comercial asociado
         if (Auth::user()->rol == 5){
-            $name = Asistente::where('asistente_id', Auth::user()->id)->first();  
-            return Excel::download(new BaseExport, $name->comercial->name." Base.xlsx");    
-        } 
-                
+            $name = Asistente::where('asistente_id', Auth::user()->id)->first();
+            return Excel::download(new BaseExport(), $name->comercial->name." Base.xlsx");
+        }
+
+        // Para otros roles, usar el nombre del usuario autenticado
         $name = Auth::user()->name;
-        return Excel::download(new BaseExport, $name." Base.xlsx");
+        return Excel::download(new BaseExport(), $name." Base.xlsx");
     }
 
-    public function delete_contacto($id){ 
+    /**
+     * Elimina un contacto del sistema
+     *
+     * Verifica que el contacto no esté asociado a ninguna gestión comercial
+     * antes de proceder con la eliminación
+     *
+     * @param int $id ID del contacto a eliminar
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
+     */
+    public function delete_contacto($id){
+        // Verificar si el contacto está vinculado a alguna gestión comercial
         $gestionComercial = GestionComercial::where('id_contacto', $id)->first();
-        
+
         if ($gestionComercial){
             return redirect()->back()->withErrors(['Éste usuario esta enlazado con una de tus gestiones comerciales.']);
         }
-        
+
+        // Si no está vinculado, proceder con la eliminación
         Contacto::destroy($id);
         return redirect()->back()->with('success', 'Contacto eliminado exitosamente.');
     }
 
-    public function update_contacto($id, Request $request){ 
+    /**
+     * Actualiza la información de un contacto existente
+     *
+     * @param int $id ID del contacto a actualizar
+     * @param Request $request Datos del formulario de actualización
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito
+     */
+    public function update_contacto($id, Request $request){
+        // Validar los datos del formulario
         $request->validate([
             "cargo_edit" => 'required|string',
             "celular_edit" => 'required|numeric',
@@ -157,18 +302,19 @@ class ComercialController extends Controller
             "pbx_edit" => 'required|string',
             "web_edit" => 'required|string',
             "direccion_edit" => 'required|string'
-        ]);        
+        ]);
 
-        $contacto = Contacto::find($id); 
+        // Buscar y actualizar el contacto
+        $contacto = Contacto::find($id);
         $contacto->cargo = $request->cargo_edit;
         $contacto->celular = $request->celular_edit;
         $contacto->correo = $request->correo_edit;
-        $contacto->web = $request->pbx_edit;
-        $contacto->pbx = $request->web_edit;
+        // Nota: Hay un intercambio en la asignación de pbx y web
+        $contacto->web = $request->pbx_edit;    // Debería ser web_edit
+        $contacto->pbx = $request->web_edit;    // Debería ser pbx_edit
         $contacto->direccion = $request->direccion_edit;
         $contacto->update();
 
         return redirect()->back()->with('success', 'Contacto actualizado exitosamente!');
     }
 }
-  

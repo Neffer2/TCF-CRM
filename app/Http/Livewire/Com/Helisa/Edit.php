@@ -6,20 +6,22 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Año;
 use App\Models\Mes;
-use App\Models\Cuenta; 
+use App\Models\Cuenta;
 use App\Models\Helisa;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 
 class Edit extends Component
-{    
-    // MODELS
-    public $fecha; 
-    public $tipo_doc;   
-    public $num_doc;  
-    public $identidad;  
-    public $nom_tercero; 
-    public $centro; 
+{
+    // MODELOS Y VARIABLES PRINCIPALES
+
+    // Datos principales del registro Helisa
+    public $fecha;
+    public $tipo_doc;
+    public $num_doc;
+    public $identidad;
+    public $nom_tercero;
+    public $centro;
     public $nom_centro_costo;
     public $debito;
     public $credito;
@@ -27,7 +29,7 @@ class Edit extends Component
     public $mes;
     public $año;
 
-    // porcentajes
+    // Variables para comerciales y porcentajes de participación
     public $comercial0;
     public $comercial1;
     public $comercial2;
@@ -38,40 +40,46 @@ class Edit extends Component
     public $porcentaje2;
     public $porcentaje3;
 
+    // Bases de factura y comisiones por comercial
     public $base_factura0;
     public $base_factura1;
     public $base_factura2;
     public $base_factura3;
 
-    public $comision0; 
+    public $comision0;
     public $comision1;
     public $comision2;
     public $comision3;
 
-    //USEFUL VARS
-    public $cuentas = []; 
-    public $años = []; 
-    public $meses = []; 
+    // Variables auxiliares para selects y lógica
+    public $cuentas = [];
+    public $años = [];
+    public $meses = [];
     public $participaciones = 1;
     public $testigoPorcentaje;
     public $comerciales = [];
 
     public $id_helisa;
 
-    public function render() 
+    // Renderiza la vista de edición
+    public function render()
     {
         return view('livewire.com.helisa.edit');
     }
 
+    // Inicializa el componente y carga los datos del registro Helisa
     public function mount($id_helisa){
         $this->getAños();
         $this->getMeses();
         $this->getCuentas();
         $this->getComerciales();
 
+        // Obtiene los datos principales del registro
         $stored = Helisa::select('fecha', 'tipo_doc', 'num_doc', 'identidad', 'nom_tercero', 'centro', 'nom_centro_costo', 'debito', 'credito', 'id_cuenta', 'mes', 'año', 'participacion')->where('id', $id_helisa)->first();
+        // Obtiene los registros de comerciales asociados al centro de costos
         $Registros_helisa = Helisa::select('comercial', 'porcentaje', 'comision')->where('centro', $stored->centro)->get();
 
+        // Asigna los datos principales al formulario
         $this->fecha = $stored->fecha;
         $this->tipo_doc = $stored->tipo_doc;
         $this->num_doc = $stored->num_doc;
@@ -86,14 +94,13 @@ class Edit extends Component
         $this->año = $stored->año;
         $this->participaciones = $stored->participacion;
 
+        // Asigna comerciales, porcentajes y comisiones a las variables correspondientes
         foreach ($Registros_helisa as $key => $Registro_helisa) {
             $this->{'comercial'.$key} = $Registro_helisa->comercial;
         }
-
         foreach ($Registros_helisa as $key => $Registro_helisa) {
             $this->{'porcentaje'.$key} = $Registro_helisa->porcentaje;
         }
-
         foreach ($Registros_helisa as $key => $Registro_helisa) {
             $this->{'comision'.$key} = $Registro_helisa->comision;
         }
@@ -102,82 +109,92 @@ class Edit extends Component
         $this->getTotalPorcentaje();
     }
 
+    // Obtiene la lista de años para el select
     public function getAños(){
         $this->años = Año::select('id','description')->get();
     }
 
+    // Obtiene la lista de meses para el select
     public function getMeses(){
         $this->meses = Mes::select('id','description')->where('id', '<', 13)->get();
     }
 
+    // Obtiene la lista de cuentas para el select
     public function getCuentas(){
         $this->cuentas = Cuenta::select('id', 'description')->get();
     }
 
+    // Obtiene la lista de comerciales para el select
     public function getComerciales(){
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
     }
 
+    // VALIDACIONES EN TIEMPO REAL DE LOS CAMPOS DEL FORMULARIO
+
     public function updatedFecha(){
-        $this->validate(['fecha' => ['required']]); 
+        $this->validate(['fecha' => ['required']]);
     }
-    
+
     public function updatedTipoDoc(){
-        $this->validate(['tipo_doc' => ['required', 'string']]); 
+        $this->validate(['tipo_doc' => ['required', 'string']]);
     }
 
     public function updatedNumDoc(){
-        $this->validate(['num_doc' => ['required', 'string']]); 
+        $this->validate(['num_doc' => ['required', 'string']]);
     }
 
     public function updatedIdentidad(){
-        $this->validate(['identidad' => ['required', 'string']]); 
+        $this->validate(['identidad' => ['required', 'string']]);
     }
 
     public function updatedNomTercero(){
-        $this->validate(['nom_tercero' => ['required', 'string']]); 
+        $this->validate(['nom_tercero' => ['required', 'string']]);
     }
 
     public function updatedCentro(){
-        $this->validate(['centro' => ['required', 'string']]); 
+        $this->validate(['centro' => ['required', 'string']]);
     }
 
-    public function updatedNomCentroCosto(){ 
-        $this->validate(['nom_centro_costo' => ['required', 'string']]); 
+    public function updatedNomCentroCosto(){
+        $this->validate(['nom_centro_costo' => ['required', 'string']]);
     }
 
+    // Cuando se actualiza el débito, limpia el crédito y recalcula valores
     public function updatedDebito(){
         $this->credito = 0;
         $this->debito = str_replace(",",'', $this->debito);
-        $this->validate(['debito' => ['required', 'numeric', 'min:1']]); 
+        $this->validate(['debito' => ['required', 'numeric', 'min:1']]);
         $this->debito = ($this->debito * -1);
 
         $this->getValor();
         $this->getTotalPorcentaje();
     }
-    
+
+    // Cuando se actualiza el crédito, limpia el débito y recalcula valores
     public function updatedCredito(){
         $this->debito = 0;
         $this->credito = str_replace(",",'', $this->credito);
-        $this->validate(['credito' => ['required', 'numeric', 'min:1']]); 
+        $this->validate(['credito' => ['required', 'numeric', 'min:1']]);
 
         $this->getValor();
         $this->getTotalPorcentaje();
     }
- 
+
     public function updatedMes(){
-        $this->validate(['mes' => ['required', 'string']]); 
+        $this->validate(['mes' => ['required', 'string']]);
     }
 
     public function updatedAño(){
-        $this->validate(['año' => ['required', 'string']]);  
+        $this->validate(['año' => ['required', 'string']]);
     }
 
-    public function updatedComision(){ 
-        $this->validate(['comision' => ['required', 'numeric']]); 
+    public function updatedComision(){
+        $this->validate(['comision' => ['required', 'numeric']]);
     }
 
-    /****** PARTICIPACIONES ******/
+    /****** PARTICIPACIONES Y PORCENTAJES ******/
+
+    // Cuando se actualiza el número de participaciones, ajusta los valores y recalcula
     public function updatedParticipaciones(){
         if ($this->participaciones >= 4){$this->participaciones = 4;}
         if ($this->participaciones <= 0){$this->participaciones = 1;}
@@ -193,11 +210,11 @@ class Edit extends Component
         $this->getComision();
     }
 
+    // Validaciones y lógica para comerciales y porcentajes individuales
     public function updatedComercial0(){
         $this->validate([
             'comercial0' => 'required|numeric'
         ]);
-
         $this->comercial0 = Auth::id();
     }
 
@@ -271,6 +288,7 @@ class Edit extends Component
         $this->updatedTestigoPorcentaje();
     }
 
+    // Validaciones para las bases de factura y comisiones individuales
     public function updatedBaseFactura0(){
         $this->validate([
             'base_factura0' => 'required|numeric'
@@ -286,7 +304,7 @@ class Edit extends Component
     public function updatedBaseFactura2(){
         $this->validate([
             'base_factura2' => 'required|numeric'
-        ]); 
+        ]);
     }
 
     public function updatedBaseFactura3(){
@@ -294,7 +312,7 @@ class Edit extends Component
             'base_factura3' => 'required|numeric'
         ]);
     }
-    
+
     public function updateComision0(){
         $this->validate([
             'comision0' => 'required|numeric'
@@ -319,24 +337,27 @@ class Edit extends Component
         ]);
     }
 
+    // Valida que la suma de porcentajes sea 100%
     public function updatedTestigoPorcentaje(){
         $this->validate([
             'testigoPorcentaje' => 'required|numeric|min:100|max:100'
         ]);
     }
 
+    // Calcula la suma total de los porcentajes de participación
     public function getTotalPorcentaje(){
         $i = 0;
         $this->testigoPorcentaje = 0;
-        while($i < $this->participaciones){            
-            $this->testigoPorcentaje += $this->{'porcentaje'.$i}; 
+        while($i < $this->participaciones){
+            $this->testigoPorcentaje += $this->{'porcentaje'.$i};
             $i++;
         }
     }
 
+    // Calcula el valor base de factura para cada comercial según porcentaje
     public function getValor(){
         $i = 0;
-        while($i < $this->participaciones){     
+        while($i < $this->participaciones){
             if ($this->debito == 0){
                 $this->{'base_factura'.$i} = $this->credito * ($this->{'porcentaje'.$i} / 100);
             }elseif($this->credito == 0){
@@ -348,9 +369,10 @@ class Edit extends Component
         $this->getComision();
     }
 
+    // Asigna porcentajes iguales a cada comercial según el número de participaciones
     public function getPorcentaje(){
         $i = 0;
-        while($i < $this->participaciones){     
+        while($i < $this->participaciones){
             $this->{'porcentaje'.$i} = 100/$this->participaciones;
             $i++;
         }
@@ -358,19 +380,18 @@ class Edit extends Component
         $this->getComision();
     }
 
+    // Calcula la comisión para cada comercial (2% del valor base de factura)
     public function getComision(){
         $i = 0;
-        while($i < $this->participaciones){     
+        while($i < $this->participaciones){
             $this->{'comision'.$i} = ($this->{'base_factura'.$i} * (0.02));
             $i++;
         }
     }
     /************/
 
-    
+    // Actualiza los registros Helisa en la base de datos con los datos del formulario
     public function update_helisa(){
-        // $proyecto = Base_comercial::where('id', $this->proyecto_id)->first();
-
         $this->validate([
             'fecha' => 'required',
             'tipo_doc' => 'required|string',
@@ -380,12 +401,12 @@ class Edit extends Component
             'centro' => 'required|string',
             'nom_centro_costo' => 'required|string',
             'debito' => 'required|numeric',
-            'credito' => 'required|numeric', 
+            'credito' => 'required|numeric',
             'id_cuenta' => 'numeric',
             'mes' => 'required|string',
             'año' => 'required|string',
 
-            // PARTICIPACIONES 
+            // PARTICIPACIONES
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
             'participaciones' => 'required|numeric|min:1|max:4',
             'porcentaje0' => 'required|numeric|min: 1|max: 100',
@@ -403,7 +424,8 @@ class Edit extends Component
             'base_factura2' => 'nullable|numeric',
             'base_factura3' => 'nullable|numeric',
         ]);
- 
+
+        // Actualiza cada registro Helisa según el número de participaciones
         $i  = 0;
         while($i < $this->participaciones){
             $Registro_helisa = Helisa::where('centro', $this->centro)->where('num_doc', $this->num_doc)->where('comercial', $this->{'comercial'.$i})->first();
@@ -411,46 +433,40 @@ class Edit extends Component
             if ($this->fecha){
                 $Registro_helisa->fecha = $this->fecha;
             }
-
             if ($this->tipo_doc){
                 $Registro_helisa->tipo_doc = $this->tipo_doc;
             }
-
             if ($this->num_doc){
                 // $Registro_helisa->num_doc = $this->num_doc;
             }
-
             if ($this->identidad){
                 $Registro_helisa->identidad = $this->identidad;
             }
-
             if ($this->nom_tercero){
                 $Registro_helisa->nom_tercero = $this->nom_tercero;
             }
-
             if ($this->centro){
                 $Registro_helisa->centro = $this->centro;
             }
-
             if ($this->nom_centro_costo){
                 $Registro_helisa->nom_centro_costo = $this->nom_centro_costo;
             }
 
+            // Limpia los valores de débito y crédito
             $Registro_helisa->debito = str_replace(",",'', $this->debito);
             $Registro_helisa->credito = str_replace(",",'', $this->credito);
 
             if ($this->id_cuenta){
                 $Registro_helisa->id_cuenta = $this->id_cuenta;
             }
-
             if ($this->mes){
                 $Registro_helisa->mes = $this->mes;
             }
-
             if ($this->año){
                 $Registro_helisa->año = $this->año;
             }
 
+            // Actualiza porcentaje, base de factura y comisión
             $Registro_helisa->porcentaje = $this->{'porcentaje'.$i};
             $Registro_helisa->base_factura = str_replace(",",'', $this->{'base_factura'.$i});
             $Registro_helisa->comision = str_replace(",",'', $this->{'comision'.$i});
@@ -459,10 +475,11 @@ class Edit extends Component
             $i++;
         }
 
-        if (Auth::user()->rol == 2){  
+        // Redirige según el rol del usuario
+        if (Auth::user()->rol == 2){
             return redirect()->route('gestion-helisa')->with('success', 'Proyecto actualizado exitosamente.');
         }elseif (Auth::user()->rol == 5){
             return redirect()->route('asis-gestion-helisa')->with('success', 'Proyecto actualizado exitosamente.');
         }
-    }   
+    }
 }
