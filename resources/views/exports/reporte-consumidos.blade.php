@@ -48,7 +48,7 @@
                             <td>{{ $consumido->otros_oc }}</td>
                             <td>{{ $consumido->vunit_oc }}</td>
                             <td>{{ $consumido->vtotal_oc }}</td>
-                            <td>{{ $consumido->created_at }}</td>
+                            <td>{{ $orden->created_at }}</td>
                         </tr>
                     @endforeach
                 @endif
