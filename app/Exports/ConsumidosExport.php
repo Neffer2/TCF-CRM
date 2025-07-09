@@ -7,21 +7,24 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Carbon\Carbon;
 use App\Models\OrdenCompra;
+use Carbon\Carbon;
 
 class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidths
 {
     protected $ordenes = [];
 
     function __construct() {
-        $dateFilter = Carbon::now()->subDay(); // 24 hours ago
+        $hace12Horas = Carbon::now()->subHours(12);
+
         $this->ordenes = OrdenCompra::where([
-            ['created_at', '>=', $dateFilter],
             ['estado_id', '!=', '6'],
             ['estado_id', '!=', '2'],
             ['estado_id', '!=', '3']
-        ])->orderBy('created_at', 'desc')->get();
+        ])
+        ->where('created_at', '>=', $hace12Horas)
+        ->orderBy('created_at', 'desc')
+        ->get();
     }
 
     /**
