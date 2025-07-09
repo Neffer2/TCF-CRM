@@ -15,13 +15,14 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
     protected $ordenes = [];
 
     function __construct() {
-        $hace12Horas = Carbon::now()->subHours(24);
+        $hace24Horas = Carbon::now()->subHours(24)->toDateTimeString(); // 24 hours ago
+
         $this->ordenes = OrdenCompra::where([
             ['estado_id', '!=', '6'],
             ['estado_id', '!=', '2'],
             ['estado_id', '!=', '3']
         ])
-        ->where('created_at', '>=', $hace12Horas)
+        ->where('created_at', '>=', $hace24Horas)
         ->orderBy('created_at', 'desc')
         ->get();
     }
