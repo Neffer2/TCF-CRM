@@ -389,17 +389,12 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input bg-gradient-warning" data-bs-toggle="collapse" type="checkbox" role="switch" id="switch" data-bs-target="#collapse383" aria-expanded="false" aria-controls="collapse383">
-                                    <label class="form-check-label" for="switch">¿Cuentas con el Art&iacute;culo 383?</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 collapse" id="collapse383">
-                            <div class="form-group">
-                                <label for="art383">Adjunta el documento con el Art&iacute;culo 383: @guest <span class="text-danger">*</span>@endguest</label>
+                                <label for="art383">
+                                    ¿Cuentas con el Art&iacute;culo 383?
+                                    Adjunta el documento con el Art&iacute;culo:
+                                </label>
                                 <input type="file" class="form-control @error('art383') is-invalid @elseif(strlen($art383) > 0) is-valid @enderror"
                                 wire:model="art383">
                                 <label>
@@ -595,11 +590,11 @@
                         <div class="form-group">
                             <label for="observacionEvidencia">Observaciones: </label>
                             <textarea id="observacionEvidencia" type="text" class="form-control form-control @error('observacionEvidencia') is-invalid @elseif(strlen($observacionEvidencia) > 0) is-valid @enderror"
-                            wire:model.lazy="observacionEvidencia" placeholder="Indica el proyecto y el servicio que prestaste"></textarea>
+                            wire:model.lazy="observacionEvidencia" placeholder="Indica el proyecto y el servicio que prestaste."></textarea>
                             @error('observacionEvidencia')
                                 <div id="observacionEvidencia" class="text-invalid">
                                     {{ $message }}
-                                </div>
+                                </div> 
                             @enderror
                         </div>
                     </div>
@@ -763,7 +758,7 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
+                            </div> 
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">

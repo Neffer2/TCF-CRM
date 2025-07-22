@@ -326,7 +326,7 @@ class Natural extends Component
         ]);
 
         // Si la orden tiene contrato, cambia el estado y envía mensaje
-        if ($this->queriedOrden->naturalInfo->contrato){
+        if ($this->queriedOrden->naturalInfo->contrato && $this->queriedOrden->evidencias->isEmpty()){
             $this->queriedOrden->update([
                 'estado_id' => 7,
             ]);
@@ -334,6 +334,11 @@ class Natural extends Component
             if ($this->queriedOrden->naturalInfo->tercero->telefono){
                 $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
             }
+        }else {
+            // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
+            $this->queriedOrden->update([
+                'estado_id' => 2,
+            ]);
         }
 
         // Elimina los items actuales y crea los nuevos

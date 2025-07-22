@@ -285,9 +285,25 @@
                                     </div>
                                 </td>
                                 <td class="d-flex align-items-center justify-content-center">
-                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">Ver</a>
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1 position-relative" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">
+                                        Ver
+                                        @if ((!$orden->evidencias->isEmpty() || $orden->naturalInfo->contrato) && $orden->estado_id == 3)
+                                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                <span class="visually-hidden">New alerts</span>
+                                            </span>
+                                        @endif
+                                    </a>
                                     @if ($orden->naturalInfo->contrato)
-                                        <button type="button" class="btn bg-gradient-secondary m-0 me-1 mb-1" data-bs-toggle="collapse" data-bs-target="#collapse{{ $orden->naturalInfo->id }}" aria-expanded="false" aria-controls="collapse" >Consultar resupuestas</button>
+                                        <button type="button" class="btn bg-gradient-secondary m-0 ms-1 mb-1 position-relative" data-bs-toggle="collapse" data-bs-target="#collapse{{ $orden->naturalInfo->id }}" aria-expanded="false" aria-controls="collapse" >
+                                            Consultar @if (!$orden->evidencias->isEmpty()) evidencias @else respuestas @endif
+
+                                            @if (!$orden->evidencias->isEmpty() && $orden->estado_id == 3)
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    {{ $orden->evidencias->count() }}
+                                                    <span class="visually-hidden">unread messages</span>
+                                                </span>
+                                            @endif
+                                        </button>
                                     @endif
                                 </td>
                             </tr>
@@ -348,29 +364,65 @@
                                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
                                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
                                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha subida</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @foreach ($orden->evidencias as $evidencia)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p class="text-xs text-secondary mb-0">
-                                                                                {{ $evidencia->fecha_evidencia }}
-                                                                            </p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p class="text-xs text-secondary mb-0">
-                                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
-                                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
-                                                                                </a>
-                                                                            </p>
-                                                                        </td>
-                                                                        <td>
-                                                                            <p class="text-xs text-secondary mb-0">
-                                                                                {{ $evidencia->observacion_evidencia }}
-                                                                            </p>
-                                                                        </td>
-                                                                    </tr>
+                                                                @foreach ($orden->evidencias as $key => $evidencia)
+                                                                    @if ($key < $orden->ordenItems->sum('cant_oc'))
+                                                                        <tr>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->fecha_evidencia }}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                                        <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                                    </a>
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->observacion_evidencia }}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->created_at }}
+                                                                                </p>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @else
+                                                                        <tr>
+                                                                            <td class="position-relative">
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->fecha_evidencia }}
+                                                                                </p>
+                                                                                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                                                    <span class="visually-hidden">New alerts</span>
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                                        <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                                    </a>
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->observacion_evidencia }}
+                                                                                </p>
+                                                                            </td>
+                                                                            <td>
+                                                                                <p class="text-xs text-secondary mb-0">
+                                                                                    {{ $evidencia->created_at }}
+                                                                                </p>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
                                                                 @endforeach
                                                             </tbody>
                                                         </table>

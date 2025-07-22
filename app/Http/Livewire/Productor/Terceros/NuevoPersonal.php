@@ -97,14 +97,14 @@ class NuevoPersonal extends Component
 
         // Si se adjuntó RUT
         if($this->rut){
-            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->rut = $this->rut->store('public/ruts');
             $tercero->rut = $this->rut->store('public/ruts');
         }
 
         // Si se adjuntó certificación bancaria
         if($this->cert_bancaria){
-            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
@@ -177,35 +177,35 @@ class NuevoPersonal extends Component
 
         // Copia de cédula
         if (!$tercero->copia_cedula && !Auth::check()){
-            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png,jpg,bmp,png|max:10000']);
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }elseif($this->copia_cedula){
-            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png,jpg,bmp,png|max:10000']);
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }
 
         // Certificación bancaria
         if (!$tercero->cert_bancaria && !Auth::check()){
-            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }elseif($this->cert_bancaria){
-            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
         // Artículo 383
         if($this->art383 && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
 
         // RUT si aplica
         if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
             if (!$tercero->rut && !Auth::check()){
-                $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+                $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
                 $tercero->rut = $this->rut->store('public/ruts');
             }elseif($this->rut){
-                $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx|max:10000']);
+                $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
                 $tercero->rut = $this->rut->store('public/ruts');
             }
         }
@@ -268,19 +268,19 @@ class NuevoPersonal extends Component
 
         // Validaciones de archivos requeridos
         if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
-            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()){
-            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if (((!$this->rut && !$this->tercero->rut) && !Auth::check()) && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx|max:10000']);
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         // Información para el contrato
@@ -391,10 +391,10 @@ class NuevoPersonal extends Component
                 'foto_evidencia' => $evidencia['foto'],
                 'observacion_evidencia' => $evidencia['observacion'],
                 'tercero_id' => $this->orden->naturalInfo->tercero_id
-            ]);
-        }
+            ]); 
+        } 
 
-        $this->orden->estado_id = 2;
+        $this->orden->estado_id = 3; 
         $this->orden->update();
 
         $this->reset_fields([

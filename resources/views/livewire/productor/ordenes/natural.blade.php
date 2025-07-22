@@ -206,7 +206,7 @@
         </div>
     </div>
 
-    @if ((Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
+    @if ((Auth()->user()->rol == 7) && ((!$queriedOrden)))
         <div class="row">
             <div class="col-lg-2">
                 <div class="form-group">
@@ -353,10 +353,168 @@
                 </div>
             </div>
         </div>
+
         <div class="row">
-            <div class="col-md-6">
-                @if(!$orden_id)
-                    <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN</button>
+            <div class="col-md-6"> 
+                @if(!$orden_id) 
+                    <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN DE TRABAJO</button>
+                @endif
+            </div>
+        </div>
+    @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && $queriedOrden->estado_id == 3))
+        @if ($queriedOrden->evidencias->isEmpty())
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="proyecto">Proyecto</label>
+                        <select id="proyecto" class="form-control" wire:model.change="presupuesto">
+                            <option value="">Seleccionar</option>
+                            @foreach ($presupuestos as $presupuesto)
+                                <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
+                            @endforeach
+                        </select>
+                        @error('presupuesto')
+                            <div id="invalid-presupuesto" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="item_presupuesto">Item</label>
+                        <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
+                            <option value="">Seleccionar</option>
+                            @foreach ($items_presupuesto as $item_presupuesto)
+                                <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
+                            @endforeach
+                        </select>
+                        @error('item_presupuesto')
+                            <div id="invalid-item_presupuesto" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad</label>
+                        <input id="cantidad" type="number" class="form-control"
+                        wire:model.lazy="cantidad" placeholder="#" x-mask:dynamic="$money($input)">
+                        @error('cantidad')
+                            <div id="invalid-cantidad" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="dias">Dias</label>
+                        <input id="dias" type="number" class="form-control"
+                        wire:model.lazy="dias" placeholder="Dias" x-mask:dynamic="$money($input)" disabled>
+                        @error('dias')
+                            <div id="invalid-dias" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="otros">Otro</label>
+                        <input id="otros" type="number" class="form-control"
+                        wire:model.lazy="otros" placeholder="Otro" x-mask:dynamic="$money($input)" disabled>
+                        @error('otros')
+                            <div id="invalid-otros" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="valor_unitario">Valor unitario</label>
+                        <input id="valor_unitario" type="text" class="form-control"
+                        wire:model.lazy="valor_unitario" placeholder="$" x-mask:dynamic="$money($input)">
+                        @error('valor_unitario')
+                            <div id="invalid-valor_unitario" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="valor_total">Valor Total</label>
+                        <input id="valor_total" type="text" class="form-control"
+                        wire:model.lazy="valor_total" placeholder="$" x-mask:dynamic="$money($input)" disabled>
+                        @error('valor_total')
+                            <div id="invalid-valor_total" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="tipo_servicio">Tipo de servicio</label>
+                        <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
+                            <option value="">Seleccionar</option>
+                            @foreach ($servicios as $item)
+                                <option value="{{ $item }}">{{ $item }}</option>
+                            @endforeach
+                        </select>
+                        @error('tipo_servicio')
+                            <div id="invalid-cantidad" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="tipo_contrato">Tipo de contrato</label>
+                        <select id="tipo_contrato" class="form-control" wire:model.change="tipo_contrato">
+                            <option value="">Seleccionar</option>
+                            <option value="Contrato de prestación de servicios">Contrato de prestación de servicios</option>
+                        </select>
+                        @error('tipo_contrato')
+                            <div id="invalid-cantidad" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                @error('items-error')
+                    <div class="text-invalid m-0">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @if (is_null($selected_item))
+                            <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                            class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
+                                <i class="fas fa-plus text-white"></i>
+                            </button>
+                        @else
+                            <button wire:click="actionEdit" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                            class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif 
+
+        <div class="row">
+            <div class="col-md-6"> 
+                @if(!$orden_id) 
+                    <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN DE TRABAJO</button>
                 @else
                     <!-- Button trigger modal -->
                     @if ($queriedOrden->naturalInfo->terminos == 1)
@@ -404,7 +562,6 @@
                 @endif
             </div>
         </div>
-
     @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
         <div>
             @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
@@ -520,29 +677,65 @@
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha subida</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($queriedOrden->evidencias as $evidencia)
-                                                <tr>
-                                                    <td>
-                                                        <p class="text-xs text-secondary mb-0">
-                                                            {{ $evidencia->fecha_evidencia }}
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <p class="text-xs text-secondary mb-0">
-                                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
-                                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
-                                                            </a>
-                                                        </p>
-                                                    </td>
-                                                    <td>
-                                                        <p class="text-xs text-secondary mb-0">
-                                                            {{ $evidencia->observacion_evidencia }}
-                                                        </p>
-                                                    </td>
-                                                </tr>
+                                            @foreach ($queriedOrden->evidencias as $key => $evidencia)
+                                                @if ($key < $queriedOrden->ordenItems->sum('cant_oc'))
+                                                    <tr>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->fecha_evidencia }}
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                </a>
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->observacion_evidencia }}
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->created_at->format('Y-m-d H:i:s') }}
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                @else
+                                                    <tr>
+                                                        <td class="position-relative">
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->fecha_evidencia }}
+                                                            </p>
+                                                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                                <span class="visually-hidden">New alerts</span>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                </a>
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->observacion_evidencia }}
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="text-xs text-secondary mb-0">
+                                                                {{ $evidencia->created_at->format('Y-m-d H:i:s') }}
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                @endif
                                             @endforeach
                                         </tbody>
                                     </table>
