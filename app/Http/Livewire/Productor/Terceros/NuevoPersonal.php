@@ -13,10 +13,12 @@ use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\SMS;
+use App\Traits\Email;
 
 class NuevoPersonal extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, SMS, Email;
 
     /*
         * Este componente se utiliza para registrar o editar personal.
@@ -194,7 +196,7 @@ class NuevoPersonal extends Component
         }
 
         // Artículo 383
-        if($this->art383 && !Auth::check()){
+        if(!$this->art383 && !Auth::check()){
             $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
@@ -214,11 +216,14 @@ class NuevoPersonal extends Component
         if (!Auth::check()){
             $this->orden->naturalInfo->contrato = $this->contrato;
             $this->orden->naturalInfo->terminos = $this->terminos;
-            $this->orden->naturalInfo->update();
+            // $this->orden->naturalInfo->update();
 
             // La orden continúa editable, pero con contrato adjunto
             $this->orden->estado_id = 3;
-            $this->orden->update();
+            // $this->orden->update();
+
+            // Mail notificacion
+            $this->ocNaturalFirmada($this->orden);
         }
 
         $tercero->update();
@@ -391,10 +396,10 @@ class NuevoPersonal extends Component
                 'foto_evidencia' => $evidencia['foto'],
                 'observacion_evidencia' => $evidencia['observacion'],
                 'tercero_id' => $this->orden->naturalInfo->tercero_id
-            ]); 
-        } 
+            ]);
+        }
 
-        $this->orden->estado_id = 3; 
+        $this->orden->estado_id = 3;
         $this->orden->update();
 
         $this->reset_fields([

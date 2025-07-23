@@ -5,39 +5,39 @@ use App\models\User;
 
 trait SMS
 {
-    public function presupuestoAprobacion($rentabilidad, $name, $cod_cc = null){
-        // Adri - Alejo
-        $admin_id = ($rentabilidad > 35) ? "30" : "26";
-        $tel = User::select('telefono')->find($admin_id)->telefono;
+    // public function presupuestoAprobacion($rentabilidad, $name, $cod_cc = null){
+    //     // Adri - Alejo
+    //     $admin_id = ($rentabilidad > 35) ? "30" : "26";
+    //     $tel = User::select('telefono')->find($admin_id)->telefono;
 
-        if ($cod_cc){
-            $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto con centro de costos: ".$cod_cc." de ".$name." fué actualizado.";
-        }else {
-            $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": Tienes un presupuesto de ".$name." por revisar.";
-        }
+    //     if ($cod_cc){
+    //         $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto con centro de costos: ".$cod_cc." de ".$name." fué actualizado.";
+    //     }else {
+    //         $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": Tienes un presupuesto de ".$name." por revisar.";
+    //     }
 
-        $this->sendAction($tel,$body);
-    }
+    //     $this->sendAction($tel,$body);
+    // }
 
-    public function presupuestoAprobado($user, $gestion, $cod_cc){
-        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido APROBADO con el siguiente centro de costos: ".$cod_cc.".";
-        $this->sendAction($user->telefono, $body);
+    // public function presupuestoAprobado($user, $gestion, $cod_cc){
+    //     $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido APROBADO con el siguiente centro de costos: ".$cod_cc.".";
+    //     $this->sendAction($user->telefono, $body);
 
-        // Mensajes ejectuvios.
-        foreach($user->asistente as $asistentes){
-            $this->sendAction($asistentes->ejecutivo->telefono, $body);
-        }
-    }
+    //     // Mensajes ejectuvios.
+    //     foreach($user->asistente as $asistentes){
+    //         $this->sendAction($asistentes->ejecutivo->telefono, $body);
+    //     }
+    // }
 
-    public function presupuestoRechazado($user, $gestion, $cod_cc){
-        $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido RECHAZADO.";
-        $this->sendAction($user->telefono, $body);
+    // public function presupuestoRechazado($user, $gestion, $cod_cc){
+    //     $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": El presupuesto del proyecto: ".$gestion->nom_proyecto_cot." ha sido RECHAZADO.";
+    //     $this->sendAction($user->telefono, $body);
 
-        // Mensajes ejectuvios.
-        foreach($user->asistente as $asistentes){
-            $this->sendAction($asistentes->ejecutivo->telefono, $body);
-        }
-    }
+    //     // Mensajes ejectuvios.
+    //     foreach($user->asistente as $asistentes){
+    //         $this->sendAction($asistentes->ejecutivo->telefono, $body);
+    //     }
+    // }
 
     public function saludo_(){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time()).": Bienvenido a Bull Marketing S.A.S! si tienes alguna duda o sugerencia, no dudes en contactarnos.";

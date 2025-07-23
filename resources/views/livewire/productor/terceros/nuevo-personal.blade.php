@@ -220,7 +220,7 @@
                         @guest
                             <div class="col-md-12">
                                 <h3 class="m-0">Actualiza tu información:</h3>
-                                <p class="text-sm m-0">Verifica tu información y confirma que est&eacute; correctamente diligenciada. Los campos marcados con * son obligatorios.</p>
+                                <p class="text-sm m-0">Los campos marcados con * son obligatorios.</p>
                             </div>
                         @endguest
 
@@ -594,7 +594,7 @@
                             @error('observacionEvidencia')
                                 <div id="observacionEvidencia" class="text-invalid">
                                     {{ $message }}
-                                </div> 
+                                </div>
                             @enderror
                         </div>
                     </div>
@@ -758,7 +758,7 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div> 
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
