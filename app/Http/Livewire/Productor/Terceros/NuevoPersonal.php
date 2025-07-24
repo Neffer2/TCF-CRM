@@ -196,8 +196,8 @@ class NuevoPersonal extends Component
         }
 
         // Artículo 383
-        if(!$this->art383 && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        if(!$tercero->art383 && !Auth::check()){
+            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
 
@@ -216,13 +216,13 @@ class NuevoPersonal extends Component
         if (!Auth::check()){
             $this->orden->naturalInfo->contrato = $this->contrato;
             $this->orden->naturalInfo->terminos = $this->terminos;
-            // $this->orden->naturalInfo->update();
+            $this->orden->naturalInfo->update();
 
             // La orden continúa editable, pero con contrato adjunto
             $this->orden->estado_id = 3;
-            // $this->orden->update();
+            $this->orden->update();
 
-            // Mail notificacion
+            // Mail notificacion 
             $this->ocNaturalFirmada($this->orden);
         }
 
@@ -273,7 +273,7 @@ class NuevoPersonal extends Component
 
         // Validaciones de archivos requeridos
         if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
@@ -407,6 +407,9 @@ class NuevoPersonal extends Component
             'fotoEvidencia',
             'observacionEvidencia'
         ]);
+    
+        // Mail evidencias enviadas
+        $this->ocNaturalEvidenciasEnviadas($this->orden);
 
         return redirect()->route('consulta-terceros');
     }

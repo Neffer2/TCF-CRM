@@ -33,6 +33,21 @@ trait Email
         ]
     ];
 
+    public $contabilidad = [
+        [
+            'name'=> 'Diana Bohorquez',
+            'email'=> 'diana.bohorquez@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Facturación Proveedores',
+            'email'=> 'facturacion.proveedores@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Auxiliar Contable',
+            'email'=> 'auxiliar.contable@bullmarketing.com.co'
+        ]
+    ];
+
     /* PRESUPEUSTOS */
     public function presupuestoAprobacion($presto, $user){
         $subject = "NOTIFICACIÓN CRM";
@@ -184,7 +199,7 @@ trait Email
 
         array_push($recipients, [
             'name'=> $user->name,
-            'email'=> $user->email
+            'email'=> $user->email 
         ]);
 
         if ($justificacion){
@@ -197,12 +212,22 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
+    /*
+        * NOTIFICACIONES ORDENES DE TRABAJO NATURALES
+    */
     public function ocNaturalFirmada($orden){
         $recipients = [];
         $cc = [];
-        $subject = "PRUEBAS CRM ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA";
-        $body = "La orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>FIRMADA.</b> \n
-        revisa el real ejecutado y confirma que la información esté correctamente diligenciada.";
+        $subject = "NOTIFICACIÓN BULLCRM - ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA";
+        $body =
+        "<p> 
+            La orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>FIRMADA.</b> <br>
+            Revisa el real ejecutado y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br> 
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        </p>";
 
         array_push($recipients, [
             'name'=> $orden->naturalInfo->productor->name,
@@ -215,6 +240,112 @@ trait Email
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
+
+    public function ocNaturalEvidenciasEnviadas($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
+        $body = 
+        "<p>
+            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br> 
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br> 
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        </p>";
+
+        array_push($recipients, [
+            'name'=> $orden->naturalInfo->productor->name,
+            'email'=> $orden->naturalInfo->productor->email
+        ]);
+
+        array_push($cc, $this->produccion);
+
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocNaturalEvidenciasRechazadas($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
+        $body = 
+        "<p>
+            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS.</b> por el equipo Controller<br> 
+            Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br> 
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        </p>";
+
+        array_push($recipients, [
+            'name'=> $orden->naturalInfo->productor->name,
+            'email'=> $orden->naturalInfo->productor->email
+        ]);
+
+        array_push($cc, $this->produccion);
+
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocNaturalRevisionController($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $body = 
+        "<p>
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el productor: ".$orden->naturalInfo->productor->name."<br> 
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br> 
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        </p>";
+
+        array_push($recipients, $this->controller);
+
+        // array_push($cc, $this->produccion, [
+        //     'name'=> $orden->naturalInfo->productor->name,
+        //     'email'=> $orden->naturalInfo->productor->email
+        // ]);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocNaturalRevisionContabilidad($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $body = 
+        "<p>
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo Controller.<br>
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br> 
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        </p>";
+
+        array_push($recipients, $this->contabilidad);
+
+        // array_push($cc, $this->produccion, [
+        //     'name'=> $orden->naturalInfo->productor->name,
+        //     'email'=> $orden->naturalInfo->productor->email
+        // ]);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    /* **** */
 
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
         require base_path("vendor/autoload.php");

@@ -62,6 +62,15 @@ trait SMS
         $this->sendAction($tercero->telefono, $body);
     }
 
+    public function oc_evidencias_rechazadas($orden){
+        $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola ".$orden->naturalInfo->tercero->nombre.". \nTus evidencias fueron rechazadas. Utiliza este enlace: \n\n".
+        route('consulta-terceros')."?orden=".$orden->id
+
+        ."\n \nPara revisar los comentarios de tus evidencias anteriores y adjuntar las nuevas evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
+
+        $this->sendAction($orden->naturalInfo->productor->telefono, $body);
+    }
+
     public function sendAction($tel, $body){
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -97,3 +106,4 @@ trait SMS
         curl_close($curl);
     }
 }
+ 

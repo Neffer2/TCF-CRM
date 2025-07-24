@@ -436,6 +436,13 @@
                         @endif
                         @guest
                             <div class="col-md-12 mt-3">
+                                <div wire:loading>
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
                                 <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
                                     Confirmar informaci&oacute;n
                                 </button>
@@ -521,9 +528,19 @@
                             </b>
                         </p>
                     </div>
+                    @if ($orden->justificacion_rechazo)
+                        <div class="col-md-12 my-2">
+                            <h6 class="m-0">Observaciones de rechazo:</h6>
+                            <p class="text-sm m-0">
+                                <b>
+                                    {{  $orden->justificacion_rechazo }}
+                                </b>
+                            </p>
+                        </div>
+                    @endif
 
                     <div class="container text-sm px-5">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="overflow-x: scroll;">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -602,7 +619,7 @@
                         <div class="col-md-2">
                             <button type="button" class="btn bg-gradient-success" wire:click="saveEvidencia" wire:loading.attr="disabled">
                                 Guardar evidencias
-                            </button>
+                            </button> 
                         </div>
                     @else
                         <div class="col-md-2">
@@ -613,6 +630,13 @@
                             </div>
                         </div>
                     @endif
+                    <div class="col-md-12 mt-3">
+                        <div wire:loading>
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         @else

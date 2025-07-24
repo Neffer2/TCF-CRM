@@ -9,6 +9,8 @@ use App\Models\OrdenCompra;
 use App\Models\OcItem;
 use App\Models\NaturalInfo;
 use App\Traits\SMS;
+use App\Traits\Email;
+use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -17,13 +19,13 @@ use Illuminate\Support\Str;
 class Natural extends Component
 {
     // Incluye traits para subir archivos, paginación y SMS personalizados
-    use WithFileUploads, WithPagination, SMS;
+    use WithFileUploads, WithPagination, SMS, Email;
 
     // Variables públicas para modelos y datos del formulario
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
-            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa;
+            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
 
     // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -339,6 +341,9 @@ class Natural extends Component
             $this->queriedOrden->update([
                 'estado_id' => 2,
             ]);
+
+            //Mail notificación controller
+            $this->ocNaturalRevisionController($this->queriedOrden);
         }
 
         // Elimina los items actuales y crea los nuevos
@@ -440,6 +445,7 @@ class Natural extends Component
     public function deleteOrden(){
         $this->queriedOrden->ordenItems()->delete();
         $this->queriedOrden->naturalInfo()->delete();
+        $this->queriedOrden->evidencias()->delete();
         $this->queriedOrden->delete();
 
         return redirect()->route('ordenes-prod')->with('success', 'Orden de compra eliminada correctamente');
@@ -479,12 +485,27 @@ class Natural extends Component
 
             $this->queriedOrden->cod_oc = $this->cod_oc;
             $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
+            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+        } elseif ($estado == 7) {
+            $this->validate([
+                'justificacion_rechazo' => 'required|string|max:255'
+            ]);
+
+            $this->queriedOrden->justificacion_rechazo = $this->justificacion_rechazo;
+            $this->oc_evidencias_rechazadas($this->queriedOrden);
+            if (Auth()->user()->rol == 1){
+                $this->ocNaturalEvidenciasRechazadas($this->queriedOrden);
+            }
         }
 
         $this->queriedOrden->estado_id = $estado;
         $this->queriedOrden->update();
 
-        return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
+        if (Auth()->user()->rol == 1) {
+            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
+        }elseif (Auth()->user()->rol == 7) {
+            return redirect()->route('ordenes-prod')->with('success', 'Validación exitosa');
+        }
     }
 
     /**
@@ -618,7 +639,7 @@ class Natural extends Component
     /* * --------------------- * */
 
     /*
-        * RESET FIELDS
+        * TOOLS
         * @params array $fields
     */
     // Limpia los campos especificados
@@ -626,5 +647,10 @@ class Natural extends Component
         foreach ($fields as $field){
             $this->$field = '';
         }
+    }
+
+    public function toggleRechazo()
+    {
+        $this->toggleRechazo = !$this->toggleRechazo;
     }
 }

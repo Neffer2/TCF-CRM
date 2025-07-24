@@ -521,22 +521,26 @@
                         <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
 
                         <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar información</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Al confirmar la informaci&oacute;n, se solicitarán evidencias al Tercero.
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button"wire:click="updateOC" data-bs-dismiss="modal" class="btn bg-gradient-success">Confirmar informaci&oacute;n</button>
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar información</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Al confirmar la informaci&oacute;n, se solicitarán evidencias al Tercero.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button"wire:click="updateOC" data-bs-dismiss="modal" class="btn bg-gradient-success">Confirmar informaci&oacute;n</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
+                    
+                    @if (!($queriedOrden->evidencias->isEmpty()))
+                        <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
                     @endif
 
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
@@ -559,6 +563,28 @@
                             </div>
                         </div>
                     </div>
+                    
+                    @if ($this->toggleRechazo)
+                        <div class="card">
+                            <div class="card-body">
+                                ¿Estas seguro de rechazar estas evidencias?
+                                <div class="form-group mt-2">
+                                    <label for="justificacion_rechazo">Justificaci&oacute;n de Rechazo</label>
+                                    <textarea id="justificacion_rechazo" class="form-control @error('justificacion_rechazo') is-invalid @elseif(strlen($justificacion_rechazo) > 0) is-valid @enderror"
+                                    wire:model.lazy="justificacion_rechazo" cols="30" rows="5"></textarea>
+                                    @error('justificacion_rechazo')
+                                        <div id="invalid-justificacion_rechazo" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <button type="button" wire:click="validateEvidencia(7)"  class="btn bg-gradient-danger">Rechazar</button>
+                                    <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -767,7 +793,9 @@
                             </div>
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> Aprobar </button>
-                                <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal"> Rechazar </button>
+                                @if (!($queriedOrden->evidencias->isEmpty()))
+                                    <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
+                                @endif
 
                                 <!-- Modal -->
                                 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -781,31 +809,34 @@
                                                 ¿Estas seguro de aprobar esta orden?
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(5)">Aprobar</button>
+                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(5)">APROBAR</button>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="deleteModalLabel">Elininar Orden</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                @if ($this->toggleRechazo)
+                                    <div class="card">
+                                        <div class="card-body">
+                                            ¿Estas seguro de rechazar estas evidencias?
+                                            <div class="form-group mt-2">
+                                                <label for="justificacion_rechazo">Justificaci&oacute;n de Rechazo</label>
+                                                <textarea id="justificacion_rechazo" class="form-control @error('justificacion_rechazo') is-invalid @elseif(strlen($justificacion_rechazo) > 0) is-valid @enderror"
+                                                wire:model.lazy="justificacion_rechazo" cols="30" rows="5"></textarea>
+                                                @error('justificacion_rechazo')
+                                                    <div id="invalid-justificacion_rechazo" class="text-invalid">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
                                             </div>
-                                            <div class="modal-body">
-                                                ¿Estas seguro de rechazar esta orden?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-danger" data-bs-dismiss="modal" wire:click="validateEvidencia(7)">Rechazar</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <div>
+                                                <button type="button" wire:click="validateEvidencia(7)"  class="btn bg-gradient-danger">Rechazar</button>
+                                                <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
