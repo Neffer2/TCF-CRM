@@ -393,7 +393,7 @@
                             <div class="form-group">
                                 <label for="art383">
                                     ¿Cuentas con el Art&iacute;culo 383?
-                                    Adjunta el documento con el Art&iacute;culo:
+                                    Adjunta el documento con el Art&iacute;culo: <span class="text-danger">*</span>
                                 </label>
                                 <input type="file" class="form-control @error('art383') is-invalid @elseif(strlen($art383) > 0) is-valid @enderror"
                                 wire:model="art383">
@@ -619,7 +619,7 @@
                         <div class="col-md-2">
                             <button type="button" class="btn bg-gradient-success" wire:click="saveEvidencia" wire:loading.attr="disabled">
                                 Guardar evidencias
-                            </button> 
+                            </button>
                         </div>
                     @else
                         <div class="col-md-2">

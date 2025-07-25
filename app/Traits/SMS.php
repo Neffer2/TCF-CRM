@@ -68,7 +68,7 @@ trait SMS
 
         ."\n \nPara revisar los comentarios de tus evidencias anteriores y adjuntar las nuevas evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
 
-        $this->sendAction($orden->naturalInfo->productor->telefono, $body);
+        $this->sendAction($orden->naturalInfo->tercero->telefono, $body);
     }
 
     public function sendAction($tel, $body){
@@ -106,4 +106,3 @@ trait SMS
         curl_close($curl);
     }
 }
- 

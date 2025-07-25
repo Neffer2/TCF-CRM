@@ -355,8 +355,8 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6"> 
-                @if(!$orden_id) 
+            <div class="col-md-6">
+                @if(!$orden_id)
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN DE TRABAJO</button>
                 @endif
             </div>
@@ -509,11 +509,11 @@
                     </div>
                 </div>
             </div>
-        @endif 
+        @endif
 
         <div class="row">
-            <div class="col-md-6"> 
-                @if(!$orden_id) 
+            <div class="col-md-6">
+                @if(!$orden_id)
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN DE TRABAJO</button>
                 @else
                     <!-- Button trigger modal -->
@@ -538,7 +538,7 @@
                             </div>
                         </div>
                     @endif
-                    
+
                     @if (!($queriedOrden->evidencias->isEmpty()))
                         <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
                     @endif
@@ -563,9 +563,9 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     @if ($this->toggleRechazo)
-                        <div class="card">
+                        <div class="card mt-2">
                             <div class="card-body">
                                 ¿Estas seguro de rechazar estas evidencias?
                                 <div class="form-group mt-2">
@@ -792,7 +792,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> Aprobar </button>
+                                <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))
                                     <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
                                 @endif
@@ -817,7 +817,7 @@
                                 </div>
 
                                 @if ($this->toggleRechazo)
-                                    <div class="card">
+                                    <div class="card mt-2">
                                         <div class="card-body">
                                             ¿Estas seguro de rechazar estas evidencias?
                                             <div class="form-group mt-2">

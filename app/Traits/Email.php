@@ -199,7 +199,7 @@ trait Email
 
         array_push($recipients, [
             'name'=> $user->name,
-            'email'=> $user->email 
+            'email'=> $user->email
         ]);
 
         if ($justificacion){
@@ -220,12 +220,12 @@ trait Email
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA";
         $body =
-        "<p> 
+        "<p>
             La orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>FIRMADA.</b> <br>
             Revisa el real ejecutado y confirma que la información esté correctamente diligenciada.
         </p><br><br>
         <p style='font-size: 12px'>
-            Enviado desde <b>BULLCRM</b>. <br> 
+            Enviado desde <b>BULLCRM</b>. <br>
             <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
@@ -234,7 +234,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, $this->produccion);
+        array_push($cc, ...$this->produccion);
 
         $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA";
 
@@ -245,13 +245,13 @@ trait Email
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
-        $body = 
+        $body =
         "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br> 
+            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p><br><br>
         <p style='font-size: 12px'>
-            Enviado desde <b>BULLCRM</b>. <br> 
+            Enviado desde <b>BULLCRM</b>. <br>
             <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
@@ -260,7 +260,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, $this->produccion);
+        array_push($cc, ...$this->produccion);
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
 
@@ -271,13 +271,13 @@ trait Email
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
-        $body = 
+        $body =
         "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS.</b> por el equipo Controller<br> 
+            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS.</b> por el equipo Controller<br>
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
         </p><br><br>
         <p style='font-size: 12px'>
-            Enviado desde <b>BULLCRM</b>. <br> 
+            Enviado desde <b>BULLCRM</b>. <br>
             <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
@@ -286,7 +286,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, $this->produccion);
+        array_push($cc, ...$this->produccion);
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
 
@@ -297,22 +297,18 @@ trait Email
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
-        $body = 
+        $body =
         "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el productor: ".$orden->naturalInfo->productor->name."<br> 
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el productor: ".$orden->naturalInfo->productor->name."<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p><br><br>
         <p style='font-size: 12px'>
-            Enviado desde <b>BULLCRM</b>. <br> 
+            Enviado desde <b>BULLCRM</b>. <br>
             <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
-        array_push($recipients, $this->controller);
 
-        // array_push($cc, $this->produccion, [
-        //     'name'=> $orden->naturalInfo->productor->name,
-        //     'email'=> $orden->naturalInfo->productor->email
-        // ]);
+        array_push($recipients, ...$this->controller);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
@@ -323,22 +319,17 @@ trait Email
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
-        $body = 
+        $body =
         "<p>
             La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo Controller.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p><br><br>
         <p style='font-size: 12px'>
-            Enviado desde <b>BULLCRM</b>. <br> 
+            Enviado desde <b>BULLCRM</b>. <br>
             <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
-        array_push($recipients, $this->contabilidad);
-
-        // array_push($cc, $this->produccion, [
-        //     'name'=> $orden->naturalInfo->productor->name,
-        //     'email'=> $orden->naturalInfo->productor->email
-        // ]);
+        $recipients = array_push($recipients, ...$this->contabilidad);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
@@ -368,9 +359,10 @@ trait Email
                 foreach ($recipients as $recipient) {
                     $mail->addAddress($recipient['email'], $recipient['name']);
                 }
-                // foreach ($cc as $copiados) {
-                //     $mail->addCC($copiados->ejecutivo->email);
-                // }
+
+                foreach ($cc as $copiados) {
+                    $mail->addCC($copiados['email'], $copiados['name']);
+                }
             /* *** */
 
             if ($attachment){
