@@ -20,7 +20,11 @@
                     </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                        <input type="text" wi re:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                    </div> 
+                    <div class="col-md-2">
+                        <label for="comercial">Buscar:</label>
+                        <input type="text" wire:model="cedula" class="form-control" placeholder="Cédula tercero">
                     </div>
                     <div class="col-md-2">
                         <label for="productor">Productor:</label>
@@ -349,6 +353,7 @@
                                                                     <p class="text-xs text-secondary mb-0">
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">Art&iacute;culo 383</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
                                                                     </p>
                                                                 </td>

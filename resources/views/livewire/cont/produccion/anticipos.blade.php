@@ -115,13 +115,10 @@
                                 <p class="text-xs text-secondary mb-0">{{ $orden->updated_at }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
-                                @if (!$orden->archivo_comprobante_pago)
+                                @if (!$orden->cod_causal)
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a>
                                 @else
-                                    @php
-                                        $archivo_comprobante_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-                                    @endphp
-                                    <a class="btn bg-gradient-secondary m-0 me-1 mb-1" href="{{ asset("storage/$archivo_comprobante_pago") }}" target="_blank">PAGADO</a>
+                                    <button class="btn bg-gradient-secondary m-0 me-1 mb-1">CAUSADO</button>
                                 @endif
                             </td>
                         </tr>
@@ -159,13 +156,10 @@
                                 <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
-                                @if (!$orden->archivo_comprobante_pago)
+                                @if (!$orden->cod_causal)
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a>
                                 @else
-                                    @php
-                                        $archivo_comprobante_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-                                    @endphp
-                                    <a class="btn bg-gradient-secondary m-0 me-1 mb-1" href="{{ asset("storage/$archivo_comprobante_pago") }}" target="_blank">PAGADO</a>
+                                    <button class="btn bg-gradient-secondary m-0 me-1 mb-1">CAUSADO</button>
                                 @endif
                             </td>
                         </tr>

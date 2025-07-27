@@ -44,11 +44,10 @@ class Anticipo extends Component
         $this->orden->archivo_comprobante_pago = $this->comprobante->store('public/ordenes_juridicas/anticipos');
         $this->orden->update();
 
-        // Envía correo (comentado)
-        // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
+        $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
 
         // Redirige con mensaje de éxito
-        return redirect()->route('anticipos')->with('success', 'Anticipo marcado como pagado exitósamente.');
+        return redirect()->route('anticipos')->with('success', 'Orden de compra marcada como pagada exitósamente.');
     }
 
     // Al montar el componente, busca la orden de compra por id

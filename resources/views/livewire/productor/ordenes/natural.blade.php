@@ -2,7 +2,7 @@
     {{-- <button wire:click="sendMessage">Mensaje</button> --}}
     <div class="row">
         <div class="col-md-12 mb-3">
-            <h3 class="m-0">Orden de compra natural</h3>
+            <h3 class="m-0">Orden de compra natural @if($queriedOrden) #{{ $queriedOrden->id }} @endif</h3>
             <p class="text-sm m-0">Selecciona tu personal y asigna los items nesesarios.</p>
         </div>
         <div class="col-md-6" style="border-right: 1px solid #eee;">
@@ -594,23 +594,23 @@
                 <div class="card mt-3">
                     <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
                         <div class="row">
+                            @if ($queriedOrden->observacion_causal)
+                                <div class="col-md-12 mb-2">
+                                    <h3 class="mb-0">Observaciones</h3>
+                                    <p class="text-sm mb-0">
+                                        <b>El equipo de contabilidad realizó las siguientes observaciones.
+                                    </p>
+                                    <div class="pe-5">
+                                        <textarea class="form-control" disabled cols="15" rows="2">{{ $queriedOrden->observacion_causal }}</textarea>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="col-md-12">
                                 <h3 class="mb-0">Evidencias</h3>
                                 <p class="text-sm mb-0">
                                     <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
                                 </p>
                             </div>
-                            @if ($queriedOrden->observacion_causal)
-                                <div class="col-md-12">
-                                    <h3 class="mb-0">Observaciones</h3>
-                                    <p class="text-sm mb-0">
-                                        <b>El equipo de contabilidad realizó las siguientes observaciones.
-                                    </p>
-                                    <div class="pe-5">
-                                        <textarea class="form-control" disabled cols="15" rows="5">{{ $queriedOrden->observacion_causal }}</textarea>
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
                     <div class="card-body">
@@ -630,6 +630,7 @@
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Num RUT</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Archivo RUT</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificación Bancaria</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Artículo 383</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Copia c&eacute;dula</th>
                                             </tr>
                                         </thead>
@@ -683,6 +684,11 @@
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
                                                         <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Ver</a>
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                        <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->art383)) }}" target="_blank">Ver</a><br>
                                                     </p>
                                                 </td>
                                                 <td>
@@ -790,7 +796,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> 
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))
@@ -910,6 +916,7 @@
                                 <p class="text-xs text-secondary mb-0">
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->art383)) }}" target="_blank">Art&iacute;culo 383</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a>

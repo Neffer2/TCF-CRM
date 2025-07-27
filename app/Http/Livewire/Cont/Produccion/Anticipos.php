@@ -25,11 +25,12 @@ class Anticipos extends Component
     // Renderiza la vista principal y aplica los filtros de búsqueda
     public function render()
     {
-        $filtros = [];
-
+        $filtros = [];        
         // Filtra por estado si está seleccionado
         if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]);
+        }else {
+            array_push($filtros, ['estado_id', 5]);
         }
 
         // Filtra por año si está seleccionado (rango de fechas del año)

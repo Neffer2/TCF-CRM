@@ -102,13 +102,13 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            @php
-                                $archivo_cot = str_replace('public/', '', $orden->archivo_cot);
-                            @endphp
-                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
-                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
-                            </a>
+                            @if ($orden->tipo_oc == 1)
+                                @php $archivo_cot = str_replace('public/', '', $orden->archivo_cot); @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>                                
+                            @endif
                         </div>
                     </div>
                 </div>

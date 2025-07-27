@@ -15,7 +15,7 @@
                         <div class="form-group">
                             <h6 style="margin: 0">N&uacute;mero de causaci&oacute;n:</h6>
                             <input value="{{ $orden->cod_causal }}" class="form-control" disabled>
-                        </div>
+                        </div> 
                         @if ($orden->observacion_causal)
                             <div class="form-group">
                                 <h6 style="margin: 0">Observaciones contabilidad:</h6>

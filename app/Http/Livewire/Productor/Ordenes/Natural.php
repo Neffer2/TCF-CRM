@@ -485,9 +485,9 @@ class Natural extends Component
 
             $this->queriedOrden->cod_oc = $this->cod_oc;
             $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
-            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+            $this->ocNaturalRevisionContabilidad($this->queriedOrden); 
         } elseif ($estado == 7) {
-            $this->validate([
+            $this->validate([ 
                 'justificacion_rechazo' => 'required|string|max:255'
             ]);
 

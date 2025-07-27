@@ -40,15 +40,14 @@ class Anticipo extends Component
         $this->validate([
             'causa_cod' => 'required|numeric',
             'observacion_causacion' => 'nullable|string'
-        ]);
+        ]);  
 
         // Actualiza los datos de la orden
         $this->orden->cod_causal = $this->causa_cod;
         $this->orden->observacion_causal = $this->observacion_causacion;
         $this->orden->update();
 
-        // (Opcional) Enviar notificación por email
-        // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
+        $this->ocNaturalRevisionTesoreria($this->orden);
 
         // Redirige con mensaje de éxito
         return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
@@ -67,11 +66,10 @@ class Anticipo extends Component
         $this->orden->estado_id = 2; // Estado: Revisión
         $this->orden->update();
 
-        // (Opcional) Enviar notificación por email
-        // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
+        $this->ocNaturalContabilidadRechazo($this->orden);
 
         // Redirige con mensaje de éxito
-        return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
+        return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra rechazada exitósamente.');
     }
 
     // Al montar el componente, carga la orden de compra correspondiente
@@ -82,7 +80,7 @@ class Anticipo extends Component
     /* MÉTODOS DE ACTUALIZACIÓN EN TIEMPO REAL */
 
     // Valida el campo causa_cod cuando se actualiza
-    public function updatedCausaCod(){
+    public function updatedCausaCod(){ 
         $this->validate([
             'causa_cod' => 'required|numeric'
         ]);
