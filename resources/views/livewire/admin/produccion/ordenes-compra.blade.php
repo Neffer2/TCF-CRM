@@ -20,8 +20,8 @@
                     </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
-                        <input type="text" wi re:model="cod_cc" class="form-control" placeholder="Centro de costos">
-                    </div> 
+                        <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                    </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cedula" class="form-control" placeholder="Cédula tercero">

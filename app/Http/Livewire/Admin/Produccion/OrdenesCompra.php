@@ -45,7 +45,7 @@ class OrdenesCompra extends Component
      */
     public function render(){
         // Array para almacenar todos los filtros aplicados
-        $filtros = []; 
+        $filtros = [];
 
         // Filtro por estado de la orden de compra
         if ($this->estado){
@@ -65,13 +65,23 @@ class OrdenesCompra extends Component
 
         // Filtro por código de centro de costo del presupuesto
         if ($this->cod_cc){
-            $ordenes = OrdenCompra::with('presupuesto')
-                ->whereHas('presupuesto', function ($presto) {
+            $ordenes = OrdenCompra::whereHas('presupuesto', function ($presto) {
                     $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
                 })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }else {
             // Sin filtro de código, consulta básica
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
+        // Filtro por cedula: información natural
+        if ($this->cedula) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->WhereHas('naturalInfo', function ($natural) {
+                    $natural->WhereHas('tercero', function ($tercero) {
+                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
+                    });
+                });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
         // Filtro por productor: busca en presupuesto o información natural
@@ -82,17 +92,6 @@ class OrdenesCompra extends Component
                 })
                 ->orWhereHas('naturalInfo', function ($natural) {
                     $natural->where('productor_id', $this->productor);
-                });
-            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
-        }
-
-        // Filtro por cedula: información natural
-        if ($this->cedula) {
-            $ordenes = OrdenCompra::where(function($query) {
-                $query->WhereHas('naturalInfo', function ($natural) {
-                    $natural->WhereHas('tercero', function ($tercero) {
-                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
-                    });
                 });
             })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
