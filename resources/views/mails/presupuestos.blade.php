@@ -21,7 +21,7 @@
     </p>
     <p style='font-size: 12px'>
         Enviado desde <b>BULLCRM</b>. <br>
-        <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
+        <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>&#161;Siempre se Puede!</b>.
     </p>
 </body>
 </html>

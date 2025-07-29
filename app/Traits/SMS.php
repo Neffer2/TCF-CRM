@@ -45,7 +45,7 @@ trait SMS
     }
 
     public function oc_natura_creada($tercero, $orden_id){
-        $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre Bienvenido a Bull Marketing! \nCon este enlace: \n\n".
+        $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre ¡Bienvenido a Bull Marketing! \nCon este enlace: \n\n".
         route('consulta-terceros')."?orden=".$orden_id
 
         ."\n \nPuedes completar tu información y aceptar los términos de tu contratación. \n \nBull Marketing la agencia del ¡Siempre se puede!";

@@ -223,6 +223,10 @@ trait Email
         "<p>
             La orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>FIRMADA.</b> <br>
             Revisa el real ejecutado y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br>
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
         array_push($recipients, [
@@ -245,6 +249,10 @@ trait Email
         "<p>
             Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br>
             Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br>
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
         array_push($recipients, [
@@ -254,7 +262,7 @@ trait Email
 
         array_push($cc, ...$this->produccion);
 
-        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS.";
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
@@ -267,6 +275,10 @@ trait Email
         "<p>
             Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS.</b> por el equipo Controller<br>
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br>
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
         array_push($recipients, [
@@ -276,7 +288,7 @@ trait Email
 
         array_push($cc, ...$this->produccion);
 
-        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS.";
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
@@ -289,12 +301,16 @@ trait Email
         "<p>
             La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el productor: ".$orden->naturalInfo->productor->name."<br>
             Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br>
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
 
         array_push($recipients, ...$this->controller);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
@@ -307,76 +323,19 @@ trait Email
         "<p>
             La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo Controller.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
+        </p><br><br>
+        <p style='font-size: 12px'>
+            Enviado desde <b>BULLCRM</b>. <br>
+            <a href='https://www.bullmarketing.com.co/' target='_blank'><b>BULLMARKETING</b></a> La Agencia del <b>¡Siempre se Puede!</b>.
         </p>";
 
         $recipients = array_push($recipients, ...$this->contabilidad);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalContabilidadRechazo($orden){
-        $recipients = [];
-        $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." RECHAZADA";
-        $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido rechazada por el quipo de Contabilidad.<br>
-            Revisa y confirma que la información esté correctamente diligenciada.
-        </p>";
-
-        array_push($recipients, ...$this->controller);
-
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADA.";
-
-        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
-    }
-
-    public function ocNaturalRevisionTesoreria($orden){
-        $recipients = [];
-        $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
-        $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo de Contabilidad.<br>
-            Revisa y confirma que la información esté correctamente diligenciada.
-        </p>";
-
-        $recipients = array_push($recipients, ...$this->contabilidad);
-
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
-
-        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
-    }
-
-    public function ocNaturalPagada($orden){
-        $recipients = [];
-        $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - ORDEN DE COMPRA ".$orden->naturalInfo->productor->name." PAGADA";
-        $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido pagada.
-        </p>";
-
-        $recipients = array_push($recipients, ...$this->contabilidad);
-
-        array_push($cc,
-            [
-                'name'=> $orden->naturalInfo->productor->name,
-                'email'=> $orden->naturalInfo->productor->email
-            ],
-            [
-                'name'=> $orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido,
-                'email'=> $orden->naturalInfo->tercero->correo
-            ]
-        );
-
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." PAGADA.";
-        $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-
-        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $archivo_pago);
-    }
     /* **** */
 
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
@@ -407,7 +366,9 @@ trait Email
             /* *** */
 
             if ($attachment){
-                $mail->addAttachment("storage/{$attachment}", "COMPROBANTE_PAGO.pdf");
+                // $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
+                $archivo_pago = str_replace('public/', '', $attachment);
+                $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
             }
 
             //Content
