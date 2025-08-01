@@ -45,6 +45,14 @@ trait Email
         [
             'name'=> 'Auxiliar Contable',
             'email'=> 'auxiliar.contable@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Tesorería',
+            'email'=> 'tesoreria@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Tesorería',
+            'email'=> 'Ligia.Torres@bullmarketing.com.co'
         ]
     ];
 
@@ -309,7 +317,7 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        $recipients = array_push($recipients, ...$this->contabilidad);
+        array_push($recipients, ...$this->contabilidad);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
@@ -317,6 +325,23 @@ trait Email
     }
 
     /* **** */
+
+    // public function error(){
+    //     $recipients = [];
+    //     $cc = [];
+    //     $subject = "NOTIFICACIÓN";
+    //     $body =
+    //     "<p>
+    //         La orden de compra del tercero <b></b> ha sido validada por el equipo Controller.<br>
+    //         Revisa y confirma que la información esté correctamente diligenciada.
+    //     </p>";
+
+    //     $recipients = array_push($recipients, ...$this->contabilidad);
+
+    //     $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+
+    //     $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    // }
 
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
         require base_path("vendor/autoload.php");
@@ -333,7 +358,7 @@ trait Email
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = env('MAIL_PORT', 587);
 
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $mail->setFrom(env('MAIL_USERNAME'), 'BULLMARKETING');
 
             /* Recipients */
                 foreach ($recipients as $recipient) {
