@@ -110,6 +110,12 @@
                                 </a>                                
                             @endif
                         </div>
+                    </div> 
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <h6>Observaciones de negociaci&oacute;n:</h6>
+                            <textarea name="observaciones_negociacion" class="form-control" disabled>{{ $orden->observaciones_negociacion }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>

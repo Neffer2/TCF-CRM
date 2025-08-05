@@ -29,6 +29,7 @@ class CreateOrdenesCompra extends Migration
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
 
             $table->string('justificacion_rechazo')->nullable();
+            $table->string('observaciones_negociacion')->nullable();
             $table->string('archivo_cot')->nullable();
             $table->string('archivo_orden_helisa')->nullable();
             $table->string('cod_causal')->nullable();

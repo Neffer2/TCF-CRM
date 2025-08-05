@@ -45,7 +45,10 @@ trait Email
         [
             'name'=> 'Auxiliar Contable',
             'email'=> 'auxiliar.contable@bullmarketing.com.co'
-        ],
+        ]
+    ];
+
+    public $tesoreria = [
         [
             'name'=> 'Tesorería',
             'email'=> 'tesoreria@bullmarketing.com.co'
@@ -318,6 +321,23 @@ trait Email
         </p>";
 
         array_push($recipients, ...$this->contabilidad);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocNaturalRevisionTesoreria($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $body =
+        "<p>
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido causada por contabilidad.<br>
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p>";
+
+        array_push($recipients, ...$this->tesoreria);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 

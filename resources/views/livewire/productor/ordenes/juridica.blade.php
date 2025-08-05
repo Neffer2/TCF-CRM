@@ -33,7 +33,7 @@
                                 </tr>
                             @endif
                         </table>
-                    </div>
+                    </div> 
                 </div>
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
@@ -146,7 +146,21 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
+                                <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
+                                @error('observaciones_negociacion') 
+                                    <div id="observaciones_negociacion" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="justificacion_rechazo">Justificaci&oacute;n de rechazo:</label>
                                 <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" cols="100" rows="2"></textarea>
@@ -156,13 +170,10 @@
                                     </div>
                                 @enderror
                             </div>
+                            <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
-                            Aprobar
-                        </button>
-                        <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>
