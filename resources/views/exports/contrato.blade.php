@@ -190,6 +190,10 @@
             presente contrato son de propiedad exclusiva de LA SOCIEDAD CONTRATANTE y no podrá hacer uso de
             ellos sin la autorización previa y escrita de LA SOCIEDAD CONTRATANTE.
         </p>
+        <br>
+        <p>
+            En cumplimiento con al Ley 1819 de 2016 y el paragrafo segundo del articulo 383 del E.T. manifiesto bajo gravedad de juramento que: Para efectos de la aplicación de la tabla de retención en la fuente establecida en elarticulo 383 del E.T, la cual se aplica a los pagos o abonos en cuenta por concepto de honorarios y por compensación por servicios personales , SI( ) No ( ) He contratado o vinculado más de un trabajados asociado a mi actividad económica por al menos noventa (90) días continuos (Parágrafo 2 art 383 E.T.)
+        </p>
         <table class="table" style="padding: 0 3rem;">
             <tr>
                 <td>

@@ -519,7 +519,7 @@
                     <!-- Button trigger modal -->
                     @if ($queriedOrden->naturalInfo->terminos == 1)
                         <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
-
+ 
                         <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">

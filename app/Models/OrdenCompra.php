@@ -13,7 +13,8 @@ class OrdenCompra extends Model
         'tipo_oc',
         'estado_id',
         'presupuesto_id', 
-        'proveedor_id'  
+        'proveedor_id',
+        'fecha_aprobacion'
     ];
 
     public function ordenItems(){

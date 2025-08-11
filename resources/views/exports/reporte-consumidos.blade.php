@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Consumidos</title>
 </head>
 <body>
     <table>
@@ -21,21 +21,22 @@
             <td style="text-align: center; font-weight: bold;">FECHA</td>
         </tr>
         @foreach ($ordenes as $orden)
-            @foreach ($orden->presupuesto->presupuestoItems as $item)
-                {{-- <tr>
-                    <td>{{ $orden->presupuesto->cod_cc }}</td>
-                    <td>{{ $orden->presupuesto->gestion->nom_proyecto_cot }}</td>
-                    <td>{{ $item->descripcion }}</td>
-                    <td>{{ $item->num_item }}</td>
-                    <td>{{ $item->cantidad }}</td>
-                    <td>{{ $item->dia }}</td>
-                    <td>{{ $item->otros }}</td>
-                    <td>{{ $item->v_unitario }}</td>
-                    <td>{{ $item->v_total }}</td>
-                    <td>{{ $orden->created_at->format('d/m/Y H:i') }}</td>
-                </tr> --}}
-            @endforeach
-            @foreach ($orden->presupuesto->presupuestoItems as $item)
+            @foreach ($orden->ordenItems as $ocItem)
+                <tr>
+                    <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
+                    <td>{{ $ocItem->itemPresupuesto->presto->gestion->nom_proyecto_cot }}</td>
+                    <td>{{ $ocItem->desc_oc }}</td>
+                    <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
+                    <td>{{ $ocItem->cant_oc }}</td>
+                    <td>{{ $ocItem->dias_oc }}</td>
+                    <td>{{ $ocItem->otros_oc }}</td>
+                    <td>{{ $ocItem->vunit_oc }}</td>
+                    <td>{{ $ocItem->vtotal_oc }}</td>
+                    <td>{{ $ocItem->created_at }}</td>
+                </tr>
+            @endforeach 
+
+            {{-- @foreach ($orden->presupuesto->presupuestoItems as $item)
                 @if ($item->consumidos->count() > 0)
                     @foreach ($item->consumidos as $consumido)
                         <tr>
@@ -52,8 +53,9 @@
                         </tr>
                     @endforeach
                 @endif
-            @endforeach
+            @endforeach --}}
         @endforeach
     </table>
 </body>
 </html>
+ 

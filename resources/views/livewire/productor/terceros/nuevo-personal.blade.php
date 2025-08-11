@@ -203,7 +203,6 @@
     <div>
         @if ($orden && $orden->estado_id == 3)
             <div>
-
                 <div class="modal-body pt-1">
                     @auth
                         <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
@@ -391,22 +390,22 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="art383">
-                                    ¿Cuentas con el Art&iacute;culo 383?
-                                    Adjunta el documento con el Art&iacute;culo: <span class="text-danger">*</span>
+                                <label for="planilla_aportes"> 
+                                    ¿Tus pagos superan el salario m&iacute;nimo?
+                                    Adjunta tu planilla de aportes:
                                 </label>
-                                <input type="file" class="form-control @error('art383') is-invalid @elseif(strlen($art383) > 0) is-valid @enderror"
-                                wire:model="art383">
+                                <input type="file" class="form-control @error('planilla_aportes') is-invalid @elseif(strlen($planilla_aportes) > 0) is-valid @enderror"
+                                wire:model="planilla_aportes">
                                 <label>
-                                    @if ($tercero->art383)
-                                        <a href="{{ asset(str_replace("public", "storage", $tercero->art383)) }}" target="_blank">
+                                    @if ($tercero->planilla_aportes)
+                                        <a href="{{ asset(str_replace("public", "storage", $tercero->planilla_aportes)) }}" target="_blank">
                                             Archivo actual:
                                             <i class="fa-regular fa-eye"></i>
                                         </a>
                                     @endif
                                 </label>
-                                @error('art383')
-                                    <div id="art383" class="text-invalid">
+                                @error('planilla_aportes')
+                                    <div id="planilla_aportes" class="text-invalid">
                                         {{ $message }}
                                     </div>
                                 @enderror

@@ -150,9 +150,13 @@
                                         <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha Evidencias</p>
                                         @if (!$orden->evidencias->isEmpty()) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
+                                    </td> --}}
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha aprobación (producci&oacute;n)</p>
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
@@ -353,7 +357,7 @@
                                                                     <p class="text-xs text-secondary mb-0">
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
-                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">Art&iacute;culo 383</a><br>
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">Planilla de Aportes</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
                                                                     </p>
                                                                 </td>

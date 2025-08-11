@@ -87,6 +87,13 @@
                                         <span class="btn-inner--text">Certificación Art. 383.</span>
                                     </a>
                                 @endif
+                                @if ($orden->naturalInfo->tercero->planilla_aportes)
+                                    <br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Planilla de Aportes.</span>
+                                    </a>
+                                @endif
                             @endif
                         </div>
                     </div>

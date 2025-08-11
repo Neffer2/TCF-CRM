@@ -14,7 +14,7 @@ class Año extends Model
         'description'
     ];
 
-    public function Meses (){
+    public function Meses(){
         return $this->hasMany(Mes::class, 'ano_id', 'id');
     }
 }

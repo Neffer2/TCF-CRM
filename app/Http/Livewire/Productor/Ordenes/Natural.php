@@ -340,6 +340,7 @@ class Natural extends Component
             // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
             $this->queriedOrden->update([
                 'estado_id' => 2,
+                'fecha_aprobacion' => now() 
             ]);
 
             //Mail notificación controller
@@ -416,7 +417,7 @@ class Natural extends Component
         // Items
         $queriedItems = $this->queriedOrden->ordenItems;
         foreach ($queriedItems as $item){
-            $newItem = [
+            $newItem = [ 
                 'proyecto' => [
                         'id' => $item->itemPresupuesto->presto->id,
                         'nombre' => $item->itemPresupuesto->presto->gestion->nom_proyecto_cot,
@@ -427,7 +428,7 @@ class Natural extends Component
                     'nombre' => $item->itemPresupuesto->descripcion,
                     'cod_cc' => $item->itemPresupuesto->presto->cod_cc,
                     'display_item' => $item->itemPresupuesto->displayItem()
-                ],
+                ], 
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
                 'otros' => $item->otros_oc,

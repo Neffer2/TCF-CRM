@@ -65,7 +65,7 @@
                 <thead>
                     <tr>
                         <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
-                        <th colspan="7" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                         <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                     </tr>
                 </thead>
@@ -109,10 +109,6 @@
                                 @if ($orden->presupuesto->productor_info)
                                     <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p>
                                 @endif
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Anticipo</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->proveedor->anticipo }}%</p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha aprobaci&oacute;n</p>
@@ -162,7 +158,7 @@
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
                             </td>
-                            <td colspan="3">
+                            <td colspan="2">
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
                             </td>

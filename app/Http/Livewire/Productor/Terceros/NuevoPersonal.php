@@ -27,7 +27,7 @@ class NuevoPersonal extends Component
 
     // Modelos y campos del formulario
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383;
+    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383, $planilla_aportes;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -194,11 +194,11 @@ class NuevoPersonal extends Component
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
-
-        // Artículo 383
-        if(!$tercero->art383 && !Auth::check()){
-            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-            $tercero->art383 = $this->art383->store('public/cert_bancarias');
+ 
+        // Planilla de aportes
+        if (!$tercero->planilla_aportes && !Auth::check()){
+            $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            if ($this->planilla_aportes){$tercero->planilla_aportes = $this->planilla_aportes->store('public/planillas_aportes');}
         }
 
         // RUT si aplica
@@ -272,8 +272,8 @@ class NuevoPersonal extends Component
         ]);
 
         // Validaciones de archivos requeridos
-        if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
-            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        if ((!$this->planilla_aportes && !$this->tercero->planilla_aportes) && !Auth::check()){
+            $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
@@ -351,7 +351,7 @@ class NuevoPersonal extends Component
         $this->banco = $this->tercero->banco;
         $this->servicio = $this->tercero->servicio;
         $this->num_rut = $this->tercero->num_rut;
-        $this->art383 = $this->tercero->art383;
+        $this->planilla_aportes = $this->tercero->planilla_aportes;
     }
 
     // Alterna la confirmación de eliminación
