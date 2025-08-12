@@ -428,7 +428,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
@@ -485,7 +485,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
@@ -535,7 +535,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
