@@ -104,8 +104,8 @@
                                         <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                        <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
@@ -116,6 +116,10 @@
                                                 NO ASIGNADO
                                             @endif
                                         </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Comercial</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -155,9 +159,9 @@
                                         @if (!$orden->evidencias->isEmpty()) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
                                     </td> --}}
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Fecha aprobación (producci&oacute;n)</p>
-                                            <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
-                                    </td>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                        </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>

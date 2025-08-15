@@ -22,6 +22,7 @@ class CreateOrdenesCompra extends Migration
             $table->foreignId('estado_id')->default(2);
             $table->foreign('estado_id')->references('id')->on('estados_ordenes_compra');
             $table->dateTime('fecha_aprobacion')->nullable();
+            $table->dateTime('fecha_envio_produccion')->nullable();
 
             $table->foreignId('presupuesto_id')->nullable();
             $table->foreign('presupuesto_id')->references('id')->on('presupuesto_proyecto');

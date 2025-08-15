@@ -8,7 +8,6 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use App\Models\OrdenCompra;
-use App\Models\Año;
 use Carbon\Carbon;
 
 class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidths
@@ -16,15 +15,12 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
     protected $ordenes = [];
 
     function __construct() {
-        // $currentYear = Carbon::now()->subDays(Carbon::now()->dayOfYear)->toDateTimeString();
-        $currentYear = Carbon::now()->subDays(7)->toDateTimeString(); // 7 days ago
-
         $this->ordenes = OrdenCompra::where([
             ['estado_id', '!=', '6'],
             ['estado_id', '!=', '2'],
             ['estado_id', '!=', '3']
         ])
-        ->where('created_at', '>=', $currentYear)
+        ->whereBetween('created_at', [Carbon::now()->startOfMonth()->toDateTimeString(), Carbon::now()->toDateTimeString()])
         ->orderBy('created_at', 'desc')
         ->get();
     }

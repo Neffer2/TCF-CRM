@@ -18,7 +18,9 @@
             <td style="text-align: center; font-weight: bold;">DIAS</td>
             <td style="text-align: center; font-weight: bold;">VALOR UNITARIO</td>
             <td style="text-align: center; font-weight: bold;">VALOR TOTAL</td>
-            <td style="text-align: center; font-weight: bold;">FECHA</td>
+            <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
+            <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
+            <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
         </tr>
         @foreach ($ordenes as $orden)
             @foreach ($orden->ordenItems as $ocItem)
@@ -33,29 +35,11 @@
                     <td>{{ $ocItem->vunit_oc }}</td>
                     <td>{{ $ocItem->vtotal_oc }}</td>
                     <td>{{ $ocItem->created_at }}</td>
+                    <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
+                    <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
                 </tr>
-            @endforeach 
-
-            {{-- @foreach ($orden->presupuesto->presupuestoItems as $item)
-                @if ($item->consumidos->count() > 0)
-                    @foreach ($item->consumidos as $consumido)
-                        <tr>
-                            <td>{{ $orden->presupuesto->cod_cc }}</td>
-                            <td>{{ $orden->presupuesto->gestion->nom_proyecto_cot }}</td>
-                            <td>{{ $consumido->desc_oc }}</td>
-                            <td>{{ $consumido->display_item }}</td>
-                            <td>{{ $consumido->cant_oc }}</td>
-                            <td>{{ $consumido->dias_oc }}</td>
-                            <td>{{ $consumido->otros_oc }}</td>
-                            <td>{{ $consumido->vunit_oc }}</td>
-                            <td>{{ $consumido->vtotal_oc }}</td>
-                            <td>{{ $orden->created_at }}</td>
-                        </tr>
-                    @endforeach
-                @endif
-            @endforeach --}}
+            @endforeach
         @endforeach
     </table>
 </body>
 </html>
- 

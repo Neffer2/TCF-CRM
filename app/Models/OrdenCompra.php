@@ -1,27 +1,28 @@
-<?php 
+<?php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrdenCompra extends Model 
+class OrdenCompra extends Model
 {
     use HasFactory;
     protected $table = "ordenes_compra";
     protected $fillable = [
         'tipo_oc',
         'estado_id',
-        'presupuesto_id', 
+        'presupuesto_id',
         'proveedor_id',
-        'fecha_aprobacion'
+        'fecha_aprobacion',
+        'fecha_envio_produccion'
     ];
 
     public function ordenItems(){
-        return $this->hasMany(OcItem::class, 'oc_id', 'id'); 
-    } 
- 
-    public function estado_oc(){ 
+        return $this->hasMany(OcItem::class, 'oc_id', 'id');
+    }
+
+    public function estado_oc(){
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
     }
 
@@ -29,7 +30,7 @@ class OrdenCompra extends Model
         return $this->hasOne(TipoOrdenCompra::class, 'id', 'tipo_oc');
     }
 
-    public function presupuesto(){ 
+    public function presupuesto(){
         return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
     }
 
@@ -44,5 +45,4 @@ class OrdenCompra extends Model
     public function evidencias(){
         return $this->hasMany(Evidencia::class, 'oc_id', 'id');
     }
-}   
- 
+}

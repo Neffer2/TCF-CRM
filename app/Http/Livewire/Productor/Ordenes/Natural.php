@@ -340,7 +340,7 @@ class Natural extends Component
             // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
             $this->queriedOrden->update([
                 'estado_id' => 2,
-                'fecha_aprobacion' => now() 
+                'fecha_envio_produccion' => now()
             ]);
 
             //Mail notificación controller
@@ -417,7 +417,7 @@ class Natural extends Component
         // Items
         $queriedItems = $this->queriedOrden->ordenItems;
         foreach ($queriedItems as $item){
-            $newItem = [ 
+            $newItem = [
                 'proyecto' => [
                         'id' => $item->itemPresupuesto->presto->id,
                         'nombre' => $item->itemPresupuesto->presto->gestion->nom_proyecto_cot,
@@ -428,7 +428,7 @@ class Natural extends Component
                     'nombre' => $item->itemPresupuesto->descripcion,
                     'cod_cc' => $item->itemPresupuesto->presto->cod_cc,
                     'display_item' => $item->itemPresupuesto->displayItem()
-                ], 
+                ],
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
                 'otros' => $item->otros_oc,
@@ -486,9 +486,10 @@ class Natural extends Component
 
             $this->queriedOrden->cod_oc = $this->cod_oc;
             $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
-            $this->ocNaturalRevisionContabilidad($this->queriedOrden); 
+            $this->queriedOrden->fecha_aprobacion = now();
+            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
         } elseif ($estado == 7) {
-            $this->validate([ 
+            $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'
             ]);
 

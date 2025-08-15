@@ -196,7 +196,7 @@ class Juridica extends Component
         $this->validate([
             'cant' => 'required|numeric',
             'vUnit' => 'required|numeric'
-        ]); 
+        ]);
 
         // Calcula el valor total del item
         $this->vTotal = ($this->cant * $this->vUnit);
@@ -204,7 +204,7 @@ class Juridica extends Component
         $this->updatedVTotal();
     }
 
-    // Envía la orden de compra para aprobación (crea o actualiza)
+    // Envía la orden de compra para aprobación de controller (crea o actualiza)
     public function enviarAprobacion(){
         $this->validate([
             'proveedor' => 'required',
@@ -219,6 +219,7 @@ class Juridica extends Component
         // Si la orden está creada, actualiza
         if ($this->orden_compra){
             $this->orden_compra->estado_id = 2;
+            $this->orden_compra->fecha_envio_produccion = now();
             $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
             $this->orden_compra->update();
@@ -229,6 +230,7 @@ class Juridica extends Component
             // Si no existe, crea una nueva OC
             $orden = new OrdenCompra;
             $orden->tipo_oc = 1;
+            $orden->fecha_envio_produccion = now();
             $orden->presupuesto_id = $this->presupuesto->id;
 
             $orden->proveedor_id = $this->proveedor;
@@ -283,7 +285,8 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
-            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion; 
+            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
+            $this->orden_compra->fecha_aprobacion = now();
             $this->orden_compra->cod_oc = $this->cod_oc;
 
             $this->mailOrdenAprobada($this->orden_compra);
