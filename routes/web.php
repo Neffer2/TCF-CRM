@@ -55,7 +55,8 @@ Route::get('/', function () {
     Route::get('/proveedores', [HomeController::class, 'showProveedores'])->middleware(['auth'])->name('proveedores');
 
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
-    Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('reporte-consumidos');
+
+    Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
 /* --- */
 
 /* commercial */

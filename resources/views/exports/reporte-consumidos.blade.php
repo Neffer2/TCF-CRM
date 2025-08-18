@@ -16,8 +16,11 @@
             <td style="text-align: center; font-weight: bold;">CANT</td>
             <td style="text-align: center; font-weight: bold;">HORAS</td>
             <td style="text-align: center; font-weight: bold;">DIAS</td>
-            <td style="text-align: center; font-weight: bold;">VALOR UNITARIO</td>
-            <td style="text-align: center; font-weight: bold;">VALOR TOTAL</td>
+            <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (OC)</td>
+            <td style="text-align: center; font-weight: bold;">VALOR TOTAL (OC)</td>
+            <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (ITEM)</td>
+            <td style="text-align: center; font-weight: bold;">VALOR TOTAL (ITEM)</td>
+            <td style="text-align: center; font-weight: bold;">SALDO</td>
             <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
             <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
             <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
@@ -34,6 +37,9 @@
                     <td>{{ $ocItem->otros_oc }}</td>
                     <td>{{ $ocItem->vunit_oc }}</td>
                     <td>{{ $ocItem->vtotal_oc }}</td>
+                    <td>{{ $ocItem->itemPresupuesto->v_unitario }}</td>
+                    <td>{{ $ocItem->itemPresupuesto->v_total }}</td>
+                    <td>{{ ($ocItem->itemPresupuesto->v_total - $ocItem->vtotal_oc) }}</td>
                     <td>{{ $ocItem->created_at }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
@@ -41,5 +47,5 @@
             @endforeach
         @endforeach
     </table>
-</body>
+</body> 
 </html>

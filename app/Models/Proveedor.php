@@ -13,4 +13,8 @@ class Proveedor extends Model
     public function categoria(){
         return $this->hasOne(CategoriaProveedor::class, 'id', 'categoria_id');
     }
+
+    public function OrdenCompra(){
+        return $this->hasMany(OrdenCompra::class, 'proveedor_id', 'id');
+    }
 }

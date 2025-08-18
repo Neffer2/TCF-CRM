@@ -85,20 +85,20 @@
             @endphp
             <tr>
                 @if (!$tipo) <td style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">ITEM</td> @endif
-                <td colspan="6" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">DESCRIPCION</td>
-                <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">CANTIDAD</td>
+                <td colspan="7" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">DESCRIPCION</td>
+                <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">CANT</td>
                 @if (!$tipo) <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">PROVEEDOR</td> @endif
                 <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">DIAS</td>
                 <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">OTROS</td>
-                <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">Vr. UNIT</td>
-                <td colspan="1" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">Vr. TOTAL</td>
+                <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">Vr. UNIT</td>
+                <td colspan="2" style="text-align: center; font-weight: bold; background-color: #ef6f14; color: white;">Vr. TOTAL</td>
             </tr>
             @foreach ($items as $key => $item)
                 @if (!$item->evento == 1)
                     <tr> 
                         @if (!$tipo) <td style="text-align: center">{{ $key+=1 }}</td> @endif
-                        <td colspan="6">{{ $item->descripcion }}</td>
-                        <td colspan="2" style="text-align: center">{{ $item->cantidad }}</td>
+                        <td colspan="7">{{ $item->descripcion }}</td>
+                        <td colspan="1" style="text-align: center">{{ $item->cantidad }}</td>
                         @if (!$tipo) 
                             <td colspan="2" style="text-align: center">
                                 @if ($proveedores_item = @unserialize($item->proveedor))
@@ -122,15 +122,15 @@
                         <td colspan="1" style="text-align: center">{{ $item->otros }}</td>
 
                         @if (!$tipo)
-                            <td colspan="1" style="">{{ $item->v_unitario }}</td> 
+                            <td colspan="2" style="">{{ $item->v_unitario }}</td> 
                         @else 
-                            <td colspan="1" style="">{{ $item->v_unitario_cot }}</td>
+                            <td colspan="2" style="">{{ $item->v_unitario_cot }}</td>
                         @endif
 
                         @if (!$tipo)
-                            <td colspan="1" style="">{{ $item->v_total }}</td>
+                            <td colspan="2" style="">{{ $item->v_total }}</td>
                         @else 
-                            <td colspan="1" style="">{{ $item->v_total_cot }}</td>
+                            <td colspan="2" style="">{{ $item->v_total_cot }}</td>
                         @endif                                             
                     </tr>            
                 @else 

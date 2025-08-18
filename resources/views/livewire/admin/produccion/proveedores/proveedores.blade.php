@@ -50,7 +50,7 @@
             <div class="table-responsive">
                 <table class="table">
                     <thead> 
-                        <th colspan="6" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n proveedores</th>
+                        <th colspan="8" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n proveedores</th>
                     </thead>  
                     <tbody>  
                         @foreach ($proveedores as $proveedor)
@@ -81,6 +81,14 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">{{ $proveedor->departamento }}</p>
                                     <p class="text-xs text-secondary">{{ $proveedor->ciudad }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Negociaci&oacute;n</p>
+                                    <p class="text-xs text-secondary">
+                                        @if (!($proveedor->OrdenCompra->isEmpty()))
+                                            <textarea rows="1" class="form-control" disabled>{{ $proveedor->OrdenCompra->last()->observaciones_negociacion }}</textarea>
+                                        @endif
+                                    </p> 
                                 </td>
                                 <td colspan="2"> 
                                     <button @if (!(Auth::user()->rol == 1)) disabled @endif class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $proveedor->id }}">Editar</button>
@@ -126,8 +134,8 @@
                         @endforeach
                     </tbody>
                 </table>
-                {{ $proveedores->links() }}
             </div>
+            {{ $proveedores->links() }}
         </div>
     </div>
     <div class="alerts"> 

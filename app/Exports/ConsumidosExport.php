@@ -29,7 +29,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
     * @return \Illuminate\Support\Collection
     */
     public function view(): View
-    {
+    { 
         return view('exports.reporte-consumidos', [
             'ordenes' => $this->ordenes
         ]);
