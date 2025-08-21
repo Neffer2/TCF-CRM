@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +9,10 @@
 <body>
     <table>
         <tr>
+            <td style="text-align: center; font-weight: bold;">PRODUCTOR</td>
             <td style="text-align: center; font-weight: bold;">C.C</td>
             <td style="text-align: center; font-weight: bold;">NOMBRE C.C.</td>
+            <td style="text-align: center; font-weight: bold;">PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">DESC ITEM</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
             <td style="text-align: center; font-weight: bold;">CANT</td>
@@ -28,10 +30,22 @@
         @foreach ($ordenes as $orden)
             @foreach ($orden->ordenItems as $ocItem)
                 <tr>
+                    <td>
+                        @if ($ocItem->OrdenCompra->tipo_oc == 1)
+                            {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }}
+                        @else
+                            {{ $ocItem->OrdenCompra->naturalInfo->productor->name }}
+                        @endif
+                    </td>
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
                     <td>{{ $ocItem->itemPresupuesto->presto->gestion->nom_proyecto_cot }}</td>
                     <td>{{ $ocItem->desc_oc }}</td>
                     <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
+                    @if ($ocItem->OrdenCompra->tipo_oc == 1)
+                        <td>{{ $ocItem->OrdenCompra->proveedor->tercero }}</td>
+                    @else
+                        <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->nombre }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->apellido }} - {{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
+                    @endif
                     <td>{{ $ocItem->cant_oc }}</td>
                     <td>{{ $ocItem->dias_oc }}</td>
                     <td>{{ $ocItem->otros_oc }}</td>
@@ -47,5 +61,5 @@
             @endforeach
         @endforeach
     </table>
-</body> 
+</body>
 </html>
