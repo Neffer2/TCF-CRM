@@ -22,6 +22,10 @@
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div>
                 <div class="col-md-2">
+                    <label for="comercial">Buscar:</label>
+                    <input type="text" wire:model="cedula" class="form-control" placeholder="Cédula tercero">
+                </div>
+                <div class="col-md-2">
                     <label for="productor">Productor:</label>
                     <select id="productor" class="form-control" wire:model="productor">
                         <option value="">Seleccionar</option>
@@ -32,7 +36,7 @@
                 </div>
                 <div class="col-md-2">
                     <label for="estado">Estados:</label>
-                    <select id="estado" class="form-control" wire:model="estado">
+                    <select id="estado" disabled class="form-control" wire:model="estado">
                         <option value="">Seleccionar</option>
                         @foreach ($estados as $estado)
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>

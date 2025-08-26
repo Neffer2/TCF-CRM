@@ -13,7 +13,7 @@ use App\Models\TipoOrdenCompra;
 class Anticipos extends Component
 {
     // Modelos para los filtros y campos del formulario
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $cedula;
 
     // Variables útiles para los selectores y catálogos
     public $estados = [], $años = [], $tipos = [], $productores = [];
@@ -54,6 +54,17 @@ class Anticipos extends Component
         }else {
             // Si no hay filtro de centro de costos, consulta normal
             $ordenes = OrdenCompra::where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
+        // Filtro por cedula: información natural
+        if ($this->cedula) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->WhereHas('naturalInfo', function ($natural) {
+                    $natural->WhereHas('tercero', function ($tercero) {
+                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
+                    });
+                });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
         // Si se selecciona un productor, filtra por productor (en presupuesto o naturalInfo)

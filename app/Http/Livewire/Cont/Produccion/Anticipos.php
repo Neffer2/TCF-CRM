@@ -13,7 +13,7 @@ use App\Models\TipoOrdenCompra;
 class Anticipos extends Component
 {
     // Variables para filtros y búsqueda
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $cedula;
 
     // Listas para selects y filtros
     public $estados = [], $años = [], $tipos = [], $productores = [];
@@ -25,7 +25,7 @@ class Anticipos extends Component
     // Renderiza la vista principal y aplica los filtros de búsqueda
     public function render()
     {
-        $filtros = [];        
+        $filtros = [];
         // Filtra por estado si está seleccionado
         if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]);
@@ -53,6 +53,17 @@ class Anticipos extends Component
         }else {
             // Si no hay código, filtra solo por los filtros generales
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
+        // Filtro por cedula: información natural
+        if ($this->cedula) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->WhereHas('naturalInfo', function ($natural) {
+                    $natural->WhereHas('tercero', function ($tercero) {
+                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
+                    });
+                });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
         // Si hay productor seleccionado, filtra por productor en presupuesto o naturalInfo
