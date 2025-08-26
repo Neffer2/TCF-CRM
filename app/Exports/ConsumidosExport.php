@@ -7,10 +7,12 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use App\Models\OrdenCompra;
 use Carbon\Carbon;
 
-class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidths
+class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidths, WithEvents
 {
     protected $ordenes = [];
 
@@ -56,6 +58,15 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
         return [
             'H' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'I' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                $event->sheet->getDelegate()->setAutoFilter('A1:Q1');
+            },
         ];
     }
 }
