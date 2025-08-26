@@ -12,8 +12,8 @@
             <td style="text-align: center; font-weight: bold;">PRODUCTOR</td>
             <td style="text-align: center; font-weight: bold;">C.C</td>
             <td style="text-align: center; font-weight: bold;">NOMBRE C.C.</td>
-            <td style="text-align: center; font-weight: bold;">PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">DESC ITEM</td>
+            <td style="text-align: center; font-weight: bold;">PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
             <td style="text-align: center; font-weight: bold;">CANT</td>
             <td style="text-align: center; font-weight: bold;">HORAS</td>
@@ -40,12 +40,12 @@
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
                     <td>{{ $ocItem->itemPresupuesto->presto->gestion->nom_proyecto_cot }}</td>
                     <td>{{ $ocItem->desc_oc }}</td>
-                    <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
                     @if ($ocItem->OrdenCompra->tipo_oc == 1)
                         <td>{{ $ocItem->OrdenCompra->proveedor->tercero }}</td>
                     @else
                         <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->nombre }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->apellido }} - {{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
                     @endif
+                    <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
                     <td>{{ $ocItem->cant_oc }}</td>
                     <td>{{ $ocItem->dias_oc }}</td>
                     <td>{{ $ocItem->otros_oc }}</td>
