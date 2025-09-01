@@ -32,9 +32,9 @@
                 <tr>
                     <td>
                         @if ($ocItem->OrdenCompra->tipo_oc == 1)
-                            {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }}
+                            {{-- {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }} --}}
                         @else
-                            {{ $ocItem->OrdenCompra->naturalInfo->productor->name }}
+                            {{-- {{ $ocItem->OrdenCompra->naturalInfo->productor->name }} --}}
                         @endif
                     </td>
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
