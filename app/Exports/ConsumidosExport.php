@@ -19,17 +19,12 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
     function __construct() {
         ini_set('max_execution_time', 10000); // or this way
 
-        // $this->ordenes = OrdenCompra::where([
-        //     ['estado_id', '5'],
-        //     ['cod_causal', NULL]
-        // ])
         $this->ordenes = OrdenCompra::where([
-            ['estado_id', '!=', '6'],
-            ['estado_id', '!=', '2'],
-            ['estado_id', '!=', '3'] 
+            ['estado_id', '5'],
+            ['cod_causal', NULL]
         ])
-        // ->whereBetween('created_at', ['2025-01-01', Carbon::now()->toDateTimeString()])
-        ->whereBetween('created_at', [Carbon::now()->startOfMonth()->toDateTimeString(), Carbon::now()->toDateTimeString()])
+        ->whereBetween('created_at', ['2025-01-01', Carbon::now()->toDateTimeString()])
+        // ->whereBetween('created_at', [Carbon::now()->startOfMonth()->toDateTimeString(), Carbon::now()->toDateTimeString()])
         ->orderBy('created_at', 'desc')
         ->get();
     }

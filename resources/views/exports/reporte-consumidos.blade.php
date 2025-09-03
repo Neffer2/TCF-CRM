@@ -29,13 +29,15 @@
             <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
             <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
             <td style="text-align: center; font-weight: bold;">ESTADO</td>
-        </tr> 
+        </tr>
         @foreach ($ordenes as $orden)
             @foreach ($orden->ordenItems as $ocItem)
                 <tr>
-                    <td> 
+                    <td>
                         @if ($ocItem->OrdenCompra->tipo_oc == 1)
-                            {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }}
+                            @if ($ocItem->OrdenCompra->presupuesto->productor_info)
+                                {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }}
+                            @endif
                         @else
                             {{ $ocItem->OrdenCompra->naturalInfo->productor->name }}
                         @endif
