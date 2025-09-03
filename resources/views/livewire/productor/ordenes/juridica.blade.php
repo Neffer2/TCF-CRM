@@ -252,7 +252,7 @@
                     </div>
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
-                {{-- GOOD RECEIVE --}}
+                {{-- GOOD RECEIVE --}} 
                 <div class="row px-4">
                     @if ($orden_compra->observacion_remision)
                         <div class="col-md-12">
@@ -373,7 +373,7 @@
                 </div>
             @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6))))
                 <div class="row px-4">
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group">
                             @php
                                 $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot);
@@ -383,8 +383,6 @@
                                 <span class="btn-inner--text">Cotizaci&oacute;n.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             @php
                                 $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
@@ -394,8 +392,6 @@
                                 <span class="btn-inner--text">Orden de compra.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             @php
                                 $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision);
@@ -405,8 +401,6 @@
                                 <span class="btn-inner--text">Remisi&oacute;n.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -414,15 +408,19 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">N&uacute;m Causaci&oacute;n: @if ($orden_compra->cod_causal) {{ $orden_compra->cod_causal }}. @endif</span>
+                            </a>
+                        </div>
                         <div class="form-group">
                             @php
                                 $archivo_comprobante_pago = str_replace('public/', '', $orden_compra->archivo_comprobante_pago);

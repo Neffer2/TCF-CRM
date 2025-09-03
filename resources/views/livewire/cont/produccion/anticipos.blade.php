@@ -36,7 +36,7 @@
                 </div>
                 <div class="col-md-2">
                     <label for="estado">Estados:</label>
-                    <select id="estado" disabled class="form-control" wire:model="estado">
+                    <select id="estado" class="form-control" wire:model="estado">
                         <option value="">Seleccionar</option>
                         @foreach ($estados as $estado)
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>

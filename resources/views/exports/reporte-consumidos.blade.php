@@ -14,6 +14,8 @@
             <td style="text-align: center; font-weight: bold;">NOMBRE C.C.</td>
             <td style="text-align: center; font-weight: bold;">DESC ITEM</td>
             <td style="text-align: center; font-weight: bold;">PROVEEDOR</td>
+            <td style="text-align: center; font-weight: bold;">NIT PROVEEDOR</td>
+            <td style="text-align: center; font-weight: bold;">TIPO</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
             <td style="text-align: center; font-weight: bold;">CANT</td>
             <td style="text-align: center; font-weight: bold;">HORAS</td>
@@ -26,15 +28,16 @@
             <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
             <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
             <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
-        </tr>
+            <td style="text-align: center; font-weight: bold;">ESTADO</td>
+        </tr> 
         @foreach ($ordenes as $orden)
             @foreach ($orden->ordenItems as $ocItem)
                 <tr>
-                    <td>
+                    <td> 
                         @if ($ocItem->OrdenCompra->tipo_oc == 1)
-                            {{-- {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }} --}}
+                            {{ $ocItem->OrdenCompra->presupuesto->productor_info->name }}
                         @else
-                            {{-- {{ $ocItem->OrdenCompra->naturalInfo->productor->name }} --}}
+                            {{ $ocItem->OrdenCompra->naturalInfo->productor->name }}
                         @endif
                     </td>
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
@@ -42,9 +45,12 @@
                     <td>{{ $ocItem->desc_oc }}</td>
                     @if ($ocItem->OrdenCompra->tipo_oc == 1)
                         <td>{{ $ocItem->OrdenCompra->proveedor->tercero }}</td>
+                        <td>{{ $ocItem->OrdenCompra->proveedor->documento }}</td>
                     @else
-                        <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->nombre }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->apellido }} - {{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
+                        <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->nombre }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->apellido }}</td>
+                        <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
                     @endif
+                    <td>{{ $ocItem->OrdenCompra->tipo->description }}</td>
                     <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
                     <td>{{ $ocItem->cant_oc }}</td>
                     <td>{{ $ocItem->dias_oc }}</td>
@@ -57,6 +63,7 @@
                     <td>{{ $ocItem->created_at }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
+                    <td>{{ $ocItem->OrdenCompra->estado_oc->description }}</td>
                 </tr>
             @endforeach
         @endforeach

@@ -302,7 +302,7 @@ class Juridica extends Component
         }elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
-                'gr' => 'required|string',
+                'gr' => 'nullable|string',
                 'observaciones_remision' => 'nullable|string|max:1000'
             ]);
 
