@@ -26,7 +26,7 @@ class OrdenesCompra extends Component
     public $año;                   // ID del año para filtrar por rango de fechas
     public $tipo;                  // ID del tipo de orden de compra
     public $productor;             // ID del productor para filtrar órdenes
-    public $cedula;                // Cédula del tercero para filtrar órdenes
+    public $documento;             // Documento del tercero para filtrar órdenes
 
     // COLECCIONES PARA OPCIONES DE FILTROS
     public $estados = [];          // Lista de estados disponibles
@@ -73,13 +73,15 @@ class OrdenesCompra extends Component
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
-        // Filtro por cedula: información natural
-        if ($this->cedula) {
+        // Filtro por documento
+        if ($this->documento) {
             $ordenes = OrdenCompra::where(function($query) {
                 $query->WhereHas('naturalInfo', function ($natural) {
                     $natural->WhereHas('tercero', function ($tercero) {
-                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
+                        $tercero->where('cedula', 'LIKE', "%$this->documento%");
                     });
+                })->orWhereHas('proveedor', function ($proveedor) {
+                    $proveedor->where('documento', 'LIKE', "%$this->documento%");
                 });
             })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }

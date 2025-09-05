@@ -23,9 +23,9 @@
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" placeholder="Nueva categor&iacute;a" wire:model.lazy="nueva_categoria">
                             <button wire:click="newCategoria" class="btn btn-primary mb-0" type="button" id="button-addon2">+</button>
-                        </div>
+                        </div> 
                     </div>
-                </div>
+                </div> 
             </div>    
         </div> 
         <div class="col-md-8">

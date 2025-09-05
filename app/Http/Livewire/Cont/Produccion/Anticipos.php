@@ -10,10 +10,10 @@ use App\Models\Año;
 use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
-class Anticipos extends Component
+class Anticipos extends Component 
 {
     // Variables para filtros y búsqueda
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $cedula;
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
 
     // Listas para selects y filtros
     public $estados = [], $años = [], $tipos = [], $productores = [];
@@ -53,13 +53,15 @@ class Anticipos extends Component
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
-        // Filtro por cedula: información natural
-        if ($this->cedula) {
+        // Filtro por documento
+        if ($this->documento) {
             $ordenes = OrdenCompra::where(function($query) {
                 $query->WhereHas('naturalInfo', function ($natural) {
                     $natural->WhereHas('tercero', function ($tercero) {
-                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
+                        $tercero->where('cedula', 'LIKE', "%$this->documento%");
                     });
+                })->orWhereHas('proveedor', function ($proveedor) {
+                    $proveedor->where('documento', 'LIKE', "%$this->documento%");
                 });
             })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }

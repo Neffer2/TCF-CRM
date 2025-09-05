@@ -350,6 +350,34 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label for="tipo_cuenta">Tipo de cuenta: @guest <span class="text-danger">*</span> @endguest</label>
+                                <select id="tipo_cuenta" class="form-control @error('tipo_cuenta') is-invalid @elseif(strlen($tipo_cuenta) > 0) is-valid @enderror"
+                                    wire:model.change="tipo_cuenta">
+                                    <option value="">Seleccionar</option>
+                                    <option value="AHORROS">AHORROS</option>
+                                    <option value="CORRIENTE">CORRIENTE</option>
+                                </select>
+                                @error('tipo_cuenta')
+                                    <div id="tipo_cuenta" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="num_cuenta">N&uacute;mero de cuenta: <span class="text-danger">*</span></label>
+                                <input id="num_cuenta" type="text" class="form-control @error('num_cuenta') is-invalid @elseif(strlen($num_cuenta) > 0) is-valid @enderror"
+                                wire:model.change="num_cuenta" placeholder="N&uacute;mero de cuenta">
+                                @error('num_cuenta')
+                                    <div id="num_cuenta" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="">Fotocopia c&eacute;dula: @guest <span class="text-danger">*</span>@endguest</label>
                                 <input type="file" class="form-control @error('copia_cedula') is-invalid @elseif(strlen($copia_cedula) > 0) is-valid @enderror"
                                 wire:model.change="copia_cedula">

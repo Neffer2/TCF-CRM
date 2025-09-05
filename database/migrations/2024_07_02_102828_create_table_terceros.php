@@ -17,12 +17,14 @@ class CreateTableTerceros extends Migration
             $table->id();
             $table->string('nombre')->nullable();
             $table->string('apellido')->nullable();
-            $table->string('cedula')->nullable();
+            $table->string('cedula')->nullable(); 
             $table->string('correo')->nullable();
             $table->string('telefono')->nullable();
             $table->string('servicio')->nullable();
             $table->string('ciudad')->nullable();
             $table->string('banco')->nullable();
+            $table->string('tipo_cuenta')->nullable();
+            $table->string('num_cuenta')->nullable();
             $table->string('num_rut')->nullable();
             $table->string('rut')->nullable();
             $table->string('cert_bancaria')->nullable();

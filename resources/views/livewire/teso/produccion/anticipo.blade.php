@@ -73,13 +73,20 @@
                             <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Orden de compra.</span>
-                            </a>
+                            </a> 
                             <br>
                             @if ($orden->tipo_oc == 2)
-                                <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
-                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                    <span class="btn-inner--text">Certificación bancaria.</span>
-                                </a>
+                                <p>
+                                    <br>
+                                    <strong>Banco:</strong>{{ $orden->naturalInfo->tercero->banco }}<br>
+                                    <strong>Tipo de cuenta:</strong> {{ $orden->naturalInfo->tercero->tipo_cuenta }}<br>
+                                    <strong>N&uacute;mero de cuenta:</strong> {{ $orden->naturalInfo->tercero->num_cuenta }}<br>
+                                    <strong>Titular de la cuenta:</strong> {{ $orden->naturalInfo->tercero->titular_cuenta }}<br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Certificación bancaria.</span>
+                                    </a>
+                                </p>
                                 @if ($orden->naturalInfo->tercero->art383)
                                     <br>
                                     <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">

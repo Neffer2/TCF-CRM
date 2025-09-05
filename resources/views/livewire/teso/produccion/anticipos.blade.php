@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-md-2">
                     <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model="cedula" class="form-control" placeholder="Cédula tercero">
+                        <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
                     </div>
                     <div class="col-md-2">
                         <label for="productor">Productor:</label>
@@ -52,7 +52,7 @@
                             <option value="desc">M&aacute;s recientes</option>
                         </select>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-1"> 
                         <label for="Tipo">Tipo:</label>
                         <select id="Tipo" class="form-control" wire:model="tipo">
                             <option value="">Seleccionar</option>
@@ -97,26 +97,49 @@
                                 <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">Proveedor</p>
-                                <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
-                            </td>
-                            <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
                                 <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
                             </td>
                             <td>
+                                <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                <span class="text-xs text-secondary mb-1">{{ $orden->proveedor->tercero }} </span>
+                                <p class="text-xs font-weight-bold mb-0">Nit</p>
+                                <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->documento }} </span>
+                            </td>
+                            <td>
                                 <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
-                            </td>
-                            <td>
+                                <p class="text-xs text-secondary mb-1">{{ $orden->presupuesto->gestion->comercial->name }}</p>
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                @if ($orden->presupuesto->productor_info)
-                                    <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p>
-                                @endif
+                                @if($orden->presupuesto->productor_info) <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->productor_info->name }}</p> @endif
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">Fecha aprobaci&oacute;n</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->updated_at }}</p>
+                                <p class="text-xs font-weight-bold mb-0">Good Receive (GR)</p>
+                                <p class="text-xs text-secondary mb-1">{{ $orden->gr }}</p>
+
+                                <p class="text-xs font-weight-bold mb-0">Causaci&oacute;n</p>
+                                <p class="text-xs text-secondary mb-1">{{ $orden->cod_causal }}</p>
+                                {{-- <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}
+                                    @if ($orden->estado_oc->id == 2)
+                                        <span class="badge badge-sm bg-gradient-warning">CONTROLLER</span>
+                                    @elseif ($orden->estado_oc->id == 7)
+                                        <span class="badge badge-sm bg-gradient-warning">TERCERO</span>
+                                    @elseif ($orden->estado_oc->id == 5 && !($orden->cod_causal))
+                                        <span class="badge badge-sm bg-gradient-warning">CONTABILIDAD</span>
+                                    @elseif ($orden->estado_oc->id == 5 && $orden->cod_causal && !($orden->archivo_comprobante_pago))
+                                        <span class="badge badge-sm bg-gradient-warning">TESORER&Iacute;A</span>
+                                    @elseif ($orden->archivo_comprobante_pago)
+                                        <span class="badge badge-sm bg-gradient-success">PAGADA</span>
+                                    @endif
+                                </p> --}}
+                            </td>
+                            {{-- <td>
+                                <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (Producci&oacute;n)</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                            </td> --}}
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Fecha aprobaci&oacute;n (Controller)</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
                                 @if (!$orden->archivo_comprobante_pago)
@@ -151,20 +174,46 @@
                                 <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
                             </td>
                             <td>
-                                <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                <span class="text-xs text-secondary mb-1">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                <p class="text-xs font-weight-bold mb-0">Documento</p>
+                                <span class="text-xs text-secondary mb-1">{{ $orden->naturalInfo->tercero->cedula }}</span>
                             </td>
-                            <td>
+                            {{-- <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
-                            </td>
+                            </td> --}}
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p> 
                             </td>
-                            <td colspan="2">
+                            {{-- <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}
+                                    @if ($orden->estado_oc->id == 2)
+                                        <span class="badge badge-sm bg-gradient-warning">CONTROLLER</span>
+                                    @elseif ($orden->estado_oc->id == 7)
+                                        <span class="badge badge-sm bg-gradient-warning">TERCERO</span>
+                                    @elseif ($orden->estado_oc->id == 5 && !($orden->cod_causal))
+                                        <span class="badge badge-sm bg-gradient-warning">CONTABILIDAD</span>
+                                    @elseif ($orden->estado_oc->id == 5 && $orden->cod_causal && !($orden->archivo_comprobante_pago))
+                                        <span class="badge badge-sm bg-gradient-warning">TESORER&Iacute;A</span>
+                                    @elseif ($orden->archivo_comprobante_pago)
+                                        <span class="badge badge-sm bg-gradient-success">PAGADA</span>
+                                    @endif
+                                </p>
+                            </td> --}}
+                            {{-- <td>
+                                <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (Producci&oacute;n)</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                            </td> --}}
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Causaci&oacute;n</p>
+                                <p class="text-xs text-secondary mb-1">{{ $orden->cod_causal }}</p>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">Fecha aprobaci&oacute;n (Controller)</p>
+                                <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
                                 @if (!$orden->archivo_comprobante_pago)

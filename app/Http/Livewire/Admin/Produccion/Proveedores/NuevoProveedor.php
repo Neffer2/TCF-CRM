@@ -10,7 +10,7 @@ use App\Models\Proveedor;
  * Componente Livewire para crear y editar proveedores
  * Maneja el formulario completo de proveedores con validación en tiempo real
  */
-class NuevoProveedor extends Component
+class NuevoProveedor extends Component 
 {
     // PROPIEDADES DEL MODELO PROVEEDOR
     public $categoria;              // ID de la categoría del proveedor
@@ -48,7 +48,7 @@ class NuevoProveedor extends Component
     // PROPIEDADES DE CONTROL
     public $proveedor_id;           // ID del proveedor cuando se está editando
 
-    /**
+    /** 
      * Renderiza la vista del componente
      * @return \Illuminate\View\View
      */

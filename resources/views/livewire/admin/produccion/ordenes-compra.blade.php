@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model="cedula" class="form-control" placeholder="Cédula tercero">
+                        <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
                     </div>
                     <div class="col-md-2">
                         <label for="productor">Productor:</label>

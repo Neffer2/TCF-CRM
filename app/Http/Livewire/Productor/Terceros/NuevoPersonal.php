@@ -27,7 +27,9 @@ class NuevoPersonal extends Component
 
     // Modelos y campos del formulario
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383, $planilla_aportes;
+    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx,
+    $copia_cedula, $num_rut, $servicio, $art383, $check_art383,
+    $planilla_aportes, $tipo_cuenta, $num_cuenta;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -148,13 +150,15 @@ class NuevoPersonal extends Component
             'telefono' => 'required|numeric',
             'ciudad' => 'required|string',
             'servicio' => 'required|string',
-            'estado' => 'required|numeric|max:1',
+            'estado' => 'required|numeric|max:1'
         ]);
 
         // Si no está autenticado, exige más campos
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required|string|max:255',
+                'tipo_cuenta' => 'required|string|max:255',
+                'num_cuenta' => 'required|string|max:255',  
                 'contrato' => 'required|string',
                 'terminos' => 'required|accepted'
             ]);
@@ -170,6 +174,8 @@ class NuevoPersonal extends Component
         $tercero->ciudad = $this->ciudad;
         $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
+        $tercero->tipo_cuenta = $this->tipo_cuenta;
+        $tercero->num_cuenta = $this->num_cuenta;
 
         // Banco
         if($this->banco){
@@ -194,7 +200,7 @@ class NuevoPersonal extends Component
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
- 
+  
         // Planilla de aportes
         if (!$tercero->planilla_aportes && !Auth::check()){
             $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
@@ -269,6 +275,8 @@ class NuevoPersonal extends Component
             'ciudad' => 'required|string',
             'estado' => 'required|numeric|max:1',
             'banco' => 'required|string|max:255',
+            'num_cuenta' => 'required|string|max:255',
+            'tipo_cuenta' => 'required|string|max:255'
         ]);
 
         // Validaciones de archivos requeridos
