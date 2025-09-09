@@ -21,7 +21,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
 
         $this->ordenes = OrdenCompra::whereIn('estado_id', [5, 2])
             ->where('cod_causal', NULL)
-            ->whereBetween('created_at', ['2025-01-01', Carbon::now()->toDateTimeString()])
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->toDateTimeString(), Carbon::now()->toDateTimeString()])
             // ->whereBetween('created_at', [Carbon::now()->startOfMonth()->toDateTimeString(), Carbon::now()->toDateTimeString()])
             ->orderBy('created_at', 'desc')
             ->get();
