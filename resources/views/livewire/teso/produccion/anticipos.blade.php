@@ -243,6 +243,14 @@
                     </tr>
                 </tbody>
             </table>
+        </div> 
+        <div class="row p-2">
+            <div class="col-md-12">
+                <button wire:click="reporteExcel" class="btn bg-gradient-warning" wire:loading.attr="disabled">Generar Reporte</button>
+                <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
         </div>
     </div>
     @if (session('success'))

@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="store"wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como pagado</button>
+                        <button wire:click="store" wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como pagado</button>
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>
@@ -76,31 +76,30 @@
                             </a> 
                             <br>
                             @if ($orden->tipo_oc == 2)
-                                <p>
-                                    <br>
-                                    <strong>Banco:</strong>{{ $orden->naturalInfo->tercero->banco }}<br>
-                                    <strong>Tipo de cuenta:</strong> {{ $orden->naturalInfo->tercero->tipo_cuenta }}<br>
-                                    <strong>N&uacute;mero de cuenta:</strong> {{ $orden->naturalInfo->tercero->num_cuenta }}<br>
-                                    <strong>Titular de la cuenta:</strong> {{ $orden->naturalInfo->tercero->titular_cuenta }}<br>
-                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
-                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                        <span class="btn-inner--text">Certificación bancaria.</span>
-                                    </a>
-                                </p>
                                 @if ($orden->naturalInfo->tercero->art383)
-                                    <br>
                                     <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Certificación Art. 383.</span>
                                     </a>
+                                    <br>
                                 @endif
                                 @if ($orden->naturalInfo->tercero->planilla_aportes)
-                                    <br>
                                     <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">
                                         <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                         <span class="btn-inner--text">Planilla de Aportes.</span>
                                     </a>
+                                    <br>
                                 @endif
+                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Certificación bancaria.</span>
+                                    </a>
+                                <p>
+                                    <br>
+                                    <strong>Banco:</strong> {{ $orden->naturalInfo->tercero->banco }}<br>
+                                    <strong>Tipo de cuenta:</strong> {{ $orden->naturalInfo->tercero->tipo_cuenta }}<br>
+                                    <strong>N&uacute;mero de cuenta:</strong> {{ $orden->naturalInfo->tercero->num_cuenta }}<br>
+                                </p>
                             @endif
                         </div>
                     </div>

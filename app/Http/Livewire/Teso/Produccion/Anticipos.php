@@ -2,9 +2,11 @@
 
 namespace App\Http\Livewire\Teso\Produccion;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrdenesTesoreria;
 use Livewire\Component;
 use App\Models\OrdenCompra;
-use App\Models\EstadoOrdenesCompra;
+use App\Models\EstadoOrdenesCompra; 
 use Livewire\WithPagination;
 use App\Models\Año;
 use App\Models\User;
@@ -84,6 +86,10 @@ class Anticipos extends Component
         // Retorna la vista con las órdenes filtradas y paginadas
         return view('livewire.teso.produccion.anticipos', ['ordenes' => $ordenes]);
     }
+
+    public function reporteExcel(){
+        return Excel::download(new OrdenesTesoreria($this->yearInfo), "reporte_ordenes_tesoreria.xlsx");
+    } 
 
     // Método que se ejecuta al montar el componente, carga los catálogos y valores iniciales
     public function mount(){
