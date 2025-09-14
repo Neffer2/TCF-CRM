@@ -107,7 +107,7 @@ Route::get('/', function () {
     Route::get('/orden-compra-natural/{orden_id?}', function ($orden_id = null){
         return view('productor.terceros.orden-compra-natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
-
+    Route::view('/anticipo', 'productor.ordenes.anticipo')->middleware(['auth'])->middleware(['productor'])->name('anticipo-prod');
 /* --- */
 
 /* Contabilidad */
