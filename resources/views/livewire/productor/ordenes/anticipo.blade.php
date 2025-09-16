@@ -11,28 +11,28 @@
                             <table class="table mb-1">
                                 <tr style="height: 35px;">
                                     <td class="font-weight-bold">Cliente:</td>
-                                    {{-- <td>{{ $presupuesto->gestion->contacto->empresa }}</td> --}}
+                                    @if ($orden)
+                                        <td>{{ $orden->presupuesto->gestion->contacto->empresa }}</td>
+                                    @endif
                                 </tr>
                                 <tr style="height: 35px;">
                                     <td class="font-weight-bold">Proyecto:</td>
-                                    {{-- <td>{{ $presupuesto->gestion->nom_proyecto_cot }}</td> --}}
+                                    @if ($orden)
+                                        <td>{{ $orden->presupuesto->gestion->nom_proyecto_cot }}</td>
+                                    @endif
                                 </tr>
                                 <tr style="height: 35px;">
                                     <td class="font-weight-bold">Centro de Costos:</td>
-                                    {{-- <td>{{ $presupuesto->cod_cc }}</td> --}}
+                                    @if ($orden)
+                                        <td>{{ $orden->presupuesto->cod_cc }}</td>
+                                    @endif
                                 </tr>
                                 <tr style="height: 35px;">
                                     <td class="font-weight-bold">Ciudad:</td>
-                                    {{-- <td>{{ $presupuesto->presupuestoItems[0]->ciudad }}</td> --}}
+                                    @if ($orden)
+                                        <td>{{ $orden->presupuesto->presupuestoItems[0]->ciudad }}</td>
+                                    @endif
                                 </tr>
-                                {{-- @if ($justificacion_rechazo && Auth::user()->rol != 1 && $orden_compra->estado_id == 3)
-                                    <tr style="height: 35px;">
-                                        <td class="font-weight-bold">Jutificacion de rechazo:</td>
-                                        <td>
-                                            <textarea disabled cols="30" rows="2">{{ $justificacion_rechazo }}</textarea>
-                                        </td>
-                                    </tr>
-                                @endif --}}
                             </table>
                         </div> 
                     </div>
@@ -41,23 +41,14 @@
                             <table class="table mb-1">
                                 <tr>
                                     <td>
-                                        {{-- <div class="form-group m-0">
-                                            <label for="proveedor"><b>Proveedor:</b> @if ($proveedor)
-                                                {{ $proveedores->where('id', $proveedor)->first()->tercero }}
-                                            @endif </label>
-                                            <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
-                                                @foreach ($proveedores as $proveedor_info)
-                                                    @if ($proveedor_info)
-                                                        <option value="{{ $proveedor_info->id }}"> • {{ $proveedor_info->tercero }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
+                                        <div class="form-group m-0">
+                                            <label for="proveedor"><b>Proveedor:</b>
+                                                @if ($orden)
+                                                    {{ $orden->proveedor->tercero }}
+                                                @endif      
+                                            </label>
+                                            <textarea class="form-control" disabled>@if ($orden) {{ $orden->proveedor->OrdenCompra->last()->observaciones_negociacion }} @endif</textarea>
                                         </div>
-                                        @error('proveedor')
-                                            <div id="proveedor" class="text-invalid">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror --}}
                                     </td>
                                 </tr>
                             </table>
@@ -77,35 +68,24 @@
                                         <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
-                                        @if (Auth::user()->rol != 1)
-                                            <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
-                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @foreach ($ocItems as $item)
-                                        <tr>
-                                            <td class="text-center">{{ $item['displayItem'] }}</td>
-                                            <td class="text-center">{{ $item['cant'] }}</td>
-                                            <td class="text-center">{{ $item['dias'] }}</td>
-                                            <td class="text-center">{{ $item['otros'] }}</td>
-                                            <td>
-                                                <textarea disabled cols="30" rows="1">{{ $item['desc'] }}</textarea>
-                                            </td>
-                                            <td class="text-center">{{ number_format($item['vUnit']) }}</td>
-                                            <td class="text-center">{{ number_format($item['vTotal']) }}</td>
-                                            @if (Auth::user()->rol != 1)
-                                                <td class="d-flex justify-content-center" style="padding: 11px;">
-                                                    <button class="me-2" wire:click="delete({{ $item['id'] }})">
-                                                        ✖️
-                                                    </button>
-                                                    <button class="" wire:click="getSelectedItem({{ $item['id'] }})">
-                                                        📝
-                                                    </button>
+                                    @if ($orden)
+                                        @foreach ($orden->ordenItems as $item)
+                                            <tr>
+                                                <td class="text-center">{{ $item->display_item }}</td>
+                                                <td class="text-center">{{ $item->cant_oc }}</td>
+                                                <td class="text-center">{{ $item->dias_oc }}</td>
+                                                <td class="text-center">{{ $item->otros_oc }}</td>
+                                                <td>
+                                                    <textarea disabled cols="30" rows="1">{{ $item->desc_oc }}</textarea>
                                                 </td>
-                                            @endif
-                                        </tr>
-                                    @endforeach --}}
+                                                <td class="text-center">{{ number_format($item->vunit_oc) }}</td>
+                                                <td class="text-center">{{ number_format($item->vtotal_oc) }}</td>
+                                            </tr>
+                                        @endforeach                                        
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -145,9 +125,9 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="observaciones">% Anticipo:</label>
-                                        <textarea name="observaciones" id="observaciones" class="form-control" wire:model="observaciones" cols="100" rows="2"></textarea>
-                                        @error('observaciones')
-                                            <div id="observaciones" class="text-invalid">
+                                        <input type="number" name="porcentaje_anticipo" id="porcentaje_anticipo" class="form-control" wire:model="porcentaje_anticipo" min="0" max="100" step="1">
+                                        @error('porcentaje_anticipo')
+                                            <div id="porcentaje_anticipo" class="text-invalid">
                                                 {{ $message }}
                                             </div>
                                         @enderror
@@ -155,14 +135,19 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="observaciones">Total:</label>
-                                        <textarea name="observaciones" id="observaciones" class="form-control" wire:model="observaciones" cols="100" rows="2"></textarea>
-                                        @error('observaciones')
-                                            <div id="observaciones" class="text-invalid">
+                                        <label for="total_anticipo">Total:</label>
+                                        <input type="text" class="form-control" disabled @if($orden_compra && $porcentaje_anticipo) value="{{ number_format(($ordenes->find($orden_compra)->ordenItems->sum('vtotal_oc') * $porcentaje_anticipo) / 100) }}" @endif>
+                                        @error('total_anticipo')
+                                            <div id="total_anticipo" class="text-invalid">
                                                 {{ $message }}
                                             </div>
                                         @enderror
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn bg-gradient-primary" wire:click="nuevoAnticipo">Crear Anticipo</button>
                                 </div>
                             </div>
                         </div>

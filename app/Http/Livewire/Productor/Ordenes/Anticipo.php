@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Auth;
 class Anticipo extends Component
 {
     // Models 
-    public $orden_compra;
+    public $orden_compra, $porcentaje_anticipo, $total_anticipo;
 
     // Useful vars
-    public $ordenes = [];
+    public $orden, $ordenes = [];
 
     public function render()
     {
@@ -40,6 +40,24 @@ class Anticipo extends Component
             ->get();
 
             $this->ordenes = $ordenes;
+    }
+
+    public function nuevoAnticipo(){
+        $this->validate([
+            'orden_compra' => 'required|unique:anticipos,oc_id',
+            'orden' => 'required',
+            'porcentaje_anticipo' => 'required|numeric|min:0|max:100',
+            'total_anticipo' => 'required|numeric|min:0',
+        ]);
+
+        // Logic to create a new anticipo
+
+        $this->reset(['orden_compra', 'porcentaje_anticipo', 'total_anticipo', 'orden']);
+    }
+
+    // Updates
+    public function updatedOrdenCompra(){
+        $this->orden = $this->ordenes->find($this->orden_compra);
     }
 }
     
