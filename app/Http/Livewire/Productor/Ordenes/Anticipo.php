@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Productor\Ordenes;
 
 use Livewire\Component;
 use App\Models\OrdenCompra;
+use App\Models\Anticipo as ModelAnticipo;
 use Illuminate\Support\Facades\Auth;
 
 class Anticipo extends Component
@@ -36,6 +37,7 @@ class Anticipo extends Component
                 ['estado_id', 1],
                 ['tipo_oc', 1]
             ])
+            ->whereDoesntHave('anticipos')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -50,14 +52,30 @@ class Anticipo extends Component
             'total_anticipo' => 'required|numeric|min:0',
         ]);
 
-        // Logic to create a new anticipo
+        ModelAnticipo::create([
+            'oc_id' => $this->orden_compra,
+            'porcentaje_anticipo' => $this->porcentaje_anticipo,
+            'total_anticipo' => $this->total_anticipo,
+            'estado_id' => 2,
+            'fecha_solicitud' => now(),
+            'productor_id' => Auth::user()->id,
+        ]); 
 
         $this->reset(['orden_compra', 'porcentaje_anticipo', 'total_anticipo', 'orden']);
+        return redirect()->back()->with('success', 'Anticipo creado'); 
     }
 
     // Updates
     public function updatedOrdenCompra(){
         $this->orden = $this->ordenes->find($this->orden_compra);
+    }
+
+    public function updatedPorcentajeAnticipo(){
+        if($this->orden && $this->porcentaje_anticipo){
+            $this->total_anticipo = ($this->orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
+        } else {
+            $this->total_anticipo = null;
+        }   
     }
 }
     

@@ -136,7 +136,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="total_anticipo">Total:</label>
-                                        <input type="text" class="form-control" disabled @if($orden_compra && $porcentaje_anticipo) value="{{ number_format(($ordenes->find($orden_compra)->ordenItems->sum('vtotal_oc') * $porcentaje_anticipo) / 100) }}" @endif>
+                                        <input type="text" class="form-control" wire:model="total_anticipo" disabled x-mask:dynamic="$money($input)">
                                         @error('total_anticipo')
                                             <div id="total_anticipo" class="text-invalid">
                                                 {{ $message }}
@@ -635,4 +635,16 @@
             </div>
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+            );
+
+            let file = document.getElementById('cotizacion');
+            file.value = "";
+        </script>
+    @endif
 </div>

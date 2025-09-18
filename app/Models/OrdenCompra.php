@@ -45,4 +45,8 @@ class OrdenCompra extends Model
     public function evidencias(){
         return $this->hasMany(Evidencia::class, 'oc_id', 'id');
     }
+
+    public function anticipos(){
+        return $this->hasMany(Anticipo::class, 'oc_id', 'id');
+    }
 }
