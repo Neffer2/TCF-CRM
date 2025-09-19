@@ -133,6 +133,38 @@
             </div>
         </li>
         <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-money-coins text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Anticipos</span>
+          </a>
+
+          <div @class([
+            'collapse' => true,
+            'show' => (request()->is('anticipo') ||
+                        request()->is('lista-anticipos'))]) id="anticipos">
+                <ul class="nav nav-sm flex-column">
+                    <li @class(['active' => request()->is('anticipo'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('anticipo'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('anticipo-prod') }}">
+                        <span class="sidenav-mini-icon"> NA </span>
+                        <span class="sidenav-normal"> Nuevo Anticipo </span>
+                    </a>
+                    </li>
+                    <li @class(['active' => request()->is('lista-anticipos'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('lista-anticipos'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('anticipos-prod') }}">
+                        <span class="sidenav-mini-icon"> MA </span>
+                        <span class="sidenav-normal"> Mis Anticipos </span>
+                    </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-settings text-secondary text-sm opacity-10"></i>

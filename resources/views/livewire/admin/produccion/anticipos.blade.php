@@ -38,7 +38,7 @@
             <table class="table align-items-center mb-0">
                 <thead>
                     <tr>
-                        <th colspan="7" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DEL ANTICIPO</th>
+                        <th colspan="8" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DEL ANTICIPO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,6 +89,11 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $anticipo->fecha_solicitud }}</p>
+                            </td>
+                            <td class="">
+                                <a href="{{ route('anticipo-admin', ['anticipo_id' => $anticipo->id]) }}" class="btn bg-gradient-primary mb-0" title="Ver detalle" data-toggle="tooltip" target="_blank">
+                                    Ver
+                                </a>
                             </td>
                         </tr>
                     @endforeach

@@ -45,7 +45,13 @@
             <ul class="nav ms-4">
               <li class="nav-item">
                 <a class="nav-link" href="{{ route('anticipos') }}">   
-                  <span class="sidenav-mini-icon text-xs"> A </span>
+                  <span class="sidenav-mini-icon text-xs"> OC's </span>
+                  <span class="sidenav-normal"> Ordenes de compra </span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('lista-anticipos-tesoreria') }}">
+                  <span class="sidenav-mini-icon text-xs"> AN </span>
                   <span class="sidenav-normal"> Anticipos </span>
                 </a>
               </li>

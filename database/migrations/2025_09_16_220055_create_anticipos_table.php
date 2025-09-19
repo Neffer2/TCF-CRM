@@ -24,6 +24,14 @@ class CreateAnticiposTable extends Migration
             $table->string('justificacion_rechazo')->nullable();
             $table->foreignId('productor_id');
             $table->foreign('productor_id')->references('id')->on('users');
+
+            $table->string('cod_causal')->nullable();
+            $table->text('observacion_causal')->nullable();
+            $table->dateTime('fecha_causal')->nullable();
+
+            $table->string('comprobante_pago')->nullable();
+            $table->dateTime('fecha_comprobante_pago')->nullable();
+
             $table->foreignId('estado_id')->default(2);
             $table->foreign('estado_id')->references('id')->on('estados_ordenes_compra');
             $table->timestamps();

@@ -57,6 +57,12 @@ Route::get('/', function () {
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
 
     Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
+
+    Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth'])->middleware(['admin'])->name('anticipos-admin');
+
+    Route::get('/anticipo-admin/{anticipo_id?}', function ($anticipo_id){
+        return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth'])->middleware(['admin'])->name('anticipo-admin');
 /* --- */
 
 /* commercial */
@@ -115,12 +121,24 @@ Route::get('/', function () {
     Route::get('/dashboard-contabilidad', [ContabilidadController::class, 'index'])->middleware(['auth'])->middleware(['contabilidad'])->name('dashboard-contabilidad');
     Route::get('/anticipos-contabilidad', [ContabilidadController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipos-contabilidad');
     Route::get('/anticipo-contabilidad/{orden?}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
+
+    Route::view('/lista-anticipos-contabilidad', 'contabilidad.anticipos_.index')->middleware(['auth'])->middleware(['contabilidad'])->name('lista-anticipos-contabilidad');
+
+    Route::get('/detalle-anticipo-contabilidad/{anticipo_id?}', function ($anticipo_id){
+        return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
 
 /* Tesoreria */
     Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
     Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
+
+    Route::view('/lista-anticipos-tesoreria', 'tesoreria.anticipos_.index')->middleware(['auth'])->middleware(['tesoreria'])->name('lista-anticipos-tesoreria');
+
+    Route::get('/detalle-anticipo-tesoreria/{anticipo_id?}', function ($anticipo_id){
+        return view('tesoreria.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth'])->middleware(['tesoreria'])->name('detalle-anticipo-tesoreria');
 /* --- */
 
 /* PÚBLICO */

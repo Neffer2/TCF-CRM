@@ -13,15 +13,23 @@ class Anticipo extends Component
     public $orden_compra, $porcentaje_anticipo, $total_anticipo;
 
     // Useful vars
-    public $orden, $ordenes = [];
+    public $orden, $ordenes = [], $queriedAnticipo;
+
+    // Filled
+    public $anticipo_id;
 
     public function render()
     {
         return view('livewire.productor.ordenes.anticipo');
-    }
+    } 
 
     public function mount(){
-        $this->getOrdenes();
+        if ($this->anticipo_id) {
+            $this->queriedAnticipo = ModelAnticipo::find($this->anticipo_id);
+            $this->setData();
+        }else {
+            $this->getOrdenes();
+        }
     }
 
     public function getOrdenes(){
@@ -41,7 +49,7 @@ class Anticipo extends Component
             ->orderBy('created_at', 'desc')
             ->get();
 
-            $this->ordenes = $ordenes;
+        $this->ordenes = $ordenes;
     }
 
     public function nuevoAnticipo(){
@@ -62,7 +70,37 @@ class Anticipo extends Component
         ]); 
 
         $this->reset(['orden_compra', 'porcentaje_anticipo', 'total_anticipo', 'orden']);
-        return redirect()->back()->with('success', 'Anticipo creado'); 
+        return redirect()->route('anticipo-prod')->with('success', 'Anticipo creado'); 
+    }
+
+    public function setData(){
+        if($this->queriedAnticipo){
+            $this->orden_compra = $this->queriedAnticipo->oc_id;
+            $this->orden = OrdenCompra::find($this->orden_compra);
+            $this->porcentaje_anticipo = $this->queriedAnticipo->porcentaje_anticipo;
+            $this->total_anticipo = $this->queriedAnticipo->total_anticipo;
+        }
+    }
+
+    public function ActualizarAnticipo(){
+        $this->validate([
+            'orden_compra' => 'required|unique:anticipos,oc_id,'.$this->anticipo_id,
+            'orden' => 'required',
+            'porcentaje_anticipo' => 'required|numeric|min:0|max:100',
+            'total_anticipo' => 'required|numeric|min:0',
+        ]);
+
+        if($this->queriedAnticipo){
+            $this->queriedAnticipo->update([
+                'oc_id' => $this->orden_compra,
+                'porcentaje_anticipo' => $this->porcentaje_anticipo,
+                'estado_id' => 1,
+                'fecha_aprobacion' => now(),
+                'total_anticipo' => $this->total_anticipo,
+            ]); 
+
+            return redirect()->route('anticipos-admin')->with('success', 'Anticipo aprobado');
+        }
     }
 
     // Updates

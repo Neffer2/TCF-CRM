@@ -49,6 +49,12 @@
                   <span class="sidenav-normal"> Ordenes de compra </span>
                 </a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('lista-anticipos-contabilidad') }}">
+                  <span class="sidenav-mini-icon text-xs"> AN </span>
+                  <span class="sidenav-normal"> Anticipos </span>
+                </a>
+              </li>
             </ul>
           </div>
         </li>

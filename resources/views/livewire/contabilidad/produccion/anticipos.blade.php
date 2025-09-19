@@ -38,7 +38,7 @@
             <table class="table align-items-center mb-0">
                 <thead>
                     <tr>
-                        <th colspan="7" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DEL ANTICIPO</th>
+                        <th colspan="8" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DEL ANTICIPO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,6 +90,11 @@
                                 <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                 <p class="text-xs text-secondary mb-0">{{ $anticipo->fecha_solicitud }}</p>
                             </td>
+                            <td class=""> 
+                                <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('detalle-anticipo-contabilidad', ['anticipo_id' => $anticipo->id]) }}" target="_blank" title="Ver detalle del anticipo">
+                                    Causar
+                                </a> 
+                            </td> 
                         </tr>
                     @endforeach
                     <tr>
@@ -105,5 +110,5 @@
             </table>
         </div>
     </div>
-</div>
+</div> 
 
