@@ -33,7 +33,7 @@
                                 </tr>
                             @endif
                         </table>
-                    </div> 
+                    </div>
                 </div>
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
@@ -150,7 +150,7 @@
                             <div class="form-group">
                                 <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
                                 <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
-                                @error('observaciones_negociacion') 
+                                @error('observaciones_negociacion')
                                     <div id="observaciones_negociacion" class="text-invalid">
                                         {{ $message }}
                                     </div>
@@ -252,16 +252,14 @@
                     </div>
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
-                {{-- GOOD RECEIVE --}} 
+                {{-- GOOD RECEIVE --}}
                 <div class="row px-4">
-                    @if ($orden_compra->observacion_remision)
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="">Observaciones: </label>
-                                <textarea wire:model="observaciones_remision" class="form-control"></textarea>
-                            </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="">Observaciones: </label>
+                            <textarea disabled class="form-control">{{ $orden_compra->observacion_remision }}</textarea>
                         </div>
-                    @endif
+                    </div>
                     <div class="row mb-3" x-data="{ accion: true }" x-cloak>
                         <div class="col-md-2">
                             <div class="form-group">

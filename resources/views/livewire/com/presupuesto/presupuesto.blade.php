@@ -362,7 +362,7 @@
                                 <option value="">Seleccionar</option>
                                 <option value="0">---- Sin tarifario ----</option>
                                 @foreach ($tarifario as $item)
-                                    <option value="{{ $item->id }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
+                                    <option value="{{ $item->id }}" title="{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}">{{ $item->concepto }} {{ $item->caso }} - {{ number_format($item->v_unidad) }}</option>
                                 @endforeach
                             </select>
                             @error('cod')
