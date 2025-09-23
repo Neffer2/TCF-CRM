@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
-  <meta charset="utf-8" /> 
+<head>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   @livewireStyles
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
@@ -9,12 +9,12 @@
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
     Comercial - {{ Auth::user()->name}}
-  </title> 
+  </title>
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/9c37d8ebcb.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -28,7 +28,7 @@
     .valid-input {
       border: 2px solid green;
     }
-    
+
     .item-table-background-tarifario {
       background-image: linear-gradient(310deg, rgba(17, 113, 239, .1) 0%, rgba(17, 205, 239, .5) 100%)
 
@@ -87,8 +87,8 @@
                     <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                       <i class="ni ni-button-power"></i>
                       <span class="d-sm-inline d-none">Salir</span>
-                    </a>  
-                  </form>    
+                    </a>
+                  </form>
                 @endauth
                 @guest
                   <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -112,9 +112,9 @@
       </nav>
       <!-- End Navbar -->
       @yield('profile-card')
-        <div class="container-fluid py-4"> 
+        <div class="container-fluid py-4">
       @yield('content')
-        
+
         <footer class="footer pt-3  ">
           <div class="container-fluid">
             <div class="row align-items-center justify-content-lg-between">
@@ -129,7 +129,7 @@
               </div>
             </div>
           </div>
-        </footer>  
+        </footer>
       </div>
     </div>
     <div class="fixed-plugin">
@@ -181,7 +181,7 @@
             <div class="form-check form-switch ps-0 ms-auto my-auto">
               <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
             </div>
-          </div> 
+          </div>
           <hr class="horizontal dark mb-1">
           <div class="d-flex my-4">
             <h6 class="mb-0">Sidenav Mini</h6>
@@ -233,19 +233,19 @@
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
     </script>
-    @if($errors->any()) 
+    @if($errors->any())
       <script>
         Swal.fire(
           '!Oppss tenemos un problema',
           `<ul style='text-align: initial; list-style-type: none;'>
-            @foreach($errors->all() as $error) 
+            @foreach($errors->all() as $error)
               <li>{{ $error }}<li>
             @endforeach
-          </ul>`, 
+          </ul>`,
           'error'
         );
       </script>
-    @endif 
+    @endif
     @if (session('success'))
       <script>
         Swal.fire(
@@ -254,7 +254,7 @@
           'success'
         );
       </script>
-    @endif 
+    @endif
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

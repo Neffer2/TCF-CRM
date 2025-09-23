@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
-  <meta charset="utf-8" /> 
+<head>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   @livewireStyles
   <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
@@ -9,12 +9,12 @@
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>
     Ejecutiv@ de cuenta - {{ Auth::user()->name}}
-  </title>  
+  </title>
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/9c37d8ebcb.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -36,37 +36,37 @@
       <hr class="horizontal dark mt-0">
       <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
-          <li class="nav-item"> 
+          <li class="nav-item">
             <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-shop text-primary text-sm opacity-10"></i>
               </div>
               <span class="nav-link-text ms-1">Inicio</span>
-            </a> 
+            </a>
             <div class="collapse  show " id="dashboardsExamples">
               <ul class="nav ms-4">
                 <li class="nav-item active">
-                  <a class="nav-link active" href="{{ route('dashboard-asis') }}"> 
+                  <a class="nav-link active" href="{{ route('dashboard-asis') }}">
                     <span class="sidenav-mini-icon"> D </span>
-                    <span class="sidenav-normal"> Dashboard </span> 
+                    <span class="sidenav-normal"> Dashboard </span>
                   </a>
                 </li>
                 <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('asis-gestion-helisa') }}">  
+                  <a class="nav-link" href="{{ route('asis-gestion-helisa') }}">
                     <span class="sidenav-mini-icon"> H </span>
                     <span class="sidenav-normal"> Helisa </span>
-                  </a> 
+                  </a>
                 </li>
                 <li class="nav-item dashboard">
-                  <a class="nav-link" href="{{ route('asis-dashboard-base') }}"> 
+                  <a class="nav-link" href="{{ route('asis-dashboard-base') }}">
                     <span class="sidenav-mini-icon"> B </span>
                     <span class="sidenav-normal"> Base comercial </span>
-                  </a> 
+                  </a>
                 </li>
               </ul>
             </div>
-          </li>  
-          <li class="nav-item"> 
+          </li>
+          <li class="nav-item">
             <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link" aria-controls="dashboardsGestion" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                 <i class="ni ni-badge text-primary text-sm opacity-10"></i>
@@ -88,14 +88,14 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('presupuestos') }}"> 
+                  <a class="nav-link" href="{{ route('presupuestos') }}">
                     <span class="sidenav-mini-icon text-xs"> NP </span>
                     <span class="sidenav-normal"> Presupuestos </span>
                   </a>
-                </li>       
+                </li>
               </ul>
             </div>
-          </li>   
+          </li>
           <li class="nav-item">
             <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
               <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -104,14 +104,14 @@
               <span class="nav-link-text ms-1">Ajustes</span>
             </a>
             <div class="collapse" id="applicationsExamples" style="">
-              <ul class="nav ms-4"> 
+              <ul class="nav ms-4">
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ route('actualizar-perfil-asis') }}">  
+                  <a class="nav-link" href="{{ route('actualizar-perfil-asis') }}">
                     <span class="sidenav-mini-icon"> A </span>
                     <span class="sidenav-normal"> Actualizar perfil </span>
                   </a>
                 </li>
-              </ul> 
+              </ul>
             </div>
           </li>
         </ul>
@@ -149,8 +149,8 @@
                     <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                       <i class="ni ni-button-power"></i>
                       <span class="d-sm-inline d-none">Salir</span>
-                    </a>  
-                  </form>    
+                    </a>
+                  </form>
                 @endauth
                 @guest
                   <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -174,9 +174,9 @@
       </nav>
       <!-- End Navbar -->
       @yield('profile-card')
-        <div class="container-fluid py-4"> 
+        <div class="container-fluid py-4">
       @yield('content')
-        
+
         <footer class="footer pt-3  ">
           <div class="container-fluid">
             <div class="row align-items-center justify-content-lg-between">
@@ -207,7 +207,7 @@
               </div> --}}
             </div>
           </div>
-        </footer>  
+        </footer>
       </div>
     </div>
     <div class="fixed-plugin">
@@ -259,7 +259,7 @@
             <div class="form-check form-switch ps-0 ms-auto my-auto">
               <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
             </div>
-          </div> 
+          </div>
           <hr class="horizontal dark mb-1">
           <div class="d-flex my-4">
             <h6 class="mb-0">Sidenav Mini</h6>
@@ -311,19 +311,19 @@
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
     </script>
-    @if($errors->any()) 
+    @if($errors->any())
       <script>
         Swal.fire(
           '!Oppss tenemos un problema',
           `<ul style='text-align: initial; list-style-type: none;'>
-            @foreach($errors->all() as $error) 
+            @foreach($errors->all() as $error)
               <li>{{ $error }}<li>
             @endforeach
-          </ul>`, 
+          </ul>`,
           'error'
         );
       </script>
-    @endif 
+    @endif
     @if (session('success'))
       <script>
         Swal.fire(
@@ -332,7 +332,7 @@
           'success'
         );
       </script>
-    @endif 
+    @endif
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->

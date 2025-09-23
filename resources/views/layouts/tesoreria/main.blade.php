@@ -11,9 +11,9 @@
   </title>
   <!-- Nucleo Icons -->
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" /> 
+  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/9c37d8ebcb.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -21,9 +21,9 @@
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
 </head>
-<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">    
+<body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
   @yield('hero-style')
-  <!-- Barra lateral --> 
+  <!-- Barra lateral -->
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
@@ -34,7 +34,7 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
-        <li class="nav-item"> 
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link" aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
@@ -44,7 +44,7 @@
           <div class="collapse" id="dashboardsProduccion">
             <ul class="nav ms-4">
               <li class="nav-item">
-                <a class="nav-link" href="{{ route('anticipos') }}">   
+                <a class="nav-link" href="{{ route('anticipos') }}">
                   <span class="sidenav-mini-icon text-xs"> OC's </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
                 </a>
@@ -56,31 +56,31 @@
                 </a>
               </li>
             </ul>
-          </div> 
-        </li>  
+          </div>
+        </li>
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>              
+              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Ajustes</span>
           </a>
           <div class="collapse" id="ajustes" style="">
-            <ul class="nav ms-4"> 
+            <ul class="nav ms-4">
               <li class="nav-item ">
-                <a class="nav-link " href="{{ route('actualizar-perfil-adm') }}">  
+                <a class="nav-link " href="{{ route('actualizar-perfil-adm') }}">
                   <span class="sidenav-mini-icon"> K </span>
                   <span class="sidenav-normal"> Actualizar perfil </span>
                 </a>
               </li>
-            </ul> 
+            </ul>
           </div>
         </li>
       </ul>
     </div>
   </aside>
   <!-- End Barra lateral -->
-  
+
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky " id="navbarBlur" data-scroll="false">
@@ -120,8 +120,8 @@
                   <a href="" onclick="this.closest('form').submit();return false;" class="nav-link text-white font-weight-bold px-0">
                     <i class="ni ni-button-power"></i>
                     <span class="d-sm-inline d-none">Salir</span>
-                  </a>  
-                </form>    
+                  </a>
+                </form>
               @endauth
               @guest
                 <a href="../../../pages/authentication/signin/illustration.html" class="nav-link text-white font-weight-bold px-0" target="_blank">
@@ -221,13 +221,13 @@
         </div>
       </div>
     </nav>
-    @yield('profile-card') 
+    @yield('profile-card')
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
         @yield('content')
-      </div> 
-      
+      </div>
+
       <footer class="footer pt-3">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
@@ -365,23 +365,23 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-    @if($errors->any()) 
+    @if($errors->any())
       Swal.fire(
       '!Oppss tenemos un problema',
       `@foreach($errors->all() as $error)
-          {{ $error }} 
+          {{ $error }}
       @endforeach`,
       'error'
       );
-    @endif 
+    @endif
     @if (session('success'))
     Swal.fire(
       'Hecho',
       `{{ session('success') }}`,
       'success'
       );
-    @endif 
-  
+    @endif
+
     // Rounded slider
     const setValue = function(value, active) {
       document.querySelectorAll("round-slider").forEach(function(el) {

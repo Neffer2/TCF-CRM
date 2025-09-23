@@ -13,7 +13,7 @@
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/9c37d8ebcb.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -129,7 +129,7 @@
                         <span class="sidenav-mini-icon text-xs"> AN </span>
                         <span class="sidenav-normal"> Anticipos </span>
                     </a>
-                </li> 
+                </li>
                 <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
                         <span class="sidenav-mini-icon text-xs"> C </span>
