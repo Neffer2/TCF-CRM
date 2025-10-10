@@ -33,7 +33,7 @@
                     </select>
                 </div> --}}
             </div>
-        </div> 
+        </div>
         <div class="table-responsive">
             <table class="table align-items-center mb-0">
                 <thead>
@@ -63,7 +63,7 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Proveedor</p>
                                     <span class="text-xs text-secondary mb-0">{{ $anticipo->ordenCompra->proveedor->tercero }}</span>
-                                </td>    
+                                </td>
                             @else
                                 {{-- <td>
                                     <p class="text-xs font-weight-bold mb-0">Tercero</p>

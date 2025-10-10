@@ -3,17 +3,17 @@
         <div class="card-header p-0 px-3 mt-3 col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="mb-0">Proveedores</h3> 
+                    <h3 class="mb-0">Proveedores</h3>
                     <p class="text-sm mb-0">Lista de proveedores.</p>
                 </div>
-                <div class="col-md-2">  
+                <div class="col-md-2">
                     <label for="comercial">Nombre:</label>
                     <input type="text" wire:model="contacto" class="form-control" placeholder="Nombre contacto">
                 </div>
-                <div class="col-md-2">  
+                <div class="col-md-2">
                     <label for="comercial">Tercero:</label>
                     <input type="text" wire:model="tercero" class="form-control" placeholder="Nombre tercero">
-                </div> 
+                </div>
                 <div class="col-md-2">
                     <label for="filtro_fecha">Categor&iacute;a:</label>
                     <select id="filtro_fecha" class="form-control" wire:model="categoria">
@@ -21,8 +21,8 @@
                         @foreach ($categorias as $categoria)
                             <option value="{{ $categoria->id }}">{{ $categoria->description }}</option>
                         @endforeach
-                    </select> 
-                </div> 
+                    </select>
+                </div>
                 <div class="col-md-2">
                     <label for="estado">Ciudad:</label>
                     <select id="estado" class="form-control" wire:model="ciudad">
@@ -30,7 +30,7 @@
                         @foreach ($ciudades as $ciudad)
                             <option value="{{ $ciudad }}">{{ $ciudad }}</option>
                         @endforeach
-                    </select> 
+                    </select>
                 </div>
                 @if (Auth::user()->rol == 1)
                     <div class="col-md-2">
@@ -41,7 +41,7 @@
                             <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
                             <option value="NO APLICA">NO APLICA</option>
                             <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
-                        </select> 
+                        </select>
                     </div>
                 @endif
             </div>
@@ -49,12 +49,12 @@
         <div class="card-body p-0 pt-1">
             <div class="table-responsive">
                 <table class="table">
-                    <thead> 
+                    <thead>
                         <th colspan="8" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n proveedores</th>
-                    </thead>  
-                    <tbody>  
+                    </thead>
+                    <tbody>
                         @foreach ($proveedores as $proveedor)
-                            <tr> 
+                            <tr>
                                 <td>
                                     <div class="d-flex px-2 py-1">
                                         <div>
@@ -67,7 +67,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Tipo</p> 
+                                    <p class="text-xs font-weight-bold mb-0">Tipo</p>
                                     <span class="badge badge-sm badge-primary">{{ $proveedor->tipo }}</span>
                                 </td>
                                 <td>
@@ -88,18 +88,18 @@
                                         @if (!($proveedor->OrdenCompra->isEmpty()))
                                             <textarea rows="1" class="form-control" disabled>{{ $proveedor->OrdenCompra->last()->observaciones_negociacion }}</textarea>
                                         @endif
-                                    </p> 
+                                    </p>
                                 </td>
-                                <td colspan="2"> 
+                                <td colspan="2">
                                     <button @if (!(Auth::user()->rol == 1)) disabled @endif class="btn bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $proveedor->id }}">Editar</button>
                                     <button @if (!(Auth::user()->rol == 1)) disabled @endif class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $proveedor->id }}">Eliminar</button>
                                 </td>
                             </tr>
-                            <!-- Edit Modal --> 
+                            <!-- Edit Modal -->
                             <div class="modal fade" id="editModal{{ $proveedor->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div class="modal-content">
-                                        <div class="modal-header"> 
+                                        <div class="modal-header">
                                             <h5 class="modal-title" id="exampleModalLabel">{{ $proveedor->contacto }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -109,13 +109,13 @@
                                             @livewire('admin.produccion.proveedores.nuevo-proveedor', ['proveedor_id' => $proveedor->id], key($proveedor->id))
                                         </div>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
-                            <!-- Delete Modal --> 
+                            <!-- Delete Modal -->
                             <div class="modal fade" id="deleteModal{{ $proveedor->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
-                                        <div class="modal-header"> 
+                                        <div class="modal-header">
                                             <h5 class="modal-title" id="exampleModalLabel">{{ $proveedor->contacto }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -138,7 +138,7 @@
             {{ $proveedores->links() }}
         </div>
     </div>
-    <div class="alerts"> 
+    <div class="alerts">
         @if (session('success'))
             <script>
                 Swal.fire(
@@ -148,5 +148,5 @@
                 );
             </script>
         @endif
-    </div> 
+    </div>
 </div>

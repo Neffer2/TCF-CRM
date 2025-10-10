@@ -5,6 +5,6 @@
         </div>
     @endsection
 
-    @section('content')     
-        @livewire('productor.anticipos.anticipos') 
+    @section('content')
+        @livewire('productor.anticipos.anticipos')
     @endsection
