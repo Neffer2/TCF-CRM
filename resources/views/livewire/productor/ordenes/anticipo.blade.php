@@ -11,7 +11,7 @@
                             Anticipo Productor
                         </button>
                     </div>
-                </div>
+                </div> 
             </div>
 
             <div class="card-body pt-0" id="anticipo-juridico" x-show="show" x-transition>
@@ -181,26 +181,26 @@
                                 <table class="table mb-1">
                                     <tr style="height: 35px;">
                                         <td class="font-weight-bold">Cliente:</td>
-                                        @if ($orden)
-                                            <td>{{ $orden->presupuesto->gestion->contacto->empresa }}</td>
+                                        @if ($centro_costo)
+                                            <td>{{ $centros_costo->find($centro_costo)->gestion->contacto->empresa }}</td>
                                         @endif
                                     </tr>
                                     <tr style="height: 35px;">
                                         <td class="font-weight-bold">Proyecto:</td>
-                                        @if ($orden)
-                                            <td>{{ $orden->presupuesto->gestion->nom_proyecto_cot }}</td>
+                                        @if ($centro_costo)
+                                            <td>{{ $centros_costo->find($centro_costo)->gestion->nom_proyecto_cot }}</td>
                                         @endif
                                     </tr>
                                     <tr style="height: 35px;">
                                         <td class="font-weight-bold">Centro de Costos:</td>
-                                        @if ($orden)
-                                            <td>{{ $orden->presupuesto->cod_cc }}</td>
+                                        @if ($centro_costo)
+                                            <td>{{ $centros_costo->find($centro_costo)->cod_cc }}</td>
                                         @endif
                                     </tr>
                                     <tr style="height: 35px;">
                                         <td class="font-weight-bold">Ciudad:</td>
-                                        @if ($orden)
-                                            <td>{{ $orden->presupuesto->presupuestoItems[0]->ciudad }}</td>
+                                        @if ($centro_costo)
+                                            <td>{{ $centros_costo->find($centro_costo)->presupuestoItems[0]->ciudad }}</td>
                                         @endif
                                     </tr>
                                 </table>
@@ -241,7 +241,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($orden)
+                                        @if ($centro_costo)
                                             @foreach ($orden->ordenItems as $item)
                                                 <tr>
                                                     <td class="text-center">{{ $item->display_item }}</td>
@@ -267,15 +267,15 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="observaciones">Orden de compra:</label>
-                                            <select name="orden_compra" id="orden_compra" class="form-control" wire:model="orden_compra">
-                                                <option value="">Seleccione una orden de compra</option>
-                                                @foreach ($ordenes as $orden)
-                                                    <option value="{{ $orden->id }}">{{ $orden->presupuesto->cod_cc }} - {{ $orden->proveedor->tercero }} </option>
+                                            <label for="observaciones">Centro de costos:</label>
+                                            <select name="centro_costo" id="centro_costo" class="form-control" wire:model="centro_costo">
+                                                <option value="">Seleccione un centro de costos</option>
+                                                @foreach ($centros_costo as $centro)
+                                                    <option value="{{ $centro->id }}">{{ $centro->cod_cc }}</option>
                                                 @endforeach
                                             </select>
-                                            @error('orden_compra')
-                                                <div id="orden_compra" class="text-invalid">
+                                            @error('centro_costo')
+                                                <div id="centro_costo" class="text-invalid">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
@@ -283,7 +283,25 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="observaciones">Valor Orden</label>
+                                            <label for="observaciones">Item:</label>
+                                            <select name="item" id="item" class="form-control" wire:model="item">
+                                                <option value="">Seleccione un item</option>
+                                                @if ($centro_costo)
+                                                    @foreach ($centros_costo->find($centro_costo)->presupuestoItems as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->descripcion }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            @error('item')
+                                                <div id="item" class="text-invalid">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="observaciones">Valor Anticipo</label>
                                             <input class="form-control" disabled @if($orden_compra) value="{{ number_format($ordenes->find($orden_compra)->ordenItems->sum('vtotal_oc')) }}" @endif>
                                             @error('observaciones')
                                                 <div id="observaciones" class="text-invalid">
@@ -294,18 +312,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="observaciones">% Anticipo:</label>
-                                            <input type="number" name="porcentaje_anticipo" id="porcentaje_anticipo" class="form-control" wire:model="porcentaje_anticipo" min="0" max="100" step="1">
-                                            @error('porcentaje_anticipo')
-                                                <div id="porcentaje_anticipo" class="text-invalid">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="total_anticipo">Total:</label>
+                                            <label for="total_anticipo">Saldo:</label>
                                             <input type="text" class="form-control" wire:model="total_anticipo" disabled x-mask:dynamic="$money($input)">
                                             @error('total_anticipo')
                                                 <div id="total_anticipo" class="text-invalid">

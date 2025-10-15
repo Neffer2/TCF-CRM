@@ -5,15 +5,21 @@ namespace App\Http\Livewire\Productor\Ordenes;
 use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Models\Anticipo as ModelAnticipo;
+use App\Models\PresupuestoProyecto as CentrosCosto;
+use App\Models\Año;
 use Illuminate\Support\Facades\Auth;
 
 class Anticipo extends Component
 {
-    // Models 
+    // Models Juridico
     public $orden_compra, $porcentaje_anticipo, $total_anticipo;
+    // Models Productor
+    public $centro_costo, $item, $valor, $saldo;
 
-    // Useful vars
+    // Useful vars Juridico
     public $orden, $ordenes = [], $queriedAnticipo;
+    // Useful vars Productor
+    public $centros_costo = [], $items = [];
 
     // Filled
     public $anticipo_id;
@@ -28,11 +34,12 @@ class Anticipo extends Component
             $this->queriedAnticipo = ModelAnticipo::find($this->anticipo_id);
             $this->setData();
         }else {
-            $this->getOrdenes();
+            $this->getData();
         }
     }
 
-    public function getOrdenes(){
+    public function getData(){
+        // Ordenes de compra del productor autenticado que no tengan anticipos
         $ordenes = OrdenCompra::where(function($query) {
                 $query->whereHas('presupuesto', function ($presupuesto) {
                     $presupuesto->where('productor', Auth::user()->id);
@@ -43,13 +50,25 @@ class Anticipo extends Component
             ;})
             ->where([
                 ['estado_id', 1],
-                ['tipo_oc', 1]
+                ['tipo_oc', 1],
+                ['created_at', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
             ])
             ->whereDoesntHave('anticipos')
             ->orderBy('created_at', 'desc')
             ->get();
 
         $this->ordenes = $ordenes;
+
+        // Centros de costo del productor autenticado
+        $centros = CentrosCosto::where([
+            ['productor', Auth::user()->id],
+            ['estado_id', 1], 
+            ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $this->centros_costo = $centros;
     }
 
     public function nuevoAnticipo(){
@@ -80,7 +99,7 @@ class Anticipo extends Component
             $this->porcentaje_anticipo = $this->queriedAnticipo->porcentaje_anticipo;
             $this->total_anticipo = $this->queriedAnticipo->total_anticipo;
         }
-    }
+    } 
 
     public function ActualizarAnticipo(){
         $this->validate([
