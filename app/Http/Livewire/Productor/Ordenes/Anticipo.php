@@ -14,7 +14,7 @@ class Anticipo extends Component
     // Models Juridico
     public $orden_compra, $porcentaje_anticipo, $total_anticipo;
     // Models Productor
-    public $centro_costo, $item, $valor, $saldo;
+    public $centro_costo, $item, $valor = 0, $saldo = 0, $selectedItem;
 
     // Useful vars Juridico
     public $orden, $ordenes = [], $queriedAnticipo;
@@ -122,6 +122,10 @@ class Anticipo extends Component
         }
     }
 
+    function getSaldo(){
+        $this->saldo = $this->selectedItem->v_total - /* $item->consumidos->sum('vtotal_oc') */ $this->valor;
+    }
+
     // Updates
     public function updatedOrdenCompra(){
         $this->orden = $this->ordenes->find($this->orden_compra);
@@ -133,6 +137,35 @@ class Anticipo extends Component
         } else {
             $this->total_anticipo = null;
         }   
+    }
+
+    public function updatedItem(){
+        $this->validate([
+            'centro_costo' => 'required',
+            'item' => 'required',
+        ]);
+
+        // Obtiene la información del item
+        $this->selectedItem = $this->centros_costo->find($this->centro_costo)->presupuestoItems->find($this->item); 
+        $this->getSaldo();
+    }
+
+    public function updatedValor(){
+        $this->valor = trim($this->valor);
+        $this->valor = str_replace(",",'', $this->valor); 
+
+        $this->validate([
+            'centro_costo' => 'required', 
+            'item' => 'required',
+            'valor' => 'required|numeric|min:0',
+        ]);
+
+        // TODO: CONSUMIDO ANTICIPO
+        if ($this->valor > $this->selectedItem->v_total) {
+            return $this->addError('valor', 'El valor no puede ser mayor al valor total del ítem');
+        }
+
+        $this->getSaldo();
     }
 }
     

@@ -301,10 +301,10 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="observaciones">Valor Anticipo</label>
-                                            <input class="form-control" disabled @if($orden_compra) value="{{ number_format($ordenes->find($orden_compra)->ordenItems->sum('vtotal_oc')) }}" @endif>
-                                            @error('observaciones')
-                                                <div id="observaciones" class="text-invalid">
+                                            <label for="valor">Valor Anticipo</label>
+                                            <input id="valor" class="form-control" wire:model="valor" wire:model.defer="valor" x-mask:dynamic="$money($input)">
+                                            @error('valor')
+                                                <div id="valor" class="text-invalid">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
@@ -312,10 +312,10 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="total_anticipo">Saldo:</label>
-                                            <input type="text" class="form-control" wire:model="total_anticipo" disabled x-mask:dynamic="$money($input)">
-                                            @error('total_anticipo')
-                                                <div id="total_anticipo" class="text-invalid">
+                                            <label for="saldo">Saldo:</label>
+                                            <input id="saldo" type="text" class="form-control" wire:model="saldo" disabled wire:model.defer="saldo" x-mask:dynamic="$money($input)">
+                                            @error('saldo')
+                                                <div id="saldo" class="text-invalid">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
