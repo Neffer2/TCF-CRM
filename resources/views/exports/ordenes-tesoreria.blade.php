@@ -21,7 +21,6 @@
             <td style="text-align: center; font-weight: bold;">OBSERVACIONES</td>
             <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
             <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
-            <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
             <td style="text-align: center; font-weight: bold;">ESTADO</td>
         </tr>
         @foreach ($ordenes as $orden)
@@ -51,7 +50,7 @@
                     <td>{{ $ocItem->OrdenCompra->cod_causal }}</td>
                     <td>{{ $ocItem->OrdenCompra->observacion_causal }}</td>
                     <td>{{ $ocItem->created_at }}</td>
-                    <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
+                    <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
                     <td>
                         @if ($ocItem->OrdenCompra->archivo_comprobante_pago)
                             Pagado

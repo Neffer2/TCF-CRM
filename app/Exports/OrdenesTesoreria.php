@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use App\Models\OrdenCompra;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 
 class OrdenesTesoreria implements FromView
 {
@@ -19,14 +19,14 @@ class OrdenesTesoreria implements FromView
     function __construct($yearInfo = null) {
         ini_set('max_execution_time', 10000);
         $this->ordenes = $ordenes = OrdenCompra::where([
-                                                    ['estado_id', '5'],
-                                                    ['cod_causal', '<>', 'NULL'],
-                                                    ['created_at', '>=', $yearInfo->meses->first()->f_inicio],
-                                                    ['created_at', '<=', $yearInfo->meses->last()->f_fin]
-                                                ])
-                                                ->whereNull('archivo_comprobante_pago')
-                                                ->orderBy('created_at', 'desc')
-                                                ->get();
+            ['estado_id', '5'],
+            ['cod_causal', '<>', 'NULL'],
+            ['created_at', '>=', $yearInfo->meses->first()->f_inicio],
+            ['created_at', '<=', $yearInfo->meses->last()->f_fin]
+        ])
+        ->whereNull('archivo_comprobante_pago')
+        ->orderBy('created_at', 'desc')
+        ->get();
     }
 
     /**
