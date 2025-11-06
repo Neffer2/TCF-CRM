@@ -24,7 +24,6 @@ class OrdenesTesoreria implements FromView
             ['created_at', '>=', $yearInfo->meses->first()->f_inicio],
             ['created_at', '<=', $yearInfo->meses->last()->f_fin]
         ])
-        ->whereNull('archivo_comprobante_pago')
         ->orderBy('created_at', 'desc')
         ->get();
     }
