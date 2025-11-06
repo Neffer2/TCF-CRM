@@ -61,7 +61,7 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
     public function columnFormats(): array
     {
         return [
-            'D' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'F' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 
@@ -69,7 +69,7 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->setAutoFilter('A1:F1');
+                $event->sheet->getDelegate()->setAutoFilter('A1:K1');
             },
         ];
     }
