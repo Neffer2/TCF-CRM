@@ -29,8 +29,8 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
             $endDate = Carbon::now()->toDateTimeString();
         }
 
-        $this->ordenes = OrdenCompra::whereIn('estado_id', [5, 2])
-            ->where('cod_causal', NULL)
+        $this->ordenes = OrdenCompra::where('cod_causal', NULL)
+            ->where('tipo_oc', 2)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();

@@ -28,8 +28,7 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
             $endDate = Carbon::now()->toDateTimeString();
         }
 
-        $this->ordenes = OrdenCompra::whereIn('estado_id', [5, 2])
-            ->where('cod_causal', NULL)
+        $this->ordenes = OrdenCompra::where('cod_causal', NULL)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
