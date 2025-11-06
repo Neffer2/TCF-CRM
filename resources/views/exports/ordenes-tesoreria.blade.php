@@ -52,7 +52,13 @@
                     <td>{{ $ocItem->OrdenCompra->observacion_causal }}</td>
                     <td>{{ $ocItem->created_at }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
-                    <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
+                    <td>
+                        @if ($ocItem->OrdenCompra->archivo_comprobante_pago)
+                            Pagado
+                        @else
+                            Por pagar
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         @endforeach
