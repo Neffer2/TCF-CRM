@@ -56,7 +56,8 @@ Route::get('/', function () {
 
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
 
-    Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
+    Route::get('/reporte-consumidos/{mes?}', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
+    Route::get('/reporte-plano-helisa/{mes?}', [AdminController::class, 'reportePlanoHelisa'])->middleware(['auth'])->name('reporte-plano-helisa');
 
     Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth'])->middleware(['admin'])->name('anticipos-admin');
 
@@ -129,7 +130,7 @@ Route::get('/', function () {
     })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
 
-/* Tesoreria */
+/* Tesoreria */ 
     Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
     Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');

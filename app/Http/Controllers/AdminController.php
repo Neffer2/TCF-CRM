@@ -12,6 +12,7 @@ use App\Exports\HelisaExport;
 use App\Http\Livewire\Com\Presupuesto\Presupuesto;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ConsumidosExport;
+use App\Exports\PlanoExport;
 
 class AdminController extends Controller
 {
@@ -147,13 +148,26 @@ class AdminController extends Controller
     }
 
     /**
-     * Reporte de consumidos (cada 12 horas)
+     * Reporte de consumidos
      *
      * @return \Illuminate\View\View
      */
-    public function reporteConsumidos(){
+    public function reporteConsumidos($mes = null){
         if (Auth::user()->rol == 1  || Auth::user()->rol == 6){
-            return Excel::download(new ConsumidosExport(), "reporte_consumidos.xlsx");
+            return Excel::download(new ConsumidosExport($mes), "reporte_consumidos-{$mes}.xlsx");
+        }else {
+            return redirect()->route('dashboard');
+        }
+    }
+
+    /**
+     * Reporte de plano Helisa
+     *
+     * @return \Illuminate\View\View
+     */
+    public function reportePlanoHelisa($mes = null){
+        if (Auth::user()->rol == 1){
+            return Excel::download(new PlanoExport($mes), "reporte_plano_helisa-{$mes}.xlsx");
         }else {
             return redirect()->route('dashboard');
         }
