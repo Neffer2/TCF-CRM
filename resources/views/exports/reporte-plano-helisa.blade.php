@@ -9,7 +9,8 @@
 <body>
     <table>
         <tr>
-            <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
+            <td style="text-align: center; font-weight: bold;">FECHA</td>
+            <td style="text-align: center; font-weight: bold;">COD OC</td>
             <td style="text-align: center; font-weight: bold;">C.C</td>
             <td style="text-align: center; font-weight: bold;">NIT PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
@@ -38,6 +39,7 @@
             @foreach ($orden->ordenItems as $ocItem)
                 <tr>
                     <td>{{ $ocItem->created_at }}</td>
+                    <td>{{ $ocItem->id }}</td>
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
                     @if ($ocItem->OrdenCompra->tipo_oc == 1)
                         <td>{{ $ocItem->OrdenCompra->proveedor->documento }}</td>

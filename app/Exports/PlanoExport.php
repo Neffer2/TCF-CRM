@@ -31,8 +31,8 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
 
         $this->ordenes = OrdenCompra::where('cod_causal', NULL)
             ->where('tipo_oc', 2)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('created_at', 'desc')
+            ->whereBetween('fecha_envio_produccion', [$startDate, $endDate])
+            ->orderBy('fecha_envio_produccion', 'desc')
             ->get();
     }
 
@@ -61,7 +61,7 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
     public function columnFormats(): array
     {
         return [
-            'F' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 
