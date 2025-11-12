@@ -64,7 +64,7 @@
         <p>
             <b>PRIMERA.- OBJETO DEL CONTRATO:</b> El objeto del contrato será la prestación por parte de EL
             CONTRATISTA de la actividad de <b> @foreach ($contratoInfo['items'] as $item) {{ $item->tipo_servicio }}, @endforeach</b>
-            quien para el presente contrato es profesional en el procedimiento de extensión de pestañas semipermanentes, por esta razón EL
+            quien para el presente contrato es profesional en el procedimiento, por esta razón EL
             CONTRATISTA asumirá la responsabilidad de todos las obligaciones emanadas del presente contrato,
             dada la índole profesional y especializada que ostenta, características del EL CONTRATISTA necesarias
             para poder cumplir con el objeto del presente contrato.
@@ -220,7 +220,7 @@
             <tr>
                 <td style="text-align: center;">
                     <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br></p>
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign.png'))) }}" alt="Firma">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign__.png'))) }}" alt="Firma">
                     <p class="bold">__________________________</p>
                     <p class="bold">BULL MARKETING S.A.S.</p>
                     <p>Representante Legal</p>
