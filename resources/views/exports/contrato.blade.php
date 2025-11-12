@@ -64,7 +64,7 @@
         <p>
             <b>PRIMERA.- OBJETO DEL CONTRATO:</b> El objeto del contrato será la prestación por parte de EL
             CONTRATISTA de la actividad de <b> @foreach ($contratoInfo['items'] as $item) {{ $item->tipo_servicio }}, @endforeach</b>
-            quien para el presente contrato es profesional en el procedimiento, por esta razón EL
+            quien para el presente contrato es profesional en el procedimiento. Por esta razón EL
             CONTRATISTA asumirá la responsabilidad de todos las obligaciones emanadas del presente contrato,
             dada la índole profesional y especializada que ostenta, características del EL CONTRATISTA necesarias
             para poder cumplir con el objeto del presente contrato.
