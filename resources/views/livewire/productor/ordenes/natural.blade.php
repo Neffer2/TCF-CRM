@@ -177,7 +177,6 @@
                 </thead>
                 <tbody>
                     @foreach ($items as $key => $item)
-                    @dd($item);
                         <tr>
                             <td class="text-center">{{ $key+=1 }}</td>
                             <td>{{ $item['proyecto']['nombre'] }}</td>
