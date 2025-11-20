@@ -151,4 +151,7 @@ Route::get('/', function () {
 // Route::get('trial-mail', function (){
 //     return view('mails.grGenerado');
 // });
+Route::get('trial', function (){
+    return view('exports.orden_compra_pdf');
+});
 require __DIR__.'/auth.php';
