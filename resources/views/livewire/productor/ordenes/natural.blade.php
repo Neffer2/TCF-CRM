@@ -168,6 +168,7 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">CIUDAD</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
                         @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
                             <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
@@ -176,6 +177,7 @@
                 </thead>
                 <tbody>
                     @foreach ($items as $key => $item)
+                    @dd($item);
                         <tr>
                             <td class="text-center">{{ $key+=1 }}</td>
                             <td>{{ $item['proyecto']['nombre'] }}</td>
@@ -188,6 +190,7 @@
                             <td>{{ number_format($item['valor_unitario']) }}</td>
                             <td>{{ number_format($item['valor_total']) }}</td>
                             <td>{{ $item['tipo_servicio'] }}</td>
+                            {{-- <td>{{ $item['tipo_servicio'] }}</td> --}}
                             <td>{{ $item['tipo_contrato'] }}</td>
                             @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
                                 <td class="d-flex justify-content-center" style="padding: 11px;">
@@ -519,7 +522,7 @@
                     <!-- Button trigger modal -->
                     @if ($queriedOrden->naturalInfo->terminos == 1)
                         <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
- 
+
                         <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -796,7 +799,7 @@
                                         </div>
                                     @enderror
                                 </div>
-                            </div> 
+                            </div>
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))

@@ -60,9 +60,8 @@
                             {{ $ocItem->OrdenCompra->naturalInfo->productor->name }}
                         @endif
                     </td>
-                    <td>{{ $ocItem->itemPresupuesto->ciudad }}</td>
+                    <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->ciudad }}</td>
                     <td>{{ $ocItem->OrdenCompra->estado_oc->description }}</td>
-
 
                     {{--
                     <td>{{ $ocItem->itemPresupuesto->presto->gestion->nom_proyecto_cot }}</td>
