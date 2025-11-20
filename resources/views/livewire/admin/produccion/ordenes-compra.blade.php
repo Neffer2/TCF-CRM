@@ -18,6 +18,10 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-1">
+                        <label for="comercial">COD OC:</label>
+                        <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                    </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
@@ -42,14 +46,6 @@
                             @foreach ($estados as $estado)
                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-1">
-                        <label for="filtro_fecha">Fecha:</label>
-                        <select id="filtro_fecha" class="form-control" wire:model="fecha">
-                            <option value="asc">Seleccionar</option>
-                            <option value="asc">M&aacute;s antiguos</option>
-                            <option value="desc">M&aacute;s recientes</option>
                         </select>
                     </div>
                     <div class="col-md-1">

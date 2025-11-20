@@ -124,6 +124,11 @@
                         </div>
                     </div>
                     <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="d-none d-md-block" style="width:100%;">
+                                <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>

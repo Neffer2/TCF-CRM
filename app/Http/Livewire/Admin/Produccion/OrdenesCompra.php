@@ -20,6 +20,7 @@ class OrdenesCompra extends Component
     protected $paginationTheme = 'bootstrap';
 
     // PROPIEDADES DE FILTROS
+    public $cod_oc;                // Código de Orden de commprs
     public $cod_cc;                // Código de centro de costo para filtrar por presupuesto
     public $fecha = 'desc';        // Orden de fecha (asc/desc)
     public $estado;                // ID del estado de la orden de compra
@@ -68,6 +69,11 @@ class OrdenesCompra extends Component
             $query->whereHas('presupuesto', function ($presto) {
                 $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
             });
+        }
+
+        // Filtro por código de orden de compra
+        if ($this->cod_oc){
+            $query->where('cod_oc', 'LIKE', "%$this->cod_oc%")->orWhere('id', 'LIKE', "%$this->cod_oc%");
         }
 
         // Filtro por documento

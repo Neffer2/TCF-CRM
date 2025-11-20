@@ -39,7 +39,7 @@
             @foreach ($orden->ordenItems as $ocItem)
                 <tr>
                     <td>{{ $ocItem->created_at }}</td>
-                    <td>{{ $ocItem->id }}</td>
+                    <td>{{ $ocItem->OrdenCompra->id }}</td>
                     <td>{{ $ocItem->itemPresupuesto->presto->cod_cc }}</td>
                     @if ($ocItem->OrdenCompra->tipo_oc == 1)
                         <td>{{ $ocItem->OrdenCompra->proveedor->documento }}</td>
