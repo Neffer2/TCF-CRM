@@ -49,7 +49,7 @@
                     <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
                     <td>{{ $ocItem->cant_oc }}</td>
                     <td>{{ $ocItem->vunit_oc }}</td>
-                    <td>{{ $ocItem->tipo_servicio }} IT {{ $ocItem->itemPresupuesto->displayItem() }} {{ $ocItem->itemPresupuesto->ciudad }} # {{ $ocItem->OrdenCompra->id }} </td>
+                    <td>{{ $ocItem->tipo_servicio }} IT {{ $ocItem->itemPresupuesto->displayItem() }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->ciudad }} # {{ $ocItem->OrdenCompra->id }} </td>
                     <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
                     <td>
                         @if ($ocItem->OrdenCompra->tipo_oc == 1)
