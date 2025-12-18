@@ -177,7 +177,7 @@
         </div>
     @else
         <div class="card card-frame p-5">
-            <h3 class="text-center">Tu presupuesto fu&eacute; modificado y está siendo validado.</h3>
+            <h3 class="text-center">Tu presupuesto fu&eacute; modificado por comercial.</h3>
             <div class="d-flex justify-content-center">
                 <div class="spinner-grow text-primary" role="status">
                     <span class="sr-only">Loading...</span>

@@ -19,6 +19,7 @@ class Proveedores extends Component
     // PROPIEDADES DE FILTROS DE BÚSQUEDA
     public $contacto;               // Filtro por nombre del contacto (búsqueda parcial)
     public $tercero;                // Filtro por nombre o razón social (búsqueda parcial)
+    public $documento;              // Filtro por documento (búsqueda parcial)
     public $categoria;              // Filtro por ID de categoría del proveedor
     public $ciudad;                 // Filtro por ciudad del proveedor
     public $estado;                 // Filtro por estado del proveedor (activo/inactivo)
@@ -58,6 +59,10 @@ class Proveedores extends Component
         // Filtro por ciudad: búsqueda exacta
         if ($this->ciudad){
             array_push($filtros, ['ciudad', $this->ciudad]);
+        }
+
+        if ($this->documento){
+            array_push($filtros, ['documento', 'LIKE', "%{$this->documento}%"]);
         }
 
         // Filtro por estado: búsqueda exacta

@@ -727,7 +727,7 @@
 
     @elseif($estadoValidator == 2)
         <div class="card card-frame p-5">
-            <h3 class="text-center">Tu presupuesto est&aacute; siendo validado.</h3>
+            <h3 class="text-center">Tu presupuesto est&aacute; siendo validado por el equipo Controller.</h3>
             <div class="d-flex justify-content-center">
                 <div class="spinner-grow text-primary" role="status">
                     <span class="sr-only">Loading...</span>

@@ -7,12 +7,16 @@
                     <p class="text-sm mb-0">Lista de proveedores.</p>
                 </div>
                 <div class="col-md-2">
-                    <label for="comercial">Nombre:</label>
-                    <input type="text" wire:model="contacto" class="form-control" placeholder="Nombre contacto">
+                    <label for="comercial">Identificación:</label>
+                    <input type="text" wire:model="contacto" class="form-control" placeholder="Identificación">
                 </div>
                 <div class="col-md-2">
                     <label for="comercial">Tercero:</label>
                     <input type="text" wire:model="tercero" class="form-control" placeholder="Nombre tercero">
+                </div>
+                <div class="col-md-2">
+                    <label for="comercial">Documento:</label>
+                    <input type="text" wire:model="documento" class="form-control" placeholder="Documento">
                 </div>
                 <div class="col-md-2">
                     <label for="filtro_fecha">Categor&iacute;a:</label>
