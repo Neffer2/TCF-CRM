@@ -21,7 +21,7 @@ class ProductorController extends Controller
         $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')
         ->where([
             ['productor', Auth::id()],
-            ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
+            ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->Meses->first()->f_inicio]
         ])->orderBy('id', 'desc')
         ->paginate(17);
 
