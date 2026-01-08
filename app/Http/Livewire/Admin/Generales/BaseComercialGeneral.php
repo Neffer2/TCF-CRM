@@ -62,7 +62,7 @@ class BaseComercialGeneral extends Component
         // Filtro por mes específico: busca registros entre el primer y último día del mes
         if ($this->mes){
             array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->find($this->mes)->f_inicio]);
-            array_push($filtros, ['fecha', '<=', $this->yearInfo->smeses->find($this->mes)->f_fin]);
+            array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->find($this->mes)->f_fin]);
         }
 
         // Filtro por estado de cuenta específico
@@ -150,6 +150,7 @@ class BaseComercialGeneral extends Component
 
         // Carga la información completa del año incluyendo sus meses
         $this->yearInfo = Año::find($this->año);
+        $this->mes = '';
     }
 
     /**
