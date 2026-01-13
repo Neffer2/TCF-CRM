@@ -158,7 +158,7 @@ class NuevoPersonal extends Component
             $this->validate([
                 'banco' => 'required|string|max:255',
                 'tipo_cuenta' => 'required|string|max:255',
-                'num_cuenta' => 'required|string|max:255',  
+                'num_cuenta' => 'required|string|max:255',
                 'contrato' => 'required|string',
                 'terminos' => 'required|accepted'
             ]);
@@ -200,7 +200,7 @@ class NuevoPersonal extends Component
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
-  
+
         // Planilla de aportes
         if (!$tercero->planilla_aportes && !Auth::check()){
             $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
@@ -228,7 +228,7 @@ class NuevoPersonal extends Component
             $this->orden->estado_id = 3;
             $this->orden->update();
 
-            // Mail notificacion 
+            // Mail notificacion
             $this->ocNaturalFirmada($this->orden);
         }
 
@@ -357,6 +357,8 @@ class NuevoPersonal extends Component
         $this->ciudad = $this->tercero->ciudad;
         $this->estado = $this->tercero->estado;
         $this->banco = $this->tercero->banco;
+        $this->tipo_cuenta = $this->tercero->tipo_cuenta;
+        $this->num_cuenta = $this->tercero->num_cuenta;
         $this->servicio = $this->tercero->servicio;
         $this->num_rut = $this->tercero->num_rut;
         $this->planilla_aportes = $this->tercero->planilla_aportes;
@@ -415,7 +417,7 @@ class NuevoPersonal extends Component
             'fotoEvidencia',
             'observacionEvidencia'
         ]);
-    
+
         // Mail evidencias enviadas
         $this->ocNaturalEvidenciasEnviadas($this->orden);
 
