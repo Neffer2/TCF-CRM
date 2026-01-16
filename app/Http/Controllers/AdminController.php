@@ -168,7 +168,7 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
     public function reportePlanoHelisa($mes = null){
-        if (Auth::user()->rol == 1){
+        if (Auth::user()->rol == 1 || Auth::user()->rol == 10){
             return Excel::download(new PlanoExport($mes), "reporte_plano_helisa-{$mes}.xlsx");
         }else {
             return redirect()->route('dashboard');

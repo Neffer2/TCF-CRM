@@ -32,6 +32,8 @@ class HomeController extends Controller
             return redirect()->route('dashboard-tesoreria');
         }elseif (Auth::user()->rol == 9){
             return redirect()->route('dashboard-contabilidad');
+        }elseif (Auth::user()->rol == 10){
+            return redirect()->route('reporte-plano-helisa');
         }
     }
 
