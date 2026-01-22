@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orden de Compra</title>
     <style>
-        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #000; } 
+        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; color: #000; }
 
         table {
             width: 100%;
@@ -33,74 +33,85 @@
 <body>
     <table>
         <tr>
-            <td>
-                <div>
-                    <p><strong>BULL MARKETING S A S</strong></p>
-                    <p>NIT: 900298176</p>
-                    <p>DIRECCIÓN: CRA 53C No. 127D 23</p>
-                    <p>TELEFONOS: 4322700</p>
-                </div>
+            <td style="vertical-align: top;">
+                <p style="font-size: 17px; margin-bottom: 0"><strong>BULL MARKETING S A S</strong></p>
+                <p style="margin-bottom: 0; line-height: 5px">N.I.T: 900298176</p>
+                <p style="margin-bottom: 0; line-height: 5px">DIRECCIÓN: CRA 53C No. 127D 23</p>
+                <p style="margin-bottom: 0; line-height: 5px">TELEFONOS: 4322700</p>
             </td>
             <td style="text-align: right;">
                 <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="80">
                 <p style="font-weight: bold;">
-                    ORDEN DE COMPRA NRO 555
+                    ORDEN DE COMPRA <br>
+                    NRO {{ $orden->cod_oc }}
                 </p>
-                <p>FECHA: Octubre 30 DE 2025</p>
+                <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
             </td>
         </tr>
         <tr>
             <td>
                 <div>
-                    <p style="text-decoration: underline;"><strong>DATOS DEL PROVEEDOR</strong></p>
-                    <p>Nombre: EJEMPLO</p>
-                    <p>NIT: EJEMPLO</p>
-                    <p>DIRECCIÓN: EJEMPLO</p>
-                    <p>CIUDAD: BOGOTÁ</p>
+                    <p style="font-size: 14px; margin-bottom: 0; text-decoration: underline;"><strong>Datos del Proveedor</strong></p>
+                    <table>
+                        <tr>
+                            <td width="60">Nombre:</td>
+                            <td>{{ $orden->proveedor->tercero }}</td>
+                        </tr>
+                        <tr>
+                            <td width="60">NIT:</td>
+                            <td>{{ $orden->proveedor->documento }}</td>
+                        </tr>
+                        <tr>
+                            <td width="60">Dirección:</td>
+                            <td>{{ $orden->proveedor->direccion }}</td>
+                        </tr>
+                        <tr>
+                            <td width="60">Ciudad:</td>
+                            <td>{{ $orden->proveedor->ciudad }}</td>
+                        </tr>
+                    </table>
                 </div>
             </td>
         </tr>
     </table>
-    <p style="font-weight: bold;">
+
+    <p style="font-size: 14px; font-weight: bold; margin-bottom: 2rem">
         Solicitamos sean ejecutados los siguientes servicios:
     </p>
 
-    <table class="table-cols"> 
+    <table class="table-cols">
         <tr class="">
             <th class="table-title">DESCRIPCIÓN</th>
-            <th class="table-title">COSTO</th>
+            <th class="table-title">C COSTO</th>
             <th class="table-title">CANT</th>
             <th class="table-title">VR UNITARIO</th>
             <th class="table-title">VR TOTAL</th>
         </tr>
-        <tr>
-            <td>Servicio de ejemplo</td>
-            <td>Servicio</td>
-            <td style="text-align: center;">2</td>
-            <td style="text-align: right;">1,000.00</td>
-            <td style="text-align: right;">2,000.00</td>
-        </tr>
-        <tr>
-            <td>Servicio de ejemplo</td>
-            <td>Servicio</td>
-            <td style="text-align: center;">2</td>
-            <td style="text-align: right;">1,000.00</td>
-            <td style="text-align: right;">2,000.00</td>
-        </tr>
+        @foreach( $orden->ordenItems as $item )
+            <tr>
+                <td>{{ $item->desc_oc }}</td>
+                <td style="text-align: center">{{ $orden->presupuesto->cod_cc }}</td>
+                <td style="text-align: center;">{{ $item->cant_oc }}</td>
+                <td style="text-align: right;">{{ number_format($item->vunit_oc) }}</td>
+                <td style="text-align: right;">{{ number_format($item->vtotal_oc) }}</td>
+            </tr>
+        @endforeach
     </table>
     <br><br>
-    <table class="totals-table"> 
+    <table class="totals-table">
         <tr>
-            <td>
-                <p>
-                    <b>Observaciones:</b> Ejemplo de observaciones de la orden de compra.  
+            <td width="60%" style="vertical-align: top">
+                <p style="margin-bottom: 0">
+                    <b>Observaciones:</b>
                 </p>
+
+                {{ $orden->observaciones_negociacion  }}
             </td>
-            <td>
+            <td width="40%">
                 <table class="totals-table">
                     <tr>
                         <td style="font-weight: bold;">SUBTOTAL:</td>
-                        <td style="text-align: right;">4,000.00</td>
+                        <td style="text-align: right;">{{ number_format($orden->subtotal) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;">IVA:</td>

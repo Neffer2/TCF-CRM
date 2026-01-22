@@ -235,10 +235,15 @@ class AdminController extends Controller
     {
         $orden->load([
             'proveedor',
-            'presupuesto.gestion.contacto',
+            'presupuesto',
+//            'presupuesto.gestion.contacto',
             'presupuesto.presupuestoItems',
-            'ordenItems',
+            'ordenItems'
         ]);
+
+        foreach ($orden->ordenItems as $item) {
+            $orden->subtotal += $item->vtotal_oc;
+        }
 
         $dompdf = new Dompdf(['enable_remote' => true]);
         $html = View::make('exports.orden_compra_pdf', [
