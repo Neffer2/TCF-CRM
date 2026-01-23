@@ -53,22 +53,41 @@
                 <div>
                     <p style="font-size: 14px; margin-bottom: 0; text-decoration: underline;"><strong>Datos del Proveedor</strong></p>
                     <table>
-                        <tr>
-                            <td width="60">Nombre:</td>
-                            <td>{{ $orden->proveedor->tercero }}</td>
-                        </tr>
-                        <tr>
-                            <td width="60">NIT:</td>
-                            <td>{{ $orden->proveedor->documento }}</td>
-                        </tr>
-                        <tr>
-                            <td width="60">Dirección:</td>
-                            <td>{{ $orden->proveedor->direccion }}</td>
-                        </tr>
-                        <tr>
-                            <td width="60">Ciudad:</td>
-                            <td>{{ $orden->proveedor->ciudad }}</td>
-                        </tr>
+                        @if ( $orden->tipo_oc === 1 )
+                            <tr>
+                                <td width="60">Nombre:</td>
+                                <td>{{ $orden->proveedor->tercero }}</td>
+                            </tr>
+                            <tr>
+                                <td width="60">NIT:</td>
+                                <td>{{ $orden->proveedor->documento }}</td>
+                            </tr>
+                            <tr>
+                                <td width="60">Dirección:</td>
+                                <td>{{ $orden->proveedor->direccion }}</td>
+                            </tr>
+                            <tr>
+                                <td width="60">Ciudad:</td>
+                                <td>{{ $orden->proveedor->ciudad }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td width="60">Nombre:</td>
+                                <td>{{ $orden->naturalInfo->tercero->nombre }}</td>
+                            </tr>
+                            <tr>
+                                <td width="60">NIT:</td>
+                                <td>{{ $orden->naturalInfo->tercero->cedula }}</td>
+                            </tr>
+                            <tr>
+                                <td width="60">Dirección:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td width="60">Ciudad:</td>
+                                <td>{{ $orden->naturalInfo->tercero->ciudad }}</td>
+                            </tr>
+                        @endif
                     </table>
                 </div>
             </td>
@@ -89,8 +108,12 @@
         </tr>
         @foreach( $orden->ordenItems as $item )
             <tr>
-                <td>{{ $item->desc_oc }}</td>
-                <td style="text-align: center">{{ $orden->presupuesto->cod_cc }}</td>
+                <td style="padding: 2px">{{ $item->desc_oc }}</td>
+                @if ( ! empty( $orden->presupuesto->cod_cc ) )
+                    <td style="text-align: center">{{  $orden->presupuesto->cod_cc  }}</td>
+                @else
+                    <td style="text-align: center">{{  $item->itemPresupuesto->presto->cod_cc  }}</td>
+                @endif
                 <td style="text-align: center;">{{ $item->cant_oc }}</td>
                 <td style="text-align: right;">{{ number_format($item->vunit_oc) }}</td>
                 <td style="text-align: right;">{{ number_format($item->vtotal_oc) }}</td>
@@ -111,27 +134,27 @@
                 <table class="totals-table">
                     <tr>
                         <td style="font-weight: bold;">SUBTOTAL:</td>
-                        <td style="text-align: right;">{{ number_format($orden->subtotal) }}</td>
+                        <td style="text-align: right;">{{ number_format($subtotal) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;">IVA:</td>
-                        <td style="text-align: right;">760.00</td>
+                        <td style="text-align: right;">{{ number_format(0) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;">RETEFUENTE:</td>
-                        <td style="text-align: right;">4,760.00</td>
+                        <td style="text-align: right;">{{ number_format(0) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;">RETEIVA:</td>
-                        <td style="text-align: right;">4,760.00</td>
+                        <td style="text-align: right;">{{ number_format(0) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;">RETEICA:</td>
-                        <td style="text-align: right;">4,760.00</td>
+                        <td style="text-align: right;">{{ number_format(0) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold; background-color: lightgray">TOTALES:</td>
-                        <td style="text-align: right;">4,760.00</td>
+                        <td style="text-align: right;">{{ number_format($subtotal) }}</td>
                     </tr>
                 </table>
             </td>

@@ -162,6 +162,7 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">CENTRO DE COSTOS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">ITEM</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">NUM ITEM</th>
+                        <th class="font-weight-bold bg-gradient-primary text-white">DESC</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
@@ -183,6 +184,7 @@
                             <td>{{ $item['proyecto']['cod_cc'] }}</td>
                             <td>{{ $item['item']['nombre'] }}</td>
                             <td>{{ $item['item']['display_item'] }}</td>
+                            <td>{{ $item['desc'] }}</td>
                             <td>{{ $item['cant'] }}</td>
                             <td>{{ $item['dias'] }}</td>
                             <td>{{ $item['otros'] }}</td>
@@ -210,7 +212,7 @@
 
     @if ((Auth()->user()->rol == 7) && ((!$queriedOrden)))
         <div class="row">
-            <div class="col-lg-2">
+            <div class="col-lg-3">
                 <div class="form-group">
                     <label for="proyecto">Proyecto</label>
                     <select id="proyecto" class="form-control" wire:model.change="presupuesto">
@@ -220,9 +222,9 @@
                         @endforeach
                     </select>
                     @error('presupuesto')
-                        <div id="invalid-presupuesto" class="text-invalid">
-                            {{ $message }}
-                        </div>
+                    <div id="invalid-presupuesto" class="text-invalid">
+                        {{ $message }}
+                    </div>
                     @enderror
                 </div>
             </div>
@@ -236,7 +238,19 @@
                         @endforeach
                     </select>
                     @error('item_presupuesto')
-                        <div id="invalid-item_presupuesto" class="text-invalid">
+                    <div id="invalid-item_presupuesto" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label for="">DESCRIPCION</label>
+                    <textarea class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
+                              placeholder="Descripción" wire:model.lazy="descripcion" cols="30" rows="1"></textarea>
+                    @error('descripcion')
+                        <div id="invalid-descripcion" class="text-invalid">
                             {{ $message }}
                         </div>
                     @enderror
@@ -246,11 +260,11 @@
                 <div class="form-group">
                     <label for="cantidad">Cantidad</label>
                     <input id="cantidad" type="number" class="form-control"
-                    wire:model.lazy="cantidad" placeholder="#" x-mask:dynamic="$money($input)">
+                           wire:model.lazy="cantidad" placeholder="#" x-mask:dynamic="$money($input)">
                     @error('cantidad')
-                        <div id="invalid-cantidad" class="text-invalid">
-                            {{ $message }}
-                        </div>
+                    <div id="invalid-cantidad" class="text-invalid">
+                        {{ $message }}
+                    </div>
                     @enderror
                 </div>
             </div>
@@ -258,11 +272,11 @@
                 <div class="form-group">
                     <label for="dias">Dias</label>
                     <input id="dias" type="number" class="form-control"
-                    wire:model.lazy="dias" placeholder="Dias" x-mask:dynamic="$money($input)" disabled>
+                           wire:model.lazy="dias" placeholder="Dias" x-mask:dynamic="$money($input)" disabled>
                     @error('dias')
-                        <div id="invalid-dias" class="text-invalid">
-                            {{ $message }}
-                        </div>
+                    <div id="invalid-dias" class="text-invalid">
+                        {{ $message }}
+                    </div>
                     @enderror
                 </div>
             </div>
@@ -270,14 +284,16 @@
                 <div class="form-group">
                     <label for="otros">Otro</label>
                     <input id="otros" type="number" class="form-control"
-                    wire:model.lazy="otros" placeholder="Otro" x-mask:dynamic="$money($input)" disabled>
+                           wire:model.lazy="otros" placeholder="Otro" x-mask:dynamic="$money($input)" disabled>
                     @error('otros')
-                        <div id="invalid-otros" class="text-invalid">
-                            {{ $message }}
-                        </div>
+                    <div id="invalid-otros" class="text-invalid">
+                        {{ $message }}
+                    </div>
                     @enderror
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-lg-2">
                 <div class="form-group">
                     <label for="valor_unitario">Valor unitario</label>
@@ -302,7 +318,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-4">
                 <div class="form-group">
                     <label for="tipo_servicio">Tipo de servicio</label>
                     <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
@@ -318,7 +334,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-4">
                 <div class="form-group">
                     <label for="tipo_contrato">Tipo de contrato</label>
                     <select id="tipo_contrato" class="form-control" wire:model.change="tipo_contrato">
@@ -600,7 +616,7 @@
                                 <div class="col-md-12 mb-2">
                                     <h3 class="mb-0">Observaciones</h3>
                                     <p class="text-sm mb-0">
-                                        <b>El equipo de contabilidad realizó las siguientes observaciones.
+                                        <b>El equipo de contabilidad realizó las siguientes observaciones.</b>
                                     </p>
                                     <div class="pe-5">
                                         <textarea class="form-control" disabled cols="15" rows="2">{{ $queriedOrden->observacion_causal }}</textarea>
@@ -775,28 +791,9 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="cod_oc">C&oacute;digo de orden de compra</label>
-                                    <input id="cod_oc" type="text" class="form-control @error('cod_oc') is-invalid @elseif(strlen($cod_oc) > 0) is-valid @enderror"
-                                    wire:model.change="cod_oc" placeholder="C&oacute;digo de orden de compra">
-                                    @error('cod_oc')
-                                        <div id="cod_oc" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="oc_helisa">Orden de compra Helisa</label>
-                                    <input type="file" class="form-control @error('oc_helisa') is-invalid @elseif(strlen($oc_helisa) > 0) is-valid @enderror"
-                                    wire:model.change="oc_helisa">
-                                    @error('oc_helisa')
-                                        <div id="oc_helisa" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
+                            <div class="col-md-12 py-3">
+                                <div class="d-none d-md-block" style="width:100%;">
+                                    <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
                                 </div>
                             </div>
                             <div class="col-md-12 mt-2">

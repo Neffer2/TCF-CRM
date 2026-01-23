@@ -2,6 +2,10 @@
 
 namespace App\Http\Livewire\Productor\Ordenes;
 
+use App\Services\PdfService;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
@@ -273,21 +277,21 @@ class Juridica extends Component
     }
 
     // Cambia el estado de la orden de compra (aprobada, rechazada, GR, anulada)
-    public function cambioEstado($estado){
+    public function cambioEstado($estado, PdfService $pdfService){
         $messaje = '';
 
         if ($estado == 1){
             // ORDEN APROBADA
             $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf|max:10000',
-                'cod_oc' => 'required|max:200',
                 'observaciones_negociacion' => 'required|string|max:1000'
             ]);
 
-            $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
+            $ulti_cod_oc = OrdenCompra::whereIn('estado_id', [1,5])->orderBy('fecha_aprobacion', 'desc')->first()->cod_oc;
             $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
             $this->orden_compra->fecha_aprobacion = now();
-            $this->orden_compra->cod_oc = $this->cod_oc;
+            $this->orden_compra->cod_oc = str_pad($ulti_cod_oc + 1, strlen($ulti_cod_oc), "0", STR_PAD_LEFT);
+            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
+            $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
 
             $this->mailOrdenAprobada($this->orden_compra);
             $messaje = 'Orden de compra APROBADA.';

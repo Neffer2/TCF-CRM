@@ -131,28 +131,6 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
-                                <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
-                                @error('oc_helisa')
-                                    <div id="oc_helisa" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="cod_oc">C&oacute;digo de orden de compra:</label>
-                                <input name="cod_oc" id="cod_oc" class="form-control" wire:model="cod_oc">
-                                @error('cod_oc')
-                                    <div id="cod_oc" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
                                 <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
                                 @error('observaciones_negociacion')

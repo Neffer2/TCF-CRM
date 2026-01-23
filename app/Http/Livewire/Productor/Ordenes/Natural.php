@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Productor\Ordenes;
 
+use App\Services\PdfService;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
@@ -24,7 +25,7 @@ class Natural extends Component
     // Variables públicas para modelos y datos del formulario
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
-            $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
+            $selected_item, $presupuesto, $item_presupuesto, $descripcion, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
             $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
 
     // Variables útiles para almacenar colecciones y límites
@@ -99,6 +100,7 @@ class Natural extends Component
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
+            'descripcion' => 'required|string',
             'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
             'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
             'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
@@ -126,6 +128,7 @@ class Natural extends Component
             ],
             'tipo_servicio' => $this->tipo_servicio,
             'tipo_contrato' => $this->tipo_contrato,
+            'desc' => $this->descripcion,
             'cant' => $this->cantidad,
             'dias' => $this->dias,
             'otros' => $this->otros,
@@ -138,6 +141,7 @@ class Natural extends Component
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
+            'descripcion',
             'cantidad',
             'dias',
             'otros',
@@ -157,6 +161,7 @@ class Natural extends Component
         $this->updatedPresupuesto();
 
         $this->item_presupuesto = $item['item']['id'];
+        $this->descripcion = $item['desc'];
         $this->cantidad = $item['cant'];
         $this->dias = $item['dias'];
         $this->otros = $item['otros'];
@@ -171,6 +176,7 @@ class Natural extends Component
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
+            'descripcion' => 'required|string',
             'cantidad' => 'required',
             'dias' => 'required',
             'otros' => 'required',
@@ -194,6 +200,7 @@ class Natural extends Component
                 'cod_cc' => $presupuesto->cod_cc,
                 'display_item' => $item->displayItem()
             ],
+            'desc' => $this->descripcion,
             'cant' => $this->cantidad,
             'dias' => $this->dias,
             'otros' => $this->otros,
@@ -207,6 +214,7 @@ class Natural extends Component
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
+            'descripcion',
             'cantidad',
             'dias',
             'otros',
@@ -271,7 +279,7 @@ class Natural extends Component
             $OcItem->create([
                 'oc_id' => $orden->id,
                 'item_id' => $item['item']['id'],
-                'desc_oc' => $item['item']['nombre'],
+                'desc_oc' => $item['desc'],
                 'cant_oc' => $item['cant'],
                 'dias_oc' => $item['dias'],
                 'otros_oc' => $item['otros'],
@@ -289,6 +297,7 @@ class Natural extends Component
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
+            'descripcion',
             'cantidad',
             'dias',
             'otros',
@@ -357,7 +366,7 @@ class Natural extends Component
             $OcItem->create([
                 'oc_id' => $this->queriedOrden->id,
                 'item_id' => $item['item']['id'],
-                'desc_oc' => $item['item']['nombre'],
+                'desc_oc' => $item['desc'],
                 'cant_oc' => $item['cant'],
                 'dias_oc' => $item['dias'],
                 'otros_oc' => $item['otros'],
@@ -372,6 +381,7 @@ class Natural extends Component
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
+            'descripcion',
             'cantidad',
             'dias',
             'otros',
@@ -429,6 +439,7 @@ class Natural extends Component
                     'cod_cc' => $item->itemPresupuesto->presto->cod_cc,
                     'display_item' => $item->itemPresupuesto->displayItem()
                 ],
+                'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
                 'otros' => $item->otros_oc,
@@ -477,17 +488,14 @@ class Natural extends Component
         * EVIDENCIAS
     */
     // Valida y sube el archivo de evidencia para la orden de compra
-    public function validateEvidencia($estado){
+    public function validateEvidencia($estado, PdfService $pdfService){
         if ($estado == 5) {
-            $this->validate([
-                'cod_oc' => 'required|string',
-                'oc_helisa' => 'required|file|mimes:pdf|max:2048'
-            ]);
-
-            $this->queriedOrden->cod_oc = $this->cod_oc;
-            $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
+            $ulti_cod_oc = OrdenCompra::whereIn('estado_id', [1,5])->orderBy('fecha_aprobacion', 'desc')->first()->cod_oc;
+            $this->queriedOrden->cod_oc = str_pad($ulti_cod_oc + 1, strlen($ulti_cod_oc), "0", STR_PAD_LEFT);
+            $crear_pdf_oc = $pdfService->generarPdfOC($this->queriedOrden, "public/ordenes_naturales");
+            $this->queriedOrden->archivo_orden_helisa = $crear_pdf_oc;
             $this->queriedOrden->fecha_aprobacion = now();
-            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+//            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
         } elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'
