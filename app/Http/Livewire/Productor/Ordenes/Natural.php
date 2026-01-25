@@ -375,7 +375,7 @@ class Natural extends Component
                 'tipo_servicio' => $item['tipo_servicio'],
                 'tipo_contrato' => $item['tipo_contrato'],
             ]);
-        }
+        } 
 
         // Limpia los campos y colecciones
         $this->resetFields([
@@ -490,12 +490,11 @@ class Natural extends Component
     // Valida y sube el archivo de evidencia para la orden de compra
     public function validateEvidencia($estado, PdfService $pdfService){
         if ($estado == 5) {
-            $ulti_cod_oc = OrdenCompra::whereIn('estado_id', [1,5])->orderBy('fecha_aprobacion', 'desc')->first()->cod_oc;
-            $this->queriedOrden->cod_oc = str_pad($ulti_cod_oc + 1, strlen($ulti_cod_oc), "0", STR_PAD_LEFT);
+            $this->queriedOrden->cod_oc = "C".$this->queriedOrden->id;
             $crear_pdf_oc = $pdfService->generarPdfOC($this->queriedOrden, "public/ordenes_naturales");
             $this->queriedOrden->archivo_orden_helisa = $crear_pdf_oc;
             $this->queriedOrden->fecha_aprobacion = now();
-//            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+            // $this->ocNaturalRevisionContabilidad($this->queriedOrden);
         } elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'

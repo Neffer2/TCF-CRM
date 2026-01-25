@@ -257,7 +257,7 @@
                         <div class="row col-md-10" x-show="accion">
                             <label for="gr">Good Receive:</label>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="form-group"> 
                                     <input id="gr" wire:model="gr" class="form-control">
                                     @error('gr')
                                         <div id="gr" class="text-invalid">

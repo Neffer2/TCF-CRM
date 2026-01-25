@@ -13,19 +13,19 @@
         }
 
         .table-title {
-            padding: 8px;
+            padding: 4px;
             font-size: 12px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 20px;
-            background-color: lightgray;
+            background-color: lightgray; 
         }
 
-        .table-cols { border-top:1px solid #000; border-bottom:1px solid #000; } /* agregado */
-    .table-cols td, .table-cols th { border-left: 1px solid #000; }
-    .table-cols td:last-child, .table-cols th:last-child { border-right: 1px solid #000; }
+        .table-cols { border-top: 1px solid #000; border-bottom: 1px solid #000; } /* agregado */
+        .table-cols td, .table-cols th { border-left: 1px solid #000; }
+        .table-cols td:last-child, .table-cols th:last-child { border-right: 1px solid #000; }
 
-        .totals-table { width:100%; border-collapse:collapse; }
+        .totals-table { width:100%; border-collapse: collapse; }
         .totals-table td { border:1px solid #000; padding:4px; }
         /* .totals-table tr:last-child td { background:#d3d3d3; } */
     </style>
@@ -43,7 +43,7 @@
                 <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="80">
                 <p style="font-weight: bold;">
                     ORDEN DE COMPRA <br>
-                    NRO {{ $orden->cod_oc }}
+                    NRO {{ "C".$orden->id }}
                 </p>
                 <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
             </td>
@@ -101,7 +101,7 @@
     <table class="table-cols">
         <tr class="">
             <th class="table-title">DESCRIPCIÓN</th>
-            <th class="table-title">C COSTO</th>
+            <th class="table-title">CENTRO DE COSTOS</th>
             <th class="table-title">CANT</th>
             <th class="table-title">VR UNITARIO</th>
             <th class="table-title">VR TOTAL</th>

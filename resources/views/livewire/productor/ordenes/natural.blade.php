@@ -795,7 +795,7 @@
                                 <div class="d-none d-md-block" style="width:100%;">
                                     <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
                                 </div>
-                            </div>
+                            </div> 
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))

@@ -166,7 +166,9 @@ class Juridica extends Component
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
         $this->observaciones_remision = $this->orden_compra->observacion_remision;
-
+        if ($this->orden_compra->estado_id == 4){
+            $this->gr = "GR".$this->orden_compra->id;
+        } 
         // Carga los items de la OC
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
@@ -286,10 +288,9 @@ class Juridica extends Component
                 'observaciones_negociacion' => 'required|string|max:1000'
             ]);
 
-            $ulti_cod_oc = OrdenCompra::whereIn('estado_id', [1,5])->orderBy('fecha_aprobacion', 'desc')->first()->cod_oc;
             $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
-            $this->orden_compra->fecha_aprobacion = now();
-            $this->orden_compra->cod_oc = str_pad($ulti_cod_oc + 1, strlen($ulti_cod_oc), "0", STR_PAD_LEFT);
+            $this->orden_compra->fecha_aprobacion = now();            
+            $this->orden_compra->cod_oc = "C".$this->orden_compra->id;
             $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
             $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
 
