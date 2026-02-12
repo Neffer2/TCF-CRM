@@ -38,6 +38,7 @@ class OrdenesCompra extends Component
     // PROPIEDADES ADICIONALES
     public $productor_id;          // ID específico del productor autenticado
     public $yearInfo;              // Información del año seleccionado
+    public $estado_id;             // ID especifico del estado de las OC
 
     /**
      * Renderiza la vista del componente con las órdenes filtradas
@@ -48,9 +49,18 @@ class OrdenesCompra extends Component
         // Inicia la consulta base
         $query = OrdenCompra::query();
 
+        if ($this->estado_id) {
+            $this->estado = $this->estado_id;
+        }
+
         // Filtro por estado de la orden de compra
         if ($this->estado){
-            $query->where('estado_id', $this->estado);
+            if (is_array($this->estado)) {
+                $query->whereIn('estado_id', $this->estado);
+            }
+            else {
+                $query->where('estado_id', $this->estado);
+            }
         }
 
         // Filtro por año: aplica rango de fechas del año seleccionado

@@ -18,7 +18,7 @@
             font-weight: bold;
             text-align: center;
             margin-bottom: 20px;
-            background-color: lightgray; 
+            background-color: lightgray;
         }
 
         .table-cols { border-top: 1px solid #000; border-bottom: 1px solid #000; } /* agregado */
@@ -40,12 +40,7 @@
                 <p style="margin-bottom: 0; line-height: 5px">TELEFONOS: 4322700</p>
             </td>
             <td style="text-align: right;">
-                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="80">
-                <p style="font-weight: bold;">
-                    ORDEN DE COMPRA <br>
-                    NRO {{ "C".$orden->id }}
-                </p>
-                <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
+                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="70">
             </td>
         </tr>
         <tr>
@@ -53,7 +48,7 @@
                 <div>
                     <p style="font-size: 14px; margin-bottom: 0; text-decoration: underline;"><strong>Datos del Proveedor</strong></p>
                     <table>
-                        @if ( $orden->tipo_oc === 1 )
+                        @if ( $orden->tipo_oc == 1 )
                             <tr>
                                 <td width="60">Nombre:</td>
                                 <td>{{ $orden->proveedor->tercero }}</td>
@@ -91,6 +86,13 @@
                     </table>
                 </div>
             </td>
+            <td style="text-align: right; vertical-align: top">
+                <p style="font-weight: bold;">
+                    ORDEN DE COMPRA <br>
+                    NRO {{ $cod_oc }}
+                </p>
+                <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
+            </td>
         </tr>
     </table>
 
@@ -101,22 +103,16 @@
     <table class="table-cols">
         <tr class="">
             <th class="table-title">DESCRIPCIÓN</th>
-            <th class="table-title">CENTRO DE COSTOS</th>
             <th class="table-title">CANT</th>
             <th class="table-title">VR UNITARIO</th>
             <th class="table-title">VR TOTAL</th>
         </tr>
         @foreach( $orden->ordenItems as $item )
             <tr>
-                <td style="padding: 2px">{{ $item->desc_oc }}</td>
-                @if ( ! empty( $orden->presupuesto->cod_cc ) )
-                    <td style="text-align: center">{{  $orden->presupuesto->cod_cc  }}</td>
-                @else
-                    <td style="text-align: center">{{  $item->itemPresupuesto->presto->cod_cc  }}</td>
-                @endif
-                <td style="text-align: center;">{{ $item->cant_oc }}</td>
-                <td style="text-align: right;">{{ number_format($item->vunit_oc) }}</td>
-                <td style="text-align: right;">{{ number_format($item->vtotal_oc) }}</td>
+                <td width="50%" style="padding: 2px; font-size: 10px">{{ $item->desc_oc }}</td>
+                <td width="10%" style="text-align: center; font-size: 10px">{{ $item->cant_oc }}</td>
+                <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vunit_oc) }}</td>
+                <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vtotal_oc) }}</td>
             </tr>
         @endforeach
     </table>
@@ -133,28 +129,16 @@
             <td width="40%">
                 <table class="totals-table">
                     <tr>
-                        <td style="font-weight: bold;">SUBTOTAL:</td>
-                        <td style="text-align: right;">{{ number_format($subtotal) }}</td>
+                        <td style="font-weight: bold;; font-size: 12px">SUBTOTAL:</td>
+                        <td style="text-align: right; font-size: 10px">{{ number_format($subtotal) }}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: bold;">IVA:</td>
-                        <td style="text-align: right;">{{ number_format(0) }}</td>
+                        <td style="font-weight: bold;; font-size: 12px">IVA:</td>
+                        <td style="text-align: right; font-size: 10px">{{ number_format(0) }}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: bold;">RETEFUENTE:</td>
-                        <td style="text-align: right;">{{ number_format(0) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold;">RETEIVA:</td>
-                        <td style="text-align: right;">{{ number_format(0) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold;">RETEICA:</td>
-                        <td style="text-align: right;">{{ number_format(0) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold; background-color: lightgray">TOTALES:</td>
-                        <td style="text-align: right;">{{ number_format($subtotal) }}</td>
+                        <td style="font-weight: bold; background-color: lightgray; font-size: 12px">TOTALES:</td>
+                        <td style="text-align: right; font-size: 10px">{{ number_format($subtotal) }}</td>
                     </tr>
                 </table>
             </td>

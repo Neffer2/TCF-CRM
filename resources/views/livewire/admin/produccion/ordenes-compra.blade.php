@@ -48,7 +48,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <label for="Tipo">Tipo:</label>
                         <select id="Tipo" class="form-control" wire:model="tipo">
                             <option value="">Seleccionar</option>
@@ -175,6 +175,10 @@
                                                 <span class="badge badge-sm bg-gradient-warning">TESORER&Iacute;A</span>
                                             @elseif ($orden->archivo_comprobante_pago)
                                                 <span class="badge badge-sm bg-gradient-success">PAGADA</span>
+                                            @elseif ($orden->estado_oc->id == 8)
+                                                <span class="badge badge-sm bg-gradient-warning">LIDER PRODUCCIÓN</span>
+                                            @elseif ($orden->estado_oc->id == 9)
+                                                <span class="badge badge-sm bg-gradient-warning">GERENCIA</span>
                                             @endif
                                         </p>
                                     </td>
@@ -192,6 +196,212 @@
                             @endphp
                             <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
                         </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mb-3 ms-2">
+                {{ $ordenes->links() }}
+            </div>
+        </div>
+    </div>
+@elseif(Auth::user()->rol == 6)
+    <div>
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="mb-0">Ordenes de compra</h3>
+                        <p class="text-sm mb-0">Lista de ordenes de compra por revisar.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="año">Año:</label>
+                        <select wire:model="año" class="form-control">
+                            <option value="">Seleccionar</option>
+                            @foreach ($años as $año)
+                                <option value="{{ $año->id }}">{{ $año->description }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="comercial">COD OC:</label>
+                        <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="comercial">Buscar:</label>
+                        <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="comercial">Buscar:</label>
+                        <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="productor">Productor:</label>
+                        <select id="productor" class="form-control" wire:model="productor">
+                            <option value="">Seleccionar</option>
+                            @foreach ($productores as $productor)
+                                <option value="{{ $productor->id }}">{{ $productor->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="estado">Estados:</label>
+                        <select id="estado" class="form-control" wire:model="estado" disabled>
+                            <option value="">Seleccionar</option>
+                            @foreach ($estados as $estado)
+                                <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="Tipo">Tipo:</label>
+                        <select id="Tipo" class="form-control" wire:model="tipo">
+                            <option value="">Seleccionar</option>
+                            @foreach ($tipos as $tipo)
+                                <option value="{{ $tipo->id }}">{{ $tipo->description }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                    <tr>
+                        <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
+                        <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
+                        <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($ordenes as $orden)
+                        @if ($orden->tipo_oc == 1)
+                            <tr>
+                                <td style="width: 16rem;">
+                                    <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}">
+                                        <div>
+                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            @if (strlen($orden->presupuesto->gestion->nom_proyecto_cot) > 80)
+                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
+                                            @else
+                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}</h6>
+                                            @endif
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Tipo</p>
+                                    <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                    <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
+                                    <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Productor</p>
+                                    <p class="text-xs text-secondary mb-0">
+                                        @if ($orden->presupuesto->productor_info)
+                                            {{ $orden->presupuesto->productor_info->name }}
+                                        @else
+                                            NO ASIGNADO
+                                        @endif
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Comercial</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                </td>
+                                <td class="d-flex align-items-center justify-content-center">
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-compra-juridica', ['orden' => $orden->id]) }}" target="_blank">Ver</a>
+                                </td>
+                            </tr>
+                        @elseif($orden->tipo_oc == 2)
+                            <tr>
+                                <td style="width: 16rem;">
+                                    <div class="d-flex px-2 py-1" title="Orden #{{ $orden->id }}">
+                                        <div>
+                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-xs" >Orden #{{ $orden->id }}</h6>
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->id }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Tipo</p>
+                                    <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Tercero</p>
+                                    <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
+                                </td>
+                                {{-- <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha Evidencias</p>
+                                    @if (!$orden->evidencias->isEmpty()) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
+                                </td> --}}
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Productor</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
+                                </td>
+                                <td colspan="2">
+                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}
+                                        @if ($orden->estado_oc->id == 2)
+                                            <span class="badge badge-sm bg-gradient-warning">CONTROLLER</span>
+                                        @elseif ($orden->estado_oc->id == 7)
+                                            <span class="badge badge-sm bg-gradient-warning">TERCERO</span>
+                                        @elseif ($orden->estado_oc->id == 5 && !($orden->cod_causal))
+                                            <span class="badge badge-sm bg-gradient-warning">CONTABILIDAD</span>
+                                        @elseif ($orden->estado_oc->id == 5 && $orden->cod_causal && !($orden->archivo_comprobante_pago))
+                                            <span class="badge badge-sm bg-gradient-warning">TESORER&Iacute;A</span>
+                                        @elseif ($orden->archivo_comprobante_pago)
+                                            <span class="badge badge-sm bg-gradient-success">PAGADA</span>
+                                        @elseif ($orden->estado_oc->id == 8)
+                                            <span class="badge badge-sm bg-gradient-warning">LIDER PRODUCCIÓN</span>
+                                        @elseif ($orden->estado_oc->id == 9)
+                                            <span class="badge badge-sm bg-gradient-warning">GERENCIA</span>
+                                        @endif
+                                    </p>
+                                </td>
+                                <td class="d-flex align-items-center justify-content-center">
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('oc-natural', ['orden_id' => $orden->id]) }}" target="_blank">Ver</a>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                    <tr>
+                        @php
+                            $ordenesArray = $ordenes->toArray();
+                            $registros_page = sizeof($ordenesArray['data']);
+                            $total = $ordenesArray['total'];
+                        @endphp
+                        <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -471,4 +681,3 @@
         </script>
     </div>
 @endif
-

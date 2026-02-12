@@ -5,9 +5,9 @@
         </div>
         <!-- <div class="min-height-300 bg-gradient-warning position-absolute w-100"></div>  -->
     @endsection
-    @section('content')        
+    @section('content')
         <div x-data="asignarProyecto">
-            <div class="card"> 
+            <div class="card">
                 <div class="card-body">
                     <h3 class="mb-4">Asignar proyecto</h3>
                     <div class="row">
@@ -23,21 +23,21 @@
                         <div class="col-md-10">
                             @foreach ($productores as $productor)
                                 <div id="show{{ $productor->id }}" x-show="false" x-cloak>
-                                    @livewire('lider-produccion.asignar-proyecto', ['id_productor' => $productor->id])                             
+                                    @livewire('lider-produccion.asignar-proyecto', ['id_productor' => $productor->id])
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
         <div class="mt-3">
             @livewire('lider-produccion.buscar-proyecto')
         </div>
-    @endsection 
+    @endsection
     @section('scripts')
         <script>
-            function asignarProyecto (){ 
+            function asignarProyecto (){
                 return {
                     productor,
                     prevComponente: null,
@@ -45,7 +45,7 @@
                         this.Close(this.prevComponente);
                         let componente = document.getElementById('show'+productor.value);
                         this.prevComponente = (componente != this.prevComponente) ? componente : this.prevComponente;
-                        componente.style.display = 'block';                        
+                        componente.style.display = 'block';
                     },
                     Close(compoente){
                         if (compoente){

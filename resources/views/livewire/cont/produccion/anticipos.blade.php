@@ -17,12 +17,16 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-1">
+                    <label for="comercial">COD OC:</label>
+                    <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                </div>
                 <div class="col-md-2">
-                    <label for="comercial">Buscar:</label>
+                    <label for="comercial">Centro de costo:</label>
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div>
                 <div class="col-md-2">
-                    <label for="comercial">Buscar:</label>
+                    <label for="comercial">Documento tercero:</label>
                     <input type="text" wire:model="documento" class="form-control" placeholder="documento tercero">
                 </div>
                 <div class="col-md-2">
@@ -41,7 +45,7 @@
                         @foreach ($estados as $estado)
                             <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                         @endforeach
-                    </select> 
+                    </select>
                 </div>
                 <div class="col-md-1">
                     <label for="filtro_fecha">Fecha:</label>
@@ -93,6 +97,10 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Tipo</p>
                                 <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">COD OC</p>
+                                <span class="badge badge-md badge-primary">{{ (!empty( $orden->cod_oc )) ? $orden->cod_oc : '' }}</span>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
@@ -160,6 +168,10 @@
                                 <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
                             </td>
                             <td>
+                                <p class="text-xs font-weight-bold mb-0">COD OC</p>
+                                <span class="badge badge-md badge-info">{{ (!empty( $orden->cod_oc )) ? $orden->cod_oc : '' }}</span>
+                            </td>
+                            <td>
                                 <p class="text-xs font-weight-bold mb-0">Proveedor</p>
                                 <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
                             </td>
@@ -169,7 +181,7 @@
                             </td> --}}
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p> 
+                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>

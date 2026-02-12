@@ -1,11 +1,11 @@
 <div class="card">
     <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
-        <div class="row">            
+        <div class="row">
             <div class="col-md-12">
                 <h3 class="mb-0">Remisiones</h3>
                 <p class="text-sm mb-0">Adjunta y firma la remisi&oacute;n enviada por el proveedor.</p>
-            </div> 
-        </div> 
+            </div>
+        </div>
     </div>
     <div class="card-body pt-2">
         <div class="row">
@@ -13,9 +13,9 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            @php 
-                                $archivo_orden_helisa = str_replace('public/', '', $storedOrden->archivo_orden_helisa); 
-                            @endphp 
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $storedOrden->archivo_orden_helisa);
+                            @endphp
                             <h6 style="margin: 0">Orden de compra:</h6>
                             <div style="font-size: 9px;">
                                 Consulta la orden de compra generada por Helisa.
@@ -25,7 +25,7 @@
                                 <span class="btn-inner--text">Ver</span>
                             </a>
                         </div>
-                        <div class="form-group"> 
+                        <div class="form-group">
                             <h6 style="margin: 0">Remisi&oacute;n:</h6>
                             <div style="font-size: 9px;">
                                 Adjunta la remisi&oacute;n.
@@ -33,8 +33,8 @@
                             <input id="remision" wire:model="remision" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                             <div wire:loading wire:target="remision" class="py-2">
                                 <div class="spinner-border text-warning" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div> 
+                                    <span class="sr-only"></span>
+                                </div>
                             </div>
                             @error('remision')
                                 <div id="remision" class="text-invalid">
@@ -42,7 +42,7 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="form-group"> 
+                        <div class="form-group">
                             <h6 style="margin: 0">Observaciones:</h6>
                             <div style="font-size: 9px;">
                                 Notif&iacute;cale a compras si hay alguna novedad u observaci&oacute;n.
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- <div class="col-md-12">
                 <div class="form-group">
                     <h6 style="margin: 0">Good receive:</h6>
@@ -92,13 +92,13 @@
             </div> --}}
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script>
         let saveButton = document.getElementById('save');
         let cancelButton = document.getElementById('clear');
         let enviarBtn = document.getElementById('enviar-btn');
-        
+
         enviarBtn.addEventListener('click', enviar);
 
         signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
@@ -114,7 +114,7 @@
             data = signaturePad.toDataURL('image/png');
             enviarBtn.disabled = false;
             document.getElementById('firma_hidden').value = data;
-        }); 
+        });
 
         cancelButton.addEventListener('click', function (event) {
             signaturePad.clear();

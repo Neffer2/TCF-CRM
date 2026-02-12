@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
 <div>
     <div class="card-body pt-0">
         <div class="card">
@@ -76,7 +77,7 @@
                                     <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
-                                    @if (Auth::user()->rol != 1)
+                                    @if (Auth::user()->rol != 1 && Auth::user()->rol != 6)
                                         <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                                     @endif
                                 </tr>
@@ -93,7 +94,7 @@
                                         </td>
                                         <td class="text-center">{{ number_format($item['vUnit']) }}</td>
                                         <td class="text-center">{{ number_format($item['vTotal']) }}</td>
-                                        @if (Auth::user()->rol != 1)
+                                        @if (Auth::user()->rol != 1 && Auth::user()->rol != 6)
                                             <td class="d-flex justify-content-center" style="padding: 11px;">
                                                 <button class="me-2" wire:click="delete({{ $item['id'] }})">
                                                     ✖️
@@ -110,7 +111,103 @@
                     </div>
                 </div>
             </div>
-            @if (Auth::user()->rol == 1 && $orden_compra->estado_id == 2)
+            @if(Auth::user()->rol == 6 && $orden_compra->estado_id == 8)
+                {{-- REVISIÓN LIDER DE PRODUCCIÓN --}}
+                <div class="row px-4">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @php
+                                $aux = str_replace('public/', '', $orden_compra->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observaciones_negociacion">Observaciones de aprobaci&oacute;n:</label>
+                            <textarea name="observaciones_revision_lider" id="observaciones_revision_lider" class="form-control" wire:model="observaciones_revision_lider" cols="100" rows="2"></textarea>
+                            @error('observaciones_revision_lider')
+                            <div id="observaciones_revision_lider" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(9)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rechazo_revision_lider">Justificaci&oacute;n de rechazo:</label>
+                            <textarea name="rechazo_revision_lider" id="rechazo_revision_lider" class="form-control" wire:model="rechazo_revision_lider" cols="100" rows="2"></textarea>
+                            @error('rechazo_revision_lider')
+                            <div id="rechazo_revision_lider" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(11)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            @elseif((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_compra->estado_id == 9)
+                {{-- REVISIÓN GERENCIA --}}
+                <div class="row px-4">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @php
+                                $aux = str_replace('public/', '', $orden_compra->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observaciones_revision_gerencia">Observaciones de aprobaci&oacute;n:</label>
+                            <textarea name="observaciones_revision_gerencia" id="observaciones_revision_gerencia" class="form-control" wire:model="observaciones_revision_gerencia" cols="100" rows="2"></textarea>
+                            @error('observaciones_revision_gerencia')
+                            <div id="observaciones_revision_gerencia" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(2)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rechazo_revision_gerencia">Justificaci&oacute;n de rechazo:</label>
+                            <textarea name="rechazo_revision_gerencia" id="rechazo_revision_gerencia" class="form-control" wire:model="rechazo_revision_gerencia" cols="100" rows="2"></textarea>
+                            @error('rechazo_revision_gerencia')
+                            <div id="rechazo_revision_gerencia" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(12)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            @elseif (Auth::user()->rol == 1 && $orden_compra->estado_id == 2)
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -126,7 +223,12 @@
                     <div class="row px-4">
                         <div class="col-md-12">
                             <div class="d-none d-md-block" style="width:100%;">
-                                <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                                <embed src="{{ route('orden-compra.pdf', $orden_compra) }}#navpanes=0" width="100%" height="900" type="application/pdf">
+                            </div>
+                            <div>
+                                <p class="text-dark font-weight-bold mt-3">
+                                    Código OC: {{ $cod_oc }}
+                                </p>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -158,7 +260,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only"></span>
                         </div>
                     </div>
                 </div>
@@ -214,7 +316,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && $orden_compra->estado_id == 1) && Auth::user()->rol == 7)
+            @elseif(($orden_compra && ($orden_compra->estado_id == 1 || $orden_compra->estado_id == 13)) && Auth::user()->rol == 7)
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -232,6 +334,95 @@
                             <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
                             <span class="btn-inner--text">Firmar remisi&oacute;n</span>
                         </a>
+                    </div>
+                </div>
+            @elseif(($orden_compra && $orden_compra->estado_id == 10) && Auth::user()->rol == 6)
+                {{-- REVISIÓN REMISIÓN LIDER PRODUCCIÓN --}}
+                <div class="row px-4">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $firma = str_replace('public/', '', $orden_compra->archivo_firma);
+                            @endphp
+                            <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Firma.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cod: @if ($orden_compra->cod_oc) {{ $orden_compra->cod_oc }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observaciones_revision_evidencias">Observaciones de aprobaci&oacute;n:</label>
+                            <textarea name="observaciones_revision_evidencias" id="observaciones_revision_evidencias" class="form-control" wire:model="observaciones_revision_evidencias" cols="100" rows="2"></textarea>
+                            @error('observaciones_revision_evidencias')
+                                <div id="observaciones_revision_evidencias" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(4)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rechazo_revision_evidencias">Justificaci&oacute;n de rechazo:</label>
+                            <textarea name="rechazo_revision_evidencias" id="rechazo_revision_evidencias" class="form-control" wire:model="rechazo_revision_evidencias" cols="100" rows="2"></textarea>
+                            @error('rechazo_revision_evidencias')
+                                <div id="rechazo_revision_evidencias" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(13)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                        <span class="sr-only"></span>
                     </div>
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
@@ -257,7 +448,7 @@
                         <div class="row col-md-10" x-show="accion">
                             <label for="gr">Good Receive:</label>
                             <div class="col-md-4">
-                                <div class="form-group"> 
+                                <div class="form-group">
                                     <input id="gr" wire:model="gr" class="form-control">
                                     @error('gr')
                                         <div id="gr" class="text-invalid">
@@ -352,7 +543,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6))))
+            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6 || $orden_compra->estado_id == 8 || $orden_compra->estado_id == 9))))
                 <div class="row px-4">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -471,26 +662,25 @@
                                 placeholder="Otros" required wire:model.lazy="otros" disabled>
                             </div>
                         </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="">DESCRIPCION</label>
-                                <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
-                                    placeholder="Descripción" wire:model.lazy="desc" cols="30" rows="1"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">V. UNI</label>
                                 <input type="text" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
                                 placeholder="Valor unitario" required wire:model.lazy="vUnit" x-mask:dynamic="$money($input)">
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">V. TOTAL</label>
                                 <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
                                 placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="">DESCRIPCION</label>
+                                <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
+                                          placeholder="Descripción" wire:model.lazy="desc" cols="30" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
@@ -549,7 +739,7 @@
                             <input id="cotizacion" wire:model="file_cot" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
                             <div wire:loading wire:target="file_cot" class="py-2">
                                 <div class="spinner-border text-warning" role="status">
-                                    <span class="sr-only">Loading...</span>
+                                    <span class="sr-only"></span>
                                 </div>
                             </div>
                         </div>
@@ -570,6 +760,23 @@
                         </div>
                     </div>
                 </div>
+                @if ($orden_compra && ($orden_compra->estado_id == 11 || $orden_compra->estado_id == 12))
+                    <div class="row px-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Justificación de rechazo</label>
+                                <p class="text-1xl text-black font-weight-bold">
+                                    @switch($orden_compra->estado_id)
+                                        @case(11)
+                                            {{ $orden_compra->rechazo_revision_lider }}
+                                        @case(12)
+                                            {{ $orden_compra->rechazo_revision_gerencia }}
+                                    @endswitch
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @endif
         </div>
     </div>

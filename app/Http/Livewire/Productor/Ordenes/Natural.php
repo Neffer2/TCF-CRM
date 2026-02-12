@@ -26,7 +26,9 @@ class Natural extends Component
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $descripcion, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
-            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
+            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false,
+            $observaciones_revision_lider, $rechazo_revision_lider, $observaciones_revision_gerencia, $rechazo_revision_gerencia,
+            $observaciones_revision_evidencias, $rechazo_revision_evidencias;
 
     // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -261,7 +263,8 @@ class Natural extends Component
         // Crea la orden de compra (tipo natural)
         $orden = OrdenCompra::create([
             'tipo_oc' => 2,
-            'estado_id' => 3,
+            'estado_id' => 8,
+//            'estado_id' => 3,
             'presupuesto_id' => null,
             'proveedor_id' => 3,
         ]);
@@ -291,7 +294,7 @@ class Natural extends Component
         }
 
         // Envía mensaje al tercero si tiene teléfono
-        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
+//        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
 
         // Limpia todos los campos y colecciones
         $this->resetFields([
@@ -345,7 +348,8 @@ class Natural extends Component
             if ($this->queriedOrden->naturalInfo->tercero->telefono){
                 $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
             }
-        }else {
+        }
+        else {
             // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
             $this->queriedOrden->update([
                 'estado_id' => 2,
@@ -375,7 +379,7 @@ class Natural extends Component
                 'tipo_servicio' => $item['tipo_servicio'],
                 'tipo_contrato' => $item['tipo_contrato'],
             ]);
-        } 
+        }
 
         // Limpia los campos y colecciones
         $this->resetFields([
@@ -403,6 +407,102 @@ class Natural extends Component
         unset($this->selected_item);
         $this->items = collect();
         return redirect()->route('ordenes-prod')->with('success', 'Información guardada correctamente');
+    }
+
+    /**
+     * Guarda las gestiones de revisión del Lider de producción, Gerencia y los cambios realizados por el
+     * productor cuando existe un rechazo
+     * @param $estado
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function revisionOC($estado) {
+        $redirect_route = 'ordenes-compra-lid';
+
+        if ($estado == 3) {
+            // REVISIÓN DE GERENCIA APROBADA
+            $this->validate([
+                'observaciones_revision_gerencia' => 'required|string|max:1000'
+            ]);
+
+            $this->queriedOrden->observaciones_revision_gerencia = $this->observaciones_revision_gerencia;
+
+            // Envía mensaje al tercero si tiene teléfono
+            $tercero = Tercero::where('id', $this->tercero)->first();
+//                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+
+            $redirect_route = 'ordenes-compra';
+        }
+        elseif ($estado == 8) {
+            // GUARDAR AJUSTES REALIZADOS A LA OC POR PARTE DEL PRODUCTOR (CUANDO LA OC ES RECHAZADA POR EL LIDER DE PRODUCCIÓN O GERENCIA)
+
+            // Elimina los items actuales y crea los nuevos
+            foreach ($this->queriedOrden->ordenItems as $item){
+                $item->delete();
+            }
+
+            $OcItem = new OcItem();
+            foreach ($this->items as $item){
+                $OcItem->create([
+                    'oc_id' => $this->queriedOrden->id,
+                    'item_id' => $item['item']['id'],
+                    'desc_oc' => $item['desc'],
+                    'cant_oc' => $item['cant'],
+                    'dias_oc' => $item['dias'],
+                    'otros_oc' => $item['otros'],
+                    'vunit_oc' => $item['valor_unitario'],
+                    'vtotal_oc' => $item['valor_total'],
+                    'tipo_servicio' => $item['tipo_servicio'],
+                    'tipo_contrato' => $item['tipo_contrato'],
+                ]);
+            }
+
+            $redirect_route = 'ordenes-compra-prod';
+        }
+        elseif ($estado == 9) {
+            // REVISIÓN LIDER APROBADA
+            $this->validate([
+                'observaciones_revision_lider' => 'required|string|max:1000'
+            ]);
+
+            // CALCULAMOS EL VALOR TOTAL DE LA OC
+            $vtotal_oc = 0;
+            foreach ($this->items as $item) {
+                $vtotal_oc += $item['valor_total'];
+            }
+
+            // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE CAMBIA A ESTADO EDITABLE ($estado_id = 3),
+            // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
+            if ($vtotal_oc < 5000000) {
+                $estado = 3;
+
+                // Envía mensaje al tercero si tiene teléfono
+                $tercero = Tercero::where('id', $this->tercero)->first();
+//                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+            }
+
+            $this->queriedOrden->observaciones_revision_lider = $this->observaciones_revision_lider;
+        }
+        elseif ($estado == 11) {
+            // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
+            $this->validate([
+                'rechazo_revision_lider' => 'required|string|max:1000',
+            ]);
+
+            $this->queriedOrden->rechazo_revision_lider = $this->rechazo_revision_lider;
+        }
+        elseif ($estado == 12) {
+            // RECHAZO REVISIÓN GERENCIA
+            $this->validate([
+                'rechazo_revision_gerencia' => 'required|string|max:1000',
+            ]);
+
+            $this->queriedOrden->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+        }
+
+        $this->queriedOrden->estado_id = $estado;
+        $this->queriedOrden->update();
+
+        return redirect()->route($redirect_route)->with('success', 'Información guardada correctamente');
     }
 
     /* * --------------------- * */
@@ -451,6 +551,10 @@ class Natural extends Component
 
             $this->items->push($newItem);
         }
+
+        if ($this->queriedOrden->estado_id == 2) {
+            $this->cod_oc = "OC" . $this->queriedOrden->id;
+        }
     }
 
     // Elimina una orden de compra y sus relaciones
@@ -490,11 +594,17 @@ class Natural extends Component
     // Valida y sube el archivo de evidencia para la orden de compra
     public function validateEvidencia($estado, PdfService $pdfService){
         if ($estado == 5) {
-            $this->queriedOrden->cod_oc = "C".$this->queriedOrden->id;
+            $this->queriedOrden->cod_oc = "OC".$this->queriedOrden->id;
+
+            // CREA EL PDF DE LA OC
             $crear_pdf_oc = $pdfService->generarPdfOC($this->queriedOrden, "public/ordenes_naturales");
+            // CREA EL PDF DE LA CUENTA DE COBRO
+            $pdf_cco = $pdfService->generarPdfCCO($this->queriedOrden, "public/cuentas_cobro");
+
             $this->queriedOrden->archivo_orden_helisa = $crear_pdf_oc;
             $this->queriedOrden->fecha_aprobacion = now();
-            // $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+//             $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+//            $this->ocNaturalEnvioCuentaCobro($this->queriedOrden, "public/cuentas_cobro/cuenta_cobro_" . $this->queriedOrden->id . ".pdf");
         } elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'

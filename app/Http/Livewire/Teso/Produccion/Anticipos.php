@@ -6,7 +6,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrdenesTesoreria;
 use Livewire\Component;
 use App\Models\OrdenCompra;
-use App\Models\EstadoOrdenesCompra; 
+use App\Models\EstadoOrdenesCompra;
 use Livewire\WithPagination;
 use App\Models\Año;
 use App\Models\User;
@@ -15,7 +15,7 @@ use App\Models\TipoOrdenCompra;
 class Anticipos extends Component
 {
     // Modelos para los filtros y campos del formulario
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
+    public $cod_oc, $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
 
     // Variables útiles para los selectores y catálogos
     public $estados = [], $años = [], $tipos = [], $productores = [];
@@ -58,6 +58,14 @@ class Anticipos extends Component
             $ordenes = OrdenCompra::where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
+        // Filtro por código de orden de compra
+        if ($this->cod_oc){
+            $ordenes = OrdenCompra::where(function($query){
+                $query->where('cod_oc', 'LIKE', "%$this->cod_oc%")
+                    ->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
         // Filtro por documento
         if ($this->documento) {
             $ordenes = OrdenCompra::where(function($query) {
@@ -89,7 +97,7 @@ class Anticipos extends Component
 
     public function reporteExcel(){
         return Excel::download(new OrdenesTesoreria($this->yearInfo), "reporte_ordenes_tesoreria.xlsx");
-    } 
+    }
 
     // Método que se ejecuta al montar el componente, carga los catálogos y valores iniciales
     public function mount(){

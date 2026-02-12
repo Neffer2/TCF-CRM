@@ -10,14 +10,14 @@ use App\Models\Año;
 use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
-class Anticipos extends Component 
+class Anticipos extends Component
 {
     // Variables para filtros y búsqueda
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
+    public $cod_oc, $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
 
     // Listas para selects y filtros
     public $estados = [], $años = [], $tipos = [], $productores = [];
- 
+
     // Habilita paginación y define el tema de Bootstrap
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
@@ -51,6 +51,14 @@ class Anticipos extends Component
         }else {
             // Si no hay código, filtra solo por los filtros generales
             $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
+
+        // Filtro por código de orden de compra
+        if ($this->cod_oc){
+            $ordenes = OrdenCompra::where(function($query){
+                $query->where('cod_oc', 'LIKE', "%$this->cod_oc%")
+                    ->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
         }
 
         // Filtro por documento

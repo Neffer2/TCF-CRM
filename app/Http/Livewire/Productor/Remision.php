@@ -51,8 +51,8 @@ class Remision extends Component
         $orden->archivo_firma = "public/firmas_produccion/$this->orden.png";
         // Guarda las observaciones
         $orden->observacion_remision = $this->observaciones;
-        // Cambia el estado de la orden a "Recibido"
-        $orden->estado_id = 4; //Recibido
+        // Cambia el estado de la orden a "Revisión evidencias lider"
+        $orden->estado_id = 10; //Revisión evidencias lider
 
         // Procesa la imagen de la firma recibida en base64
         $data_uri = $data;

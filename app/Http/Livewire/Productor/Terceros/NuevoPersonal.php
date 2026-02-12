@@ -419,7 +419,7 @@ class NuevoPersonal extends Component
         ]);
 
         // Mail evidencias enviadas
-        $this->ocNaturalEvidenciasEnviadas($this->orden);
+//        $this->ocNaturalEvidenciasEnviadas($this->orden);
 
         return redirect()->route('consulta-terceros');
     }

@@ -50,6 +50,8 @@ Route::get('/', function () {
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['admin'])->name('orden-natural');
 
+    Route::get('/cuenta-cobro/pdf/{orden}', [AdminController::class, 'cuentaCobroPdf'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro.pdf');
+
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');
@@ -105,6 +107,11 @@ Route::get('/', function () {
 
 /* Líder produccion */
     Route::get('/dashboard-lider-produccion', [LiderProduccionController::class, 'index'])->middleware(['auth'])->middleware(['lproduccion'])->name('dashboard-lider-produccion');
+    Route::view('/ordenes-compra-lid', 'lider-produccion.ordenes.index')->middleware(['auth'])->middleware(['lproduccion'])->name('ordenes-compra-lid');
+    Route::get('/orden-compra-juridica/{orden?}', [LiderProduccionController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['lproduccion'])->name('orden-compra-juridica');
+    Route::get('/oc-natural/{orden_id?}', function ($orden_id){
+        return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
+    })->middleware(['auth'])->middleware(['lproduccion'])->name('oc-natural');
 /* --- */
 
 /* Productor */
@@ -153,5 +160,9 @@ Route::get('/', function () {
 // });
 Route::get('trial', function (){
     return view('exports.orden_compra_pdf');
+});
+
+Route::get('trial', function (){
+    return view('exports.cuenta_cobro_pdf');
 });
 require __DIR__.'/auth.php';

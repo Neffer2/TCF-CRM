@@ -21,7 +21,8 @@ class Juridica extends Component
     // Variables para los datos del formulario y modelos
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
-    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion;
+    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion, $observaciones_revision_lider,
+        $rechazo_revision_lider, $observaciones_revision_gerencia, $rechazo_revision_gerencia, $observaciones_revision_evidencias, $rechazo_revision_evidencias;
 
     // Variables para la orden y presupuesto seleccionados
     public $presupuesto, $orden_compra;
@@ -166,9 +167,19 @@ class Juridica extends Component
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
         $this->observaciones_remision = $this->orden_compra->observacion_remision;
+        if ($this->orden_compra->estado_id == 2){
+            // Generar código de OC
+            $cod_cc = $this->presupuesto->cod_cc;
+            $cod_cc_explode = explode("-", $cod_cc);
+            $this->cod_oc = "OC" . $this->orden_compra->id;
+        }
         if ($this->orden_compra->estado_id == 4){
+            // Generar código de GR
+            $cod_cc = $this->presupuesto->cod_cc;
+            $cod_cc_explode = explode("-", $cod_cc);
+//            $this->gr = "GR" . substr($cod_cc_explode[0], 0, -3);
             $this->gr = "GR".$this->orden_compra->id;
-        } 
+        }
         // Carga los items de la OC
         foreach ($this->orden_compra->ordenItems as $item){
             array_push($this->ocItems, [
@@ -224,7 +235,17 @@ class Juridica extends Component
 
         // Si la orden está creada, actualiza
         if ($this->orden_compra){
-            $this->orden_compra->estado_id = 2;
+            $estado_id = 0;
+            // SI EL ESTADO ACTUAL ES EDITABLE, SE ENVIA A VALIDACIÓN DE CONTROLLER
+            if ($this->orden_compra->estado_id == 3) {
+                $estado_id = 2;
+            }
+            // SI EL ESTADO ES Rechazo revisión lider o Rechazo revisión gerencia, SE ENVIA NUEVAMENTE A REVISIÓN LIDER PRODUCCIÓN
+            elseif ($this->orden_compra->estado_id == 11) {
+                $estado_id = 8;
+            }
+
+            $this->orden_compra->estado_id = $estado_id;
             $this->orden_compra->fecha_envio_produccion = now();
             $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
@@ -233,9 +254,10 @@ class Juridica extends Component
             $this->deleteItems($this->orden_compra->id);
             $this->storeItems($this->orden_compra->id);
         }else{
-            // Si no existe, crea una nueva OC
+            // Si no existe, crea una nueva OC (estado Revisión lider producción)
             $orden = new OrdenCompra;
             $orden->tipo_oc = 1;
+            $orden->estado_id = 8;
             $orden->fecha_envio_produccion = now();
             $orden->presupuesto_id = $this->presupuesto->id;
 
@@ -281,6 +303,7 @@ class Juridica extends Component
     // Cambia el estado de la orden de compra (aprobada, rechazada, GR, anulada)
     public function cambioEstado($estado, PdfService $pdfService){
         $messaje = '';
+        $redirect_route = 'ordenes-compra';
 
         if ($estado == 1){
             // ORDEN APROBADA
@@ -289,14 +312,30 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
-            $this->orden_compra->fecha_aprobacion = now();            
-            $this->orden_compra->cod_oc = "C".$this->orden_compra->id;
+            $this->orden_compra->fecha_aprobacion = now();
+
+            // Generar código de OC
+            $cod_cc = $this->presupuesto->cod_cc;
+            $cod_cc_explode = explode("-", $cod_cc);
+//            $this->orden_compra->cod_cc = "C" . substr($cod_cc_explode[0], 0, -3);
+
+            $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
             $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
             $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
 
             $this->mailOrdenAprobada($this->orden_compra);
             $messaje = 'Orden de compra APROBADA.';
-        }elseif($estado == 3){
+        }
+        elseif ($estado == 2){
+            // REVISIÓN GERENCIA OC APROBADA
+            $this->validate([
+                'observaciones_revision_gerencia' => 'required|string|max:1000'
+            ]);
+
+            $this->orden_compra->observaciones_revision_gerencia = $this->observaciones_revision_gerencia;
+            $messaje = 'Revisión Orden de compra APROBADA.';
+        }
+        elseif($estado == 3){
             // ORDEN RECHAZADA
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
@@ -304,7 +343,18 @@ class Juridica extends Component
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
             $messaje = 'Orden de compra RECHAZADA.';
-        }elseif ($estado == 5) {
+        }
+        elseif ($estado == 4) {
+            // REVISIÓN REMISIÓN APROBADA (LIDER DE PRODUCCIÓN)
+            $this->validate([
+                'observaciones_revision_evidencias' => 'required|string|max:1000',
+            ]);
+
+            $this->orden_compra->observaciones_revision_evidencias = $this->observaciones_revision_evidencias;
+            $messaje = 'Revisión Orden de compra APROBADA.';
+            $redirect_route = 'ordenes-compra-lid';
+        }
+        elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
                 'gr' => 'nullable|string',
@@ -315,7 +365,8 @@ class Juridica extends Component
             $this->orden_compra->observacion_remision = $this->observaciones_remision;
             $this->mailGrGenerado($this->orden_compra);
             $messaje = 'Good Receive guardado y enviado con éxito.';
-        }elseif ($estado == 6) {
+        }
+        elseif ($estado == 6) {
             // ORDEN ANULADA
             $this->validate([
                 'observaciones_anulacion' => 'required|string|max:1000'
@@ -325,11 +376,62 @@ class Juridica extends Component
             $this->mailOrdenAnulada($this->orden_compra);
             $messaje = 'Orden de compra ANULADA.';
         }
+        elseif ($estado == 9) {
+            // REVISIÓN LIDER APROBADA
+            $this->validate([
+                'observaciones_revision_lider' => 'required|string|max:1000'
+            ]);
+
+            // CALCULAMOS EL VALOR TOTAL DE LA OC
+            $vtotal_oc = 0;
+            foreach ($this->ocItems as $item) {
+                $vtotal_oc += $item['vTotal'];
+            }
+
+            // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE ENVIA A REVISIÓN DE CONTROLLER (estado_id = 2),
+            // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
+            if ($vtotal_oc < 5000000) {
+                $estado = 2;
+            }
+
+            $this->orden_compra->observaciones_revision_lider = $this->observaciones_revision_lider;
+            $messaje = 'Revisión Orden de compra APROBADA.';
+            $redirect_route = 'ordenes-compra-lid';
+        }
+        elseif ($estado == 11) {
+            // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
+            $this->validate([
+                'rechazo_revision_lider' => 'required|string|max:1000',
+            ]);
+
+            $this->orden_compra->rechazo_revision_lider = $this->rechazo_revision_lider;
+            $messaje = 'Revisión Orden de compra RECHAZADA.';
+            $redirect_route = 'ordenes-compra-lid';
+        }
+        elseif ($estado == 12) {
+            // RECHAZO REVISIÓN GERENCIA
+            $this->validate([
+                'rechazo_revision_gerencia' => 'required|string|max:1000',
+            ]);
+
+            $this->orden_compra->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+            $messaje = 'Revisión Orden de compra RECHAZADA.';
+        }
+        elseif ($estado == 13) {
+            // RECHAZO REVISIÓN REMISIÓN (LIDER DE PRODUCCIÓN)
+            $this->validate([
+                'rechazo_revision_evidencias' => 'required|string|max:1000',
+            ]);
+
+            $this->orden_compra->rechazo_revision_evidencias = $this->rechazo_revision_evidencias;
+            $messaje = 'Revisión Orden de compra RECHAZADA.';
+            $redirect_route = 'ordenes-compra-lid';
+        }
 
         $this->orden_compra->estado_id = $estado;
         $this->orden_compra->update();
 
-        return redirect()->route('ordenes-compra')->with('success', $messaje);
+        return redirect()->route($redirect_route)->with('success', $messaje);
     }
 
     // Elimina la orden de compra y sus items

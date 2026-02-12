@@ -18,12 +18,16 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-1">
+                        <label for="comercial">COD OC:</label>
+                        <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                    </div>
                     <div class="col-md-2">
-                        <label for="comercial">Buscar:</label>
+                        <label for="comercial">Centro de costo:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                     </div>
                     <div class="col-md-2">
-                    <label for="comercial">Buscar:</label>
+                    <label for="comercial">Documento tercero:</label>
                         <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
                     </div>
                     <div class="col-md-2">
@@ -52,7 +56,7 @@
                             <option value="desc">M&aacute;s recientes</option>
                         </select>
                     </div>
-                    <div class="col-md-1"> 
+                    <div class="col-md-1">
                         <label for="Tipo">Tipo:</label>
                         <select id="Tipo" class="form-control" wire:model="tipo">
                             <option value="">Seleccionar</option>
@@ -95,6 +99,10 @@
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Tipo</p>
                                 <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">COD OC</p>
+                                <span class="badge badge-md badge-primary">{{ (!empty( $orden->cod_oc )) ? $orden->cod_oc : '' }}</span>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
@@ -174,6 +182,10 @@
                                 <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
                             </td>
                             <td>
+                                <p class="text-xs font-weight-bold mb-0">COD OC</p>
+                                <span class="badge badge-md badge-info">{{ (!empty( $orden->cod_oc )) ? $orden->cod_oc : '' }}</span>
+                            </td>
+                            <td>
                                 <p class="text-xs font-weight-bold mb-0">Proveedor</p>
                                 <span class="text-xs text-secondary mb-1">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
                                 <p class="text-xs font-weight-bold mb-0">Documento</p>
@@ -185,7 +197,7 @@
                             </td> --}}
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p> 
+                                <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
                             </td>
                             {{-- <td>
                                 <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -243,7 +255,7 @@
                     </tr>
                 </tbody>
             </table>
-        </div> 
+        </div>
         <div class="row p-2">
             <div class="col-md-12">
                 <button wire:click="reporteExcel" class="btn bg-gradient-warning" wire:loading.attr="disabled">Generar Reporte</button>

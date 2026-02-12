@@ -344,6 +344,25 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
+    public function ocNaturalEnvioCuentaCobro($orden, $file_path){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN CUENTA DE COBRO - BULL MARKETING S.A.S";
+        $body =
+        "<p>
+            Se te ha generado una cuenta de cobro. Por favor revisar.
+        </p>";
+
+        array_push($recipients, [
+            'name' => $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido,
+            'email' => $orden->naturalInfo->tercero->correo
+        ]);
+
+        $altBody = "CUENTA DE COBRO - BULL MARKETING S.A.S";
+
+        $this->sendMail($subject, $body, $altBody, $recipients, $cc, $file_path);
+    }
+
     /* **** */
 
     // public function error(){
@@ -391,9 +410,11 @@ trait Email
             /* *** */
 
             if ($attachment){
+                $path = str_replace('public/', '', $attachment);
+                $mail->addAttachment("storage/{$path}");
                 // $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-                $archivo_pago = str_replace('public/', '', $attachment);
-                $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
+                // $archivo_pago = str_replace('public/', '', $attachment);
+                // $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
             }
 
             //Content

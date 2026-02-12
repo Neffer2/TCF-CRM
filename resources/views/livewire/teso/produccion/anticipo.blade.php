@@ -15,7 +15,7 @@
                         <div class="form-group">
                             <h6 style="margin: 0">N&uacute;mero de causaci&oacute;n:</h6>
                             <input value="{{ $orden->cod_causal }}" class="form-control" disabled>
-                        </div> 
+                        </div>
                         @if ($orden->observacion_causal)
                             <div class="form-group">
                                 <h6 style="margin: 0">Observaciones contabilidad:</h6>
@@ -27,7 +27,7 @@
                             <div style="font-size: 9px;">
                                 Adjunta el comprobante de pago para el proveedor {{ $orden->proveedor->tercero }}.
                             </div>
-                            <input id="comprobante" wire:model="comprobante" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                            <input id="comprobante" wire:model="comprobante" type="file" class="form-control" accept=".pdf,.xls,.xlsx,image/png,image/jpg,image/jpeg">
                             @error('comprobante')
                                 <div id="comprobante" class="text-invalid">
                                     {{ $message }}
@@ -73,7 +73,7 @@
                             <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Orden de compra.</span>
-                            </a> 
+                            </a>
                             <br>
                             @if ($orden->tipo_oc == 2)
                                 @if ($orden->naturalInfo->tercero->art383)

@@ -171,7 +171,7 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CIUDAD</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
-                        @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
+                        @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11))))
                             <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                         @endif
                     </tr>
@@ -193,7 +193,7 @@
                             <td>{{ $item['tipo_servicio'] }}</td>
                             {{-- <td>{{ $item['tipo_servicio'] }}</td> --}}
                             <td>{{ $item['tipo_contrato'] }}</td>
-                            @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && $queriedOrden->estado_id == 3)))
+                            @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11))))
                                 <td class="d-flex justify-content-center" style="padding: 11px;">
                                     <button class="me-2" wire:click="deleteItem({{ $key-=1 }})">
                                         ✖️
@@ -210,7 +210,77 @@
         </div>
     </div>
 
-    @if ((Auth()->user()->rol == 7) && ((!$queriedOrden)))
+    @if(Auth::user()->rol == 6 && $queriedOrden->estado_id == 8)
+        {{-- REVISIÓN LIDER DE PRODUCCIÓN --}}
+        <div class="row px-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="observaciones_negociacion">Observaciones de aprobaci&oacute;n:</label>
+                    <textarea name="observaciones_revision_lider" id="observaciones_revision_lider" class="form-control" wire:model="observaciones_revision_lider" cols="100" rows="2"></textarea>
+                    @error('observaciones_revision_lider')
+                    <div id="observaciones_revision_lider" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(9)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                    Aprobar
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="rechazo_revision_lider">Justificaci&oacute;n de rechazo:</label>
+                    <textarea name="rechazo_revision_lider" id="rechazo_revision_lider" class="form-control" wire:model="rechazo_revision_lider" cols="100" rows="2"></textarea>
+                    @error('rechazo_revision_lider')
+                    <div id="rechazo_revision_lider" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(11)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    @elseif ((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_compra->estado_id == 9)
+        {{-- REVISIÓN GERENCIA --}}
+        <div class="row px-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="observaciones_revision_gerencia">Observaciones de aprobaci&oacute;n:</label>
+                    <textarea name="observaciones_revision_gerencia" id="observaciones_revision_gerencia" class="form-control" wire:model="observaciones_revision_gerencia" cols="100" rows="2"></textarea>
+                    @error('observaciones_revision_gerencia')
+                    <div id="observaciones_revision_gerencia" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(3)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                    Aprobar
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="rechazo_revision_gerencia">Justificaci&oacute;n de rechazo:</label>
+                    <textarea name="rechazo_revision_gerencia" id="rechazo_revision_gerencia" class="form-control" wire:model="rechazo_revision_gerencia" cols="100" rows="2"></textarea>
+                    @error('rechazo_revision_gerencia')
+                    <div id="rechazo_revision_gerencia" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(12)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden)))
         <div class="row">
             <div class="col-lg-3">
                 <div class="form-group">
@@ -244,19 +314,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="form-group">
-                    <label for="">DESCRIPCION</label>
-                    <textarea class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
-                              placeholder="Descripción" wire:model.lazy="descripcion" cols="30" rows="1"></textarea>
-                    @error('descripcion')
-                        <div id="invalid-descripcion" class="text-invalid">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <div class="form-group">
                     <label for="cantidad">Cantidad</label>
                     <input id="cantidad" type="number" class="form-control"
@@ -268,7 +326,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <div class="form-group">
                     <label for="dias">Dias</label>
                     <input id="dias" type="number" class="form-control"
@@ -280,7 +338,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <div class="form-group">
                     <label for="otros">Otro</label>
                     <input id="otros" type="number" class="form-control"
@@ -355,6 +413,20 @@
             @enderror
         </div>
         <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="">DESCRIPCION</label>
+                    <textarea class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
+                              placeholder="Descripción" wire:model.lazy="descripcion" cols="30" rows="1"></textarea>
+                    @error('descripcion')
+                    <div id="invalid-descripcion" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-lg-2">
                 <div class="form-group">
                     @if (is_null($selected_item))
@@ -379,7 +451,7 @@
                 @endif
             </div>
         </div>
-    @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && $queriedOrden->estado_id == 3))
+    @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11 || $queriedOrden->estado_id == 12)))
         @if ($queriedOrden->evidencias->isEmpty())
             <div class="row">
                 <div class="col-lg-2">
@@ -539,7 +611,7 @@
                         <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
 
                         <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar información</h1>
@@ -561,11 +633,22 @@
                         <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
                     @endif
 
+                    @if ($queriedOrden->estado_id == 11 || $queriedOrden->estado_id == 12)
+                        <div>
+                            <p class="font-weight-bold mb-1">Observaciones del rechazo</p>
+                            <P>
+                                {{ $queriedOrden->rechazo_revision_lider ? $queriedOrden->rechazo_revision_lider : $queriedOrden->rechazo_revision_gerencia }}
+                            </P>
+                        </div>
+
+                        <button wire:click="revisionOC(8)" class="btn bg-gradient-success mt-2 mb-0">GUARDAR CAMBIOS</button>
+                    @endif
+
                     <button type="button" class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#exampleModal"> ELIMINAR </button>
 
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Orden</h1>
@@ -792,10 +875,39 @@
                                 </div>
                             </div>
                             <div class="col-md-12 py-3">
-                                <div class="d-none d-md-block" style="width:100%;">
-                                    <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                <div class="nav-wrapper position-relative end-0">
+                                    <ul class="nav nav-pills nav-fill p-1 mb-3" role="tablist" style="border: 1px solid #e3e3e3">
+                                        <li class="nav-item">
+                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#oc-pdf" role="tab" aria-controls="preview" aria-selected="true">
+                                                PDF ORDEN DE COMPRA
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold" data-bs-toggle="tab" href="#cc-pdf" role="tab" aria-controls="code" aria-selected="false">
+                                                PDF CUENTA DE COBRO
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
-                            </div> 
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">
+                                        <div class="d-none d-md-block" style="width:100%;">
+                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
+                                        <div class="d-none d-md-block" style="width:100%;">
+                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-dark font-weight-bold mt-3">
+                                        Código OC: {{ $cod_oc }}
+                                    </p>
+                                </div>
+                            </div>
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))
@@ -804,7 +916,7 @@
 
                                 <!-- Modal -->
                                 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
@@ -861,16 +973,16 @@
                 @if (($queriedOrden->estado_id == 7) || (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2))
                     <div class="d-flex justify-content-center">
                         <div class="spinner-grow text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only"></span>
                         </div>
                         <div class="spinner-grow text-success" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only"></span>
                         </div>
                         <div class="spinner-grow text-warning" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only"></span>
                         </div>
                         <div class="spinner-grow text-info" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <span class="sr-only"></span>
                         </div>
                     </div>
                 @endif

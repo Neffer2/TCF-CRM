@@ -247,9 +247,12 @@ class AdminController extends Controller
             $subtotal += $item->vtotal_oc;
         }
 
+        $cod_oc = "OC" . $orden->id;
+
         $dompdf = new Dompdf(['enable_remote' => true]);
         $html = View::make('exports.orden_compra_pdf', [
             'orden' => $orden,
+            'cod_oc' => $cod_oc,
             'subtotal' => $subtotal,
         ])->render();
 
@@ -260,5 +263,37 @@ class AdminController extends Controller
         return response($dompdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="orden_compra_'.$orden->id.'.pdf"');
+    }
+
+    public function cuentaCobroPdf(OrdenCompra $orden) {
+        $orden->load([
+            'proveedor',
+            'presupuesto',
+//            'presupuesto.presupuestoItems',
+            'ordenItems'
+        ]);
+
+        $subtotal = 0;
+
+        foreach ($orden->ordenItems as $item) {
+            $subtotal += $item->vtotal_oc;
+        }
+
+        $cod_cuenta_cobro = "CC" . $orden->id;
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $html = View::make('exports.cuenta_cobro_pdf', [
+            'orden' => $orden,
+            'cod_cuenta_cobro' => $cod_cuenta_cobro,
+            'subtotal' => $subtotal,
+        ])->render();
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="cuenta_cobro'.$orden->id.'.pdf"');
     }
 }

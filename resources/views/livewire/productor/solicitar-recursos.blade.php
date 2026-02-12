@@ -139,7 +139,7 @@
                     @foreach ($this->presupuesto->ordenesCompra as $orden)
                         <div class="col-md-12 my-1">
                             <div class="card" style="border-top: 3px solid #825ee4; border-radius: 2px; box-shadow: none;">
-                                <div class="card-body px-1 py-1" style="background-color: white">
+                                <div class="card-body px-1 py-1" style="background-color: @if($orden->estado_id == 11 || $orden->estado_id == 12 || $orden->estado_id == 13) #FFA796 @else white @endif">
                                     <div class="row align-items-center">
                                         <div class="col-sm-3">
                                             <span class="font-weight-bold me-1">Proveedor: <br></span>{{ $orden->proveedor->tercero }}.
