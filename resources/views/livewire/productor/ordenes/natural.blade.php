@@ -245,7 +245,7 @@
                 <span class="sr-only"></span>
             </div>
         </div>
-    @elseif ((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_compra->estado_id == 9)
+    @elseif ((Auth::user()->id == 8 || Auth::user()->id == 10) && $queriedOrden->estado_id == 9)
         {{-- REVISIÓN GERENCIA --}}
         <div class="row px-4">
             <div class="col-md-6">
