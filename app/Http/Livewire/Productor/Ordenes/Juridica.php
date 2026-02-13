@@ -241,7 +241,7 @@ class Juridica extends Component
                 $estado_id = 2;
             }
             // SI EL ESTADO ES Rechazo revisión lider o Rechazo revisión gerencia, SE ENVIA NUEVAMENTE A REVISIÓN LIDER PRODUCCIÓN
-            elseif ($this->orden_compra->estado_id == 11) {
+            elseif ($this->orden_compra->estado_id == 11 || $this->orden_compra->estado_id == 12) {
                 $estado_id = 8;
             }
 

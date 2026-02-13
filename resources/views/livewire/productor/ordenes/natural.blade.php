@@ -171,7 +171,7 @@
                         <th class="font-weight-bold bg-gradient-primary text-white">SERVICIO</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CIUDAD</th>
                         <th class="font-weight-bold bg-gradient-primary text-white">CONTRATO</th>
-                        @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11))))
+                        @if (Auth()->user()->rol == 7 && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11 || $queriedOrden->estado_id == 12))))
                             <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
                         @endif
                     </tr>
@@ -454,7 +454,7 @@
     @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && ($queriedOrden->estado_id == 3 || $queriedOrden->estado_id == 11 || $queriedOrden->estado_id == 12)))
         @if ($queriedOrden->evidencias->isEmpty())
             <div class="row">
-                <div class="col-lg-2">
+                <div class="col-lg-3">
                     <div class="form-group">
                         <label for="proyecto">Proyecto</label>
                         <select id="proyecto" class="form-control" wire:model.change="presupuesto">
@@ -486,7 +486,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-1">
+                <div class="col-lg-2">
                     <div class="form-group">
                         <label for="cantidad">Cantidad</label>
                         <input id="cantidad" type="number" class="form-control"
@@ -498,7 +498,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-1">
+                <div class="col-lg-2">
                     <div class="form-group">
                         <label for="dias">Dias</label>
                         <input id="dias" type="number" class="form-control"
@@ -510,7 +510,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-1">
+                <div class="col-lg-2">
                     <div class="form-group">
                         <label for="otros">Otro</label>
                         <input id="otros" type="number" class="form-control"
@@ -546,7 +546,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-1">
+                <div class="col-lg-4">
                     <div class="form-group">
                         <label for="tipo_servicio">Tipo de servicio</label>
                         <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
@@ -562,7 +562,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-2">
+                <div class="col-lg-4">
                     <div class="form-group">
                         <label for="tipo_contrato">Tipo de contrato</label>
                         <select id="tipo_contrato" class="form-control" wire:model.change="tipo_contrato">
@@ -571,6 +571,18 @@
                         </select>
                         @error('tipo_contrato')
                             <div id="invalid-cantidad" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="">DESCRIPCION</label>
+                        <textarea class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
+                                  placeholder="Descripción" wire:model.change="descripcion" cols="30" rows="1"></textarea>
+                        @error('descripcion')
+                            <div id="invalid-descripcion" class="text-invalid">
                                 {{ $message }}
                             </div>
                         @enderror
