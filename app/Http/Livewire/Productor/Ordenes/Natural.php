@@ -296,6 +296,9 @@ class Natural extends Component
         // Envía mensaje al tercero si tiene teléfono
 //        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
 
+        // Se envia notificación por correo a los Lideres de producción
+        $this->ocNaturalRevisionLiderProd($natural);
+
         // Limpia todos los campos y colecciones
         $this->resetFields([
             'presupuesto',
@@ -428,7 +431,7 @@ class Natural extends Component
 
             // Envía mensaje al tercero si tiene teléfono
             $tercero = Tercero::where('id', $this->tercero)->first();
-//                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+            if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
 
             $redirect_route = 'ordenes-compra';
         }
@@ -456,6 +459,9 @@ class Natural extends Component
                 ]);
             }
 
+            // Se envia notificación a Lideres de producción
+            $this->ocNaturalRevisionLiderProd($this->queriedOrden);
+
             $redirect_route = 'ordenes-compra-prod';
         }
         elseif ($estado == 9) {
@@ -477,7 +483,11 @@ class Natural extends Component
 
                 // Envía mensaje al tercero si tiene teléfono
                 $tercero = Tercero::where('id', $this->tercero)->first();
-//                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+            }
+            else {
+                // Se envia notificación por correo a los Gerentes
+                $this->ocNaturalRevisionGerencia($this->queriedOrden);
             }
 
             $this->queriedOrden->observaciones_revision_lider = $this->observaciones_revision_lider;
@@ -489,6 +499,9 @@ class Natural extends Component
             ]);
 
             $this->queriedOrden->rechazo_revision_lider = $this->rechazo_revision_lider;
+
+            // Se envia notificación de rechazo al producctor
+            $this->ocNaturalRechazoLiderProd($this->queriedOrden);
         }
         elseif ($estado == 12) {
             // RECHAZO REVISIÓN GERENCIA
@@ -497,6 +510,9 @@ class Natural extends Component
             ]);
 
             $this->queriedOrden->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+
+            // Se envia notificación de rechazo al producctor
+            $this->ocNaturalRechazoGerencia($this->queriedOrden);
         }
 
         $this->queriedOrden->estado_id = $estado;
@@ -603,8 +619,7 @@ class Natural extends Component
 
             $this->queriedOrden->archivo_orden_helisa = $crear_pdf_oc;
             $this->queriedOrden->fecha_aprobacion = now();
-//             $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-//            $this->ocNaturalEnvioCuentaCobro($this->queriedOrden, "public/cuentas_cobro/cuenta_cobro_" . $this->queriedOrden->id . ".pdf");
+            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
         } elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'

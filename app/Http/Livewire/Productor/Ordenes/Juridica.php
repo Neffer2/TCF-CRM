@@ -239,10 +239,16 @@ class Juridica extends Component
             // SI EL ESTADO ACTUAL ES EDITABLE, SE ENVIA A VALIDACIÓN DE CONTROLLER
             if ($this->orden_compra->estado_id == 3) {
                 $estado_id = 2;
+
+                // Se envia notificación a Controller
+                $this->ocJuridicaRevisionController($this->orden_compra);
             }
             // SI EL ESTADO ES Rechazo revisión lider o Rechazo revisión gerencia, SE ENVIA NUEVAMENTE A REVISIÓN LIDER PRODUCCIÓN
             elseif ($this->orden_compra->estado_id == 11 || $this->orden_compra->estado_id == 12) {
                 $estado_id = 8;
+
+                // Se envia notificación a Lideres de producción
+                $this->ocJuridicaRevisionLiderProd($this->orden_compra);
             }
 
             $this->orden_compra->estado_id = $estado_id;
@@ -253,7 +259,8 @@ class Juridica extends Component
 
             $this->deleteItems($this->orden_compra->id);
             $this->storeItems($this->orden_compra->id);
-        }else{
+        }
+        else{
             // Si no existe, crea una nueva OC (estado Revisión lider producción)
             $orden = new OrdenCompra;
             $orden->tipo_oc = 1;
@@ -266,6 +273,9 @@ class Juridica extends Component
 
             $orden->save();
             $this->storeItems($orden->id);
+
+            // Se envia notificación a Lideres de producción
+            $this->ocJuridicaRevisionLiderProd($orden);
         }
 
         $this->resetFields();
@@ -305,7 +315,7 @@ class Juridica extends Component
         $messaje = '';
         $redirect_route = 'ordenes-compra';
 
-        if ($estado == 1){
+        if ($estado == 1) {
             // ORDEN APROBADA
             $this->validate([
                 'observaciones_negociacion' => 'required|string|max:1000'
@@ -316,26 +326,27 @@ class Juridica extends Component
 
             // Generar código de OC
             $cod_cc = $this->presupuesto->cod_cc;
-            $cod_cc_explode = explode("-", $cod_cc);
-//            $this->orden_compra->cod_cc = "C" . substr($cod_cc_explode[0], 0, -3);
-
             $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
             $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
             $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
 
-            $this->mailOrdenAprobada($this->orden_compra);
+            $this->ocJuridicaAprobada($this->orden_compra);
             $messaje = 'Orden de compra APROBADA.';
         }
-        elseif ($estado == 2){
+        elseif ($estado == 2) {
             // REVISIÓN GERENCIA OC APROBADA
             $this->validate([
                 'observaciones_revision_gerencia' => 'required|string|max:1000'
             ]);
 
             $this->orden_compra->observaciones_revision_gerencia = $this->observaciones_revision_gerencia;
+
+            // Se envia notificación a Controller
+            $this->ocJuridicaRevisionController($this->orden_compra);
+
             $messaje = 'Revisión Orden de compra APROBADA.';
         }
-        elseif($estado == 3){
+        elseif($estado == 3) {
             // ORDEN RECHAZADA
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
@@ -351,6 +362,10 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->observaciones_revision_evidencias = $this->observaciones_revision_evidencias;
+
+            // Se envia notificación a Controller
+            $this->ocJuridicaRevisionRemiController($this->orden_compra);
+
             $messaje = 'Revisión Orden de compra APROBADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
@@ -363,7 +378,7 @@ class Juridica extends Component
 
             $this->orden_compra->gr = $this->gr;
             $this->orden_compra->observacion_remision = $this->observaciones_remision;
-            $this->mailGrGenerado($this->orden_compra);
+            $this->ocJuridicaGrGenerado($this->orden_compra);
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
         elseif ($estado == 6) {
@@ -373,7 +388,7 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->observaciones_anulacion = $this->observaciones_anulacion;
-            $this->mailOrdenAnulada($this->orden_compra);
+            $this->ocJuridicaAnulada($this->orden_compra);
             $messaje = 'Orden de compra ANULADA.';
         }
         elseif ($estado == 9) {
@@ -392,6 +407,13 @@ class Juridica extends Component
             // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
             if ($vtotal_oc < 5000000) {
                 $estado = 2;
+
+                // Se envia notificación a Controller
+                $this->ocJuridicaRevisionController($this->orden_compra);
+            }
+            else {
+                // Se envia notificación a los Gerentes
+                $this->ocJuridicaRevisionGerencia($this->orden_compra);
             }
 
             $this->orden_compra->observaciones_revision_lider = $this->observaciones_revision_lider;
@@ -405,6 +427,10 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->rechazo_revision_lider = $this->rechazo_revision_lider;
+
+            // Se envia notificación al productor
+            $this->ocJuridicaRechazoLiderProd($this->orden_compra);
+
             $messaje = 'Revisión Orden de compra RECHAZADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
@@ -415,6 +441,10 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+
+            // Se envia notificación al productor
+            $this->ocJuridicaRechazoGerencia($this->orden_compra);
+
             $messaje = 'Revisión Orden de compra RECHAZADA.';
         }
         elseif ($estado == 13) {
@@ -424,6 +454,10 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->rechazo_revision_evidencias = $this->rechazo_revision_evidencias;
+
+            // Se envia notificación al productor
+            $this->ocJuridicaRechazoGerencia($this->orden_compra);
+
             $messaje = 'Revisión Orden de compra RECHAZADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
