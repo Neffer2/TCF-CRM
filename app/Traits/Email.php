@@ -7,66 +7,116 @@ use App\models\User;
 
 trait Email
 {
+//    public $controller = [
+//        [
+//            'name'=> 'Sebastian Beltran',
+//            'email'=> 'sebastian.beltran@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Equipo Controller',
+//            'email'=> 'controller@bullmarketing.com.co'
+//        ]
+//    ];
     public $controller = [
         [
-            'name'=> 'Sebastian Beltran',
-            'email'=> 'sebastian.beltran@bullmarketing.com.co'
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Equipo Controller',
-            'email'=> 'controller@bullmarketing.com.co'
+            'name'=> 'Juan Camilo Rojas Pineda',
+            'email'=> 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
+//    public $produccion = [
+//        [
+//            'name'=> 'Fernando Paez',
+//            'email'=> 'fernando.paez@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Geraldin Parada',
+//            'email'=> 'geraldin.parada@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Jesica Ramirez',
+//            'email'=> 'jesica.ramirez@bullmarketing.com.co'
+//        ]
+//    ];
     public $produccion = [
         [
-            'name'=> 'Fernando Paez',
-            'email'=> 'fernando.paez@bullmarketing.com.co'
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Geraldin Parada',
-            'email'=> 'geraldin.parada@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Jesica Ramirez',
-            'email'=> 'jesica.ramirez@bullmarketing.com.co'
+            'name'=> 'Juan Camilo Rojas Pineda',
+            'email'=> 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
+//    public $gerencia = [
+//        [
+//            'name'=> 'Alejandro Rodriguez',
+//            'email'=> 'alejandro.rodriguez@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Jony Ariza',
+//            'email'=> 'j.ariza@bullmarketing.com.co'
+//        ]
+//    ];
     public $gerencia = [
         [
-            'name'=> 'Alejandro Rodriguez',
-            'email'=> 'alejandro.rodriguez@bullmarketing.com.co'
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Jony Ariza',
-            'email'=> 'j.ariza@bullmarketing.com.co'
+            'name'=> 'Juan Camilo Rojas Pineda',
+            'email'=> 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
+//    public $contabilidad = [
+//        [
+//            'name'=> 'Diana Bohorquez',
+//            'email'=> 'diana.bohorquez@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Facturación Proveedores',
+//            'email'=> 'facturacion.proveedores@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Auxiliar Contable',
+//            'email'=> 'auxiliar.contable@bullmarketing.com.co'
+//        ]
+//    ];
     public $contabilidad = [
         [
-            'name'=> 'Diana Bohorquez',
-            'email'=> 'diana.bohorquez@bullmarketing.com.co'
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Facturación Proveedores',
-            'email'=> 'facturacion.proveedores@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Auxiliar Contable',
-            'email'=> 'auxiliar.contable@bullmarketing.com.co'
+            'name'=> 'Juan Camilo Rojas Pineda',
+            'email'=> 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
+//    public $tesoreria = [
+//        [
+//            'name'=> 'Tesorería',
+//            'email'=> 'tesoreria@bullmarketing.com.co'
+//        ],
+//        [
+//            'name'=> 'Tesorería',
+//            'email'=> 'Ligia.Torres@bullmarketing.com.co'
+//        ]
+//    ];
     public $tesoreria = [
         [
-            'name'=> 'Tesorería',
-            'email'=> 'tesoreria@bullmarketing.com.co'
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Tesorería',
-            'email'=> 'Ligia.Torres@bullmarketing.com.co'
+            'name'=> 'Juan Camilo Rojas Pineda',
+            'email'=> 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
@@ -247,12 +297,17 @@ trait Email
             Revisa el real ejecutado y confirma que la información esté correctamente diligenciada.
         </p>";
 
+//        array_push($recipients, [
+//            'name'=> $orden->naturalInfo->productor->name,
+//            'email'=> $orden->naturalInfo->productor->email
+//        ]);
+
         array_push($recipients, [
-            'name'=> $orden->naturalInfo->productor->name,
-            'email'=> $orden->naturalInfo->productor->email
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        array_push($cc, ...$this->produccion);
+//        array_push($cc, ...$this->produccion);
 
         $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA.";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -268,12 +323,17 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
+//        array_push($recipients, [
+//            'name'=> $orden->naturalInfo->productor->name,
+//            'email'=> $orden->naturalInfo->productor->email
+//        ]);
+
         array_push($recipients, [
-            'name'=> $orden->naturalInfo->productor->name,
-            'email'=> $orden->naturalInfo->productor->email
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        array_push($cc, ...$this->produccion);
+//        array_push($cc, ...$this->produccion);
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -289,12 +349,17 @@ trait Email
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
         </p>";
 
+//        array_push($recipients, [
+//            'name'=> $orden->naturalInfo->productor->name,
+//            'email'=> $orden->naturalInfo->productor->email
+//        ]);
+
         array_push($recipients, [
-            'name'=> $orden->naturalInfo->productor->name,
-            'email'=> $orden->naturalInfo->productor->email
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        array_push($cc, ...$this->produccion);
+//        array_push($cc, ...$this->produccion);
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -310,7 +375,12 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        array_push($recipients, ...$this->produccion);
+//        array_push($recipients, ...$this->produccion);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -326,7 +396,12 @@ trait Email
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
-        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+//        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -342,7 +417,11 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        array_push($recipients, ...$this->gerencia);
+//        array_push($recipients, ...$this->gerencia);
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -358,7 +437,12 @@ trait Email
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
-        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+//        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -390,7 +474,12 @@ trait Email
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
         </p>";
 
-        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+//        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -495,7 +584,12 @@ trait Email
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -527,7 +621,12 @@ trait Email
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -575,7 +674,12 @@ trait Email
             Revisa las observaciones y corrige la remisión de la orden de compra.
         </p>";
 
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -597,20 +701,25 @@ trait Email
             Saludos.
         </p>";
 
-        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
-        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
-        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
+//        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
+//        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+//        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
+//
+//        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
+//        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
+//        array_push($cc, ['email' => $orden->proveedor->correo, 'name' => $orden->proveedor->contacto] );
+//
+//        /* CONTABILIDAD */
+//        if ($orden->proveedor->anticipo > 0) {
+//            array_push( $cc, ['email' => 'ontadores@bullmarketing.com.co', 'name' => 'Contadores'] );
+//            array_push( $cc, ['email' => 'tesoreria@bullmarketing.com.co', 'name' => 'Tesoreria'] );
+//        }
 
-        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
-        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
-        array_push($cc, ['email' => $orden->proveedor->correo, 'name' => $orden->proveedor->contacto] );
-
-        /* CONTABILIDAD */
-        if ($orden->proveedor->anticipo > 0) {
-            array_push( $cc, ['email' => 'ontadores@bullmarketing.com.co', 'name' => 'Contadores'] );
-            array_push( $cc, ['email' => 'tesoreria@bullmarketing.com.co', 'name' => 'Tesoreria'] );
-        }
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $files = [
             [
@@ -640,13 +749,18 @@ trait Email
             con copia a <a href='mailto:compras@bullmarketing.com.co'>compras@bullmarketing.com.co</a>. <br>
         </p>";
 
-        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
-        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+//        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
+//        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+//
+//        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
+//        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
+//        array_push($cc, ['email' => $orden->proveedor->correo, 'name' =>$orden->proveedor->contacto] );
 
-        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
-        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
-        array_push($cc, ['email' => $orden->proveedor->correo, 'name' =>$orden->proveedor->contacto] );
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $files = [
             [
@@ -683,12 +797,17 @@ trait Email
             Saludos.
         </p>";
 
-        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
-        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+//        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
+//        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+//
+//        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
+//        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
 
-        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
-        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
 
         $files = [
             [
@@ -749,7 +868,6 @@ trait Email
         $altBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $files);
     }
-
 
     /**
      * Función principal para envío de notificaciones por correo
