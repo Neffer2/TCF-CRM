@@ -701,7 +701,7 @@
                 @endif
             </div>
         </div>
-    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
+    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 6 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
         <div>
             @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
                 <div class="card mt-3">
@@ -961,6 +961,284 @@
                                             </div>
                                             <div>
                                                 <button type="button" wire:click="validateEvidencia(7)"  class="btn bg-gradient-danger">Rechazar</button>
+                                                <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @elseif (Auth()->user()->rol == 6 && $queriedOrden->estado_id == 10)
+                <div class="card mt-3">
+                    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
+                        <div class="row">
+                            @if ($queriedOrden->observacion_causal)
+                                <div class="col-md-12 mb-2">
+                                    <h3 class="mb-0">Observaciones</h3>
+                                    <p class="text-sm mb-0">
+                                        <b>El equipo de contabilidad realizó las siguientes observaciones.</b>
+                                    </p>
+                                    <div class="pe-5">
+                                        <textarea class="form-control" disabled cols="15" rows="2">{{ $queriedOrden->observacion_causal }}</textarea>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="col-md-12">
+                                <h3 class="mb-0">Evidencias</h3>
+                                <p class="text-sm mb-0">
+                                    <b>{{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}</b> ha enviado las siguientes evidencias.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">C&eacute;dula</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Correo</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tel&eacute;fono</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Servicio</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ciudad</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Banco</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Num RUT</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Archivo RUT</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificación Bancaria</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Artículo 383</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Copia c&eacute;dula</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->nombre }} {{ $queriedOrden->naturalInfo->tercero->apellido }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->cedula }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->correo }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->telefono }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->servicio }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->ciudad }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->banco }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    {{ $queriedOrden->naturalInfo->tercero->num_rut }}
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->rut)) }}" target="_blank">Ver</a>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Ver</a>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->art383)) }}" target="_blank">Ver</a><br>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs text-secondary mb-0">
+                                                    <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->copia_cedula)) }}" target="_blank">Ver</a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 border-top mt-4 pt-4">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha subida</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach ($queriedOrden->evidencias as $key => $evidencia)
+                                            @if ($key < $queriedOrden->ordenItems->sum('cant_oc'))
+                                                <tr>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->fecha_evidencia }}
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                            </a>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->observacion_evidencia }}
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->created_at->format('Y-m-d H:i:s') }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                <tr>
+                                                    <td class="position-relative">
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->fecha_evidencia }}
+                                                        </p>
+                                                        <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                                <span class="visually-hidden">New alerts</span>
+                                                            </span>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                            </a>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->observacion_evidencia }}
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $evidencia->created_at->format('Y-m-d H:i:s') }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 py-3">
+                                <div class="nav-wrapper position-relative end-0">
+                                    <ul class="nav nav-pills nav-fill p-1 mb-3" role="tablist" style="border: 1px solid #e3e3e3">
+                                        <li class="nav-item">
+                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#oc-pdf" role="tab" aria-controls="preview" aria-selected="true">
+                                                PDF ORDEN DE COMPRA
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold" data-bs-toggle="tab" href="#cc-pdf" role="tab" aria-controls="code" aria-selected="false">
+                                                PDF CUENTA DE COBRO
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">
+                                        <div class="d-none d-md-block" style="width:100%;">
+                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
+                                        <div class="d-none d-md-block" style="width:100%;">
+                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-dark font-weight-bold mt-3">
+                                        Código OC: {{ $cod_oc }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
+                                @if (!($queriedOrden->evidencias->isEmpty()))
+                                    <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
+                                @endif
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estas seguro de aprobar las evidencias?
+
+                                                <div class="form-group mt-2">
+                                                    <label for="observaciones_revision_evidencias">Observaciones</label>
+                                                    <textarea id="observaciones_revision_evidencias" class="form-control @error('observaciones_revision_evidencias') is-invalid @elseif(strlen($observaciones_revision_evidencias) > 0) is-valid @enderror"
+                                                              wire:model.lazy="observaciones_revision_evidencias" cols="30" rows="5"></textarea>
+                                                    @error('observaciones_revision_evidencias')
+                                                    <div id="invalid-observaciones_revision_evidencias" class="text-invalid">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(2)">APROBAR</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if ($this->toggleRechazo)
+                                    <div class="card mt-2">
+                                        <div class="card-body">
+                                            ¿Estas seguro de rechazar estas evidencias?
+                                            <div class="form-group mt-2">
+                                                <label for="rechazo_revision_evidencias">Justificaci&oacute;n de Rechazo</label>
+                                                <textarea id="rechazo_revision_evidencias" class="form-control @error('rechazo_revision_evidencias') is-invalid @elseif(strlen($rechazo_revision_evidencias) > 0) is-valid @enderror"
+                                                          wire:model.lazy="rechazo_revision_evidencias" cols="30" rows="5"></textarea>
+                                                @error('rechazo_revision_evidencias')
+                                                    <div id="invalid-rechazo_revision_evidencias" class="text-invalid">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                            <div>
+                                                <button type="button" wire:click="validateEvidencia(13)"  class="btn bg-gradient-danger">Rechazar</button>
                                                 <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             </div>
                                         </div>

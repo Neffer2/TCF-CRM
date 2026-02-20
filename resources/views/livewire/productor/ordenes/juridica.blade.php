@@ -173,6 +173,11 @@
                             </a>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <p class="text-dark font-weight-bold mt-3">
+                            Observaciones lider de producción: {{ $orden_compra->observaciones_revision_lider }}
+                        </p>
+                    </div>
                 </div>
                 <div class="row px-4">
                     <div class="col-md-6">
@@ -430,7 +435,7 @@
                 <div class="row px-4">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="">Observaciones: </label>
+                            <label for="">Observaciones remisión: </label>
                             <textarea disabled class="form-control">{{ $orden_compra->observacion_remision }}</textarea>
                         </div>
                     </div>
@@ -461,7 +466,7 @@
                                 <div class="form-group">
                                     <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
                                     <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                                        <span class="sr-only">Loading...</span>
+                                        <span class="sr-only"></span>
                                     </div>
                                 </div>
                             </div>

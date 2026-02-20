@@ -296,8 +296,12 @@ class Natural extends Component
         // Envía mensaje al tercero si tiene teléfono
 //        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
 
+        $orden->load([
+            'naturalInfo'
+        ]);
+
         // Se envia notificación por correo a los Lideres de producción
-        $this->ocNaturalRevisionLiderProd($natural);
+        $this->ocNaturalRevisionLiderProd($orden);
 
         // Limpia todos los campos y colecciones
         $this->resetFields([
@@ -353,14 +357,14 @@ class Natural extends Component
             }
         }
         else {
-            // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
+            // Si la orden de compra ya tiene evidencias, actualiza el estado a 10: Revisión evidencias lider
             $this->queriedOrden->update([
-                'estado_id' => 2,
+                'estado_id' => 10,
                 'fecha_envio_produccion' => now()
             ]);
 
             //Mail notificación controller
-            $this->ocNaturalRevisionController($this->queriedOrden);
+            $this->ocNaturalRevisionLiderProd($this->queriedOrden);
         }
 
         // Elimina los items actuales y crea los nuevos
@@ -609,7 +613,17 @@ class Natural extends Component
     */
     // Valida y sube el archivo de evidencia para la orden de compra
     public function validateEvidencia($estado, PdfService $pdfService){
-        if ($estado == 5) {
+        if ($estado == 2) {
+            $this->validate([
+                'observaciones_revision_evidencias' => 'required|string|max:255',
+            ]);
+
+            $this->queriedOrden->observaciones_revision_evidencias = $this->observaciones_revision_evidencias;
+
+            // Se envia notificación a Controller
+            $this->ocNaturalRevisionController($this->queriedOrden);
+        }
+        elseif ($estado == 5) {
             $this->queriedOrden->cod_oc = "OC".$this->queriedOrden->id;
 
             // CREA EL PDF DE LA OC
@@ -620,7 +634,8 @@ class Natural extends Component
             $this->queriedOrden->archivo_orden_helisa = $crear_pdf_oc;
             $this->queriedOrden->fecha_aprobacion = now();
             $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-        } elseif ($estado == 7) {
+        }
+        elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'
             ]);
@@ -631,13 +646,26 @@ class Natural extends Component
                 $this->ocNaturalEvidenciasRechazadas($this->queriedOrden);
             }
         }
+        elseif ($estado == 13) {
+            $this->validate([
+                'rechazo_revision_evidencias' => 'required|string|max:255',
+            ]);
+
+            $this->queriedOrden->rechazo_revision_evidencias = $this->rechazo_revision_evidencias;
+            $this->ocNaturalEvidenciasRechazadas($this->queriedOrden);
+            $estado = 7;
+        }
 
         $this->queriedOrden->estado_id = $estado;
         $this->queriedOrden->update();
 
         if (Auth()->user()->rol == 1) {
             return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
-        }elseif (Auth()->user()->rol == 7) {
+        }
+        elseif (Auth()->user()->rol == 6) {
+            return redirect()->route('ordenes-compra-lid')->with('success', 'Validación exitosa');
+        }
+        elseif (Auth()->user()->rol == 7) {
             return redirect()->route('ordenes-prod')->with('success', 'Validación exitosa');
         }
     }

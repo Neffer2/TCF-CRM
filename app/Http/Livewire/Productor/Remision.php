@@ -63,6 +63,9 @@ class Remision extends Component
 
         // Actualiza la orden en la base de datos
         $orden->update();
+
+        // Se envia notificación al LIder de producción
+        $this->ocJuridicaRevisionRemiLiderProd($orden);
         // $this->send($orden); // (opcional) Enviar notificación por email
 
         // Redirige con mensaje de éxito

@@ -24,6 +24,7 @@
         .table-cols { border-top: 1px solid #000; border-bottom: 1px solid #000; } /* agregado */
         .table-cols td, .table-cols th { border-left: 1px solid #000; }
         .table-cols td:last-child, .table-cols th:last-child { border-right: 1px solid #000; }
+        .table-cols td {word-wrap: break-word; white-space: normal}
 
         .totals-table { width:100%; border-collapse: collapse; }
         .totals-table td { border:1px solid #000; padding:4px; }
@@ -109,7 +110,7 @@
         </tr>
         @foreach( $orden->ordenItems as $item )
             <tr>
-                <td width="50%" style="padding: 2px; font-size: 10px">{{ $item->desc_oc }}</td>
+                <td width="50%" style="padding: 2px; font-size: 10px;">{{ $item->desc_oc }}</td>
                 <td width="10%" style="text-align: center; font-size: 10px">{{ $item->cant_oc }}</td>
                 <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vunit_oc) }}</td>
                 <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vtotal_oc) }}</td>
