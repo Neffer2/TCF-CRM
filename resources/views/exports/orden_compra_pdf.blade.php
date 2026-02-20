@@ -35,7 +35,7 @@
     <table>
         <tr>
             <td style="vertical-align: top;">
-                <p style="font-size: 17px; margin-bottom: 0"><strong>BULL MARKETING S A S</strong></p>
+                <p style="font-size: 17px; margin-bottom: 0"><strong>BUlllLL MARKETING S A S</strong></p>
                 <p style="margin-bottom: 0; line-height: 5px">N.I.T: 900298176</p>
                 <p style="margin-bottom: 0; line-height: 5px">DIRECCIÓN: CRA 53C No. 127D 23</p>
                 <p style="margin-bottom: 0; line-height: 5px">TELEFONOS: 4322700</p>

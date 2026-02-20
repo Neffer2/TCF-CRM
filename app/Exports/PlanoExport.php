@@ -20,7 +20,8 @@ class PlanoExport implements FromView, WithColumnFormatting, WithColumnWidths, W
     function __construct($mes = null) {
         ini_set('max_execution_time', 10000); // or this way
 
-        $año = Carbon::now()->year;
+        // $año = Carbon::now()->year;
+        $año = 2025;
         if ($mes) {
             $startDate = Carbon::createFromDate($año, $mes, 1)->startOfMonth()->toDateTimeString();
             $endDate = Carbon::createFromDate($año, $mes, 1)->endOfMonth()->toDateTimeString();
