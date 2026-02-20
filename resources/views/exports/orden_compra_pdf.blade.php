@@ -24,7 +24,7 @@
         .table-cols { border-top: 1px solid #000; border-bottom: 1px solid #000; } /* agregado */
         .table-cols td, .table-cols th { border-left: 1px solid #000; }
         .table-cols td:last-child, .table-cols th:last-child { border-right: 1px solid #000; }
-        .table-cols td {word-wrap: break-word; white-space: normal}
+        .table-cols td {word-wrap: break-word; white-space: pre-wrap}
 
         .totals-table { width:100%; border-collapse: collapse; }
         .totals-table td { border:1px solid #000; padding:4px; }

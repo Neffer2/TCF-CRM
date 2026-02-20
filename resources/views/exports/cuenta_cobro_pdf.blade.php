@@ -53,7 +53,7 @@
         .table-cols td {
             padding: 0.5rem;
             word-wrap: break-word;
-            white-space: normal
+            white-space: pre-wrap
         }
 
         .totals-table {
