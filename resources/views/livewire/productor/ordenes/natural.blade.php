@@ -701,7 +701,7 @@
                 @endif
             </div>
         </div>
-    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 6 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2))))
+    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 6 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 10))))
         <div>
             @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
                 <div class="card mt-3">
@@ -1151,40 +1151,6 @@
                                         @endforeach
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                            <div class="col-md-12 py-3">
-                                <div class="nav-wrapper position-relative end-0">
-                                    <ul class="nav nav-pills nav-fill p-1 mb-3" role="tablist" style="border: 1px solid #e3e3e3">
-                                        <li class="nav-item">
-                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#oc-pdf" role="tab" aria-controls="preview" aria-selected="true">
-                                                PDF ORDEN DE COMPRA
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold" data-bs-toggle="tab" href="#cc-pdf" role="tab" aria-controls="code" aria-selected="false">
-                                                PDF CUENTA DE COBRO
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">
-                                        <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
-                                        <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <p class="text-dark font-weight-bold mt-3">
-                                        Código OC: {{ $cod_oc }}
-                                    </p>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-2">

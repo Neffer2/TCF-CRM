@@ -419,7 +419,7 @@ trait Email
 
         $body =
         "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> con un monto: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
@@ -609,7 +609,7 @@ trait Email
 
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
@@ -666,7 +666,7 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        array_push($recipients, ...$this->proveedor);
+        array_push($recipients, ...$this->produccion);
 
         $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);

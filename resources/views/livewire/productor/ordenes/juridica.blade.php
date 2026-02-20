@@ -548,7 +548,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6 || $orden_compra->estado_id == 8 || $orden_compra->estado_id == 9))))
+            @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6 || $orden_compra->estado_id == 8 || $orden_compra->estado_id == 9 || $orden_compra->estado_id == 10))))
                 <div class="row px-4">
                     <div class="col-md-6">
                         <div class="form-group">
