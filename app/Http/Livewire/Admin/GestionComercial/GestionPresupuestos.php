@@ -103,6 +103,7 @@ class GestionPresupuestos extends Component
 
             // Limpia las justificaciones
             $presupuesto->justificacion_compras = null;
+            $presupuesto->justificacion_lider = null;
             $presupuesto->justificacion = null;
         }
         $presupuesto->update();

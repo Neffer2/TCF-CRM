@@ -43,6 +43,7 @@ Route::get('/', function () {
     Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');
     Route::get('/ordenes-compra/pdf/{orden}', [AdminController::class, 'ordenCompraPdf'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra.pdf');
     Route::get('/actualizaciones', [AdminController::class, 'actualizaciones'])->middleware(['auth'])->name('actualizaciones');
+    Route::get('/validaciones', [AdminController::class, 'validaciones'])->middleware(['auth'])->name('validaciones');
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
@@ -152,6 +153,7 @@ Route::get('/', function () {
 
 /* PÚBLICO */
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
+    Route::get('/consulta-cuenta-cobro/{orden}/{borrador?}', [AdminController::class, 'cuentaCobroPdf'])->name('consulta-cuenta-cobro');
 /* --- */
 
 

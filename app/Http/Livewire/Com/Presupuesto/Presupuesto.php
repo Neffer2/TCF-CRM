@@ -48,6 +48,7 @@ class Presupuesto extends Component
     public $centroCostos;
     public $justificacion;
     public $justificacion_compras;
+    public $justificacion_lider_comercial;
 
     // Variables útiles para lógica y vistas
     public $presupuesto;
@@ -103,6 +104,7 @@ class Presupuesto extends Component
             $this->estadoValidator = $validator->estado_id;
             $this->justificacion = $validator->justificacion;
             $this->justificacion_compras = $validator->justificacion_compras;
+            $this->justificacion_lider_comercial = $validator->justificacion_lider;
             $this->presupuesto = $validator;
         }
 
@@ -464,23 +466,25 @@ class Presupuesto extends Component
         return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
     }
 
-    // Envía el presupuesto a aprobación
+    // Envía el presupuesto a Validación del lider comercial
     public function aprobacion(){
         // Si es actualización, justificación es obligatoria
-        if ($this->presupuesto->cod_c){
+        if ($this->presupuesto->cod_cc){
             $this->validate([
                 'justificacion' => ['required', 'string', 'max:254']
             ]);
         }
 
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presto->estado_id = 2;
+        $presto->estado_id = 4;
+//        $presto->estado_id = 2;
         $presto->justificacion = $this->justificacion;
         $presto->update();
         $this->estadoValidator = $presto->estado_id;
 
-        // Envía email de aprobación
-        $this->presupuestoAprobacion($presto, Auth::user());
+        // Envía email de validación
+        $this->presupuestoValidacionLiderComercial($presto, Auth::user());
+//        $this->presupuestoAprobacion($presto, Auth::user());
         return redirect()->route('presupuesto', $this->id_gestion);
     }
 
@@ -572,12 +576,23 @@ class Presupuesto extends Component
 
     // Rechaza el presupuesto y guarda la justificación
     public function rechazar(){
-        $this->validate([
-            'justificacion_compras' => ['required', 'string']
-        ]);
-
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presupuesto->justificacion_compras = $this->justificacion_compras;
+
+        if ($presupuesto->estado_id == 4){
+            $this->validate([
+                'justificacion_lider_comercial' => ['required', 'string']
+            ]);
+
+            $presupuesto->justificacion_lider = $this->justificacion_lider_comercial;
+        }
+        else {
+            $this->validate([
+                'justificacion_compras' => ['required', 'string']
+            ]);
+
+            $presupuesto->justificacion_compras = $this->justificacion_compras;
+        }
+
         $presupuesto->estado_id = 3;
         $presupuesto->update();
 

@@ -247,6 +247,13 @@
         </div>
     @elseif ((Auth::user()->id == 8 || Auth::user()->id == 10) && $queriedOrden->estado_id == 9)
         {{-- REVISIÓN GERENCIA --}}
+        <div class="row m-0">
+            <div class="col-12">
+                <p class="text-dark font-weight-bold mt-3">
+                    Observaciones lider de producción: {{ $orden_compra->observaciones_revision_lider }}
+                </p>
+            </div>
+        </div>
         <div class="row px-4">
             <div class="col-md-6">
                 <div class="form-group">
@@ -904,12 +911,12 @@
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">
                                         <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
                                         <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf">
+                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">
                                         </div>
                                     </div>
                                 </div>
@@ -971,6 +978,7 @@
                     </div>
                 </div>
             @elseif (Auth()->user()->rol == 6 && $queriedOrden->estado_id == 10)
+                {{-- REVISIÓN EVIDENCIAS LIDER PRODUCCIÓN --}}
                 <div class="card mt-3">
                     <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
                         <div class="row">

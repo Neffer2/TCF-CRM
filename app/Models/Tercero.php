@@ -18,6 +18,7 @@ class Tercero extends Model
         'servicio',
         'ciudad',
         'banco',
-        'estado'
+        'estado',
+        'firma'
     ];
 }

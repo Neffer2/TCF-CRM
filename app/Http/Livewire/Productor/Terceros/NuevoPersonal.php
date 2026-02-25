@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Productor\Terceros;
 
+use App\Models\Evidencia;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
@@ -47,6 +48,9 @@ class NuevoPersonal extends Component
     // Colección de evidencias
     public $evidencias = [];
 
+    // Listener para ejecutar el método store cuando se emite 'evidencia-signal'
+    protected $listeners = ['evidencia-signal' => 'saveEvidencia'];
+
     // Renderiza la vista principal del componente
     public function render()
     {
@@ -62,7 +66,17 @@ class NuevoPersonal extends Component
 
         $this->estados = EstadoTercero::all();
 
-        if ($this->tercero){$this->fillForm();}
+        if ($this->tercero) {
+            $this->fillForm();
+        }
+
+        // Si el estado_id es 7 (Evidencias), obtenemos las evidencias guardadas
+        if ($this->orden->estado_id == 7) {
+            $this->evidencias = Evidencia::where([
+                ['oc_id', $this->orden->id],
+                ['tercero_id', $this->tercero->id],
+            ])->get();
+        }
     }
 
     // Importa terceros desde archivo Excel
@@ -381,11 +395,12 @@ class NuevoPersonal extends Component
             'observacionEvidencia' => 'required|string|max:255'
         ]);
 
-        $evidencia = [
-            'fecha' => $this->fechaEvidencia,
-            'foto' => $this->fotoEvidencia->store('public/evidencias'),
-            'observacion' => $this->observacionEvidencia
-        ];
+        $evidencia = $this->orden->evidencias()->create([
+            'fecha_evidencia' => $this->fechaEvidencia,
+            'foto_evidencia' => $this->fotoEvidencia->store('public/evidencias'),
+            'observacion_evidencia' => $this->observacionEvidencia,
+            'tercero_id' => $this->orden->naturalInfo->tercero_id
+        ]);
 
         $this->evidencias->push($evidencia);
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
@@ -393,30 +408,32 @@ class NuevoPersonal extends Component
 
     // Elimina una evidencia de la colección y borra el archivo
     public function deleteEvidencia($itemId){
-        $filePath = $this->evidencias[$itemId]['foto'];
-        Storage::delete($filePath);
-        unset($this->evidencias[$itemId]);
+        $itemEvidencia = Evidencia::find($itemId);
+        Storage::delete($itemEvidencia->foto_evidencia);
+
+        $itemEvidencia->delete();
+        $this->evidencias = $this->evidencias->reject(function ($e) use ($itemId) {
+            return $e->id === $itemId;
+        });
     }
 
     // Guarda todas las evidencias en la base de datos
-    public function saveEvidencia(){
-        foreach($this->evidencias as $evidencia){
-            $this->orden->evidencias()->create([
-                'fecha_evidencia' => $evidencia['fecha'],
-                'foto_evidencia' => $evidencia['foto'],
-                'observacion_evidencia' => $evidencia['observacion'],
-                'tercero_id' => $this->orden->naturalInfo->tercero_id
-            ]);
-        }
+    public function saveEvidencia($data){
+        // Eliminamos la firma antigua
+        Storage::delete($this->tercero->firma);
+
+        // Procesa la imagen de la firma recibida en base64
+        $data_uri = $data;
+        $encoded_image = explode(",", $data_uri)[1];
+        $decoded_image = base64_decode($encoded_image);
+
+        // Guarda la firma como archivo PNG en storage
+        file_put_contents("storage/firmas_terceros/".$this->tercero->cedula.".png", $decoded_image);
+        $this->tercero->firma = "public/firmas_terceros/".$this->tercero->cedula.".png";
+        $this->tercero->update();
 
         $this->orden->estado_id = 3;
         $this->orden->update();
-
-        $this->reset_fields([
-            'fechaEvidencia',
-            'fotoEvidencia',
-            'observacionEvidencia'
-        ]);
 
         // Mail evidencias enviadas
         $this->ocNaturalEvidenciasEnviadas($this->orden);

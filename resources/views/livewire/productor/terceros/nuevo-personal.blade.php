@@ -418,7 +418,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="planilla_aportes"> 
+                                <label for="planilla_aportes">
                                     ¿Tus pagos superan el salario m&iacute;nimo?
                                     Adjunta tu planilla de aportes:
                                 </label>
@@ -585,18 +585,18 @@
                                                 {{ $key+=1 }}
                                             </td>
                                             <td>
-                                                {{ $evidencia['fecha'] }}
+                                                {{ $evidencia->fecha_evidencia }}
                                             </td>
                                             <td>
-                                                <a href="{{ asset(str_replace("public", "storage", $evidencia['foto'])) }}" target="_blank">
-                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia['foto'])) }}" height="70">
+                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="70">
                                                 </a>
                                             </td>
                                             <td>
-                                                {{ $evidencia['observacion'] }}
+                                                {{ $evidencia->observacion_evidencia }}
                                             </td>
                                             <td>
-                                                <Button class="btn btn-danger" wire:click="deleteEvidencia({{ $key-=1 }})">Eliminar</Button>
+                                                <Button class="btn btn-danger" wire:click="deleteEvidencia({{ $evidencia->id }})">Eliminar</Button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -643,8 +643,25 @@
                         </div>
                     </div>
                     @if ($evidencias->count() == $orden->ordenItems->sum('cant_oc'))
+                        <div class="col-12">
+                            <div class="row m-0">
+                                <div class="col-md-5">
+                                    <h6>Firma: </h6>
+                                    <canvas id="signature-pad" class="signature-pad" width="400" height="210"></canvas>
+                                    <input id="firma_hidden" type="text" wire:model="firma" style="display: none">
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <button id="save" class="btn bg-gradient-primary">Guardar</button>
+                                        <button id="clear" class="btn bg-gradient-secondary">Borrar</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <embed src="{{ route('consulta-cuenta-cobro', [$orden, 'borrador' => true]) }}#navpanes=0" width="100%" height="600" type="application/pdf">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-2">
-                            <button type="button" class="btn bg-gradient-success" wire:click="saveEvidencia" wire:loading.attr="disabled">
+                            <button id="enviar-evidencias" class="btn bg-gradient-success" disabled>
                                 Guardar evidencias
                             </button>
                         </div>
@@ -666,6 +683,40 @@
                     </div>
                 </div>
             </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+            <script>
+                let saveButton = document.getElementById('save');
+                let cancelButton = document.getElementById('clear');
+                let enviarBtn = document.getElementById('enviar-evidencias');
+
+                enviarBtn.addEventListener('click', enviar);
+
+                signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    penColor: 'rgb(0, 0, 0)'
+                });
+
+                signaturePad.addEventListener('beginStroke', () => {
+                    enviarBtn.disabled = true;
+                });
+
+                saveButton.addEventListener('click', function (event) {
+                    data = signaturePad.toDataURL('image/png');
+                    enviarBtn.disabled = false;
+                    document.getElementById('firma_hidden').value = data;
+                });
+
+                cancelButton.addEventListener('click', function (event) {
+                    signaturePad.clear();
+                    enviarBtn.disabled = true;
+                });
+
+                function enviar(){
+                    enviarBtn.disabled = true;
+                    Livewire.emit('evidencia-signal', firma_hidden.value);
+                }
+            </script>
         @else
             <div>
                 <div class="modal-body pt-1">

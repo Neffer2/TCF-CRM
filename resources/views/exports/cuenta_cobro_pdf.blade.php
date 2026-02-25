@@ -66,10 +66,39 @@
             padding: 4px;
         }
 
+        .marca-borrador {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 30%;
+            left: 0;
+            z-index: 2;
+            opacity: 0.3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .marca-borrador h1 {
+            font-size: 7rem;
+            color: #fd7e14;
+            text-align: center;
+        }
+
+        .firma-tercero {
+            width: 135px;
+        }
+
         /* .totals-table tr:last-child td { background:#d3d3d3; } */
     </style>
 </head>
 <body>
+@if ( $borrador )
+    <div class="marca-borrador">
+        <h1>BORRADOR</h1>
+    </div>
+@endif
+
 <table>
     <tr>
         <td style="vertical-align: top;">
@@ -204,7 +233,12 @@
                     </td>
                     <td style="text-align: center;">
                         <p class="bold">EL CONTRATISTA. <br><br><br></p>
-                        <p class="sign"> {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</p>
+                        @if ( ! $borrador && $orden->naturalInfo->tercero->firma )
+                            <img
+                                class="firma-tercero"
+                                src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path( str_replace('public', 'storage', $orden->naturalInfo->tercero->firma) ))) }}"
+                                alt="Firma tercero">
+                        @endif
                         <p class="bold">__________________________</p>
                         <p class="bold" style="font-size: 10px; margin-bottom: 0; line-height: 5px">
                             Nombre: {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}

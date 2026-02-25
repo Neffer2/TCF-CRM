@@ -114,6 +114,10 @@ class AdminController extends Controller
         return view('admin.gestion.actualizaciones');
     }
 
+    public function validaciones(){
+        return view('admin.gestion.validaciones');
+    }
+
     /**
      * Muestra la página principal de órdenes de compra (producción)
      *
@@ -265,7 +269,7 @@ class AdminController extends Controller
             ->header('Content-Disposition', 'inline; filename="orden_compra_'.$orden->id.'.pdf"');
     }
 
-    public function cuentaCobroPdf(OrdenCompra $orden) {
+    public function cuentaCobroPdf(OrdenCompra $orden, $borrador = false) {
         $orden->load([
             'proveedor',
             'presupuesto',
@@ -286,6 +290,7 @@ class AdminController extends Controller
             'orden' => $orden,
             'cod_cuenta_cobro' => $cod_cuenta_cobro,
             'subtotal' => $subtotal,
+            'borrador' => $borrador
         ])->render();
 
         $dompdf->loadHtml($html);
