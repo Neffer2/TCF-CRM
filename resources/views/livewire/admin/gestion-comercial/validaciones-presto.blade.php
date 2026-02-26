@@ -35,7 +35,7 @@
                 <tr>
                     <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
                     <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
-                    <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                    <th colspan="3" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -87,7 +87,8 @@
                             @if (Auth::user()->rol == 1)
                                 <td class="d-flex align-items-start">
                                     <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
-                                    <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">
+                                    <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control w-auto mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">
+                                        <option value selected>Cambiar estado</option>
                                         @foreach ($estados as $estado)
                                             @if ( $estado->id != 3 )
                                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>

@@ -488,6 +488,18 @@ class Presupuesto extends Component
         return redirect()->route('presupuesto', $this->id_gestion);
     }
 
+    // Guarda la gestión de validación del Lider Comercial
+    public function validacionLiderComercial(){
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presto->estado_id = 2;
+        $presto->justificacion_lider = null;
+        $presto->update();
+
+        // Envía notificación de revisión
+        $this->presupuestoAprobacion($presto, Auth::user());
+        return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
+    }
+
     // Marca el presupuesto como editable
     public function setEnEdicion($presto){
         if ($presto->estado_id != 3){
