@@ -419,8 +419,10 @@ class NuevoPersonal extends Component
 
     // Guarda todas las evidencias en la base de datos
     public function saveEvidencia($data){
-        // Eliminamos la firma antigua
-        Storage::delete($this->tercero->firma);
+        // Si ya existe una firma, se elimina
+        if ($this->tercero->firma) {
+            Storage::delete($this->tercero->firma);
+        }
 
         // Procesa la imagen de la firma recibida en base64
         $data_uri = $data;
