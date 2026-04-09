@@ -26,7 +26,7 @@ class ValidacionesPresto extends Component
     public $yearInfo; // Información detallada del año seleccionado
 
     // Variable que contiene los ids de los Lideres Comerciales
-    public $idLideresComerciales = [2, 9, 38, 126];
+    public $idLideresComerciales = [2, 8, 9, 10, 38, 126];
 
     public function render()
     {
