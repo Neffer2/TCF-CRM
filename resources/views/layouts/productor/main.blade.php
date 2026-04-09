@@ -156,7 +156,7 @@
                         <li @class(['active' => request()->is('anticipo'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('anticipo'),
                         'nav-link' => true,
-                        'ps-4' => true, 'pe-0' => true]) href="{{ route('anticipo-prod') }}">
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('solicitd-anticipo-prod') }}">
                                 <span class="sidenav-mini-icon"> NA </span>
                                 <span class="sidenav-normal"> Nuevo Anticipo </span>
                             </a>
@@ -164,7 +164,7 @@
                         <li @class(['active' => request()->is('lista-anticipos'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('lista-anticipos'),
                         'nav-link' => true,
-                        'ps-4' => true, 'pe-0' => true]) href="{{ route('anticipos-prod') }}">
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('lista-anticipos-prod') }}">
                                 <span class="sidenav-mini-icon"> MA </span>
                                 <span class="sidenav-normal"> Mis Anticipos </span>
                             </a>

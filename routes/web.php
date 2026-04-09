@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Anticipo;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\AdminController;
@@ -60,13 +61,14 @@ Route::get('/', function () {
 
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
 
-    Route::get('/reporte-consumidos/{mes?}', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
+    Route::get('/reporte-consumidos/{mes?}/{anio?}', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
     Route::get('/reporte-plano-helisa/{mes?}', [AdminController::class, 'reportePlanoHelisa'])->middleware(['auth'])->name('reporte-plano-helisa');
 
-    Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth'])->middleware(['admin'])->name('anticipos-admin');
+    Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth'])->middleware(['admin'])->name('lista-anticipos-admin');
 
     Route::get('/anticipo-admin/{anticipo_id?}', function ($anticipo_id){
-        return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
+        $anticipo = Anticipo::find($anticipo_id);
+        return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => ($anticipo->oc_id) ? 1 : 2]);
     })->middleware(['auth'])->middleware(['admin'])->name('anticipo-admin');
 /* --- */
 
@@ -113,6 +115,11 @@ Route::get('/', function () {
     Route::get('/oc-natural/{orden_id?}', function ($orden_id){
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['lproduccion'])->name('oc-natural');
+    Route::view('/lista-anticipos-lid', 'lider-produccion.anticipos.index')->middleware(['auth'])->middleware(['lproduccion'])->name('lista-anticipos-lid');
+    Route::get('/anticipo-lid/{anticipo_id?}', function ($anticipo_id){
+        $anticipo = Anticipo::find($anticipo_id);
+        return view('lider-produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => ($anticipo->oc_id) ? 1 : 2]);
+    })->middleware(['auth'])->middleware(['lproduccion'])->name('anticipo-lid');
 /* --- */
 
 /* Productor */
@@ -123,8 +130,12 @@ Route::get('/', function () {
     Route::get('/orden-compra-natural/{orden_id?}', function ($orden_id = null){
         return view('productor.terceros.orden-compra-natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
-    Route::view('/anticipo', 'productor.ordenes.anticipo')->middleware(['auth'])->middleware(['productor'])->name('anticipo-prod');
-    Route::view('/lista-anticipos', 'productor.anticipos.index')->middleware(['auth'])->middleware(['productor'])->name('anticipos-prod');
+    Route::view('/solicitud-anticipo', 'productor.ordenes.anticipo')->middleware(['auth'])->middleware(['productor'])->name('solicitd-anticipo-prod');
+    Route::view('/lista-anticipos', 'productor.anticipos.index')->middleware(['auth'])->middleware(['productor'])->name('lista-anticipos-prod');
+    Route::get('/anticipo-prod/{anticipo_id?}', function ($anticipo_id){
+        $anticipo = Anticipo::find($anticipo_id);
+        return view('productor.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => ($anticipo->oc_id) ? 1 : 2]);
+    })->middleware(['auth'])->middleware(['productor'])->name('anticipo-prod');
 /* --- */
 
 /* Contabilidad */

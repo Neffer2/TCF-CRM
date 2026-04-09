@@ -139,7 +139,7 @@
                             </a>
                         </li>
                         <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('anticipos-admin') }}">
+                            <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
                                 <span class="sidenav-mini-icon text-xs"> AN </span>
                                 <span class="sidenav-normal"> Anticipos </span>
                             </a>

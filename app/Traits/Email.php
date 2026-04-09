@@ -919,6 +919,108 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $files);
     }
 
+    /*
+        * NOTIFICACIONES ANTICIPOS PRODUCTOR
+    */
+    public function anticipoProdRevisionLiderProd($anticipo) {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $body =
+        "<p>
+            Tienes una solicitud de anticipo registrada por el productor ".$anticipo->productor_info->name." pendiente por revisar.
+            Confirma que la información esté correctamente diligenciada.
+        </p>";
+
+        array_push($recipients, ...$this->produccion);
+
+        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function anticipoProdRechazoLiderProd($anticipo) {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $body =
+        "<p>
+            La solicitud de anticipo que registraste ha sido <b>RECHAZADA</b> por el lider de producción.<br>
+            Revisa las observaciones y corrige la información de la orden de compra.
+        </p>";
+
+//        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+
+        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function anticipoProdRevisionGerencia($anticipo) {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $total = $anticipo->total_anticipo;
+
+        $body =
+        "<p>
+            La solicitud de anticipo del productor <b>".$anticipo->productor_info->name."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p>";
+
+        array_push($recipients, ...$this->gerencia);
+
+        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function anticipoProdRechazoGerencia($anticipo) {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $body =
+        "<p>
+            La solicitud de anticipo que registraste ha sido <b>RECHAZADA</b> por gerencia.<br>
+            Revisa las observaciones y corrige la información de la orden de compra.
+        </p>";
+
+//        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+
+        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function anticipoProdEvidencias($anticipo) {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $total = $anticipo->total_anticipo;
+
+        $body =
+        "<p>
+            La solicitud de anticipo que registraste ha sido validada y aprobada. <br>
+            Recuerda que debes adjuntar las evidencias para continuar con el proceso de legalización.
+        </p>";
+
+        //        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+
+        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
     /**
      * Función principal para envío de notificaciones por correo
      * @param $subject

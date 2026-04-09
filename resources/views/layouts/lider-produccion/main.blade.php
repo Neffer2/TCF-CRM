@@ -40,16 +40,16 @@
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active"
+                <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link"
                    aria-controls="dashboardsExamples" role="button" aria-expanded="false">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
                         <i class="ni ni-shop text-primary text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Inicio</span>
                 </a>
-                <div class="collapse  show " id="dashboardsExamples">
+                <div class="collapse" id="dashboardsExamples">
                     <ul class="nav ms-4">
-                        <li class="nav-item active">
+                        <li class="nav-item">
                             <a class="nav-link active" href="{{ route('dashboard-lider-produccion') }}">
                                 <span class="sidenav-mini-icon"> D </span>
                                 <span class="sidenav-normal"> Dashboard </span>
@@ -67,10 +67,16 @@
                     <span class="nav-link-text ms-1">Producci&oacute;n</span>
                 </a>
                 <div @class([
-                    'show' => (request()->is('ordenes-compra')),
+                    'show' => (request()->is('ordenes-compra') || request()->is('lista-anticipos-lid')),
                     'collapse' => true
                     ]) id="dashboardsProduccion">
                     <ul class="nav ms-4">
+                        <li @class(['active' => request()->is('lista-anticipos-lid'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('lista-anticipos-lid'), 'nav-link' => true]) href="{{ route('lista-anticipos-lid') }}">
+                                <span class="sidenav-mini-icon text-xs"> A </span>
+                                <span class="sidenav-normal"> Anticipos </span>
+                            </a>
+                        </li>
                         <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra-lid') }}">
                                 <span class="sidenav-mini-icon text-xs"> OC </span>

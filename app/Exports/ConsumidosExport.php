@@ -16,13 +16,16 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
 {
     protected $ordenes = [];
 
-    function __construct($mes = null) {
+    function __construct($mes = null, $anio = null) {
         ini_set('max_execution_time', 10000); // or this way
 
-        $año = Carbon::now()->year;
+        if (!$anio) {
+            $anio = Carbon::now()->year;
+        }
+
         if ($mes) {
-            $startDate = Carbon::createFromDate($año, $mes, 1)->startOfMonth()->toDateTimeString();
-            $endDate = Carbon::createFromDate($año, $mes, 1)->endOfMonth()->toDateTimeString();
+            $startDate = Carbon::createFromDate($anio, $mes, 1)->startOfMonth()->toDateTimeString();
+            $endDate = Carbon::createFromDate($anio, $mes, 1)->endOfMonth()->toDateTimeString();
         } else {
             $startDate = Carbon::now()->startOfMonth()->toDateTimeString();
             $endDate = Carbon::now()->toDateTimeString();

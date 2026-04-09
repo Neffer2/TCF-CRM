@@ -49,6 +49,7 @@ class Presupuesto extends Component
     public $justificacion;
     public $justificacion_compras;
     public $justificacion_lider_comercial;
+    public $justificacion_gerencia;
 
     // Variables útiles para lógica y vistas
     public $presupuesto;
@@ -489,7 +490,27 @@ class Presupuesto extends Component
     }
 
     // Guarda la gestión de validación del Lider Comercial
-    public function validacionLiderComercial(){
+    public function validacionLiderComercial() {
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+
+        // Si el margen del proyecto es menor al 35%, se envia a validación de gerencia (estado_id = 5),
+        // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
+        if ($presto->margen_proy < 35.00) {
+            $presto->estado_id = 5;
+        }
+        else {
+            $presto->estado_id = 2;
+            // Envía notificación de revisión
+            $this->presupuestoAprobacion($presto, Auth::user());
+        }
+
+        $presto->justificacion_lider = null;
+        $presto->update();
+        return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
+    }
+
+    // Guarda la gestión de validación de Gerencia
+    public function validacionGerencia() {
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 2;
         $presto->justificacion_lider = null;
@@ -590,12 +611,19 @@ class Presupuesto extends Component
     public function rechazar(){
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-        if ($presupuesto->estado_id == 4){
+        if ($presupuesto->estado_id == 4) {
             $this->validate([
                 'justificacion_lider_comercial' => ['required', 'string']
             ]);
 
             $presupuesto->justificacion_lider = $this->justificacion_lider_comercial;
+        }
+        elseif ($presupuesto->estado_id == 5) {
+            $this->validate([
+                'justificacion_gerencia' => ['required', 'string']
+            ]);
+
+            $presupuesto->justificacion_gerencia = $this->justificacion_gerencia;
         }
         else {
             $this->validate([

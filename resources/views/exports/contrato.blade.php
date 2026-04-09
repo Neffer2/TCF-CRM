@@ -45,6 +45,36 @@
             font-size: 24px;
             font-style: italic
         }
+
+        .table-cols {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-title {
+            padding: 4px;
+            font-weight: bold;
+            text-align: center;
+            background-color: lightgray;
+        }
+
+        .table-cols td, .table-cols th {
+            border-left: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-cols td:last-child, .table-cols th:last-child {
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-cols td {
+            padding: 0.1rem 0.2rem;
+            word-wrap: break-word;
+            white-space: pre-wrap
+        }
     </style>
 </head>
 <body>
@@ -69,6 +99,30 @@
             dada la índole profesional y especializada que ostenta, características del EL CONTRATISTA necesarias
             para poder cumplir con el objeto del presente contrato.
         </p>
+        <br>
+        <p>
+            EL CONTRATISTA prestará a EL CONTRATANTE los servicios objeto del presente contrato, conforme a lo acordado entre las partes.
+            El detalle, alcance y condiciones de dichos servicios se establecen en la tabla que forma parte integral del presente documento.
+        </p>
+        <br>
+        <div style="padding: 0 3rem">
+            <table class="table-cols">
+                <tr>
+                    <th class="table-title">DESCRIPCIÓN</th>
+                    <th class="table-title">CANTIDAD</th>
+                    <th class="table-title">VALOR UNITARIO</th>
+                    <th class="table-title">VALOR TOTAL</th>
+                </tr>
+                @foreach ($contratoInfo['items'] as $item)
+                    <tr>
+                        <td>{{ $item->desc_oc }}</td>
+                        <td>{{ $item->cant_oc }}</td>
+                        <td>{{ number_format( $item->vunit_oc ) }}</td>
+                        <td>{{ number_format( $item->vtotal_oc ) }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
         <br>
         <p>
             <b>SEGUNDA.- NATURALEZA JURÍDICA:</b> El presente contrato es de orden mercantil, y no conlleva para EL

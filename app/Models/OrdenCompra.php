@@ -15,7 +15,8 @@ class OrdenCompra extends Model
         'presupuesto_id',
         'proveedor_id',
         'fecha_aprobacion',
-        'fecha_envio_produccion'
+        'fecha_envio_produccion',
+        'actualizado'
     ];
 
     public function ordenItems(){
@@ -31,7 +32,8 @@ class OrdenCompra extends Model
     }
 
     public function presupuesto(){
-        return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
+//        return $this->hasOne(PresupuestoProyecto::class, 'presupuesto_id', 'id');
+        return $this->belongsTo(PresupuestoProyecto::class, 'presupuesto_id', 'id');
     }
 
     public function proveedor(){

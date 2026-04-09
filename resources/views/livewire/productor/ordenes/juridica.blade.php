@@ -1,6 +1,11 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 <div>
     <div class="card-body pt-0">
+        @if ( !$orden_compra )
+            <div class="alert alert-warning" role="alert" style="background-image: none">
+                Recuerda que el proveedor debe estar registrado para generar la solicitud de OC.
+            </div>
+        @endif
         <div class="card">
             <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
                 SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA
@@ -431,14 +436,102 @@
                     </div>
                 </div>
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
-                {{-- GOOD RECEIVE --}}
+                {{-- REVISIÓN REMISIÓN CONTROLLER --}}
                 <div class="row px-4">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="">Observaciones remisión: </label>
-                            <textarea disabled class="form-control">{{ $orden_compra->observacion_remision }}</textarea>
+                            <label for="observaciones_remision">Observaciones remisión</label>
+                            <textarea name="observaciones_remision" id="observaciones_remision" class="form-control"
+                                wire:model="observaciones_remision" cols="100" rows="2"></textarea>
+                            @error('observaciones_remision')
+                                <div id="observaciones_remision" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(14)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gr">Observaciones de anulaci&oacute;n:</label>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
+                                @error('observaciones_anulacion')
+                                <div id="observaciones_anulacion" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <button wire:click="cambioEstado(6)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
+                                <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Remisi&oacute;n.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @php
+                                $firma = str_replace('public/', '', $orden_compra->archivo_firma);
+                            @endphp
+                            <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Firma.</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cod: @if ($orden_compra->cod_oc) {{ $orden_compra->cod_oc }}. @endif</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @elseif(($orden_compra && ($orden_compra->estado_id == 4) && (Auth::user()->rol == 1 && Auth::user()->id == 181)))
+                {{-- GOOD RECEIVE - LIDER CONTROLLER --}}
+                <div class="row px-4">
                     <div class="row mb-3" x-data="{ accion: true }" x-cloak>
                         <div class="col-md-2">
                             <div class="form-group">
@@ -456,9 +549,9 @@
                                 <div class="form-group">
                                     <input id="gr" wire:model="gr" class="form-control">
                                     @error('gr')
-                                        <div id="gr" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
+                                    <div id="gr" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
                                     @enderror
                                 </div>
                             </div>
@@ -477,9 +570,9 @@
                                 <div class="form-group">
                                     <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
                                     @error('observaciones_anulacion')
-                                        <div id="observaciones_anulacion" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
+                                    <div id="observaciones_anulacion" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
                                     @enderror
                                 </div>
                             </div>

@@ -125,7 +125,7 @@
             {{-- Actualizacion --}}
             @if (Auth::user()->rol == 1)
                 <div class="row mt-2">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
@@ -174,7 +174,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-header p-0 mt-3 col-md-12">
                                 <div class="row px-3">
@@ -186,7 +186,9 @@
                             </div>
                             <div class="card-body p-2">
                                 <div class="form-group">
-                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif id="justificacion_lider_comercial" cols="10" rows="2" class="form-control" wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
+                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif
+                                        id="justificacion_lider_comercial" cols="10" rows="2" class="form-control"
+                                        wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_lider_comercial')
                                     <small id="justificacion_lider_comercial" class="text-danger bold">
                                         {{ $message }}
@@ -195,7 +197,36 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                            @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif
+                                        @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif
+                                        wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12">
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Justificaci&oacute;n gerencia</h3>
+                                        <p class="text-sm mb-0">Expl&iacute;cale al comercial porqu&eacute; ha sido rechazado el presupuesto.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-2">
+                                <div class="form-group">
+                                    <textarea name="justificacion_gerencia" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
+                                        id="justificacion_gerencia" cols="10" rows="2" class="form-control" wire:model="justificacion_gerencia"
+                                        class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion_gerencia')
+                                    <small id="justificacion_gerencia" class="text-danger bold">
+                                        {{ $message }}
+                                    </small>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn bg-gradient-warning m-0"
+                                        @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
                                         wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>
@@ -204,57 +235,92 @@
                 </div>
             @endif
 
-            @if ($justificacion_compras && Auth::user()->rol != 1)
+            @if (( $justificacion_compras || $justificacion_lider_comercial || $justificacion_gerencia ) && Auth::user()->rol != 1)
                 <div class="row mt-2">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12">
-                                <div class="row px-3">
-                                    <div class="col-md-12">
-                                        <h3 class="mb-0">Justificaci&oacute;n compras</h3>
-                                        <p class="text-sm mb-0">Revisa el porqu&eacute; fue rechazado tu presupuesto.</p>
+                    @if ($justificacion_compras)
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header p-0 mt-3 col-md-12">
+                                    <div class="row px-3">
+                                        <div class="col-md-12">
+                                            <h3 class="mb-0">
+                                                Justificaci&oacute;n compras
+                                            </h3>
+                                            <p class="text-sm mb-0">Revisa el porqu&eacute; fue rechazado tu presupuesto.</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="form-group">
-                                    <textarea name="justificacion_compras" @if(Auth::user()->rol != 1) disabled @endif id="justificacion_compras" cols="10" rows="1" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
-                                    @error('justificacion_compras')
+                                <div class="card-body p-2">
+                                    <div class="form-group">
+                                        <textarea name="justificacion_compras" @if(Auth::user()->rol != 1) disabled @endif id="justificacion_compras" cols="10" rows="1" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
+                                        @error('justificacion_compras')
                                         <small id="justificacion_compras" class="text-danger bold">
                                             {{ $message }}
                                         </small>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if ($justificacion_lider_comercial && Auth::user()->rol != 1)
-                <div class="row mt-2">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12">
-                                <div class="row px-3">
-                                    <div class="col-md-12">
-                                        <h3 class="mb-0">Justificaci&oacute;n líder comercial</h3>
-                                        <p class="text-sm mb-0">Revisa el porqu&eacute; fue rechazado tu presupuesto.</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body p-2">
-                                <div class="form-group">
-                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1) disabled @endif id="justificacion_lider_comercial" cols="10" rows="1" class="form-control" wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
-                                    @error('justificacion_lider_comercial')
-                                    <small id="justificacion_lider_comercial" class="text-danger bold">
-                                        {{ $message }}
-                                    </small>
-                                    @enderror
+                        </div>
+                    @endif
+
+                    @if ($justificacion_lider_comercial)
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header p-0 mt-3 col-md-12">
+                                    <div class="row px-3">
+                                        <div class="col-md-12">
+                                            <h3 class="mb-0">
+                                                Justificaci&oacute;n lider comercial
+                                            </h3>
+                                            <p class="text-sm mb-0">Revisa el porqu&eacute; fue rechazado tu presupuesto.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <div class="form-group">
+                                        <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1) disabled @endif
+                                            id="justificacion_lider_comercial" cols="10" rows="1" class="form-control"
+                                            wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
+                                        @error('justificacion_lider_comercial')
+                                            <small id="justificacion_lider_comercial" class="text-danger bold">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
+
+                    @if ($justificacion_gerencia)
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header p-0 mt-3 col-md-12">
+                                    <div class="row px-3">
+                                        <div class="col-md-12">
+                                            <h3 class="mb-0">
+                                                Justificaci&oacute;n gerencia
+                                            </h3>
+                                            <p class="text-sm mb-0">Revisa el porqu&eacute; fue rechazado tu presupuesto.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <div class="form-group">
+                                    <textarea name="justificacion_gerencia" @if(Auth::user()->rol != 1) disabled @endif
+                                        id="justificacion_gerencia" cols="10" rows="1" class="form-control"
+                                        wire:model="justificacion_gerencia" class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
+                                    @error('justificacion_gerencia')
+                                        <small id="justificacion_gerencia" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
+                                    @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>
@@ -847,14 +913,90 @@
                             </div>
                         </div>
                     </div>
+                @elseif ($estadoValidator == 5 && (Auth::user()->id == 8 || Auth::user()->id == 10))
+                    {{-- GERENCIA --}}
+                    <div class="col-md-12 p-2">
+                        <div class="row gy-0">
+                            <div class="col-md-3">
+                                <button wire:click="validacionGerencia" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
+                                    <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
+                                    <span class="btn-inner--text">Aprobar</span>
+                                </button>
+                            </div>
+                            <div class="col-md-6 py-1">
+                                <div class="form-check form-switch me-1">
+                                    <div class="form-check form-switch me-1">
+                                        <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label>
+                                    </div>
+                                    <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
+                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                        <span class="btn-inner--text">Exportar</span>
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Exportar</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="modal-body">
+                                                        <h2 class="fs-5">Documentos Cliente</h2>
+                                                        <button wire:click="cotizacionPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                            <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                            <span class="btn-inner--text">Cotizaci&oacute;n PDF</span>
+                                                        </button>
+
+                                                        <button wire:click="cotizacionExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                            <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                            <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                        </button>
+                                                        <hr class="horizontal dark">
+                                                        <h2 class="fs-5">Documentos Interno</h2>
+                                                        @if ($presupuesto->cod_cc)
+                                                            <button wire:click="internoPdf" class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                                <span class="btn-inner--text">Interno PDF</span>
+                                                            </button>
+
+                                                            <button wire:click="internoExcel" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button" data-bs-dismiss="modal">
+                                                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                                                <span class="btn-inner--text">Cotizaci&oacute;n Excel</span>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endif
             @endif
         </div>
-    @elseif($estadoValidator == 2 || $estadoValidator == 4)
+    @elseif($estadoValidator == 2 || $estadoValidator == 4 || $estadoValidator == 5)
         <div class="card card-frame p-5">
             <h3 class="text-center">
                 Tu presupuesto est&aacute; siendo validado por
-                {{ $estadoValidator == 2 ? 'el equipo Controller' : 'el Líder Comercial' }}.
+                @switch ($estadoValidator)
+                    @case (2)
+                        {{ 'el equipo de controller.' }}
+                        @break
+                    @case (4)
+                        {{ 'el Lider Comercial.' }}
+                        @break
+                    @case (5)
+                        {{ 'Gerencia.' }}
+                        @break
+                @endswitch
             </h3>
             <div class="d-flex justify-content-center">
                 <div class="spinner-grow text-primary" role="status">

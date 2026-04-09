@@ -489,7 +489,7 @@
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
                                                 <label class="custom-control-label" for="customCheck1">
-                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
+                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span></a>
                                                 </label>
                                                 @error('terminos')
                                                     <div id="terminos" class="text-invalid">

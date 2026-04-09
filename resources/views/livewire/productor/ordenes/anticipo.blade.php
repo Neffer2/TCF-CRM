@@ -11,7 +11,7 @@
                             Anticipo Productor
                         </button>
                     </div>
-                </div> 
+                </div>
             </div>
 
             <div class="card-body pt-0" id="anticipo-juridico" x-show="show" x-transition>
@@ -175,6 +175,24 @@
                     <div class="card-header text-center font-weight-bold bg-gradient-info text-white p-0">
                         SOLICITUD ANTICIPO PRODUCTOR
                     </div>
+                    <div class="row px-4 mt-3">
+                        <div class="col-md-12 border-bottom" style="border-color: #f3f3f3">
+                            <div class="form-group">
+                                <label for="centro_costo">Centro de costos:</label>
+                                <select name="centro_costo" id="centro_costo" class="form-control" wire:model="centro_costo">
+                                    <option value="">Seleccione un centro de costos</option>
+                                    @foreach ($centros_costo as $centro)
+                                        <option value="{{ $centro->id }}">{{ $centro->cod_cc }}</option>
+                                    @endforeach
+                                </select>
+                                @error('centro_costo')
+                                <div id="centro_costo" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     <div class="row font-table px-4">
                         <div class="col-md-6 mt-3">
                             <div class="table-responsive">
@@ -217,7 +235,8 @@
                                                         {{ $orden->proveedor->tercero }}
                                                     @endif
                                                 </label>
-                                                <textarea class="form-control" disabled>@if ($orden) {{ $orden->proveedor->OrdenCompra->last()->observaciones_negociacion }} @endif</textarea>
+                                                <textarea class="form-control"
+                                                          disabled>@if ($orden) {{ $orden->proveedor->OrdenCompra->last()->observaciones_negociacion }} @endif</textarea>
                                             </div>
                                         </td>
                                     </tr>
@@ -230,32 +249,32 @@
                             <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
                                 <table class="table">
                                     <thead>
-                                        <tr>
-                                            <th class="font-weight-bold bg-gradient-info text-white">No. ITEM</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">CANT</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">DIAS</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">OTROS</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">CARACTERISTICAS</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">V. UNI</th>
-                                            <th class="font-weight-bold bg-gradient-info text-white">V. TOTAL</th>
-                                        </tr>
+                                    <tr>
+                                        <th class="font-weight-bold bg-gradient-info text-white">No. ITEM</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">CANT</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">DIAS</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">OTROS</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">CARACTERISTICAS</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">V. UNI</th>
+                                        <th class="font-weight-bold bg-gradient-info text-white">V. TOTAL</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($centro_costo)
-                                            @foreach ($orden->ordenItems as $item)
-                                                <tr>
-                                                    <td class="text-center">{{ $item->display_item }}</td>
-                                                    <td class="text-center">{{ $item->cant_oc }}</td>
-                                                    <td class="text-center">{{ $item->dias_oc }}</td>
-                                                    <td class="text-center">{{ $item->otros_oc }}</td>
-                                                    <td>
-                                                        <textarea disabled cols="30" rows="1">{{ $item->desc_oc }}</textarea>
-                                                    </td>
-                                                    <td class="text-center">{{ number_format($item->vunit_oc) }}</td>
-                                                    <td class="text-center">{{ number_format($item->vtotal_oc) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
+                                    @if ($centro_costo)
+                                        @foreach ($orden->ordenItems as $item)
+                                            <tr>
+                                                <td class="text-center">{{ $item->display_item }}</td>
+                                                <td class="text-center">{{ $item->cant_oc }}</td>
+                                                <td class="text-center">{{ $item->dias_oc }}</td>
+                                                <td class="text-center">{{ $item->otros_oc }}</td>
+                                                <td>
+                                                    <textarea disabled cols="30" rows="1">{{ $item->desc_oc }}</textarea>
+                                                </td>
+                                                <td class="text-center">{{ number_format($item->vunit_oc) }}</td>
+                                                <td class="text-center">{{ number_format($item->vtotal_oc) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -265,22 +284,6 @@
                         <div class="col-md-12">
                             <div class="card card-body">
                                 <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="observaciones">Centro de costos:</label>
-                                            <select name="centro_costo" id="centro_costo" class="form-control" wire:model="centro_costo">
-                                                <option value="">Seleccione un centro de costos</option>
-                                                @foreach ($centros_costo as $centro)
-                                                    <option value="{{ $centro->id }}">{{ $centro->cod_cc }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('centro_costo')
-                                                <div id="centro_costo" class="text-invalid">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="observaciones">Item:</label>
@@ -293,36 +296,110 @@
                                                 @endif
                                             </select>
                                             @error('item')
-                                                <div id="item" class="text-invalid">
-                                                    {{ $message }}
-                                                </div>
+                                            <div id="item" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="cantidad">Cantidad</label>
+                                            <input id="cantidad" type="number" class="form-control"
+                                                   wire:model.lazy="cantidad" placeholder="#" x-mask:dynamic="$money($input)">
+                                            @error('cantidad')
+                                            <div id="invalid-cantidad" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="dias">Dias</label>
+                                            <input id="dias" type="number" class="form-control"
+                                                   wire:model.lazy="dias" placeholder="Dias" x-mask:dynamic="$money($input)" disabled>
+                                            @error('dias')
+                                            <div id="invalid-dias" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="otros">Otro</label>
+                                            <input id="otros" type="number" class="form-control"
+                                                   wire:model.lazy="otros" placeholder="Otro" x-mask:dynamic="$money($input)" disabled>
+                                            @error('otros')
+                                            <div id="invalid-otros" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="valor_unitario">Valor unitario</label>
+                                            <input id="valor_unitario" type="text" class="form-control"
+                                                   wire:model.lazy="valor_unitario" placeholder="$" x-mask:dynamic="$money($input)">
+                                            @error('valor_unitario')
+                                            <div id="invalid-valor_unitario" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="valor_total">Valor Total</label>
+                                            <input id="valor_total" type="text" class="form-control"
+                                                   wire:model.lazy="valor_total" placeholder="$" x-mask:dynamic="$money($input)" disabled>
+                                            @error('valor_total')
+                                            <div id="invalid-valor_total" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="valor">Valor Anticipo</label>
-                                            <input id="valor" class="form-control" wire:model="valor" wire:model.defer="valor" x-mask:dynamic="$money($input)">
+                                            <input id="valor" class="form-control" wire:model="valor" wire:model.defer="valor"
+                                                   x-mask:dynamic="$money($input)">
                                             @error('valor')
-                                                <div id="valor" class="text-invalid">
-                                                    {{ $message }}
-                                                </div>
+                                            <div id="valor" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="saldo">Saldo:</label>
-                                            <input id="saldo" type="text" class="form-control" wire:model="saldo" disabled wire:model.defer="saldo" x-mask:dynamic="$money($input)">
+                                            <input id="saldo" type="text" class="form-control" wire:model="saldo" disabled
+                                                   wire:model.defer="saldo" x-mask:dynamic="$money($input)">
                                             @error('saldo')
-                                                <div id="saldo" class="text-invalid">
-                                                    {{ $message }}
-                                                </div>
+                                            <div id="saldo" class="text-invalid">
+                                                {{ $message }}
+                                            </div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                                                class="btn avatar border-1 rounded-circle bg-gradient-success" style="box-shadow: none;" >
+                                            <i class="fas fa-plus text-white"></i>
+                                        </button>
+
+                                        <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                                                class="btn avatar border-1 rounded-circle bg-gradient-warning" style="box-shadow: none;" >
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
                                     <div class="col-md-12">
                                         <button class="btn bg-gradient-info" wire:click="nuevoAnticipo">Crear Anticipo</button>
                                     </div>

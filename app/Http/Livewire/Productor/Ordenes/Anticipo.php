@@ -13,13 +13,17 @@ class Anticipo extends Component
 {
     // Models Juridico
     public $orden_compra, $porcentaje_anticipo, $total_anticipo;
+
     // Models Productor
-    public $centro_costo, $item, $valor = 0, $saldo = 0, $selectedItem;
+    public $centro_costo, $item, $selectedItem, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros,
+        $valor = 0, $saldo = 0;
 
     // Useful vars Juridico
     public $orden, $ordenes = [], $queriedAnticipo;
+
     // Useful vars Productor
-    public $centros_costo = [], $items = [];
+    public $centros_costo = [], $items = [], $itemsAP = [], $items_presupuesto = [], $selected_item,
+        $limiteCantidad, $limiteDias, $limiteOtros, $limiteValorUnitario, $limiteValorTotal;
 
     // Filled
     public $anticipo_id;
@@ -27,7 +31,7 @@ class Anticipo extends Component
     public function render()
     {
         return view('livewire.productor.ordenes.anticipo');
-    } 
+    }
 
     public function mount(){
         if ($this->anticipo_id) {
@@ -61,14 +65,39 @@ class Anticipo extends Component
 
         // Centros de costo del productor autenticado
         $centros = CentrosCosto::where([
-            ['productor', Auth::user()->id],
-            ['estado_id', 1], 
-            ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
+                ['productor', Auth::user()->id],
+                ['estado_id', 1],
+                ['fecha_cc', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
             ])
             ->orderBy('created_at', 'desc')
             ->get();
 
         $this->centros_costo = $centros;
+    }
+
+    public function newItem() {
+        $this->validate([
+            'item' => 'required',
+            'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
+            'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
+            'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
+            'valor_unitario' => 'required|min: 1numeric|max:'.$this->limiteValorUnitario,
+            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal,
+            'valor' => 'required|numeric|min: 1|max'
+        ]);
+    }
+
+    public function getItem($itemId) {
+        $this->selected_item = $itemId;
+        $item = $this->itemsAP[$itemId];
+    }
+
+    public function getItemLimite() {
+        $item_info = $this->items_presupuesto->where('id', $this->item)->first();
+
+        $this->limiteDias = $item_info->dia;
+        $this->limiteOtros = $item_info->otros;
+        $this->limiteValorUnitario = $item_info->v_unitario;
     }
 
     public function nuevoAnticipo(){
@@ -86,10 +115,10 @@ class Anticipo extends Component
             'estado_id' => 2,
             'fecha_solicitud' => now(),
             'productor_id' => Auth::user()->id,
-        ]); 
+        ]);
 
         $this->reset(['orden_compra', 'porcentaje_anticipo', 'total_anticipo', 'orden']);
-        return redirect()->route('anticipo-prod')->with('success', 'Anticipo creado'); 
+        return redirect()->route('anticipo-prod')->with('success', 'Anticipo creado');
     }
 
     public function setData(){
@@ -99,7 +128,7 @@ class Anticipo extends Component
             $this->porcentaje_anticipo = $this->queriedAnticipo->porcentaje_anticipo;
             $this->total_anticipo = $this->queriedAnticipo->total_anticipo;
         }
-    } 
+    }
 
     public function ActualizarAnticipo(){
         $this->validate([
@@ -116,7 +145,7 @@ class Anticipo extends Component
                 'estado_id' => 1,
                 'fecha_aprobacion' => now(),
                 'total_anticipo' => $this->total_anticipo,
-            ]); 
+            ]);
 
             return redirect()->route('anticipos-admin')->with('success', 'Anticipo aprobado');
         }
@@ -136,7 +165,7 @@ class Anticipo extends Component
             $this->total_anticipo = ($this->orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
         } else {
             $this->total_anticipo = null;
-        }   
+        }
     }
 
     public function updatedItem(){
@@ -146,16 +175,16 @@ class Anticipo extends Component
         ]);
 
         // Obtiene la información del item
-        $this->selectedItem = $this->centros_costo->find($this->centro_costo)->presupuestoItems->find($this->item); 
+        $this->selectedItem = $this->centros_costo->find($this->centro_costo)->presupuestoItems->find($this->item);
         $this->getSaldo();
     }
 
     public function updatedValor(){
         $this->valor = trim($this->valor);
-        $this->valor = str_replace(",",'', $this->valor); 
+        $this->valor = str_replace(",",'', $this->valor);
 
         $this->validate([
-            'centro_costo' => 'required', 
+            'centro_costo' => 'required',
             'item' => 'required',
             'valor' => 'required|numeric|min:0',
         ]);
@@ -168,4 +197,3 @@ class Anticipo extends Component
         $this->getSaldo();
     }
 }
-    

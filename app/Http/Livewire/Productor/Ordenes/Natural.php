@@ -171,6 +171,8 @@ class Natural extends Component
         $this->valor_total = $item['valor_total'];
         $this->tipo_servicio = $item['tipo_servicio'];
         $this->tipo_contrato = $item['tipo_contrato'];
+
+        $this->getItemLimite();
     }
 
     // Edita un item existente en la orden de compra
@@ -348,13 +350,41 @@ class Natural extends Component
 
         // Si la orden tiene contrato, cambia el estado y envía mensaje
         if ($this->queriedOrden->naturalInfo->contrato && $this->queriedOrden->evidencias->isEmpty()){
-            $this->queriedOrden->update([
-                'estado_id' => 7,
-            ]);
+            // Valida si se hicieron cambios en los items de la oc por parte del productor en el R.E
+            $original_items = $this->queriedOrden->ordenItems->keyBy('item_id');
+            $actualizado = false;
+
+            // Detectar eliminación o nuevos items
+            if (count($this->items) !== $original_items->count()) {
+                $actualizado = true;
+            }
+
+            // Validar cambios en campos
+            if (!$actualizado) {
+                foreach ($this->items as $item) {
+                    $original_item = $original_items[$item['item']['id']] ?? null;
+
+                    if (!$original_item) {
+                        $actualizado = true;
+                        break;
+                    }
+
+                    if ((float) $item['valor_total'] !== (float) $original_item->vtotal_oc) {
+                        $actualizado = true;
+                        break;
+                    }
+                }
+            }
+
 
             if ($this->queriedOrden->naturalInfo->tercero->telefono){
                 $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
             }
+
+            $this->queriedOrden->update([
+                'estado_id' => 7,
+                'actualizado' => $actualizado,
+            ]);
         }
         else {
             // Si la orden de compra ya tiene evidencias, actualiza el estado a 10: Revisión evidencias lider
@@ -482,7 +512,7 @@ class Natural extends Component
 
             // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE CAMBIA A ESTADO EDITABLE ($estado_id = 3),
             // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
-            if ($vtotal_oc < 5000000) {
+            if ($vtotal_oc < 1000000) {
                 $estado = 3;
 
                 // Envía mensaje al tercero si tiene teléfono
@@ -572,7 +602,7 @@ class Natural extends Component
             $this->items->push($newItem);
         }
 
-        if ($this->queriedOrden->estado_id == 2) {
+        if ($this->queriedOrden->estado_id == 14) {
             $this->cod_oc = "OC" . $this->queriedOrden->id;
         }
     }
@@ -593,11 +623,12 @@ class Natural extends Component
         $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
 
         /* LIMITES: LOS LIMITES OMITEN LOS ITEMS DE LA OC ACTUAL SI ES ACTUALIZACIÓN */
-        if($this->queriedOrden){
-            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('cant_oc'));
+        if ($this->queriedOrden){
+            $this->limiteCantidad = ( ( $item_info->cantidad * $item_info->dia * $item_info->otros ) - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('cant_oc') );
             $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('vtotal_oc'));
-        }else {
-            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->get()->sum('cant_oc'));
+        }
+        else {
+            $this->limiteCantidad = ( ( $item_info->cantidad * $item_info->dia * $item_info->otros ) - $item_info->consumidos()->get()->sum('cant_oc') );
             $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
         }
 

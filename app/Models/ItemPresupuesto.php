@@ -13,13 +13,18 @@ class ItemPresupuesto extends Model
     public function mesDescription (){
         return $this->hasOne(Mes::class, 'id', 'mes');
     }
- 
+
     public function consumidos(){
         return $this->hasMany(OcItem::class, 'item_id', 'id');
     }
 
     public function consumidos_anticipo(){
+        return $this->hasMany(ItemAnticipo::class, 'item_id', 'id');
         // return $this->hasMany(OcItem::class, 'item_id', 'id');
+    }
+
+    public function evidencia() {
+        return $this->hasMany(Evidencia::class, 'item_id', 'id');
     }
 
     public function presto(){

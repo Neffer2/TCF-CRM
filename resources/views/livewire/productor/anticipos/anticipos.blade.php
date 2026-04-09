@@ -43,54 +43,89 @@
                 </thead>
                 <tbody>
                     @foreach ($anticipos as $key => $anticipo)
-                        <tr>
-                            <td style="width: 16rem;">
-                                <div class="d-flex px-2 py-1" title="Orden #{{ $anticipo->id }}">
-                                    <div>
-                                        <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                        {{-- ANTICIPOS JURIDICOS --}}
+                        @if ($anticipo->oc_id)
+                            <tr>
+                                <td style="width: 16rem;">
+                                    <div class="d-flex px-2 py-1" title="Orden #{{ $anticipo->id }}">
+                                        <div>
+                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-xs">Anticipo #{{ $anticipo->id }}</h6>
+                                            <p class="text-xs text-secondary mb-0">Orden de Compra #{{ $anticipo->ordenCompra->id }}</p>
+                                        </div>
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="mb-0 text-xs">Anticipo #{{ $anticipo->id }}</h6>
-                                        <p class="text-xs text-secondary mb-0">Orden de Compra #{{ $anticipo->ordenCompra->id }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            {{-- <td>
-                                <p class="text-xs font-weight-bold mb-0">Tipo</p>
-                                <span class="badge badge-sm badge-info">{{ $anticipo->ordenCompra->tipo->description }}</span>
-                            </td> --}}
-                            @if ($anticipo->ordenCompra->tipo)
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0">Proveedor</p>
-                                    <span class="text-xs text-secondary mb-0">{{ $anticipo->ordenCompra->proveedor->tercero }}</span>
                                 </td>
-                            @else
                                 {{-- <td>
-                                    <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                    <span class="text-xs text-secondary mb-0">{{ $anticipo->ordenCompra->naturalInfo->tercero->nombre }} {{ $anticipo->ordenCompra->naturalInfo->tercero->apellido }}</span>
+                                    <p class="text-xs font-weight-bold mb-0">Tipo</p>
+                                    <span class="badge badge-sm badge-info">{{ $anticipo->ordenCompra->tipo->description }}</span>
                                 </td> --}}
-                            @endif
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Valor Orden</p>
-                                <p class="text-xs text-secondary mb-0">${{ number_format($anticipo->ordenCompra->ordenItems->sum('vtotal_oc'), 0, ',', '.') }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Porcentaje Anticipo</p>
-                                <p class="text-xs text-secondary mb-0">% {{ number_format($anticipo->porcentaje_anticipo, 0, ',', '.') }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Valor Anticipo</p>
-                                <p class="text-xs text-secondary mb-0">${{ number_format($anticipo->total_anticipo, 0, ',', '.') }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Estado</p>
-                                <p class="text-xs text-secondary mb-0">{{ $anticipo->estado->description }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">Fecha</p>
-                                <p class="text-xs text-secondary mb-0">{{ $anticipo->fecha_solicitud }}</p>
-                            </td>
-                        </tr>
+                                @if ($anticipo->ordenCompra->tipo)
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                        <span class="text-xs text-secondary mb-0">{{ $anticipo->ordenCompra->proveedor->tercero }}</span>
+                                    </td>
+                                @else
+                                    {{-- <td>
+                                        <p class="text-xs font-weight-bold mb-0">Tercero</p>
+                                        <span class="text-xs text-secondary mb-0">{{ $anticipo->ordenCompra->naturalInfo->tercero->nombre }} {{ $anticipo->ordenCompra->naturalInfo->tercero->apellido }}</span>
+                                    </td> --}}
+                                @endif
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Valor Orden</p>
+                                    <p class="text-xs text-secondary mb-0">${{ number_format($anticipo->ordenCompra->ordenItems->sum('vtotal_oc'), 0, ',', '.') }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Porcentaje Anticipo</p>
+                                    <p class="text-xs text-secondary mb-0">% {{ number_format($anticipo->porcentaje_anticipo, 0, ',', '.') }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Valor Anticipo</p>
+                                    <p class="text-xs text-secondary mb-0">${{ number_format($anticipo->total_anticipo, 0, ',', '.') }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $anticipo->estado->description }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $anticipo->fecha_solicitud }}</p>
+                                </td>
+                            </tr>
+                        {{-- ANTICIPOS PRODUCTOR --}}
+                        @elseif ($anticipo->presupuesto_id)
+                            <tr @if ($anticipo->estado_id == 11 || $anticipo->estado_id == 12) style="background-color: #f8d7da; border-color: #f5c6cb" @endif>
+                                <td style="width: 16rem;">
+                                    <div class="d-flex px-2 py-1" title="Orden #{{ $anticipo->id }}">
+                                        <div>
+                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-xs">Anticipo #{{ $anticipo->id }}</h6>
+                                            <p class="text-xs text-secondary mb-0">Centro de costo: {{ $anticipo->presupuesto->cod_cc }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Valor Anticipo</p>
+                                    <p class="text-xs text-secondary mb-0">${{ number_format($anticipo->total_anticipo, 0, ',', '.') }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $anticipo->estado->description }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $anticipo->fecha_solicitud }}</p>
+                                </td>
+                                <td class="">
+                                    <a href="{{ route('anticipo-prod', ['anticipo_id' => $anticipo->id]) }}" class="btn bg-gradient-primary mb-0" title="Ver detalle" data-toggle="tooltip" target="_blank">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                     <tr>
                         @php

@@ -126,7 +126,7 @@
                                     </td>
                                 </tr>
                             @elseif($orden->tipo_oc == 2)
-                                <tr>
+                                <tr @if ($orden->actualizado && ($orden->estado_id == 2 || $orden->estado_id == 14)) style="background-color: #fee0d9" @endif>
                                     <td style="width: 16rem;">
                                         <div class="d-flex px-2 py-1" title="Orden #{{ $orden->id }}">
                                             <div>

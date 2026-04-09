@@ -158,9 +158,9 @@ class AdminController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function reporteConsumidos($mes = null){
+    public function reporteConsumidos($mes = null, $anio = null){
         if (Auth::user()->rol == 1  || Auth::user()->rol == 6){
-            return Excel::download(new ConsumidosExport($mes), "reporte_consumidos-{$mes}.xlsx");
+            return Excel::download(new ConsumidosExport($mes, $anio), "reporte_consumidos-{$mes}.xlsx");
         }else {
             return redirect()->route('dashboard');
         }

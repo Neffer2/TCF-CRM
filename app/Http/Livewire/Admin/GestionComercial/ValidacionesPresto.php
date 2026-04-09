@@ -44,7 +44,13 @@ class ValidacionesPresto extends Component
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        array_push($filtros, ['estado_id', 4]);
+        // Si los usuarios autenticados son de gerencia, se obtienen los presupuestos con estado_id 5 (Validación gerencia)
+        if (Auth::user()->id == 8 || Auth::user()->id == 10) {
+            array_push($filtros, ['estado_id', 5]);
+        }
+        else {
+            array_push($filtros, ['estado_id', 4]);
+        }
 
         if ( in_array(Auth::user()->id, $this->idLideresComerciales) ) {
             $presupuestos = PresupuestoProyecto::where($filtros)->orderBy('id', $this->fecha)->paginate(15);
@@ -69,7 +75,9 @@ class ValidacionesPresto extends Component
      * Obtiene la lista de estados de presupuesto disponibles
      */
     public function getEstados(){
-        $this->estados = EstadosPresupuesto::select('id', 'description')->whereNotIn('id', [1,4])->get();
+        $this->estados = EstadosPresupuesto::select('id', 'description')
+            ->whereNotIn('id', [1,4,5])
+            ->get();
     }
 
     /**
@@ -104,19 +112,27 @@ class ValidacionesPresto extends Component
      */
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id);
-        $presupuesto->estado_id = $estado;
 
         // Si el estado es 2 (revisión)
-        if ($presupuesto->estado_id == 2) {
-            // Envía notificación de revisión
-            $this->presupuestoAprobacion($presupuesto, Auth::user());
+        if ($estado == 2) {
+            // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 35%,
+            // se envia a validación de gerencia (estado_id = 5),
+            // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
+            if ($presupuesto->estado_id == 4 && $presupuesto->margen_proy < 35.00) {
+                $estado = 5;
+            }
+            else {
+                // Envía notificación de revisión
+                $this->presupuestoAprobacion($presupuesto, Auth::user());
+            }
         }
         // Si el estado es 3 (rechazado)
-        elseif ($presupuesto->estado_id == 3){
+        elseif ($estado == 3) {
             // Envía notificación de rechazo
             $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
         }
 
+        $presupuesto->estado_id = $estado;
         $presupuesto->update();
         return redirect()->route('validaciones')->with('success', 'Cambios guardados exitosamente');
     }

@@ -292,7 +292,8 @@
             <div class="col-lg-3">
                 <div class="form-group">
                     <label for="proyecto">Proyecto</label>
-                    <select id="proyecto" class="form-control" wire:model.change="presupuesto">
+                    <select id="proyecto" class="form-control" wire:model.change="presupuesto"
+                        @if(!is_null($selected_item)) disabled @endif>
                         <option value="">Seleccionar</option>
                         @foreach ($presupuestos as $presupuesto)
                             <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
@@ -308,7 +309,8 @@
             <div class="col-lg-3">
                 <div class="form-group">
                     <label for="item_presupuesto">Item</label>
-                    <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
+                    <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto"
+                        @if(!is_null($selected_item)) disabled @endif>
                         <option value="">Seleccionar</option>
                         @foreach ($items_presupuesto as $item_presupuesto)
                             <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
@@ -464,7 +466,8 @@
                 <div class="col-lg-3">
                     <div class="form-group">
                         <label for="proyecto">Proyecto</label>
-                        <select id="proyecto" class="form-control" wire:model.change="presupuesto">
+                        <select id="proyecto" class="form-control" wire:model.change="presupuesto"
+                            @if(!is_null($selected_item)) disabled @endif>
                             <option value="">Seleccionar</option>
                             @foreach ($presupuestos as $presupuesto)
                                 <option value="{{ $presupuesto->id }}">{{ $presupuesto->cod_cc }}</option>
@@ -480,7 +483,8 @@
                 <div class="col-lg-3">
                     <div class="form-group">
                         <label for="item_presupuesto">Item</label>
-                        <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
+                        <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto"
+                            @if(!is_null($selected_item)) disabled @endif>
                             <option value="">Seleccionar</option>
                             @foreach ($items_presupuesto as $item_presupuesto)
                                 <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
@@ -708,9 +712,10 @@
                 @endif
             </div>
         </div>
-    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 6 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 10))))
+    @elseif ((Auth()->user()->rol == 1 || Auth()->user()->rol == 6 || Auth()->user()->rol == 7) && ((!$queriedOrden) || ($queriedOrden && ($queriedOrden->estado_id == 7 || $queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 10 || $queriedOrden->estado_id == 14))))
         <div>
-            @if (Auth()->user()->rol == 1 && $queriedOrden->estado_id == 2)
+            @if (Auth()->user()->rol == 1 && ($queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 14))
+                {{-- REVISIÓN EVIDENCIAS CONTROLLER - REVISIÓN LIDER CONTROLLER --}}
                 <div class="card mt-3">
                     <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 col-md-12">
                         <div class="row">
@@ -893,87 +898,120 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="col-md-12 py-3">
-                                <div class="nav-wrapper position-relative end-0">
-                                    <ul class="nav nav-pills nav-fill p-1 mb-3" role="tablist" style="border: 1px solid #e3e3e3">
-{{--                                        <li class="nav-item">--}}
-{{--                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#oc-pdf" role="tab" aria-controls="preview" aria-selected="true">--}}
-{{--                                                PDF ORDEN DE COMPRA--}}
-{{--                                            </a>--}}
-{{--                                        </li>--}}
-                                        <li class="nav-item">
-                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#cc-pdf" role="tab" aria-controls="code" aria-selected="true">
-                                                PDF CUENTA DE COBRO
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="tab-content">
-{{--                                    <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">--}}
-{{--                                        <div class="d-none d-md-block" style="width:100%;">--}}
-{{--                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-                                    <div class="tab-pane fade show active" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
-                                        <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">
-                                        </div>
+                            @if ($queriedOrden->actualizado)
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning mt-3 mb-3" role="alert" style="background-image: none">
+                                        El productor a modificado los items registrados inicialmente. Revisa el contrato y compara con los items modificados.
+                                    </div>
+
+                                    <div class="form-group">
+                                        <a href="{{ $queriedOrden->naturalInfo->contrato }}" target="_blank" class="">
+                                            <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                            <span class="btn-inner--text">Contrato - {{ $queriedOrden->naturalInfo->tercero->nombre . ' ' . $queriedOrden->naturalInfo->tercero->apellido }}</span>
+                                        </a>
                                     </div>
                                 </div>
+                            @endif
 
-                                <div>
-                                    <p class="text-dark font-weight-bold mt-3">
-                                        Código OC: {{ $cod_oc }}
-                                    </p>
+                            @php
+                                $estado_aprob = 14;
+                            @endphp
+
+                            @if ($queriedOrden->estado_id == 2)
+                                <div class="col-md-12 mt-2">
+                                    <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
+                                    @if (!($queriedOrden->evidencias->isEmpty()))
+                                        <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
+                                    @endif
+                                </div>
+                            @elseif ($queriedOrden->estado_id == 14 && Auth::user()->id == 181)
+                                <div class="col-md-12 py-3">
+                                    <div class="nav-wrapper position-relative end-0">
+                                        <ul class="nav nav-pills nav-fill p-1 mb-3" role="tablist" style="border: 1px solid #e3e3e3">
+                                            {{--                                        <li class="nav-item">--}}
+                                            {{--                                            <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#oc-pdf" role="tab" aria-controls="preview" aria-selected="true">--}}
+                                            {{--                                                PDF ORDEN DE COMPRA--}}
+                                            {{--                                            </a>--}}
+                                            {{--                                        </li>--}}
+                                            <li class="nav-item">
+                                                <a class="nav-link mb-0 px-0 py-1 font-weight-bold active" data-bs-toggle="tab" href="#cc-pdf" role="tab" aria-controls="code" aria-selected="true">
+                                                    PDF CUENTA DE COBRO
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        {{--                                    <div class="tab-pane fade show active" id="oc-pdf" role="tabpanel" aria-labelledby="oc-pdf-tab">--}}
+                                        {{--                                        <div class="d-none d-md-block" style="width:100%;">--}}
+                                        {{--                                            <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">--}}
+                                        {{--                                        </div>--}}
+                                        {{--                                    </div>--}}
+                                        <div class="tab-pane fade show active" id="cc-pdf" role="tabpanel" aria-labelledby="cc-pdf-tab">
+                                            <div class="d-none d-md-block" style="width:100%;">
+                                                <embed src="{{ route('cuenta-cobro.pdf', $queriedOrden) }}#navpanes=0" width="100%" height="900" type="application/pdf">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-dark font-weight-bold mt-3">
+                                            Código OC: {{ $cod_oc }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
+                                    @if (!($queriedOrden->evidencias->isEmpty()))
+                                        <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR ORDEN</button>
+                                    @endif
+                                </div>
+
+                                @php
+                                    $estado_aprob = 5;
+                                @endphp
+                            @endif
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            ¿Estas seguro de aprobar esta orden?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal"
+                                                    wire:click="validateEvidencia({{ $estado_aprob }})">APROBAR</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 mt-2">
-                                <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
-                                @if (!($queriedOrden->evidencias->isEmpty()))
-                                    <button type="button" wire:click="toggleRechazo" @if($this->toggleRechazo) disabled @endif class="btn bg-gradient-danger mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#rechazarEviedenciasModal"> RECHAZAR EVIDENCIAS </button>
-                                @endif
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            @if ($this->toggleRechazo)
+                                <div class="card mt-2">
+                                    <div class="card-body">
+                                        ¿Estas seguro de rechazar estas evidencias?
+                                        <div class="form-group mt-2">
+                                            <label for="justificacion_rechazo">Justificaci&oacute;n de Rechazo</label>
+                                            <textarea id="justificacion_rechazo" class="form-control @error('justificacion_rechazo') is-invalid @elseif(strlen($justificacion_rechazo) > 0) is-valid @enderror"
+                                                      wire:model.lazy="justificacion_rechazo" cols="30" rows="5"></textarea>
+                                            @error('justificacion_rechazo')
+                                            <div id="invalid-justificacion_rechazo" class="text-invalid">
+                                                {{ $message }}
                                             </div>
-                                            <div class="modal-body">
-                                                ¿Estas seguro de aprobar esta orden?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal" wire:click="validateEvidencia(5)">APROBAR</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            </div>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <button type="button" wire:click="validateEvidencia(7)"  class="btn bg-gradient-danger">Rechazar</button>
+                                            <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                         </div>
                                     </div>
                                 </div>
-
-                                @if ($this->toggleRechazo)
-                                    <div class="card mt-2">
-                                        <div class="card-body">
-                                            ¿Estas seguro de rechazar estas evidencias?
-                                            <div class="form-group mt-2">
-                                                <label for="justificacion_rechazo">Justificaci&oacute;n de Rechazo</label>
-                                                <textarea id="justificacion_rechazo" class="form-control @error('justificacion_rechazo') is-invalid @elseif(strlen($justificacion_rechazo) > 0) is-valid @enderror"
-                                                wire:model.lazy="justificacion_rechazo" cols="30" rows="5"></textarea>
-                                                @error('justificacion_rechazo')
-                                                    <div id="invalid-justificacion_rechazo" class="text-invalid">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                            <div>
-                                                <button type="button" wire:click="validateEvidencia(7)"  class="btn bg-gradient-danger">Rechazar</button>
-                                                <button type="button" wire:click="toggleRechazo" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -1229,12 +1267,12 @@
                 <h3 class="text-center">
                     @if ($queriedOrden->estado_id == 7)
                         El tercero est&aacute; subiendo sus evidencias.
-                    @elseif (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2)
+                    @elseif (Auth()->user()->rol == 7 && ($queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 14))
                         Orden de compra en revisi&oacute;n.
                     @endif
                 </h3>
 
-                @if (($queriedOrden->estado_id == 7) || (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2))
+                @if (($queriedOrden->estado_id == 7) || (Auth()->user()->rol == 7 && ($queriedOrden->estado_id == 2 || $queriedOrden->estado_id == 14)))
                     <div class="d-flex justify-content-center">
                         <div class="spinner-grow text-primary" role="status">
                             <span class="sr-only"></span>

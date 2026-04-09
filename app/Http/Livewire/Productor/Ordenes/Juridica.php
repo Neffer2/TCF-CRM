@@ -317,21 +317,21 @@ class Juridica extends Component
 
         if ($estado == 1) {
             // ORDEN APROBADA
-            $this->validate([
-                'observaciones_negociacion' => 'required|string|max:1000'
-            ]);
-
-            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
-            $this->orden_compra->fecha_aprobacion = now();
-
-            // Generar código de OC
-            $cod_cc = $this->presupuesto->cod_cc;
-            $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
-            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
-            $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
-
-            $this->ocJuridicaAprobada($this->orden_compra);
-            $messaje = 'Orden de compra APROBADA.';
+//            $this->validate([
+//                'observaciones_negociacion' => 'required|string|max:1000'
+//            ]);
+//
+//            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
+//            $this->orden_compra->fecha_aprobacion = now();
+//
+//            // Generar código de OC
+//            $cod_cc = $this->presupuesto->cod_cc;
+//            $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
+//            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
+//            $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
+//
+//            $this->ocJuridicaAprobada($this->orden_compra);
+//            $messaje = 'Orden de compra APROBADA.';
         }
         elseif ($estado == 2) {
             // REVISIÓN GERENCIA OC APROBADA
@@ -340,9 +340,19 @@ class Juridica extends Component
             ]);
 
             $this->orden_compra->observaciones_revision_gerencia = $this->observaciones_revision_gerencia;
+            $this->orden_compra->fecha_aprobacion = now();
 
-            // Se envia notificación a Controller
-            $this->ocJuridicaRevisionController($this->orden_compra);
+            // Generar código de OC
+            $cod_cc = $this->presupuesto->cod_cc;
+            $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
+            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
+            $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
+
+            // Se envia notificación de aprobación
+            $this->ocJuridicaAprobada($this->orden_compra);
+
+            // Cambio de estado a id 1 (Aprobado)
+            $estado = 1;
 
             $messaje = 'Revisión Orden de compra APROBADA.';
         }
@@ -372,12 +382,10 @@ class Juridica extends Component
         elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
-                'gr' => 'nullable|string',
-                'observaciones_remision' => 'nullable|string|max:1000'
+                'gr' => 'nullable|string'
             ]);
 
             $this->orden_compra->gr = $this->gr;
-            $this->orden_compra->observacion_remision = $this->observaciones_remision;
             $this->ocJuridicaGrGenerado($this->orden_compra);
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
@@ -405,11 +413,22 @@ class Juridica extends Component
 
             // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE ENVIA A REVISIÓN DE CONTROLLER (estado_id = 2),
             // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
-            if ($vtotal_oc < 5000000) {
+            if ($vtotal_oc < 1000000) {
                 $estado = 2;
 
-                // Se envia notificación a Controller
-                $this->ocJuridicaRevisionController($this->orden_compra);
+                $this->orden_compra->fecha_aprobacion = now();
+
+                // Generar código de OC
+                $cod_cc = $this->presupuesto->cod_cc;
+                $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
+                $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
+                $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
+
+                // Se envia notificación de aprobación
+                $this->ocJuridicaAprobada($this->orden_compra);
+
+                // Cambio de estado a id 1 (Aprobado)
+                $estado = 1;
             }
             else {
                 // Se envia notificación a los Gerentes
@@ -460,6 +479,16 @@ class Juridica extends Component
 
             $messaje = 'Revisión Orden de compra RECHAZADA.';
             $redirect_route = 'ordenes-compra-lid';
+        }
+        elseif ($estado == 14) {
+            $this->validate([
+                'observaciones_remision' => 'nullable|string|max:1000'
+            ]);
+
+            $this->orden_compra->observacion_remision = $this->observaciones_remision;
+
+            // REVISIÓN REMISIÓN CONTROLLER APROBADA
+            $messaje = 'Revisión Orden de compra APROBADA.';
         }
 
         $this->orden_compra->estado_id = $estado;

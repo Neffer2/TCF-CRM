@@ -1,11 +1,11 @@
 <div x-data>
     <div class="card card-frame p-2">
-        <div class="row justify-content-md-center"> 
+        <div class="row justify-content-md-center">
             <div class="col-md-3">
                 <div class="card">
                     <div class="table-responsive">
                         <table class="table mb-0">
-                            <tr> 
+                            <tr>
                                 <td class="font-weight-bold font-table">MARGEN GENERAL</td>
                                 <td class="font-table">{{ number_format($presupuesto->margen_general, 4) }}</td>
                             </tr>
@@ -28,15 +28,15 @@
                         </table>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div class="col-md-3">
-                <div class="card"> 
+                <div class="card">
                     <div class="table-responsive">
                         <table class="table mb-0">
                             <tr>
                                 <td class="font-weight-bold font-table">CONTACTO</td>
                                 <td class="font-table">
-                                    {{ $presupuesto->gestion->contacto->nombre }} {{ $presupuesto->gestion->contacto->apellido }} 
+                                    {{ $presupuesto->gestion->contacto->nombre }} {{ $presupuesto->gestion->contacto->apellido }}
                                 </td>
                             </tr>
                             <tr>
@@ -54,7 +54,7 @@
                             <tr>
                                 <td class="font-weight-bold font-table">CIUDAD</td>
                                 <td class="font-table">
-                                    {{ $presupuesto->gestion->contacto->ciudad }} 
+                                    {{ $presupuesto->gestion->contacto->ciudad }}
                                 </td>
                             </tr>
                         </table>
@@ -95,8 +95,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card">
-                    <div class="table-responsive"> 
-                        <table class="table mb-0"> 
+                    <div class="table-responsive">
+                        <table class="table mb-0">
                             <tr>
                                 <td class="font-weight-bold font-table">NOTAS</td>
                                 <td class="font-table">
@@ -107,9 +107,9 @@
                     </div>
                 </div>
             </div>
-        </div> 
-    </div>             
-    
+        </div>
+    </div>
+
     <div class="table-responsive mt-2 rounded bg-white">
         <table class="table">
             <thead>
@@ -136,7 +136,7 @@
             <tbody>
                 @foreach ($presupuesto->presupuestoItems as $key => $item)
                     @php
-                        if (count($item->consumidos) > 0){ 
+                        if (count($item->consumidos) > 0){
                             $cont_cant_oc = 0;
                             $cont_dias_oc = 0;
                             $cont_otros_oc = 0;
@@ -171,13 +171,13 @@
                     @else
                         <tr @if (count($item->consumidos) > 0 && (($item->cantidad - $cont_cant_oc == 0) || ($item->v_total - $acum_total_oc == 0)))
                                 style="background-color: #f5365c; color: white;"
-                            @endif> 
+                            @endif>
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
                             </td>
                             <td class="font-weight-bold font-table">
                                 {{ $key+=1 }}
-                            </td> 
+                            </td>
                             <td class="font-weight-bold font-table">
                                 {{ $item->cantidad }}
                             </td>
@@ -198,13 +198,13 @@
                             </td>
                             <td class="font-weight-bold font-table">
                                 @if ($proveedores_item = @unserialize($item->proveedor))
-                                    @foreach ($proveedores_item as $proveedor) 
+                                    @foreach ($proveedores_item as $proveedor)
                                         {{ $proveedores->find($proveedor)->tercero }} <br>
-                                    @endforeach 
-                                @else  
+                                    @endforeach
+                                @else
                                     @if ($proveedores->find($item->proveedor))
                                         {{ $proveedores->find($item->proveedor)->tercero }}
-                                    @else   
+                                    @else
                                         {{ $item->proveedor }}
                                     @endif
                                 @endif
@@ -226,7 +226,7 @@
                                     <td colspan="11" class="m-0 p-0">
                                         <div class="table-responsive px-5 py-1 rounded bg-white">
                                             <table class="table font-table">
-                                                <tr> 
+                                                <tr>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                                                     <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
@@ -253,7 +253,7 @@
                                                             {{ $ordenItem->otros_oc }}
                                                         </td>
                                                         <td class="font-weight-bold font-table" style="width: 1rem;">
-                                                            <textarea cols="30" rows="1" readonly>{{ $ordenItem->desc_oc }}</textarea>                                                    
+                                                            <textarea cols="30" rows="1" readonly>{{ $ordenItem->desc_oc }}</textarea>
                                                         </td>
                                                         <td class="font-weight-bold font-table">
                                                             $ {{ number_format($ordenItem->vunit_oc) }}
@@ -275,7 +275,7 @@
                                             </table>
                                         </div>
                                     </td>
-                                </tr>                                
+                                </tr>
                             @else
                                 <td class="font-weight-bold font-table">
                                     <div class="m-0 p-0 d-flex justify-content-center" style="width: 100%; color: #825ee4;">
@@ -284,10 +284,9 @@
                                 </td>
                             @endif
                         </tr>
-                    @endif           
+                    @endif
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
- 

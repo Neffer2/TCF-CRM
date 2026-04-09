@@ -61,6 +61,7 @@ class PdfService
         $dompdf = new Dompdf(['enable_remote' => true]);
         $html = View::make('exports.cuenta_cobro_pdf', [
             'orden' => $orden,
+            'borrador' => false,
             'cod_cuenta_cobro' => $cod_cuenta_cobro,
             'subtotal' => $subtotal,
         ])->render();
