@@ -83,7 +83,7 @@ class AnticipoJuridico extends Component
         ]);
 
         $this->reset(['orden_compra', 'porcentaje_anticipo', 'total_anticipo', 'orden']);
-        return redirect()->route('anticipo-prod')->with('success', 'Anticipo creado');
+        return redirect()->route('lista-anticipos-prod')->with('success', 'Anticipo creado');
     }
 
     public function actualizarAnticipoJuridico() {

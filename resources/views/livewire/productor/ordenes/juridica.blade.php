@@ -529,7 +529,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(($orden_compra && ($orden_compra->estado_id == 4) && (Auth::user()->rol == 1 && Auth::user()->id == 181)))
+            @elseif(($orden_compra && ($orden_compra->estado_id == 14) && (Auth::user()->rol == 1 && Auth::user()->id == 181)))
                 {{-- GOOD RECEIVE - LIDER CONTROLLER --}}
                 <div class="row px-4">
                     <div class="row mb-3" x-data="{ accion: true }" x-cloak>
@@ -702,7 +702,7 @@
                         </div>
                     </div>
                 </div>
-            @else
+            @elseif (Auth::user()->rol == 7)
                 <div class="row px-4">
                     <div class="col-md-1 d-flex justify-content-center align-items-center">
                         <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"

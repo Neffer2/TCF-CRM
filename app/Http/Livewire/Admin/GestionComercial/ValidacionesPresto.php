@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Admin\GestionComercial;
 use App\Models\Año;
 use App\Models\EstadosPresupuesto;
 use App\Models\PresupuestoProyecto;
+use App\Models\User;
 use App\Traits\Email;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -25,8 +26,9 @@ class ValidacionesPresto extends Component
     public $años; // Lista de años disponibles (Collection)
     public $yearInfo; // Información detallada del año seleccionado
 
-    // Variable que contiene los ids de los Lideres Comerciales
-    public $idLideresComerciales = [2, 8, 9, 10, 38, 126];
+    // Variables que contienen los ids de los Lideres Comerciales y de los Gerentes
+    public $gerentes = [8, 10];
+    public $lideres_comerciales = [];
 
     public function render()
     {
@@ -44,16 +46,29 @@ class ValidacionesPresto extends Component
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        // Si los usuarios autenticados son de gerencia, se obtienen los presupuestos con estado_id 5 (Validación gerencia)
-        if (Auth::user()->id == 8 || Auth::user()->id == 10) {
-            array_push($filtros, ['estado_id', 5]);
-        }
-        else {
+        // Validamos si el usuario es Lider Comercial
+        if (Auth::user()->comerciales()->exists()) {
             array_push($filtros, ['estado_id', 4]);
-        }
 
-        if ( in_array(Auth::user()->id, $this->idLideresComerciales) ) {
-            $presupuestos = PresupuestoProyecto::where($filtros)->orderBy('id', $this->fecha)->paginate(15);
+            // Obtenemos los ids de los comerciales asignados al Lider
+            $comerciales_id = Auth::user()->comerciales()->pluck('users.id');
+
+            // Obtenemos el listado de presupuestos
+            $presupuestos = PresupuestoProyecto::where($filtros)
+                ->whereHas('gestion', function ($query) use ($comerciales_id) {
+                    $query->whereIn('id_user', $comerciales_id);
+                })
+                ->orderBy('id', $this->fecha)
+                ->paginate(15);
+        }
+        // Validamos si el usuario es Gerente
+        elseif (in_array(Auth::user()->id, $this->gerentes)) {
+            array_push($filtros, ['estado_id', 5]);
+
+            // Obtenemos el listado de presupuestos
+            $presupuestos = PresupuestoProyecto::where($filtros)
+                ->orderBy('id', $this->fecha)
+                ->paginate(15);
         }
         else {
             $presupuestos = [];
@@ -63,7 +78,7 @@ class ValidacionesPresto extends Component
     }
 
     /**
-     * Método de inicialización del componente
+     * Metodo de inicialización del componente
      * Se ejecuta cuando el componente es montado
      */
     public function mount(){

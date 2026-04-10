@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <button class="btn bg-gradient-primary" wire:click="ActualizarAnticipo">Aprobar</button>
+                                        <button class="btn bg-gradient-primary" wire:click="actualizarAnticipoJuridico">Aprobar</button>
                                     </div>
                                 </div>
                             </div>

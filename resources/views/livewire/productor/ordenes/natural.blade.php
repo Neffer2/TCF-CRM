@@ -1199,6 +1199,12 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <a href="{{ $queriedOrden->naturalInfo->contrato }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Contrato - {{ $queriedOrden->naturalInfo->tercero->nombre . ' ' . $queriedOrden->naturalInfo->tercero->apellido }}</span>
+                                </a>
+                            </div>
                             <div class="col-md-12 mt-2">
                                 <button type="button" class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#successModal"> APROBAR </button>
                                 @if (!($queriedOrden->evidencias->isEmpty()))
