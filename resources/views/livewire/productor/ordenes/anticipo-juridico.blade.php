@@ -147,7 +147,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <button class="btn bg-gradient-primary" wire:click="nuevoAnticipo">Crear Anticipo</button>
+                                <button class="btn bg-gradient-primary" wire:click="nuevoAnticipoJuridico">Crear Anticipo</button>
                             </div>
                         </div>
                     @endif
