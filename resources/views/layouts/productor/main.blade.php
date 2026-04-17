@@ -106,6 +106,39 @@
                 </div>
             </li>
             <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#nomina" class="nav-link" aria-controls="applicationsExamples"
+                   role="button" aria-expanded="false">
+                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                        <i class="ni ni-money-coins text-info text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Nómina</span>
+                </a>
+
+                <div @class([
+                    'collapse' => true,
+                    'show' => (request()->is('orden-nomina') || request()->is('personal') || request()->is('ordenes-compra-prod'))
+                    ]) id="nomina">
+                    <ul class="nav nav-sm flex-column">
+                        <li @class(['active' => request()->is('orden-nomina'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('orden-nomina'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('orden-nomina-prod') }}">
+                                <span class="sidenav-mini-icon"> NO </span>
+                                <span class="sidenav-normal"> Nueva Orden </span>
+                            </a>
+                        </li>
+                        <li @class(['active' => request()->is('ordenes-compra-prod'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('ordenes-compra-prod'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-prod') }}">
+                                <span class="sidenav-mini-icon"> Oc's </span>
+                                <span class="sidenav-normal"> Mis Ordenes </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#terceros" class="nav-link" aria-controls="applicationsExamples"
                    role="button" aria-expanded="false">
                     <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">

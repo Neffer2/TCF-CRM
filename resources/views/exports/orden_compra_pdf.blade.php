@@ -49,7 +49,7 @@
                 <div>
                     <p style="font-size: 14px; margin-bottom: 0; text-decoration: underline;"><strong>Datos del Proveedor</strong></p>
                     <table>
-                        @if ( $orden->tipo_oc == 1 )
+                        @if ( $orden->tipo_oc == 1 || $orden->tipo_oc == 3 )
                             <tr>
                                 <td width="60">Nombre:</td>
                                 <td>{{ $orden->proveedor->tercero }}</td>

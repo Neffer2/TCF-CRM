@@ -32,4 +32,15 @@ class LiderProduccionController extends Controller
 
         return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
     }
+
+    public function showOrdenNomina($orden_id) {
+        // Buscar la orden de compra por ID
+        $orden = OrdenCompra::find($orden_id);
+        // Obtener el presupuesto relacionado con la orden
+        $presupuesto = $orden->presupuesto;
+        // Obtener todos los proveedores (solo ID y tercero)
+        $proveedores = Proveedor::select('id', 'tercero')->get();
+
+        return view('admin.produccion.ordenes.nomina', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
+    }
 }

@@ -186,7 +186,7 @@
                             </div>
                             <div class="card-body p-2">
                                 <div class="form-group">
-                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif
+                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
                                         id="justificacion_lider_comercial" cols="10" rows="2" class="form-control"
                                         wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_lider_comercial')
@@ -197,7 +197,7 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                        @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 4 || (Auth::user()->id != 2 && Auth::user()->id != 9 && Auth::user()->id && 38 && Auth::user()->id && 126)) disabled @endif
+                                        @if (Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
                                         wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>

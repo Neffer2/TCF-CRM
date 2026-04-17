@@ -39,6 +39,7 @@ class OrdenesCompra extends Component
     public $productor_id;          // ID específico del productor autenticado
     public $yearInfo;              // Información del año seleccionado
     public $estado_id;             // ID especifico del estado de las OC
+    public $tipo_oc;
 
     /**
      * Renderiza la vista del componente con las órdenes filtradas
@@ -51,6 +52,10 @@ class OrdenesCompra extends Component
 
         if ($this->estado_id) {
             $this->estado = $this->estado_id;
+        }
+
+        if ($this->tipo_oc) {
+            $this->tipo = $this->tipo_oc;
         }
 
         // Filtro por estado de la orden de compra
@@ -112,7 +117,7 @@ class OrdenesCompra extends Component
         }
 
         // Filtro específico para usuario productor autenticado
-        if ($this->productor_id){
+        if ($this->productor_id && $this->tipo == 2){
             $query->whereHas('naturalInfo', function ($natural) {
                 $natural->where('productor_id', $this->productor_id);
             });

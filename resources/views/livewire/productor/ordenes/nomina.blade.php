@@ -1,0 +1,880 @@
+<div>
+    <div class="card-body pt-2">
+        <div class="card">
+            <div class="card-header text-center font-weight-bold bg-gradient-warning text-white p-3">
+                SOLICITUD ORDEN DE NÓMINA
+            </div>
+
+            @if (Auth::user()->rol == 7 && ! $orden_nomina)
+                <div class="row px-4 mt-3">
+                    <div class="col-md-12 border-bottom" style="border-color: #f3f3f3">
+                        <div class="form-group">
+                            <label for="centro_costo">Centro de costos:</label>
+                            <select name="centro_costo" id="centro_costo" class="form-control" wire:model="centro_costo">
+                                <option value="">Seleccione un centro de costos</option>
+                                @foreach ($centros_costo as $centro)
+                                    <option value="{{ $centro->id }}">{{ $centro->cod_cc }}</option>
+                                @endforeach
+                            </select>
+                            @error('centro_costo')
+                            <div id="centro_costo" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($presupuesto)
+                <div class="row font-table px-4">
+                    <div class="col-md-7 mt-3">
+                        <div class="table-responsive">
+                            <table class="table mb-1" style="font-size: 12px">
+                                <tr style="height: 35px;">
+                                    <td class="font-weight-bold">Cliente:</td>
+                                    <td>{{ $presupuesto->gestion->contacto->empresa }}</td>
+                                </tr>
+                                <tr style="height: 35px;">
+                                    <td class="font-weight-bold">Proyecto:</td>
+                                    <td>{{ $presupuesto->gestion->nom_proyecto_cot }}</td>
+                                </tr>
+                                <tr style="height: 35px;">
+                                    <td class="font-weight-bold">Centro de Costos:</td>
+                                    <td>{{ $presupuesto->cod_cc }}</td>
+                                </tr>
+                                <tr style="height: 35px;">
+                                    <td class="font-weight-bold">Ciudad:</td>
+                                    <td>{{ $presupuesto->gestion->contacto->ciudad }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mt-3">
+                        <div class="table-responsive">
+                            <table class="table mb-1">
+                                <tr>
+                                    <td>
+                                        <div class="form-group m-0">
+                                            <label for="proveedor"><b>Proveedor:</b> @if ($proveedor)
+                                                {{ $proveedores->where('id', $proveedor)->first()['tercero'] }}
+                                                @endif </label>
+                                            <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
+                                                @foreach ($proveedores as $proveedor_info)
+                                                    @if ($proveedor_info)
+                                                        <option value="{{ $proveedor_info['id'] }}">
+                                                            • {{ $proveedor_info['tercero'] }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @error('proveedor')
+                                        <div id="proveedor" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row font-table px-4">
+                    <div class="col-md-12">
+                        <div class="card card-body table-responsive mb-3 rounded bg-whitem p-0">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">No. ITEM</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
+                                        @if (Auth::user()->rol != 1 && Auth::user()->rol != 6)
+                                            <th colspan="2" class="font-weight-bold bg-gradient-primary text-white">ACCIONES</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($nominaItems as $item)
+                                        <tr>
+                                            <td class="text-center">{{ $item['displayItem'] }}</td>
+                                            <td class="text-center">{{ $item['cant'] }}</td>
+                                            <td class="text-center">{{ $item['dias'] }}</td>
+                                            <td class="text-center">{{ $item['otros'] }}</td>
+                                            <td>
+                                                <textarea disabled cols="30" rows="1">{{ $item['desc'] }}</textarea>
+                                            </td>
+                                            <td class="text-center">{{ number_format($item['vUnit']) }}</td>
+                                            <td class="text-center">{{ number_format($item['vTotal']) }}</td>
+                                            @if (Auth::user()->rol != 1 && Auth::user()->rol != 6)
+                                                <td class="d-flex justify-content-center" style="padding: 11px;">
+                                                    <button class="me-2" wire:click="delete({{ $item['id'] }})">
+                                                        ✖️
+                                                    </button>
+                                                    <button class="" wire:click="getSelectedItem({{ $item['id'] }})">
+                                                        📝
+                                                    </button>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @if(Auth::user()->rol == 6 && $orden_nomina->estado_id == 8)
+                    {{-- REVISIÓN LIDER DE PRODUCCIÓN --}}
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @php
+                                    $aux = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_negociacion">Observaciones de aprobaci&oacute;n:</label>
+                                <textarea name="observaciones_revision_lider" id="observaciones_revision_lider" class="form-control" wire:model="observaciones_revision_lider" cols="100" rows="2"></textarea>
+                                @error('observaciones_revision_lider')
+                                <div id="observaciones_revision_lider" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(9)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="rechazo_revision_lider">Justificaci&oacute;n de rechazo:</label>
+                                <textarea name="rechazo_revision_lider" id="rechazo_revision_lider" class="form-control" wire:model="rechazo_revision_lider" cols="100" rows="2"></textarea>
+                                @error('rechazo_revision_lider')
+                                <div id="rechazo_revision_lider" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(11)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                @elseif((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_nomina->estado_id == 9)
+                    {{-- REVISIÓN GERENCIA --}}
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @php
+                                    $aux = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <p class="text-dark font-weight-bold mt-3">
+                                Observaciones lider de producción: {{ $orden_nomina->observaciones_revision_lider }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_revision_gerencia">Observaciones de aprobaci&oacute;n:</label>
+                                <textarea name="observaciones_revision_gerencia" id="observaciones_revision_gerencia" class="form-control" wire:model="observaciones_revision_gerencia" cols="100" rows="2"></textarea>
+                                @error('observaciones_revision_gerencia')
+                                <div id="observaciones_revision_gerencia" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(2)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="rechazo_revision_gerencia">Justificaci&oacute;n de rechazo:</label>
+                                <textarea name="rechazo_revision_gerencia" id="rechazo_revision_gerencia" class="form-control" wire:model="rechazo_revision_gerencia" cols="100" rows="2"></textarea>
+                                @error('rechazo_revision_gerencia')
+                                <div id="rechazo_revision_gerencia" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(12)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                @elseif (Auth::user()->rol == 1 && $orden_nomina->estado_id == 2)
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @php
+                                    $aux = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row px-4">
+                            <div class="col-md-12">
+                                <div class="d-none d-md-block" style="width:100%;">
+                                    <embed src="{{ route('orden-compra.pdf', $orden_nomina) }}#navpanes=0" width="100%" height="900" type="application/pdf">
+                                </div>
+                                <div>
+                                    <p class="text-dark font-weight-bold mt-3">
+                                        Código OC: {{ $cod_oc }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
+                                    <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
+                                    @error('observaciones_negociacion')
+                                    <div id="observaciones_negociacion" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                    Aprobar
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="justificacion_rechazo">Justificaci&oacute;n de rechazo:</label>
+                                    <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" cols="100" rows="2"></textarea>
+                                    @error('justificacion_rechazo')
+                                    <div id="justificacion_rechazo" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                @elseif(Auth::user()->rol == 1 && $orden_nomina->estado_id == 1)
+                    {{-- ORDEN APROBADA - VISTA CONTROLLER --}}
+                    <div class="row px-4">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_cot = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_orden_helisa = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de compra.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_remision = str_replace('public/', '', $orden_nomina->archivo_remision);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Remisi&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cod Oc: @if ($orden_nomina->cod_oc) {{ $orden_nomina->cod_oc }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Gr: @if ($orden_nomina->gr) {{ $orden_nomina->gr }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @elseif(($orden_nomina && ($orden_nomina->estado_id == 1 || $orden_nomina->estado_id == 13)) && Auth::user()->rol == 7)
+                    {{-- FIRMA REMISIÓN - PRODUCTOR --}}
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @php
+                                    $aux = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de nómina</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <a class="btn btn-icon btn-3 bg-gradient-warning" type="button" href="{{ route('firmar-remision', $orden_nomina) }}">
+                                <span class="btn-inner--icon"><i class="fa-solid fa-file-signature"></i></span>
+                                <span class="btn-inner--text">Firmar remisi&oacute;n</span>
+                            </a>
+                        </div>
+                    </div>
+                @elseif(($orden_nomina && $orden_nomina->estado_id == 10) && Auth::user()->rol == 6)
+                    {{-- REVISIÓN REMISIÓN - LIDER PRODUCCIÓN --}}
+                    <div class="row px-4">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_cot = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_orden_helisa = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de nómina.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_remision = str_replace('public/', '', $orden_nomina->archivo_remision);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Remisi&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $firma = str_replace('public/', '', $orden_nomina->archivo_firma);
+                                @endphp
+                                <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Firma.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cod: @if ($orden_nomina->cod_oc) {{ $orden_nomina->cod_oc }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_revision_evidencias">Observaciones de aprobaci&oacute;n:</label>
+                                <textarea name="observaciones_revision_evidencias" id="observaciones_revision_evidencias" class="form-control" wire:model="observaciones_revision_evidencias" cols="100" rows="2"></textarea>
+                                @error('observaciones_revision_evidencias')
+                                <div id="observaciones_revision_evidencias" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(4)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="rechazo_revision_evidencias">Justificaci&oacute;n de rechazo:</label>
+                                <textarea name="rechazo_revision_evidencias" id="rechazo_revision_evidencias" class="form-control" wire:model="rechazo_revision_evidencias" cols="100" rows="2"></textarea>
+                                @error('rechazo_revision_evidencias')
+                                <div id="rechazo_revision_evidencias" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(13)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                <span class="sr-only"></span>
+                            </div>
+                        </div>
+                    </div>
+                @elseif(($orden_nomina && ($orden_nomina->estado_id == 4) && ((Auth::user()->rol == 1))))
+                    {{-- REVISIÓN REMISIÓN - CONTROLLER --}}
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_remision">Observaciones remisión</label>
+                                <textarea name="observaciones_remision" id="observaciones_remision" class="form-control"
+                                          wire:model="observaciones_remision" cols="100" rows="2"></textarea>
+                                @error('observaciones_remision')
+                                <div id="observaciones_remision" class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(14)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gr">Observaciones de anulaci&oacute;n:</label>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
+                                    @error('observaciones_anulacion')
+                                    <div id="observaciones_anulacion" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <button wire:click="cambioEstado(6)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
+                                    <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_cot = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_orden_helisa = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de compra.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_remision = str_replace('public/', '', $orden_nomina->archivo_remision);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Remisi&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $firma = str_replace('public/', '', $orden_nomina->archivo_firma);
+                                @endphp
+                                <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Firma.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cod: @if ($orden_nomina->cod_oc) {{ $orden_nomina->cod_oc }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @elseif(($orden_nomina && ($orden_nomina->estado_id == 14) && (Auth::user()->rol == 1 && Auth::user()->id == 181)))
+                    {{-- GOOD RECEIVE - LIDER CONTROLLER --}}
+                    <div class="row px-4">
+                        <div class="row mb-3" x-data="{ accion: true }" x-cloak>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="acciones">Acciones</label>
+                                    <select x-model="accion" id="acciones" class="form-control" >
+                                        <option value="1">Aprobar</option>
+                                        <option value="">Anular</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {{-- <span x-text="accion"> --}}
+                            <div class="row col-md-10" x-show="accion">
+                                <label for="gr">Good Receive:</label>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input id="gr" wire:model="gr" class="form-control">
+                                        @error('gr')
+                                        <div id="gr" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                            <span class="sr-only"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-md-10" x-show="!accion">
+                                <label for="gr">Observaciones de anulaci&oacute;n:</label>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
+                                        @error('observaciones_anulacion')
+                                        <div id="observaciones_anulacion" class="text-invalid">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <button wire:click="cambioEstado(6)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Anular orden</button>
+                                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_cot = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_orden_helisa = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de compra.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $archivo_remision = str_replace('public/', '', $orden_nomina->archivo_remision);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Remisi&oacute;n.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @php
+                                    $firma = str_replace('public/', '', $orden_nomina->archivo_firma);
+                                @endphp
+                                <a href="{{ asset("storage/$firma") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Firma.</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cod: @if ($orden_nomina->cod_oc) {{ $orden_nomina->cod_oc }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @elseif(($orden_nomina && (($orden_nomina->estado_id == 5) || ($orden_nomina->estado_id == 4) || ($orden_nomina->estado_id == 6 || $orden_nomina->estado_id == 8 || $orden_nomina->estado_id == 9 || $orden_nomina->estado_id == 10))))
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @php
+                                    $archivo_cot = str_replace('public/', '', $orden_nomina->archivo_cot);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_cot") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cotizaci&oacute;n.</span>
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                @php
+                                    $archivo_orden_helisa = str_replace('public/', '', $orden_nomina->archivo_orden_helisa);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Orden de compra.</span>
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                @php
+                                    $archivo_remision = str_replace('public/', '', $orden_nomina->archivo_remision);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_remision") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Remisi&oacute;n.</span>
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Cod: @if ($orden_nomina->cod_oc) {{ $orden_nomina->cod_oc }}. @endif</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Gr: @if ($orden_nomina->gr) {{ $orden_nomina->gr }}. @endif</span>
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                <a href="#">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">N&uacute;m Causaci&oacute;n: @if ($orden_nomina->cod_causal) {{ $orden_nomina->cod_causal }}. @endif</span>
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                @php
+                                    $archivo_comprobante_pago = str_replace('public/', '', $orden_nomina->archivo_comprobante_pago);
+                                @endphp
+                                <a href="{{ asset("storage/$archivo_comprobante_pago") }}" target="_blank" class="">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Comprobante pago.</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @elseif (Auth::user()->rol == 7)
+                    <div class="row px-4">
+                        <div class="col-md-1 d-flex justify-content-center align-items-center">
+                            <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
+                                    class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
+                                @if (is_null($selectedItem)) <i class="fas fa-plus text-white" aria-hidden="true"></i> @else <i class="fa-solid fa-pen-to-square"></i> @endif
+                            </button>
+                        </div>
+                        <div class="col-md-11 row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">ITEM</label>
+                                    <select wire:model.lazy="item" class="form-control" @if (!is_null($selectedItem)) disabled @endif>
+                                        <option value="">Seleccionar</option>
+                                        @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
+                                            @if (!$presupuestoItem->evento)
+                                                @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
+                                                <option value="{{ $presupuestoItem->id }}"
+                                                        @if (is_array($itemProveedor))
+                                                            @php
+                                                                $validator = in_array($proveedor, $itemProveedor);
+                                                            @endphp
+                                                            @if (!$validator)
+                                                                disabled
+                                                        style="background-color: #e9ecef !important;"
+                                                        @endif
+                                                        @elseif (!is_array($itemProveedor) && $itemProveedor != $proveedor)
+                                                            disabled
+                                                        style="background-color: #e9ecef !important;"
+                                                    @endif>
+                                                    {{ $key+1 }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">CANT</label>
+                                    <input type="number" class="form-control @error('cant') is-invalid @elseif(strlen($cant) > 0) is-valid @enderror"
+                                           placeholder="Cantidad" required wire:model.lazy="cant">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">DIAS</label>
+                                    <input type="number" class="form-control @error('dias') is-invalid @elseif(strlen($dias) > 0) is-valid @enderror"
+                                           placeholder="Dias" required wire:model.lazy="dias" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">OTROS</label>
+                                    <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
+                                           placeholder="Otros" required wire:model.lazy="otros" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">V. UNI</label>
+                                    <input type="text" class="form-control @error('vUnit') is-invalid @elseif(strlen($vUnit) > 0) is-valid @enderror"
+                                           placeholder="Valor unitario" required wire:model.lazy="vUnit" x-mask:dynamic="$money($input)">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">V. TOTAL</label>
+                                    <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
+                                           placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">DESCRIPCION</label>
+                                    <textarea class="form-control @error('desc') is-invalid @elseif(strlen($desc) > 0) is-valid @enderror"
+                                              placeholder="Descripción" wire:model.lazy="desc" cols="30" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        @error('vUnit')
+                        <div id="vUnit" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('cant')
+                        <div id="cant" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('dias')
+                        <div id="dias" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('otros')
+                        <div id="otros" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('vTotal')
+                        <div id="vTotal" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('desc')
+                        <div id="desc" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('customError')
+                        <div id="customError" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('file_cot')
+                        <div id="file_cot" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        @error('oc_helisa')
+                        <div id="oc_helisa" class="text-invalid">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="cotizacion">Adjunta tu cotizaci&oacute;n:</label>
+                                <input id="cotizacion" wire:model="file_cot" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                                <div wire:loading wire:target="file_cot" class="py-2">
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <button wire:click="enviarAprobacion" wire:loading.attr="disabled" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
+                                @if($orden_nomina && $orden_nomina->estado_id == 3)
+                                    <button wire:click="deleteOrden" class="btn btn-icon btn-3 btn bg-gradient-danger mt-2 mb-0" type="button">
+                                    <span class="btn-inner--icon">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </span>
+                                        <span class="btn-inner--text">Eliminar</span>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endif
+        </div>
+    </div>
+</div>

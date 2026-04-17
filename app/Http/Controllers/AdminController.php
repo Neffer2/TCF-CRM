@@ -145,6 +145,23 @@ class AdminController extends Controller
     }
 
     /**
+     * Muestra la página de orden nómina específica
+     *
+     * @param int $orden_id - ID de la orden de compra
+     * @return \Illuminate\View\View
+     */
+    public function showOrdenNomina($orden_id){
+        // Buscar la orden de compra por ID
+        $orden = OrdenCompra::find($orden_id);
+        // Obtener el presupuesto relacionado con la orden
+        $presupuesto = $orden->presupuesto;
+        // Obtener todos los proveedores (solo ID y tercero)
+        $proveedores = Proveedor::select('id', 'tercero')->get();
+
+        return view('admin.produccion.ordenes.nomina', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
+    }
+
+    /**
      * Muestra la página de lista de consumidos
      *
      * @return \Illuminate\View\View

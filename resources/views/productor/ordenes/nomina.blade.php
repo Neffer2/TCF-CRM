@@ -4,7 +4,6 @@
             <span class="mask bg-gradient-warning opacity-6"></span>
         </div>
     @endsection
-
     @section('content')
-        @livewire('admin.produccion.ordenes-compra', ['productor_id' => Auth::user()->id, 'tipo_oc' => $tipo])
+        @livewire('productor.ordenes.nomina', ['productor' => Auth()->user(), 'orden_id' => $orden_id])
     @endsection
