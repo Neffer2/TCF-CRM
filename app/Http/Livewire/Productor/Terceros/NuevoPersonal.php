@@ -71,7 +71,7 @@ class NuevoPersonal extends Component
         }
 
         // Si el estado_id es 7 (Evidencias), obtenemos las evidencias guardadas
-        if ($this->orden->estado_id == 7) {
+        if ($this->orden && $this->orden->estado_id == 7) {
             $this->evidencias = Evidencia::where([
                 ['oc_id', $this->orden->id],
                 ['tercero_id', $this->tercero->id],
