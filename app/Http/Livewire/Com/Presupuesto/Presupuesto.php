@@ -40,6 +40,8 @@ class Presupuesto extends Component
     public $mes;
     public $dias;
     public $ciudad;
+    public $ubicacion;
+    public $item_ubicacion;
 
     public $imprevistos = 0;
     public $administracion = 0;
@@ -61,11 +63,11 @@ class Presupuesto extends Component
     public $proveedores = [];
     public $tarifario = [];
     public $selected_item;
-    public $rentabilidadView = false;
+    public $rentabilidadView = true;
     public $estadoValidator;
 
     // Métricas del proyecto
-    public $margenGeneral = 0;
+    public $margenItems = 0;
     public $costosProyecto = 0;
     public $ventaProyecto = 0;
     public $margenProyecto = 0;
@@ -145,6 +147,7 @@ class Presupuesto extends Component
             'valor_total' => ['required'],
             // 'proveedor' => ['required', new SameCategory],
             'proveedor' => ['required'],
+            'valor_total_cliente' => ['numeric', 'required'],
             'utilidad' => ['required', 'numeric'],
             'mes' => ['required'],
             'dias' => ['required'],
@@ -153,13 +156,6 @@ class Presupuesto extends Component
             'administracion' => ['required', 'numeric'],
             'fee' => ['required', 'numeric'],
         ]);
-
-        // Validación adicional si el cliente es "claro"
-        if ($this->presupuesto->gestion->claro){
-            $this->validate([
-                'valor_total_cliente' => ['numeric', 'required']
-            ]);
-        }
 
         // Crea el nuevo ítem
         $item = new ItemPresupuesto;
@@ -188,7 +184,18 @@ class Presupuesto extends Component
         $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
         $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
         $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
+
+        // Calcula el total de items del presupuesto y asigna el nuevo num_item y orden
+        $total_items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->count();
+        $item->num_item = $total_items + 1;
+        $item->orden = $this->num_item;
+
         $item->save();
+
+        // Valida si el item lleva un orden especifico
+        if ($this->ubicacion && $this->item_ubicacion) {
+            $this->changeOrden($item->id, $this->ubicacion, $this->item_ubicacion);
+        }
 
         $this->refresh();
         $this->limpiar();
@@ -226,13 +233,25 @@ class Presupuesto extends Component
 
     // Obtiene los ítems del presupuesto actual
     public function getItems(){
-        $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
+        $this->items = ItemPresupuesto::query()
+            ->where('presupuesto_id', $this->presupuesto_id)
+            ->when('orden' != null, function($query) {
+                return $query->orderBy('orden');
+            })->get();
     }
 
     // Calcula y actualiza las métricas del presupuesto
     public function getMetricas(){
         $this->getInfoFacturas();
-        (!$this->margenGeneral = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenGeneral = 0;
+//        (!$this->margenItems = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenItems = 0;
+        (
+            ! $this->margenItems = ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->where('evento', 0)
+                ->where('margen_utilidad', '>', 0)
+                ->sum('v_total') ) / ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->where('evento', 0)
+                ->sum('v_total_cot') )
+        ) && $this->margenItems = 0;
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
         $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos/100)) + ($this->ventaProyecto * ($this->administracion/100)) + ($this->ventaProyecto * ($this->fee/100));
         $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');
@@ -243,7 +262,7 @@ class Presupuesto extends Component
 
         // Actualiza los valores en el modelo de presupuesto
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presto->margen_general = $this->margenGeneral;
+        $presto->margen_general = $this->margenItems;
         $presto->venta_proy = $this->ventaProyecto;
         $presto->costos_proy = $this->costosProyecto;
         $presto->margen_proy = $this->margenProyecto;
@@ -311,6 +330,53 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
+    // Cambia el orden de un ítem
+    public function changeOrden($item_id, $ubicacion, $item_referencia_id) {
+        // Si el item de referencia es igual al item actual, sale de la función
+        if ($item_id == $item_referencia_id) {
+            return;
+        }
+
+        $item = ItemPresupuesto::find($item_id);
+        $item_referencia = ItemPresupuesto::find($item_referencia_id);
+
+        // Calcular nuevo orden
+        if ($ubicacion == '<') {
+            $nuevo_orden = $item_referencia->orden;
+        }
+        else {
+            $nuevo_orden = $item_referencia->orden + 1;
+        }
+
+        // Ajustar cuando baja
+        if ($nuevo_orden > $item->orden) {
+            $nuevo_orden--;
+        }
+
+        $orden_actual = $item->orden;
+
+        // Si el orden es el mismo, sale de la función
+        if ($nuevo_orden == $orden_actual) {
+            return;
+        }
+
+        // Mover hacia arriba
+        if ($nuevo_orden < $orden_actual) {
+            ItemPresupuesto::where('presupuesto_id', $item->presupuesto_id)
+                ->whereBetween('orden', [$nuevo_orden, $orden_actual - 1])
+                ->increment('orden');
+        }
+        // Mover hacia abajo
+        else {
+            ItemPresupuesto::where('presupuesto_id', $item->presupuesto_id)
+                ->whereBetween('orden', [$orden_actual + 1, $nuevo_orden - 1])
+                ->increment('orden');
+        }
+
+        $item->orden = $nuevo_orden;
+        $item->save();
+    }
+
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
@@ -376,7 +442,8 @@ class Presupuesto extends Component
             $item->dias = 0;
             $item->ciudad = 0;
             $item->update();
-        }else{
+        }
+        else{
             // Validaciones para ítem normal
             $this->validate([
                 'cod' => ['required'],
@@ -391,17 +458,12 @@ class Presupuesto extends Component
                 'ciudad' => ['required']
             ]);
 
-            if ($this->presupuesto->gestion->claro){
-                $this->validate([
-                    'valor_total_cliente' => ['numeric', 'required']
-                ]);
-            }
-
             $item = ItemPresupuesto::find($this->selected_item->id);
 
             $this->validate([
                 'cantidad' => ['required', (new PrestoConsumido($item))],
                 'valor_total' => ['required', (new PrestoConsumido($item))],
+                'valor_total_cliente' => ['numeric', 'required']
             ]);
 
             // Marca como actualizado y pone en edición el presupuesto
@@ -416,9 +478,7 @@ class Presupuesto extends Component
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
             $item->v_total = $this->valor_total;
-            if ($this->presupuesto->gestion->claro){
-                $item->v_total_cliente = $this->valor_total_cliente;
-            }
+            $item->v_total_cliente = $this->valor_total_cliente;
 
             // Valida que no se cambie un proveedor ya consumido
             $proveedores_consumidos = $item->consumidos->map(function ($orden){
@@ -444,6 +504,11 @@ class Presupuesto extends Component
             $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
             $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
             $item->update();
+
+            // Valida si cambia la ubicación del ítem
+            if ($this->ubicacion && $this->item_ubicacion) {
+                $this->changeOrden($this->selected_item->id, $this->ubicacion, $this->item_ubicacion);
+            }
         }
 
         $this->refresh();
@@ -493,9 +558,9 @@ class Presupuesto extends Component
     public function validacionLiderComercial() {
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-        // Si el margen del proyecto es menor al 35%, se envia a validación de gerencia (estado_id = 5),
+        // Si el margen del proyecto es menor al 30%, se envia a validación de gerencia (estado_id = 5),
         // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
-        if ($presto->margen_proy < 35.00) {
+        if ($presto->margen_proy < 30.00) {
             $presto->estado_id = 5;
         }
         else {
@@ -836,6 +901,8 @@ class Presupuesto extends Component
         $this->dias = "";
         $this->ciudad = "";
         $this->selected_item = null;
+        $this->ubicacion = "";
+        $this->item_ubicacion = "";
     }
 
     // Alterna la vista de rentabilidad

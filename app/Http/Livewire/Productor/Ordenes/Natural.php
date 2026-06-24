@@ -455,8 +455,8 @@ class Natural extends Component
     public function revisionOC($estado) {
         $redirect_route = 'ordenes-compra-lid';
 
+        // REVISIÓN DE GERENCIA APROBADA
         if ($estado == 3) {
-            // REVISIÓN DE GERENCIA APROBADA
             $this->validate([
                 'observaciones_revision_gerencia' => 'required|string|max:1000'
             ]);
@@ -469,9 +469,8 @@ class Natural extends Component
 
             $redirect_route = 'ordenes-compra';
         }
+        // GUARDAR AJUSTES REALIZADOS A LA OC POR PARTE DEL PRODUCTOR (CUANDO LA OC ES RECHAZADA POR EL LIDER DE PRODUCCIÓN O GERENCIA)
         elseif ($estado == 8) {
-            // GUARDAR AJUSTES REALIZADOS A LA OC POR PARTE DEL PRODUCTOR (CUANDO LA OC ES RECHAZADA POR EL LIDER DE PRODUCCIÓN O GERENCIA)
-
             // Elimina los items actuales y crea los nuevos
             foreach ($this->queriedOrden->ordenItems as $item){
                 $item->delete();
@@ -498,8 +497,58 @@ class Natural extends Component
 
             $redirect_route = 'ordenes-compra-prod';
         }
+        // REVISIÓN GERENCIA FINANCIERA APROBADA
         elseif ($estado == 9) {
-            // REVISIÓN LIDER APROBADA
+            $this->validate([
+                'observaciones_revision_gerencia' => 'required|string|max:1000'
+            ]);
+
+            // CALCULAMOS EL VALOR TOTAL DE LA OC
+            $vtotal_oc = 0;
+            foreach ($this->items as $item) {
+                $vtotal_oc += $item['valor_total'];
+            }
+
+            // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE CAMBIA A ESTADO EDITABLE ($estado_id = 3),
+            // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
+            if ($vtotal_oc < 1000000) {
+                $estado = 3;
+
+                // Envía mensaje al tercero si tiene teléfono
+                $tercero = Tercero::where('id', $this->tercero)->first();
+                if ($tercero->telefono){ $this->oc_natura_creada($tercero, $this->queriedOrden->id); }
+            }
+            else {
+                // Se envia notificación por correo a los Gerentes
+                $this->ocNaturalRevisionGerencia($this->queriedOrden);
+            }
+
+            $this->queriedOrden->observaciones_revision_lider = $this->observaciones_revision_lider;
+        }
+        // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
+        elseif ($estado == 11) {
+            $this->validate([
+                'rechazo_revision_lider' => 'required|string|max:1000',
+            ]);
+
+            $this->queriedOrden->rechazo_revision_lider = $this->rechazo_revision_lider;
+
+            // Se envia notificación de rechazo al producctor
+            $this->ocNaturalRechazoLiderProd($this->queriedOrden);
+        }
+        // RECHAZO REVISIÓN GERENCIA
+        elseif ($estado == 12) {
+            $this->validate([
+                'rechazo_revision_gerencia' => 'required|string|max:1000',
+            ]);
+
+            $this->queriedOrden->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+
+            // Se envia notificación de rechazo al producctor
+            $this->ocNaturalRechazoGerencia($this->queriedOrden);
+        }
+        // REVISIÓN LIDER PRODUCCIÓN APROBADA
+        elseif ($estado == 15) {
             $this->validate([
                 'observaciones_revision_lider' => 'required|string|max:1000'
             ]);
@@ -526,27 +575,16 @@ class Natural extends Component
 
             $this->queriedOrden->observaciones_revision_lider = $this->observaciones_revision_lider;
         }
-        elseif ($estado == 11) {
-            // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
-            $this->validate([
-                'rechazo_revision_lider' => 'required|string|max:1000',
-            ]);
-
-            $this->queriedOrden->rechazo_revision_lider = $this->rechazo_revision_lider;
-
-            // Se envia notificación de rechazo al producctor
-            $this->ocNaturalRechazoLiderProd($this->queriedOrden);
-        }
-        elseif ($estado == 12) {
-            // RECHAZO REVISIÓN GERENCIA
+        // RECHAZO REVISIÓN GERENCIA FINANCIERA
+        elseif ($estado == 16) {
             $this->validate([
                 'rechazo_revision_gerencia' => 'required|string|max:1000',
             ]);
 
             $this->queriedOrden->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
 
-            // Se envia notificación de rechazo al producctor
-            $this->ocNaturalRechazoGerencia($this->queriedOrden);
+            // Se envia notificación al productor
+//            $this->ocNatuRechazoFinanciera($this->queriedOrden);
         }
 
         $this->queriedOrden->estado_id = $estado;

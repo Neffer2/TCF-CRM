@@ -626,7 +626,7 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionGerencia($orden){
+    public function ocJuridicaRevisionFinanciera($orden){
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
@@ -639,6 +639,49 @@ trait Email
         $body =
             "<p>
             La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p>";
+
+        array_push($recipients, ...$this->gerencia);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocJuridicaRechazoFinanciera($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $body =
+            "<p>
+            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido <b>RECHAZADA</b> por gerencia financiera.<br>
+            Revisa las observaciones y corrige la información de la orden de compra.
+        </p>";
+
+//        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
+
+        array_push($recipients, [
+            'name'=> 'Nefer Barragan',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+        ]);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function ocJuridicaRevisionGerencia($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $total = 0;
+
+        foreach ($orden->ordenItems as $item) {
+            $total += $item->vtotal_oc;
+        }
+
+        $body =
+            "<p>
+            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción y gerencia financiera.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 

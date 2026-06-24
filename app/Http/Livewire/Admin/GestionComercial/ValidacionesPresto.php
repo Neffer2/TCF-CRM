@@ -130,10 +130,10 @@ class ValidacionesPresto extends Component
 
         // Si el estado es 2 (revisión)
         if ($estado == 2) {
-            // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 35%,
+            // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 30%,
             // se envia a validación de gerencia (estado_id = 5),
             // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
-            if ($presupuesto->estado_id == 4 && $presupuesto->margen_proy < 35.00) {
+            if ($presupuesto->estado_id == 4 && $presupuesto->margen_proy < 30.00) {
                 $estado = 5;
             }
             else {

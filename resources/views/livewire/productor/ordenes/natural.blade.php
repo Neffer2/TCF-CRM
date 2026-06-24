@@ -245,6 +245,48 @@
                 <span class="sr-only"></span>
             </div>
         </div>
+    @elseif(Auth::user()->id == 198 && $queriedOrden->estado_id == 15)
+        {{-- REVISIÓN GERENCIA FINANCIERA --}}
+        <div class="row m-0">
+            <div class="col-12">
+                <p class="text-dark font-weight-bold mt-3">
+                    Observaciones lider de producción: {{ $orden_compra->observaciones_revision_lider }}
+                </p>
+            </div>
+        </div>
+        <div class="row px-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="observaciones_revision_gerencia">Observaciones de aprobaci&oacute;n:</label>
+                    <textarea name="observaciones_revision_gerencia" id="observaciones_revision_gerencia" class="form-control" wire:model="observaciones_revision_gerencia" cols="100" rows="2"></textarea>
+                    @error('observaciones_revision_gerencia')
+                    <div id="observaciones_revision_gerencia" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(9)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                    Aprobar
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="rechazo_revision_gerencia">Justificaci&oacute;n de rechazo:</label>
+                    <textarea name="rechazo_revision_gerencia" id="rechazo_revision_gerencia" class="form-control" wire:model="rechazo_revision_gerencia" cols="100" rows="2"></textarea>
+                    @error('rechazo_revision_gerencia')
+                    <div id="rechazo_revision_gerencia" class="text-invalid">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+                <button wire:click="revisionOC(16)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+            </div>
+            <div class="col-md-12">
+                <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                    <span class="sr-only"></span>
+                </div>
+            </div>
+        </div>
     @elseif ((Auth::user()->id == 8 || Auth::user()->id == 10) && $queriedOrden->estado_id == 9)
         {{-- REVISIÓN GERENCIA --}}
         <div class="row m-0">
@@ -281,10 +323,10 @@
                 </div>
                 <button wire:click="revisionOC(12)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
             </div>
-        </div>
-        <div class="col-md-12">
-            <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                <span class="sr-only"></span>
+            <div class="col-md-12">
+                <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                    <span class="sr-only"></span>
+                </div>
             </div>
         </div>
     @elseif ((Auth()->user()->rol == 7) && ((!$queriedOrden)))

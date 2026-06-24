@@ -46,7 +46,7 @@ class AnticipoJuridico extends Component
             ;})
             ->where([
                 ['estado_id', 1],
-                ['tipo_oc', 1],
+//                ['tipo_oc', 1],
                 ['created_at', '>=', Año::orderBy('description', 'desc')->first()->description.'-01-01']
             ])
             ->whereDoesntHave('anticipos')

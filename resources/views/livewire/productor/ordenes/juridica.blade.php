@@ -164,6 +164,59 @@
                         <span class="sr-only"></span>
                     </div>
                 </div>
+            @elseif(Auth::user()->id == 198 && $orden_compra->estado_id == 15)
+                {{-- REVISIÓN GERENCIA FINANCIERA --}}
+                <div class="row px-4">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @php
+                                $aux = str_replace('public/', '', $orden_compra->archivo_cot);
+                            @endphp
+                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <p class="text-dark font-weight-bold mt-3">
+                            Observaciones lider de producción: {{ $orden_compra->observaciones_revision_lider }}
+                        </p>
+                    </div>
+                </div>
+                <div class="row px-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="observaciones_revision_gerencia">Observaciones de aprobaci&oacute;n:</label>
+                            <textarea name="observaciones_revision_gerencia" id="observaciones_revision_gerencia" class="form-control" wire:model="observaciones_revision_gerencia" cols="100" rows="2"></textarea>
+                            @error('observaciones_revision_gerencia')
+                            <div id="observaciones_revision_gerencia" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(9)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rechazo_revision_gerencia">Justificaci&oacute;n de rechazo:</label>
+                            <textarea name="rechazo_revision_gerencia" id="rechazo_revision_gerencia" class="form-control" wire:model="rechazo_revision_gerencia" cols="100" rows="2"></textarea>
+                            @error('rechazo_revision_gerencia')
+                            <div id="rechazo_revision_gerencia" class="text-invalid">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(16)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Rechazar</button>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                </div>
             @elseif((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_compra->estado_id == 9)
                 {{-- REVISIÓN GERENCIA --}}
                 <div class="row px-4">

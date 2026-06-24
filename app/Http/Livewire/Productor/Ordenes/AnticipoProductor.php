@@ -484,9 +484,9 @@ class AnticipoProductor extends Component
                 'observaciones_revision_lider' => 'required|string|max:1000'
             ]);
 
-            // SI EL VALOR TOTAL DEL ANTICIPO ES MENOR A 5.000.000, SE CAMBIA A ESTADO EVIDENCIAS ($estado_id = 7),
+            // SI EL VALOR TOTAL DEL ANTICIPO ES MENOR A 500.000, SE CAMBIA A ESTADO EVIDENCIAS ($estado_id = 7),
             // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
-            if ($this->queriedAnticipo->total_anticipo < 5000000) {
+            if ($this->queriedAnticipo->total_anticipo < 500000) {
                 $estado_id = 7;
 
                 // Se envia notificación al productor para el cargue de evidencias

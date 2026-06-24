@@ -333,8 +333,8 @@ class Juridica extends Component
 //            $this->ocJuridicaAprobada($this->orden_compra);
 //            $messaje = 'Orden de compra APROBADA.';
         }
+        // REVISIÓN GERENCIA OC APROBADA
         elseif ($estado == 2) {
-            // REVISIÓN GERENCIA OC APROBADA
             $this->validate([
                 'observaciones_revision_gerencia' => 'required|string|max:1000'
             ]);
@@ -356,8 +356,8 @@ class Juridica extends Component
 
             $messaje = 'Revisión Orden de compra APROBADA.';
         }
+        // ORDEN RECHAZADA
         elseif($estado == 3) {
-            // ORDEN RECHAZADA
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
             ]);
@@ -365,8 +365,8 @@ class Juridica extends Component
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
             $messaje = 'Orden de compra RECHAZADA.';
         }
+        // REVISIÓN REMISIÓN APROBADA (LIDER DE PRODUCCIÓN)
         elseif ($estado == 4) {
-            // REVISIÓN REMISIÓN APROBADA (LIDER DE PRODUCCIÓN)
             $this->validate([
                 'observaciones_revision_evidencias' => 'required|string|max:1000',
             ]);
@@ -379,8 +379,8 @@ class Juridica extends Component
             $messaje = 'Revisión Orden de compra APROBADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
+        // GR GENERADO
         elseif ($estado == 5) {
-            // GR GENERADO
             $this->validate([
                 'gr' => 'nullable|string'
             ]);
@@ -389,8 +389,8 @@ class Juridica extends Component
             $this->ocJuridicaGrGenerado($this->orden_compra);
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }
+        // ORDEN ANULADA
         elseif ($estado == 6) {
-            // ORDEN ANULADA
             $this->validate([
                 'observaciones_anulacion' => 'required|string|max:1000'
             ]);
@@ -399,10 +399,10 @@ class Juridica extends Component
             $this->ocJuridicaAnulada($this->orden_compra);
             $messaje = 'Orden de compra ANULADA.';
         }
+        // REVISIÓN GERENCIA FINANCIERA APROBADA
         elseif ($estado == 9) {
-            // REVISIÓN LIDER APROBADA
             $this->validate([
-                'observaciones_revision_lider' => 'required|string|max:1000'
+                'observaciones_revision_gerencia' => 'required|string|max:1000'
             ]);
 
             // CALCULAMOS EL VALOR TOTAL DE LA OC
@@ -414,12 +414,9 @@ class Juridica extends Component
             // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE ENVIA A REVISIÓN DE CONTROLLER (estado_id = 2),
             // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
             if ($vtotal_oc < 1000000) {
-                $estado = 2;
-
                 $this->orden_compra->fecha_aprobacion = now();
 
                 // Generar código de OC
-                $cod_cc = $this->presupuesto->cod_cc;
                 $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
                 $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
                 $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
@@ -439,8 +436,8 @@ class Juridica extends Component
             $messaje = 'Revisión Orden de compra APROBADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
+        // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
         elseif ($estado == 11) {
-            // RECHAZO VALIDACIÓN LIDER DE PRODUCCIÓN
             $this->validate([
                 'rechazo_revision_lider' => 'required|string|max:1000',
             ]);
@@ -453,8 +450,8 @@ class Juridica extends Component
             $messaje = 'Revisión Orden de compra RECHAZADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
+        // RECHAZO REVISIÓN GERENCIA
         elseif ($estado == 12) {
-            // RECHAZO REVISIÓN GERENCIA
             $this->validate([
                 'rechazo_revision_gerencia' => 'required|string|max:1000',
             ]);
@@ -466,8 +463,8 @@ class Juridica extends Component
 
             $messaje = 'Revisión Orden de compra RECHAZADA.';
         }
+        // RECHAZO REVISIÓN REMISIÓN (LIDER DE PRODUCCIÓN)
         elseif ($estado == 13) {
-            // RECHAZO REVISIÓN REMISIÓN (LIDER DE PRODUCCIÓN)
             $this->validate([
                 'rechazo_revision_evidencias' => 'required|string|max:1000',
             ]);
@@ -480,15 +477,64 @@ class Juridica extends Component
             $messaje = 'Revisión Orden de compra RECHAZADA.';
             $redirect_route = 'ordenes-compra-lid';
         }
+        // REVISIÓN REMISIÓN CONTROLLER APROBADA
         elseif ($estado == 14) {
             $this->validate([
                 'observaciones_remision' => 'nullable|string|max:1000'
             ]);
 
             $this->orden_compra->observacion_remision = $this->observaciones_remision;
-
-            // REVISIÓN REMISIÓN CONTROLLER APROBADA
             $messaje = 'Revisión Orden de compra APROBADA.';
+        }
+        // REVISIÓN LIDER PRODUCCIÓN APROBADA
+        elseif ($estado == 15) {
+            $this->validate([
+                'observaciones_revision_lider' => 'required|string|max:1000'
+            ]);
+
+            // CALCULAMOS EL VALOR TOTAL DE LA OC
+            $vtotal_oc = 0;
+            foreach ($this->ocItems as $item) {
+                $vtotal_oc += $item['vTotal'];
+            }
+
+            // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE ENVIA A REVISIÓN DE CONTROLLER (estado_id = 2),
+            // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE FINANCIERA (estado_id = 15)
+            if ($vtotal_oc < 1000000) {
+                $this->orden_compra->fecha_aprobacion = now();
+
+                // Generar código de OC
+                $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
+                $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
+                $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
+
+                // Se envia notificación de aprobación
+                $this->ocJuridicaAprobada($this->orden_compra);
+
+                // Cambio de estado a id 1 (Aprobado)
+                $estado = 1;
+            }
+            else {
+                // Se envia notificación a los Gerentes Financieros
+                $this->ocJuridicaRevisionFinanciera($this->orden_compra);
+            }
+
+            $this->orden_compra->observaciones_revision_lider = $this->observaciones_revision_lider;
+            $messaje = 'Revisión Orden de compra APROBADA.';
+            $redirect_route = 'ordenes-compra-lid';
+        }
+        // RECHAZO REVISIÓN GERENCIA FINANCIERA
+        elseif ($estado == 16) {
+            $this->validate([
+                'rechazo_revision_gerencia' => 'required|string|max:1000',
+            ]);
+
+            $this->orden_compra->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
+
+            // Se envia notificación al productor
+            $this->ocJuridicaRechazoFinanciera($this->orden_compra);
+
+            $messaje = 'Revisión Orden de compra RECHAZADA.';
         }
 
         $this->orden_compra->estado_id = $estado;

@@ -1,5 +1,5 @@
 <div class="col-lg-12 col-12 mx-auto mt-">
-    <div class="card" x-data="new_project" x-cloak>  
+    <div class="card" x-data="new_project" x-cloak>
         <div class="card-body d-flex justify-content-center">
             <div class="col-lg-2 col-md-2 col-sm-3 col-4 text-center">
                 <a x-on:click="show_form" href="javascript:;" class="avatar border-1 rounded-circle bg-gradient-warning">
@@ -8,10 +8,10 @@
                 </a>
                 <p class="mb-0 text-sm" style="margin-top:6px;">Nuevo registro</p>
             </div>
-        </div>  
+        </div>
         <div class="card-body" x-show="form_project" x-transition x-cloak>
             <form wire:submit.prevent="store">
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="fecha">Fecha:</label>
@@ -20,11 +20,11 @@
                                 <div id="fecha" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror 
-                        </div> 
+                            @enderror
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group"> 
+                        <div class="form-group">
                             <label for="tipo_doc">Tipo Doc:</label>
                             <input wire:model.lazy="tipo_doc" id="tipo_doc" type="text" name="tipo_doc" class="form-control @error('tipo_doc') is-invalid @elseif(strlen($tipo_doc) > 0) is-valid @enderror" value="{{ old('tipo_doc') }}" placeholder="Tipo documento" required>
                             @error('tipo_doc')
@@ -42,7 +42,7 @@
                                 <div id="num_doc" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror 
+                            @enderror
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -75,7 +75,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div> 
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
@@ -87,8 +87,8 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div> 
-                    </div> 
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="debito">D&eacute;bito:</label>
@@ -125,8 +125,8 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div> 
-                    </div> 
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <label for="testigoPorcentaje">Total %: </label>
                         <input disabled type="text" id="testigoPorcentaje" class="form-control @error('testigoPorcentaje') is-invalid @enderror" value="{{ old('testigoPorcentaje') }}" wire:model="testigoPorcentaje" required>
@@ -148,14 +148,14 @@
                                         @foreach ($comerciales as $comercial)
                                             <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
                                         @endforeach
-                                    </select>                                    
+                                    </select>
                                     {{-- {{ ${'comercial'.$i} }} --}}
                                     @if ($errors->has("comercial".$i))
                                         <div class="text-danger">
                                             <small>{{ $errors->first("comercial".$i) }}</small>
                                         </div>
                                     @endif
-                                </div> 
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
@@ -166,7 +166,7 @@
                                             <small>{{ $errors->first("porcentaje".$i) }}</small>
                                         </div>
                                     @endif
-                                </div> 
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
@@ -178,8 +178,8 @@
                                         <div class="text-danger">
                                             <small>{{ $errors->first("base_factura".$i) }}</small>
                                         </div>
-                                    @endif 
-                                </div> 
+                                    @endif
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group mb-1">
@@ -192,7 +192,7 @@
                                             <small>{{ $errors->first("comision".$i) }}</small>
                                         </div>
                                     @endif
-                                </div> 
+                                </div>
                             </div>
                         @endfor
                     </div>
@@ -212,7 +212,7 @@
                                 </div>
                             @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="año">Año: </label>
@@ -246,14 +246,15 @@
                                 <div id="mes" class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror 
+                            @enderror
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-12">
                         <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
                     </div>
                 </div>
+                </div>
             </form>
-        </div> 
+        </div>
     </div>
 </div>

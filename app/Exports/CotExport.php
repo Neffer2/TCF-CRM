@@ -4,12 +4,13 @@ namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
-class CotExport implements FromView, WithDrawings, WithColumnFormatting
+class CotExport implements FromView, WithDrawings, WithColumnFormatting, WithColumnWidths
 {
 
     protected $info = [];
@@ -52,6 +53,14 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting
             'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+        ];
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'K' => 18,
+            'L' => 18
         ];
     }
 }
