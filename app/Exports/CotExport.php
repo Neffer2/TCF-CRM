@@ -2,15 +2,9 @@
 
 namespace App\Exports;
 
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithDrawings;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class CotExport implements FromView, WithDrawings, WithColumnFormatting, WithColumnWidths
+class CotExport implements WithMultipleSheets
 {
 
     protected $info = [];
@@ -19,48 +13,12 @@ class CotExport implements FromView, WithDrawings, WithColumnFormatting, WithCol
         $this->info = $info;
     }
 
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function view(): View
-    {
-        return view('exports.excel', [
-            'items' => $this->info['items'],
-            'presto' => $this->info['presto'],
-            'tipo' => $this->info['tipo'],
-            'proveedores' => $this->info['proveedores']
-        ]);
-    }
-
-    public function drawings()
-    {
-        $drawing = new Drawing();
-        $drawing->setName('Logo');
-        $drawing->setDescription('Bullmarketing logo');
-        $drawing->setPath(public_path('assets/img/bull-logo.png'));
-        $drawing->setHeight(80);
-        $drawing->setCoordinates('A1');
-
-        return $drawing;
-    }
-
-    public function columnFormats(): array
+    public function sheets(): array
     {
         return [
-            // 'I' => NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE,
-            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'Presupuestos'         => new PresupuestosSheetsExports($this->info),
+            'Historial de cambios' => new HistorialSheetsExports($this->info['historial'] ?? []),
         ];
     }
 
-    public function columnWidths(): array
-    {
-        return [
-            'K' => 18,
-            'L' => 18
-        ];
-    }
 }

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
 use App\Exports\BaseExport;
+use App\Models\HistorialItemPresupuesto;
 use Maatwebsite\Excel\Facades\Excel;
 
 // Importación de clases base de Laravel
@@ -179,14 +180,41 @@ class ComercialController extends Controller
      * @param string $tipo Tipo de cotización (Interno/Cliente)
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse Descarga del Excel
      */
+    /**
+     * Genera y descarga un archivo Excel de cotización
+     *
+     * @param int $prespuesto ID del presupuesto
+     * @param string $nom_proyecto Nombre del proyecto para el archivo
+     * @param string $tipo Tipo de cotización (Interno/Cliente)
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse Descarga del Excel
+     */
     public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {
-        // Obtener datos necesarios para la exportación
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
-        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+
+        if (!$presto) {
+            return session()->flash('error', 'El presupuesto no existe.');
+        }
+
+        $allItems = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+
+        $itemIds = $allItems->pluck('id');
+
+        $itemsHistorial = HistorialItemPresupuesto::whereIn('item_presupuesto_id', $itemIds)
+            ->with('itemPresupuesto') // Trae la relación por si necesitas el código actual
+            ->latest()
+            ->get();
+
         $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
 
-        // Generar y descargar archivo Excel usando la clase CotExport
-        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx");
+        $payload = [
+            'presto'      => $presto,
+            'items'       => $allItems,
+            'tipo'        => $tipo,
+            'proveedores' => $proveedores,
+            'historial'   => $itemsHistorial
+        ];
+
+        return Excel::download(new CotExport($payload), $nom_proyecto.".xlsx");
     }
 
     /**

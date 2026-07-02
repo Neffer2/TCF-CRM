@@ -36,6 +36,11 @@ class ItemPresupuesto extends Model
         return $this->hasOne(Proveedor::class, 'id', 'proveedor');
     }
 
+    public function historiales()
+    {
+        return $this->hasMany(HistorialItemPresupuesto::class, 'item_presupuesto_id');
+    }
+
     // Obtiene el item que reconocen los productores
     public function displayItem(){
         foreach ($this->presto->presupuestoItems as $key => $item) {
