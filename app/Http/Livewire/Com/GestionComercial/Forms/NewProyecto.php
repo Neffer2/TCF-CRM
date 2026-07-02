@@ -27,6 +27,7 @@ class NewProyecto extends Component
     public $id_cuenta = ""; // Cuenta asociada
     public $fecha_inicio = null; // Fecha de inicio
     public $dura_mes = null; // Duración en meses
+    public $fecha_facturacion = null; // Fecha de facturacion
 
     // Variables para comerciales y porcentajes
     public $comercial0; // Comercial principal
@@ -144,8 +145,13 @@ class NewProyecto extends Component
     public function updateFechaInicio(){
         $this->validate(['fecha_inicio' => ['present']]);
     }
+
     public function updateDuraMes(){
         $this->validate(['dura_mes' => ['present']]);
+    }
+
+    public function updateFechaFacturacion() {
+        $this->validate(['fecha_facturacion' => ['present']]);
     }
 
     // Carga los estados posibles
@@ -331,6 +337,7 @@ class NewProyecto extends Component
             'id_cuenta' => ['required','numeric'],
             'fecha_inicio' => ['present'],
             'dura_mes' => ['present'],
+            'fecha_facturacion' => ['present'],
 
             // PARTICIPACIONES
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
@@ -367,6 +374,7 @@ class NewProyecto extends Component
             $base_comercial->id_estado = $this->id_estado;
             $base_comercial->fecha_inicio = $this->fecha_inicio;
             $base_comercial->dura_mes = $this->dura_mes;
+            $base_comercial->fecha_facturacion = $this->fecha_facturacion;
             $base_comercial->id_user = $this->{'comercial'.$i};
 
             $base_comercial->save();
@@ -394,5 +402,6 @@ class NewProyecto extends Component
         $this->id_estado = "";
         $this->fecha_inicio = null;
         $this->dura_mes = null;
+        $this->fecha_facturacion = null;
     }
 }

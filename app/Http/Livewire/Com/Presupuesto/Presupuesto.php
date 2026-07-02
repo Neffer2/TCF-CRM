@@ -244,15 +244,22 @@ class Presupuesto extends Component
     // Calcula y actualiza las métricas del presupuesto
     public function getMetricas(){
         $this->getInfoFacturas();
-//        (!$this->margenItems = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->where('margen_utilidad', '>', 0)->avg('margen_utilidad')) && $this->margenItems = 0;
-        (
-            ! $this->margenItems = ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                ->where('evento', 0)
-                ->where('margen_utilidad', '>', 0)
-                ->sum('v_total') ) / ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                ->where('evento', 0)
-                ->sum('v_total_cot') )
-        ) && $this->margenItems = 0;
+
+        // Validamos si el presupuesto tiene items o no para calcular el margen de items
+        $items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
+
+        if ($items->count() > 0) {
+            $this->margenItems = ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                    ->where('evento', 0)
+                    ->where('margen_utilidad', '>', 0)
+                    ->sum('v_total') ) / ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                    ->where('evento', 0)
+                    ->sum('v_total_cot') );
+        }
+        else {
+            $this->margenItems = 0;
+        }
+
         $this->ventaProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total_cot');
         $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos/100)) + ($this->ventaProyecto * ($this->administracion/100)) + ($this->ventaProyecto * ($this->fee/100));
         $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->where('evento', 0)->sum('v_total');

@@ -163,7 +163,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="fecha_inicio">Fecha inicio:</label>
                     <input wire:model="fecha_inicio" id="fecha_inicio" type="date" name="fecha_inicio" class="form-control @error('fecha_inicio') is-invalid @elseif(strlen($fecha_inicio) > 0) is-valid @enderror" value="{{ old('fecha_inicio') }}">
@@ -174,12 +174,23 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="dura_mes">Fecha fin: </label>
                     <input wire:model="dura_mes" id="dura_mes" type="date" name="dura_mes" class="form-control @error('dura_mes') is-invalid @elseif(strlen($dura_mes) > 0) is-valid @enderror" value="{{ old('dura_mes') }}">
                     @error('dura_mes')
                         <div id="dura_mes" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha facturación:</label>
+                    <input wire:model="fecha_facturacion" id="fecha_facturacion" type="date" name="fecha_facturacion" class="form-control @error('fecha_facturacion') is-invalid @elseif(strlen($fecha_facturacion) > 0) is-valid @enderror" value="{{ old('fecha_facturacion') }}">
+                    @error('fecha_facturacion')
+                        <div id="fecha_facturacion" class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror

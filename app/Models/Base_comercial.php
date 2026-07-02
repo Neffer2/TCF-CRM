@@ -13,19 +13,20 @@ class Base_comercial extends Model
     protected $fillable = [
         'fecha',
         'nom_cliente',
-        'nom_proyecto', 
+        'nom_proyecto',
         'cod_cc',
-        'valor_proyecto', 
+        'valor_proyecto',
         'com_1',
         'com_2',
         'com_3',
         'id_estado',
         'id_cuenta',
         'fecha_inicio',
-        'dura_mes', 
+        'dura_mes',
+        'fecha_facturacion',
         'id_user',
-        'id_gestion',  
-        'id_asistente', 
+        'id_gestion',
+        'id_asistente',
     ];
 
     public function comercial (){
@@ -34,7 +35,7 @@ class Base_comercial extends Model
 
     public function asistente (){
         return $this->hasOne(User::class, 'id', 'id_asistente');
-    } 
+    }
 
     public function estado_cuenta (){
         return $this->hasOne(EstadoCuenta::class, 'id', 'id_estado');
@@ -50,4 +51,3 @@ class Base_comercial extends Model
         return $this->hasOne(GestionComercial::class, 'id', 'id_gestion');
     }
 }
-  
