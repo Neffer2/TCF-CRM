@@ -785,7 +785,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 d-flex justify-content-end p-2">
+                    <div class="col-md-4 d-flex justify-content-end p-2"ñ>
                         <button class="btn btn-icon btn-3 bg-gradient-warning mb-0 me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" wire:loading.attr="disabled">
                             <span class="btn-inner--icon"><i class="ni ni-check-bold"></i></span>
                             <span class="btn-inner--text">Enviar a aprobaci&oacute;n</span>

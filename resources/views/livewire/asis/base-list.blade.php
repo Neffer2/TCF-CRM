@@ -1,30 +1,30 @@
 <div class="col-lg-12 col-12 mx-auto">
     <div class="card card-body mt-4">
-        <!-- Card header --> 
+        <!-- Card header -->
         <div class="card-header">
-            <h5 class="mb-0">Base comercial</h5>            
+            <h5 class="mb-0">Base comercial</h5>
         </div>
         <div class="table-responsive">
             <table class="table table-flush" id="datatable-search">
                 <thead class="thead-light">
-                <tr> 
-                    <th>#</th> 
+                <tr>
+                    <th>#</th>
                     <th>Fecha</th>
                     <th>Cliente</th>
-                    <th>Proyecto</th> 
+                    <th>Proyecto</th>
                     <th>COD_CC</th>
-                    <th>Valor</th> 
+                    <th>Valor</th>
                     <th>Estado</th>
                     <th>Cuenta</th>
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Editor</th>
-                    <th>ACCIONES</th> 
-                </tr> 
-                </thead> 
-                <tbody>   
+                    <th>ACCIONES</th>
+                </tr>
+                </thead>
+                <tbody>
                     @foreach ($list as $key => $item)
-                    <tr> 
+                    <tr>
                         <td>{{ $key+=1 }}</td>
                         <td class="text-sm font-weight-normal">{{ $item->fecha }}</td>
                         <td class="text-sm font-weight-normal">
@@ -48,26 +48,26 @@
                         <td class="text-sm font-weight-normal">
                             @if ($item->id_asistente)
                                 {{ $item->asistente->name }}
-                            @endif                            
+                            @endif
                         </td>
                         <td  colspan="2">
                             {{-- <button class="btn bg-gradient-danger btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#modal{{ $item->id }}">Eliminar</button> --}}
                             <button class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#editmodal{{ $item->id }}"> Editar </button>
                         </td>
-                    </tr> 
+                    </tr>
                     <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
-                        <div class="modal-dialog"> 
+                        <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Editar proyecto</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div :wire:key="'item-'.$item->id"> 
-                                    @livewire('com.base.edit', ['proyecto_id' => $item->id], key('item-'.$item->id))     
+                                <div :wire:key="'item-'.$item->id">
+                                    @livewire('com.base.edit', ['proyecto_id' => $item->id], key('item-'.$item->id))
                                 </div>
                             </div>
                         </div>
-                    </div> 
+                    </div>
 
                     <div class="modal fade" id="modal{{ $item->id }}" tabindex="-1" aria-labelledby="Modal" aria-hidden="true">
                         <div class="modal-dialog">
@@ -85,7 +85,7 @@
                                         <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
                                         <button type="submit" class="btn bg-gradient-danger">Eliminar</button>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -93,7 +93,7 @@
                 </tbody>
             </table>
         </div>
- 
+
         <form action="{{ route('base-export', auth()->user()->id) }}" method="POST" class="d-flex justify-content-center">
             @csrf
             <button type="submit" class="btn bg-gradient-warning mt-3">
