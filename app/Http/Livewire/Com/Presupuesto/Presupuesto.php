@@ -16,6 +16,7 @@ use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;
 use App\Models\PresupuestoProyecto;
 use App\Traits\Email;
+use App\Models\HistorialItemPresupuesto;
 
 class Presupuesto extends Component
 {
@@ -412,6 +413,19 @@ class Presupuesto extends Component
         $this->ciudad = $this->selected_item->ciudad;
     }
 
+    public function actualizarItem($id, array $nuevosDatos)
+    {
+        $item = ItemPresupuesto::findOrFail($id);
+
+        HistorialItemPresupuesto::create([
+            'item_presupuesto_id' => $item->id,
+            'valores_anteriores'  => $item->toArray(),
+            'user_id'             => auth()->id(),
+        ]);
+
+        $item->update(array_merge($nuevosDatos, ['actualizado' => 1]));
+    }
+
     // Guarda los cambios al editar un ítem
     public function actionEdit(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
@@ -420,28 +434,38 @@ class Presupuesto extends Component
             return redirect()->back()->withErrors('Ningún elemento seleccionado')->withInput();
         }
 
-        // Si es un evento, solo actualiza la descripción
+        $itemOriginal = ItemPresupuesto::find($this->selected_item->id);
+
+        if (!$itemOriginal) {
+            return redirect()->back()->withErrors('El elemento no existe.');
+        }
+
         if ($this->selected_item->evento){
             $this->validate([
                 'descripcion' => ['required'],
             ]);
 
-            $item = ItemPresupuesto::find($this->selected_item->id);
-            $item->cod = 0;
-            $item->presupuesto_id = $this->presupuesto_id;
-            $item->evento = 1;
-            $item->cantidad = 0;
-            $item->dia = 0;
-            $item->otros = 0;
-            $item->descripcion = $this->descripcion;
-            $item->v_unitario = 0;
-            $item->v_total = 0;
-            $item->proveedor = [];
-            $item->margen_utilidad = 0;
-            $item->mes = 1;
-            $item->dias = 0;
-            $item->ciudad = 0;
-            $item->update();
+            HistorialItemPresupuesto::create([
+                'item_presupuesto_id' => $itemOriginal->id,
+                'valores_anteriores'  => $itemOriginal->toArray(),
+                'user_id'             => auth()->id(),
+            ]);
+
+            $itemOriginal->cod = 0;
+            $itemOriginal->presupuesto_id = $this->presupuesto_id;
+            $itemOriginal->evento = 1;
+            $itemOriginal->cantidad = 0;
+            $itemOriginal->dia = 0;
+            $itemOriginal->otros = 0;
+            $itemOriginal->descripcion = $this->descripcion;
+            $itemOriginal->v_unitario = 0;
+            $itemOriginal->v_total = 0;
+            $itemOriginal->proveedor = serialize([]);
+            $itemOriginal->margen_utilidad = 0;
+            $itemOriginal->mes = 1;
+            $itemOriginal->dias = 0;
+            $itemOriginal->ciudad = 0;
+            $itemOriginal->update();
         }
         else{
             // Validaciones para ítem normal
@@ -450,7 +474,6 @@ class Presupuesto extends Component
                 'dia' => ['required'],
                 'otros' => ['required'],
                 'descripcion' => ['required'],
-                // 'proveedor' => ['required', new SameCategory],
                 'proveedor' => ['required'],
                 'utilidad' => ['required'],
                 'mes' => ['required'],
@@ -458,35 +481,19 @@ class Presupuesto extends Component
                 'ciudad' => ['required']
             ]);
 
-            $item = ItemPresupuesto::find($this->selected_item->id);
-
             $this->validate([
-                'cantidad' => ['required', (new PrestoConsumido($item))],
-                'valor_total' => ['required', (new PrestoConsumido($item))],
+                'cantidad' => ['required', (new PrestoConsumido($itemOriginal))],
+                'valor_total' => ['required', (new PrestoConsumido($itemOriginal))],
                 'valor_total_cliente' => ['numeric', 'required']
             ]);
 
-            // Marca como actualizado y pone en edición el presupuesto
-            $item->actualizado = true;
-            $this->setEnEdicion($presto);
-
-            $item->cod = $this->cod;
-            $item->presupuesto_id = $this->presupuesto_id;
-            $item->cantidad = $this->cantidad;
-            $item->dia = $this->dia;
-            $item->otros = $this->otros;
-            $item->descripcion = $this->descripcion;
-            $item->v_unitario = $this->valor_unitario;
-            $item->v_total = $this->valor_total;
-            $item->v_total_cliente = $this->valor_total_cliente;
-
             // Valida que no se cambie un proveedor ya consumido
-            $proveedores_consumidos = $item->consumidos->map(function ($orden){
+            $proveedores_consumidos = $itemOriginal->consumidos->map(function ($orden){
                 return $orden->OrdenCompra->proveedor_id;
             });
 
-            if ((@unserialize($item->proveedor))){
-                foreach (@unserialize($item->proveedor) as $proveedor) {
+            if ((@unserialize($itemOriginal->proveedor))){
+                foreach (@unserialize($itemOriginal->proveedor) as $proveedor) {
                     if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
                         $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
                         return redirect()->back();
@@ -494,18 +501,35 @@ class Presupuesto extends Component
                 }
             }
 
-            $item->proveedor = serialize($this->proveedor);
-            $item->margen_utilidad = $this->utilidad;
-            $item->mes = $this->mes;
-            $item->dias = $this->dias;
-            $item->ciudad = $this->ciudad;
+            HistorialItemPresupuesto::create([
+                'item_presupuesto_id' => $itemOriginal->id,
+                'valores_anteriores'  => $itemOriginal->toArray(),
+                'user_id'             => auth()->id(),
+            ]);
 
-            $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
-            $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
-            $item->update();
+            $itemOriginal->actualizado = true;
+            $this->setEnEdicion($presto);
 
-            // Valida si cambia la ubicación del ítem
+            $itemOriginal->cod = $this->cod;
+            $itemOriginal->presupuesto_id = $this->presupuesto_id;
+            $itemOriginal->cantidad = $this->cantidad;
+            $itemOriginal->dia = $this->dia;
+            $itemOriginal->otros = $this->otros;
+            $itemOriginal->descripcion = $this->descripcion;
+            $itemOriginal->v_unitario = $this->valor_unitario;
+            $itemOriginal->v_total = $this->valor_total;
+            $itemOriginal->v_total_cliente = $this->valor_total_cliente;
+            $itemOriginal->proveedor = serialize($this->proveedor);
+            $itemOriginal->margen_utilidad = $this->utilidad;
+            $itemOriginal->mes = $this->mes;
+            $itemOriginal->dias = $this->dias;
+            $itemOriginal->ciudad = $this->ciudad;
+
+            $itemOriginal->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
+            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $itemOriginal->v_unitario_cot : 0;
+            $itemOriginal->rentabilidad = ($this->utilidad > 0) ? $itemOriginal->v_total_cot - $itemOriginal->v_total : 0;
+            $itemOriginal->update();
+
             if ($this->ubicacion && $this->item_ubicacion) {
                 $this->changeOrden($this->selected_item->id, $this->ubicacion, $this->item_ubicacion);
             }
@@ -514,6 +538,7 @@ class Presupuesto extends Component
         $this->refresh();
         $this->limpiar();
     }
+
 
     // Redirecciones para exportar cotizaciones y presupuestos
     public function cotizacionPdf(){
