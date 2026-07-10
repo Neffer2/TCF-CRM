@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class solicitudcliente extends Model{
+class SolicitudCliente extends Model{
     use HasFactory;
-    protected $table = 'solicitudcliente';
+    protected $table = 'solicitud_contactos';
 
     protected $fillable = [
         'id_user',

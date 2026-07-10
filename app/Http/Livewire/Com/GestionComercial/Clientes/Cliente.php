@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Com\GestionComercial\Clientes;
 
 use App\Models\solicitudcliente;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -73,13 +74,13 @@ class Cliente extends Component
             'RazonSocialCliente' => ['required', 'string'],
             'DireccionCliente'   => ['nullable', 'string'],
             'telefonoCliente'    => ['nullable', 'string'],
-            'emailCliente'       => ['required', 'string', 'email'],
+            'emailCliente'       => ['required', 'string', 'email', 'email:rfc'],
             'DescripcionCliente' => ['nullable', 'string'],
         ]);
 
         try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
 
-            // RN-001, RN-003 y RN-007: Se crea como solicitud Pendiente guardando la empresa temporalmente
             $solicitud = solicitudcliente::create([
                 'id_user'             => Auth::id(), // Comercial (RN-008)
                 'tipo_cliente'        => $this->TipoCliente,
@@ -96,6 +97,8 @@ class Cliente extends Component
                 ]),
             ]);
 
+            \Illuminate\Support\Facades\DB::commit();
+
             // Notificación limpia al Controller (RN-010 / HU-001)
             $controller = User::where('role', 'Controller')->first();
             if ($controller && method_exists($this, 'mailNuevaSolicitudController')) {
@@ -108,6 +111,7 @@ class Cliente extends Component
             $this->emit('list');
 
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
             $this->addError('error_proceso', 'Hubo un fallo al procesar la solicitud: ' . $e->getMessage());
         }
     }
