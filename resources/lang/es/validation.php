@@ -211,7 +211,7 @@ return [
         'creator'                  => 'creador',
         'currency'                 => 'moneda',
         'current_password'         => 'contraseña actual',
-        'customer'                 => 'cliente',
+        'customer'                 => 'clientes',
         'date'                     => 'fecha',
         'date_of_birth'            => 'fecha de nacimiento',
         'dates'                    => 'fechas',

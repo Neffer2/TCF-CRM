@@ -9,8 +9,8 @@ trait Email
 {
     public $lider_comercial = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
     ];
 
@@ -26,12 +26,12 @@ trait Email
 //    ];
     public $controller = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Juan Camilo Rojas Pineda',
-            'email'=> 'juan.rojas@bullmarketing.com.co'
+            'name' => 'Juan Camilo Rojas Pineda',
+            'email' => 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
@@ -51,12 +51,12 @@ trait Email
 //    ];
     public $produccion = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Juan Camilo Rojas Pineda',
-            'email'=> 'juan.rojas@bullmarketing.com.co'
+            'name' => 'Juan Camilo Rojas Pineda',
+            'email' => 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
@@ -72,12 +72,12 @@ trait Email
 //    ];
     public $gerencia = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Juan Camilo Rojas Pineda',
-            'email'=> 'juan.rojas@bullmarketing.com.co'
+            'name' => 'Juan Camilo Rojas Pineda',
+            'email' => 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
@@ -97,12 +97,12 @@ trait Email
 //    ];
     public $contabilidad = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Juan Camilo Rojas Pineda',
-            'email'=> 'juan.rojas@bullmarketing.com.co'
+            'name' => 'Juan Camilo Rojas Pineda',
+            'email' => 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
@@ -118,25 +118,25 @@ trait Email
 //    ];
     public $tesoreria = [
         [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Juan Camilo Rojas Pineda',
-            'email'=> 'juan.rojas@bullmarketing.com.co'
+            'name' => 'Juan Camilo Rojas Pineda',
+            'email' => 'juan.rojas@bullmarketing.com.co'
         ]
     ];
 
     /* PRESUPEUSTOS */
-    public function presupuestoValidacionLiderComercial($presto, $user) {
+    public function presupuestoValidacionLiderComercial($presto, $user)
+    {
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN CRM";
 
         if ($presto->cod_cc) {
             $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
-        }
-        else {
+        } else {
             $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
         }
 
@@ -150,17 +150,18 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function presupuestoAprobacion($presto, $user){
+    public function presupuestoAprobacion($presto, $user)
+    {
         $subject = "NOTIFICACIÓN CRM";
         $recipients = [];
         $cc = [];
 
         // COMPRAS - Alejo / CLARO JHONY
-        if ($presto->margen_proy > 35 && (!$presto->gestion->claro)){
+        if ($presto->margen_proy > 35 && (!$presto->gestion->claro)) {
             $admin_id = 30;
-        }elseif ($presto->margen_proy > 35 && $presto->gestion->claro){
+        } elseif ($presto->margen_proy > 35 && $presto->gestion->claro) {
             $admin_id = 36;
-        }elseif ($presto->margen_proy < 35 && (!$presto->gestion->claro)){
+        } elseif ($presto->margen_proy < 35 && (!$presto->gestion->claro)) {
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -172,19 +173,19 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
+        } elseif ($presto->margen_proy < 35 && $presto->gestion->claro) {
             $admin_id = 10;
 
             array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                'name' => 'Sebastian Beltran',
+                'email' => 'sebastian.beltran@bullmarketing.com.co'
             ]);
         }
 
         $recipient = User::select('name', 'email')->find($admin_id);
         array_push($recipients, [
-            'name'=> $recipient->name,
-            'email'=> $recipient->email
+            'name' => $recipient->name,
+            'email' => $recipient->email
         ]);
 
         // array_push($recipients, [
@@ -192,13 +193,13 @@ trait Email
         //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         // ]);
 
-        if ($presto->cod_cc){
+        if ($presto->cod_cc) {
             $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
-        }else {
+        } else {
             $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
         }
 
-        if ($presto->justificacion){
+        if ($presto->justificacion) {
             $body .= "<br><b>{$user->name}</b> ha realizado las siguientes observaciones: {$presto->justificacion}.";
         }
 
@@ -207,19 +208,20 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function presupuestoAprobado($user, $gestion, $justificacion, $cod_cc = null){
-        $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." APROBADO";
+    public function presupuestoAprobado($user, $gestion, $justificacion, $cod_cc = null)
+    {
+        $subject = "PRESUPUESTO " . $gestion->nom_proyecto_cot . " APROBADO";
         $body = "El presupuesto del proyecto: <b>{$gestion->nom_proyecto_cot}</b> ha sido APROBADO con el siguiente centro de costos: <b>{$cod_cc}</b>.";
 
-        if ($justificacion){
+        if ($justificacion) {
             $body .= "<br>El equipo de compras ha realizado las siguientes observaciones: {$justificacion}.";
         }
 
-        $altBody = "Se ha Aprobado el presupuesto: ".$gestion->nom_proyecto_cot;
+        $altBody = "Se ha Aprobado el presupuesto: " . $gestion->nom_proyecto_cot;
         $recipients = [];
         $cc = $user->asistente;
 
-        if ($gestion->presupuesto->margen_proy < 35 && (!$gestion->claro)){
+        if ($gestion->presupuesto->margen_proy < 35 && (!$gestion->claro)) {
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -231,26 +233,26 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+        } elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro) {
             $admin_id = 10;
 
             array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                'name' => 'Sebastian Beltran',
+                'email' => 'sebastian.beltran@bullmarketing.com.co'
             ]);
         }
 
-        if ($gestion->presupuesto->margen_proy < 35){
+        if ($gestion->presupuesto->margen_proy < 35) {
             $recipient = User::select('name', 'email')->find($admin_id);
             array_push($recipients, [
-                'name'=> $recipient->name,
-                'email'=> $recipient->email
+                'name' => $recipient->name,
+                'email' => $recipient->email
             ]);
         }
 
         array_push($recipients, [
-            'name'=> $user->name,
-            'email'=> $user->email
+            'name' => $user->name,
+            'email' => $user->email
         ]);
 
         // array_push($recipients, [
@@ -261,17 +263,18 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function presupuestoRechazado($user, $gestion, $justificacion, $cod_cc = null){
+    public function presupuestoRechazado($user, $gestion, $justificacion, $cod_cc = null)
+    {
         $recipients = [];
-        $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
-        $body = "El presupuesto del proyecto: <b>".$gestion->nom_proyecto_cot."</b> ha sido <b>RECHAZADO.</b>";
+        $subject = "PRESUPUESTO " . $gestion->nom_proyecto_cot . " RECHAZADO";
+        $body = "El presupuesto del proyecto: <b>" . $gestion->nom_proyecto_cot . "</b> ha sido <b>RECHAZADO.</b>";
 
         // COMPRAS - Alejo / CLARO JHONY
-        if ($gestion->presupuesto->margen_proy > 35 && (!$gestion->claro)){
+        if ($gestion->presupuesto->margen_proy > 35 && (!$gestion->claro)) {
             $admin_id = 30;
-        }elseif ($gestion->presupuesto->margen_proy > 35 && $gestion->claro){
+        } elseif ($gestion->presupuesto->margen_proy > 35 && $gestion->claro) {
             $admin_id = 36;
-        }elseif ($gestion->presupuesto->margen_proy < 35 && !($gestion->claro)){
+        } elseif ($gestion->presupuesto->margen_proy < 35 && !($gestion->claro)) {
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -283,31 +286,31 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+        } elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro) {
             $admin_id = 10;
 
             array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
+                'name' => 'Sebastian Beltran',
+                'email' => 'sebastian.beltran@bullmarketing.com.co'
             ]);
         }
 
         $recipient = User::select('name', 'email')->find($admin_id);
         array_push($recipients, [
-            'name'=> $recipient->name,
-            'email'=> $recipient->email
+            'name' => $recipient->name,
+            'email' => $recipient->email
         ]);
 
         array_push($recipients, [
-            'name'=> $user->name,
-            'email'=> $user->email
+            'name' => $user->name,
+            'email' => $user->email
         ]);
 
-        if ($justificacion){
+        if ($justificacion) {
             $body .= "<br>El equipo de controller ha realizado las siguientes observaciones: {$justificacion}.";
         }
 
-        $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
+        $altBody = "Se ha rechazado el presupuesto: " . $gestion->nom_proyecto_cot;
         $cc = $user->asistente;
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -316,13 +319,14 @@ trait Email
     /*
         * NOTIFICACIONES ORDENES DE TRABAJO NATURALES
     */
-    public function ocNaturalFirmada($orden){
+    public function ocNaturalFirmada($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA";
+        $subject = "NOTIFICACIÓN BULLCRM - ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " FIRMADA";
         $body =
-        "<p>
-            La orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>FIRMADA.</b> <br>
+            "<p>
+            La orden de trabajo de <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido <b>FIRMADA.</b> <br>
             Revisa el real ejecutado y confirma que la información esté correctamente diligenciada.
         </p>";
 
@@ -332,23 +336,24 @@ trait Email
 //        ]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
 //        array_push($cc, ...$this->produccion);
 
-        $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA.";
+        $altBody = "ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " FIRMADA.";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalEvidenciasEnviadas($orden){
+    public function ocNaturalEvidenciasEnviadas($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
+        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " ENVIADAS";
         $body =
-        "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br>
+            "<p>
+            Las evidencias de la orden de trabajo de <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> han sido <b>ENVIADAS.</b><br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
@@ -358,23 +363,24 @@ trait Email
 //        ]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
 //        array_push($cc, ...$this->produccion);
 
-        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " ENVIADAS";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalEvidenciasRechazadas($orden){
+    public function ocNaturalEvidenciasRechazadas($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
+        $subject = "NOTIFICACIÓN BULLCRM - EVIDENCIAS ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " RECHAZADAS";
         $body =
-        "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS.</b>
+            "<p>
+            Las evidencias de la orden de trabajo de <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> han sido <b>RECHAZADAS.</b>
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
         </p>";
 
@@ -384,62 +390,65 @@ trait Email
 //        ]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
 //        array_push($cc, ...$this->produccion);
 
-        $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
+        $altBody = "EVIDENCIAS ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " RECHAZADAS";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionLiderProd($orden){
+    public function ocNaturalRevisionLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el productor: ".$orden->naturalInfo->productor->name."<br>
+            "<p>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido validada por el productor: " . $orden->naturalInfo->productor->name . "<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
 //        array_push($recipients, ...$this->produccion);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
+        $altBody = "ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR.";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRechazoLiderProd($orden){
+    public function ocNaturalRechazoLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." RECHAZADA";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " RECHAZADA";
         $body =
             "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
+        $altBody = "ORDEN DE TRABAJO " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionGerencia($orden){
+    public function ocNaturalRevisionGerencia($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $total = 0;
 
         foreach ($orden->ordenItems as $item) {
@@ -447,132 +456,139 @@ trait Email
         }
 
         $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            "<p>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> con un monto de: <b>" . number_format($total) . "</b> ha sido validada por producción.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->gerencia);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRechazoGerencia($orden){
+    public function ocNaturalRechazoGerencia($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
             "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido <b>RECHAZADA</b> por gerencia.<br>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido <b>RECHAZADA</b> por gerencia.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionEvidenciasLiderProd($orden){
+    public function ocNaturalRevisionEvidenciasLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>ENVIADAS.</b><br>
+            "<p>
+            Las evidencias de la orden de trabajo de <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> han sido <b>ENVIADAS.</b><br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->produccion);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR.";
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR.";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRechazoEvidenciasLiderProd($orden){
+    public function ocNaturalRechazoEvidenciasLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            Las evidencias de la orden de trabajo de <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido <b>RECHAZADAS</b> por el lider de producción<br>
+            "<p>
+            Las evidencias de la orden de trabajo de <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> han sido <b>RECHAZADAS</b> por el lider de producción<br>
             Notifica al tercero que debe adjuntar nuevamente las evidencias de la orden de trabajo.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->naturalInfo->productor->email, 'name' => $orden->naturalInfo->productor->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido;
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionController($orden){
+    public function ocNaturalRevisionController($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            Las evidencias de la orden de trabajo de: <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> han sido validadas.<br>
+            "<p>
+            Las evidencias de la orden de trabajo de: <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> han sido validadas.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->controller);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionContabilidad($orden){
+    public function ocNaturalRevisionContabilidad($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo Controller.<br>
+            "<p>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido validada por el equipo Controller.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->contabilidad);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalRevisionTesoreria($orden){
+    public function ocNaturalRevisionTesoreria($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->naturalInfo->productor->name . " POR REVISAR";
         $body =
-        "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido causada por contabilidad.<br>
+            "<p>
+            La orden de compra del tercero <b>" . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . "</b> ha sido causada por contabilidad.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->tesoreria);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->naturalInfo->tercero->nombre . " " . $orden->naturalInfo->tercero->apellido . " POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocNaturalEnvioCuentaCobro($orden, $file_path){
+    public function ocNaturalEnvioCuentaCobro($orden, $file_path)
+    {
         $recipients = [];
         $cc = [];
         $subject = "NOTIFICACIÓN CUENTA DE COBRO - BULL MARKETING S.A.S";
         $body =
-        "<p>
+            "<p>
             Se te ha generado una cuenta de cobro. Por favor revisar.
         </p>";
 
@@ -589,47 +605,50 @@ trait Email
     /*
         * NOTIFICACIONES ORDENES DE COMPRA JURIDICAS
     */
-    public function ocJuridicaRevisionLiderProd($orden){
+    public function ocJuridicaRevisionLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
-            Tienes una solicitud de orden de compra registrada por el productor ".$orden->presupuesto->productor_info->name." pendiente por revisar.
+            "<p>
+            Tienes una solicitud de orden de compra registrada por el productor " . $orden->presupuesto->productor_info->name . " pendiente por revisar.
             Confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->produccion);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRechazoLiderProd($orden){
+    public function ocJuridicaRechazoLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionFinanciera($orden){
+    public function ocJuridicaRevisionFinanciera($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $total = 0;
 
         foreach ($orden->ordenItems as $item) {
@@ -638,41 +657,43 @@ trait Email
 
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> con un monto de: <b>" . number_format($total) . "</b> ha sido validada por producción.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->gerencia);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRechazoFinanciera($orden){
+    public function ocJuridicaRechazoFinanciera($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido <b>RECHAZADA</b> por gerencia financiera.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> ha sido <b>RECHAZADA</b> por gerencia financiera.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionGerencia($orden){
+    public function ocJuridicaRevisionGerencia($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $total = 0;
 
         foreach ($orden->ordenItems as $item) {
@@ -681,113 +702,119 @@ trait Email
 
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción y gerencia financiera.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> con un monto de: <b>" . number_format($total) . "</b> ha sido validada por producción y gerencia financiera.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->gerencia);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRechazoGerencia($orden){
+    public function ocJuridicaRechazoGerencia($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido <b>RECHAZADA</b> por gerencia.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> ha sido <b>RECHAZADA</b> por gerencia.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->proveedor->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->proveedor->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionController($orden){
+    public function ocJuridicaRevisionController($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
-            Tienes una solicitud de orden de compra registrada por el productor ".$orden->presupuesto->productor_info->name." pendiente por revisar.
+            "<p>
+            Tienes una solicitud de orden de compra registrada por el productor " . $orden->presupuesto->productor_info->name . " pendiente por revisar.
             Confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->controller);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->presupuesto->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionRemiLiderProd($orden){
+    public function ocJuridicaRevisionRemiLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
             "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido validada por el productor: ".$orden->presupuesto->productor_info->name." y se ha firmado la remisión.<br>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> ha sido validada por el productor: " . $orden->presupuesto->productor_info->name . " y se ha firmado la remisión.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->produccion);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->presupuesto->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRevisionRemiController($orden){
+    public function ocJuridicaRevisionRemiController($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
-            La orden de compra del proveedor <b>".$orden->presupuesto->tercero."</b> ha sido validada por producción.
+            "<p>
+            La orden de compra del proveedor <b>" . $orden->presupuesto->tercero . "</b> ha sido validada por producción.
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->controller);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->presupuesto->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaRechazoRemisionLiderProd($orden){
+    public function ocJuridicaRechazoRemisionLiderProd($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->presupuesto->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE " . $orden->presupuesto->productor_info->name . " POR REVISAR";
         $body =
             "<p>
-            La remisión de laorden de compra del tercero <b>".$orden->presupuesto->tercero."</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
+            La remisión de laorden de compra del tercero <b>" . $orden->presupuesto->tercero . "</b> ha sido <b>RECHAZADA</b> por el lider de producción.<br>
             Revisa las observaciones y corrige la remisión de la orden de compra.
         </p>";
 
 //        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->presupuesto->tercero." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA " . $orden->presupuesto->tercero . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function ocJuridicaAprobada($orden){
+    public function ocJuridicaAprobada($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;;
+        $subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;;
         $body =
-        "<p>
-            De acuerdo con tu solicitud se gener&oacute; la <b>Orden de compra: ". $orden->cod_oc."</b> para el proveedor <b>".$orden->proveedor->tercero."</b>.<br>
+            "<p>
+            De acuerdo con tu solicitud se gener&oacute; la <b>Orden de compra: " . $orden->cod_oc . "</b> para el proveedor <b>" . $orden->proveedor->tercero . "</b>.<br>
             No olvides subir la remisión para generar el Good Receive respectivo.
 
             Cordialmente,<br>
@@ -810,32 +837,33 @@ trait Email
 //        }
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
         $files = [
             [
-                'name' => "OC_".$orden->proveedor->tercero.".pdf",
+                'name' => "OC_" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_orden_helisa
             ]
         ];
 
-        $altBody = "Se ha generado la orden de compra: ".$orden->cod_oc." para el proveedor ".$orden->proveedor->tercero;
+        $altBody = "Se ha generado la orden de compra: " . $orden->cod_oc . " para el proveedor " . $orden->proveedor->tercero;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $files);
     }
 
-    public function ocJuridicaGrGenerado($orden){
+    public function ocJuridicaGrGenerado($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+        $subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
         $body =
-        "<p>
+            "<p>
             <b>Sr. Proveedor</b><br>
             A continuaci&oacute;n, se relaciona el GR correspondiente para el proceso de radicaci&oacute;n de factura. <br>
             <ul>
-                <li>OC: ".$orden->cod_oc."</li>
-                <li>GR: ".$orden->gr."</li>
+                <li>OC: " . $orden->cod_oc . "</li>
+                <li>GR: " . $orden->gr . "</li>
             </ul>
 
             Por favor radicar en <a href='mailto:Facturacion.proveedores@bullmarketing.com.co'>Facturacion.proveedores@bullmarketing.com.co</a>
@@ -851,38 +879,39 @@ trait Email
 //        array_push($cc, ['email' => $orden->proveedor->correo, 'name' =>$orden->proveedor->contacto] );
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
         $files = [
             [
-                'name' => "OC_".$orden->proveedor->tercero.".pdf",
+                'name' => "OC_" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_orden_helisa
             ],
             [
-                'name' => "REMISION_".$orden->proveedor->tercero.".pdf",
+                'name' => "REMISION_" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_remision
             ]
         ];
 
-        $altBody = "Se ha asignado el GR: ".$orden->gr." para la orden de compra ".$orden->cod_oc;
+        $altBody = "Se ha asignado el GR: " . $orden->gr . " para la orden de compra " . $orden->cod_oc;
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $files);
     }
 
-    public function ocJuridicaAnulada($orden){
+    public function ocJuridicaAnulada($orden)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+        $subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
         $body =
-        "<p>
-            Hola <b>".$orden->presupuesto->productor_info->name."</b>,<br><br>
+            "<p>
+            Hola <b>" . $orden->presupuesto->productor_info->name . "</b>,<br><br>
 
-            Debido a inconsitencias en la <b>Orden de compra: ".$orden->cod_oc." </b> para el proveedor <b>".$orden->proveedor->tercero."</b>,<br>
+            Debido a inconsitencias en la <b>Orden de compra: " . $orden->cod_oc . " </b> para el proveedor <b>" . $orden->proveedor->tercero . "</b>,<br>
             El equipo de compras ha decidido anularla con las siguientes obervaciones: <br><br>";
 
-        if ( $orden->observaciones_anulacion ) {
-            $body .= "<b>Observaciones:</b> ".$orden->observaciones_anulacion."<br><br>";
+        if ($orden->observaciones_anulacion) {
+            $body .= "<b>Observaciones:</b> " . $orden->observaciones_anulacion . "<br><br>";
         }
 
         $body .= "
@@ -898,17 +927,17 @@ trait Email
 //        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
         $files = [
             [
-                'name' => "OC_".$orden->proveedor->tercero.".pdf",
+                'name' => "OC_" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_orden_helisa
             ],
             [
-                'name' => "REMISION_".$orden->proveedor->tercero.".pdf",
+                'name' => "REMISION_" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_remision
             ]
         ];
@@ -917,43 +946,44 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc, $files);
     }
 
-    public function ocJuridicaAnticipoPagado($orden, $observaciones){
+    public function ocJuridicaAnticipoPagado($orden, $observaciones)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
+        $subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
         $body =
-        "<p>
+            "<p>
             <b>Sr. Proveedor</b><br>
-            Se relaciona el comprobante de pago del ".$orden->proveedor->anticipo ."% correspondiente al anticipo acordado en la negociaci&oacute;n realizada.
+            Se relaciona el comprobante de pago del " . $orden->proveedor->anticipo . "% correspondiente al anticipo acordado en la negociaci&oacute;n realizada.
             <ul>
-                <li>OC: ".$orden->cod_oc."</li>
+                <li>OC: " . $orden->cod_oc . "</li>
             </ul>
         </p>";
 
-        if ( $observaciones ) {
+        if ($observaciones) {
             $body .=
-            "<p>
-                <b>Observaciones:</b> ".$observaciones."
+                "<p>
+                <b>Observaciones:</b> " . $observaciones . "
             </p>";
         }
 
         $body .=
-        "<p>
+            "<p>
             Cordialmente,<br>
             Saludos.
         </p>";
 
-        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran'] );
-        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name] );
-        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name] );
+        array_push($recipients, ['email' => 'Compras@bullmarketing.com.co', 'name' => 'Sebastian Beltran']);
+        array_push($recipients, ['email' => $orden->presupuesto->gestion->comercial->email, 'name' => $orden->presupuesto->gestion->comercial->name]);
+        array_push($recipients, ['email' => $orden->presupuesto->productor_info->email, 'name' => $orden->presupuesto->productor_info->name]);
 
-        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño'] );
-        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis'] );
-        array_push($cc, ['email' => $orden->proveedor->correo, 'name' => $orden->proveedor->contacto] );
+        array_push($cc, ['email' => 'nicol.riano@bullmarketing.com.co', 'name' => 'Nicol Riaño']);
+        array_push($cc, ['email' => 'katherine.galvis@bullmarketing.com.co', 'name' => 'Katherine Galvis']);
+        array_push($cc, ['email' => $orden->proveedor->correo, 'name' => $orden->proveedor->contacto]);
 
         $files = [
             [
-                'name' => "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf",
+                'name' => "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc" . $orden->proveedor->tercero . ".pdf",
                 'path' => $orden->archivo_comprobante_pago
             ]
         ];
@@ -965,28 +995,30 @@ trait Email
     /*
         * NOTIFICACIONES ANTICIPOS PRODUCTOR
     */
-    public function anticipoProdRevisionLiderProd($anticipo) {
+    public function anticipoProdRevisionLiderProd($anticipo)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE " . $anticipo->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
-            Tienes una solicitud de anticipo registrada por el productor ".$anticipo->productor_info->name." pendiente por revisar.
+            "<p>
+            Tienes una solicitud de anticipo registrada por el productor " . $anticipo->productor_info->name . " pendiente por revisar.
             Confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->produccion);
 
-        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $altBody = "ANTICIPO " . $anticipo->productor_info->name . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function anticipoProdRechazoLiderProd($anticipo) {
+    public function anticipoProdRechazoLiderProd($anticipo)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE " . $anticipo->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
+            "<p>
             La solicitud de anticipo que registraste ha sido <b>RECHAZADA</b> por el lider de producción.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
@@ -994,38 +1026,40 @@ trait Email
 //        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $altBody = "ANTICIPO " . $anticipo->productor_info->name . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function anticipoProdRevisionGerencia($anticipo) {
+    public function anticipoProdRevisionGerencia($anticipo)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE " . $anticipo->productor_info->name . " POR REVISAR";
         $total = $anticipo->total_anticipo;
 
         $body =
-        "<p>
-            La solicitud de anticipo del productor <b>".$anticipo->productor_info->name."</b> con un monto de: <b>".number_format($total)."</b> ha sido validada por producción.<br>
+            "<p>
+            La solicitud de anticipo del productor <b>" . $anticipo->productor_info->name . "</b> con un monto de: <b>" . number_format($total) . "</b> ha sido validada por producción.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->gerencia);
 
-        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $altBody = "ANTICIPO " . $anticipo->productor_info->name . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function anticipoProdRechazoGerencia($anticipo) {
+    public function anticipoProdRechazoGerencia($anticipo)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE " . $anticipo->productor_info->name . " POR REVISAR";
         $body =
-        "<p>
+            "<p>
             La solicitud de anticipo que registraste ha sido <b>RECHAZADA</b> por gerencia.<br>
             Revisa las observaciones y corrige la información de la orden de compra.
         </p>";
@@ -1033,22 +1067,23 @@ trait Email
 //        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $altBody = "ANTICIPO " . $anticipo->productor_info->name . " POR REVISAR";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    public function anticipoProdEvidencias($anticipo) {
+    public function anticipoProdEvidencias($anticipo)
+    {
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE ".$anticipo->productor_info->name." POR REVISAR";
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA SOLICITUD DE ANTICIPO DE " . $anticipo->productor_info->name . " POR REVISAR";
         $total = $anticipo->total_anticipo;
 
         $body =
-        "<p>
+            "<p>
             La solicitud de anticipo que registraste ha sido validada y aprobada. <br>
             Recuerda que debes adjuntar las evidencias para continuar con el proceso de legalización.
         </p>";
@@ -1056,15 +1091,73 @@ trait Email
         //        array_push($recipients, ['email' => $anticipo->productor_info->email, 'name' => $anticipo->productor_info->name]);
 
         array_push($recipients, [
-            'name'=> 'Nefer Barragan',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
         ]);
 
-        $altBody = "ANTICIPO ".$anticipo->productor_info->name." POR REVISAR";
+        $altBody = "ANTICIPO " . $anticipo->productor_info->name . " POR REVISAR";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    //Comercial Notificaciones
+    public function SolicitudCreacionCliente($solicitud, $controllerEmail, $controllerName)
+    {
+        $recipients = [$controllerEmail, $controllerName];
+        $cc = [];
+
+        $subject = "NOTIFICACIÓN BULLCRM - NUEVA SOLICITUD DE CREACION DE CLIENTE";
+
+        $comercial = $solicitud->comercial->name ?? 'Comercial Asignado';
+
+        $body = "
+            <p>Hola <b>" . htmlspecialchars($controllerName) . "</b>,</p>
+        <p>Se ha registrado una nueva solicitud de creación de contacto en el sistema por el comercial <b>" . htmlspecialchars($comercial) . "</b>.</p>
+        <hr>
+        <ul>
+            <li><b>Contacto:</b> " . htmlspecialchars($solicitud->nombre_cliente . ' ' . $solicitud->apellido_cliente) . "</li>
+            <li><b>Email Contacto:</b> " . htmlspecialchars($solicitud->email_cliente) . "</li>
+            <li><b>Tipo:</b> " . htmlspecialchars($solicitud->tipo_cliente) . "</li>
+            <li><b>Fecha Solicitud:</b> " . $solicitud->created_at->format('d/m/Y H:i') . "</li>
+        </ul>
+        <hr>
+        <p>Por favor, ingresa al CRM para revisar, cambiar el estado a <i>En revisión</i> y proceder con la aprobación o rechazo.</p>
+        ";
+        $altBody = "Nueva solicitud de contacto pendiente para: " . $solicitud->nombre_cliente . " " . $solicitud->apellido_cliente;
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
+    public function mailResultadoSolicitudComercial($solicitud, $comercial, $resultado, $motivo = null)
+    {
+        $recipients = [$comercial->email => $comercial->name];
+        $cc = [];
+
+        $subject = "NOTIFICACIÓN BULLCRM - TU SOLICITUD DE CONTACTO HA SIDO " . strtoupper($resultado);
+
+        // Personalizar el cuerpo según si fue aprobada o rechazada
+        if ($resultado === 'Aprobada') {
+            $body = "
+            <p>Hola <b>" . htmlspecialchars($comercial->name) . "</b>,</p>
+            <p>Te informamos que tu solicitud para la creación del contacto <b>" . htmlspecialchars($solicitud->nombre_cliente . ' ' . $solicitud->apellido_cliente) . "</b> ha sido <b>APROBADA</b> por el Controller.</p>
+            <p>El cliente ya se encuentra activo en el sistema y listo para operar.</p>
+        ";
+        } else {
+            $body = "
+            <p>Hola <b>" . htmlspecialchars($comercial->name) . "</b>,</p>
+            <p>Te informamos que tu solicitud para la creación del contacto <b>" . htmlspecialchars($solicitud->nombre_cliente . ' ' . $solicitud->apellido_cliente) . "</b> ha sido <b style='color: red;'>RECHAZADA</b>.</p>
+            <p><b>Motivo del rechazo indicado por el Controller:</b></p>
+            <blockquote style='background: #f9f9f9; padding: 10px; border-left: 4px solid #ccc;'>" . htmlspecialchars($motivo) . "</blockquote>
+            <p>Por favor, revisa las observaciones para corregir la información e intentar de nuevo.</p>
+        ";
+        }
+
+        $altBody = "Resultado de tu solicitud de contacto: " . $resultado;
+
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
     /**
+     *
      * Función principal para envío de notificaciones por correo
      * @param $subject
      * @param $body
@@ -1075,34 +1168,35 @@ trait Email
      * @param $attachment
      * @return \Illuminate\Http\RedirectResponse|void
      */
-    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
+    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null)
+    {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
-        try{
+        try {
             //Server settings
             // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
             $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->Port = env('MAIL_PORT', 587);
 
             $mail->setFrom(env('MAIL_USERNAME'), 'BULLMARKETING');
 
             /* Recipients */
-                foreach ($recipients as $recipient) {
-                    $mail->addAddress($recipient['email'], $recipient['name']);
-                }
+            foreach ($recipients as $recipient) {
+                $mail->addAddress($recipient['email'], $recipient['name']);
+            }
 
-                foreach ($cc as $copiados) {
-                    $mail->addCC($copiados['email'], $copiados['name']);
-                }
+            foreach ($cc as $copiados) {
+                $mail->addCC($copiados['email'], $copiados['name']);
+            }
             /* *** */
 
-            if ($attachment){
+            if ($attachment) {
                 foreach ($attachment as $file) {
                     $path = str_replace('public/', '', $file['path']);
                     $mail->addAttachment("storage/{$path}", $file['name']);
@@ -1115,7 +1209,7 @@ trait Email
             //Content
             $mail->isHTML(true);
             $mail->Subject = utf8_decode($subject);
-            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]);
+            $mail->Body = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]);
             $mail->AltBody = utf8_decode($altBody);
 
             $mail->send();
@@ -1126,55 +1220,56 @@ trait Email
     /* *** */
 
     /* ORDENES COMPRA */
-    public function mailOrdenAprobada($orden){
+    public function mailOrdenAprobada($orden)
+    {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
-        try{
+        try {
             //Server settings
             // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
             $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->Port = env('MAIL_PORT', 587);
 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
+            $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
-                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+            $mail->addCC('nicol.riano@bullmarketing.com.co');
+            $mail->addCC('katherine.galvis@bullmarketing.com.co');
+            $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
             /* CONTABILIDAD */
-                if ($orden->proveedor->anticipo > 0){
-                    $mail->addCC('contadores@bullmarketing.com.co');
-                    $mail->addCC('tesoreria@bullmarketing.com.co');
-                    // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                    $mail->addCC('nicol.riano@bullmarketing.com.co');
-                    $mail->addCC('katherine.galvis@bullmarketing.com.co');
-                }
+            if ($orden->proveedor->anticipo > 0) {
+                $mail->addCC('contadores@bullmarketing.com.co');
+                $mail->addCC('tesoreria@bullmarketing.com.co');
+                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+                $mail->addCC('nicol.riano@bullmarketing.com.co');
+                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+            }
             /* *** */
 
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
-            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_" . $orden->proveedor->tercero . ".pdf");
 
             //Content
             $mail->isHTML(true);
             // $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.ordenAprobada', ['orden' => $orden]);
+            $mail->Subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
+            $mail->Body = view('mails.ordenAprobada', ['orden' => $orden]);
             $mail->AltBody = "Se ha generado la orden de compra: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
             $mail->send();
@@ -1183,48 +1278,49 @@ trait Email
         }
     }
 
-    public function mailGrGenerado($orden){
+    public function mailGrGenerado($orden)
+    {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
-        try{
+        try {
             //Server settings
             // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
             $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->Port = env('MAIL_PORT', 587);
 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
+            $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+            $mail->addCC('nicol.riano@bullmarketing.com.co');
+            $mail->addCC('katherine.galvis@bullmarketing.com.co');
 
-                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
             $archivo_remision = str_replace('public/', '', $orden->archivo_remision);
-            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
-            $mail->addAttachment("storage/{$archivo_remision}", "REMISION_".$orden->proveedor->tercero.".pdf");
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_" . $orden->proveedor->tercero . ".pdf");
+            $mail->addAttachment("storage/{$archivo_remision}", "REMISION_" . $orden->proveedor->tercero . ".pdf");
 
             //Content
             $mail->isHTML(true);
             // $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.grGenerado', ['orden' => $orden]);
+            $mail->Subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
+            $mail->Body = view('mails.grGenerado', ['orden' => $orden]);
             $mail->AltBody = "Se ha asignado el GR: {$orden->gr} para la orden de compra {$orden->cod_oc}";
 
             $mail->send();
@@ -1233,46 +1329,47 @@ trait Email
         }
     }
 
-    public function mailOrdenAnulada($orden){
+    public function mailOrdenAnulada($orden)
+    {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
-        try{
+        try {
             //Server settings
             // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
             $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->Port = env('MAIL_PORT', 587);
 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
+            $mail->addAddress('Compras@bullmarketing.com.co', 'Sebastian Beltran');
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+            $mail->addCC('nicol.riano@bullmarketing.com.co');
+            $mail->addCC('katherine.galvis@bullmarketing.com.co');
             /* *** */
 
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
             $archivo_remision = str_replace('public/', '', $orden->archivo_remision);
-            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_".$orden->proveedor->tercero.".pdf");
-            $mail->addAttachment("storage/{$archivo_remision}", "REMISION_".$orden->proveedor->tercero.".pdf");
+            $mail->addAttachment("storage/{$archivo_orden_helisa}", "OC_" . $orden->proveedor->tercero . ".pdf");
+            $mail->addAttachment("storage/{$archivo_remision}", "REMISION_" . $orden->proveedor->tercero . ".pdf");
 
             //Content
             $mail->isHTML(true);
             // $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.ordenAnulada', ['orden' => $orden]);
+            $mail->Subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
+            $mail->Body = view('mails.ordenAnulada', ['orden' => $orden]);
             $mail->AltBody = "Se ha anulado la roden de compra {$orden->cod_oc}";
 
             $mail->send();
@@ -1281,50 +1378,51 @@ trait Email
         }
     }
 
-    public function mailAnticipoPagado($orden, $observaciones){
+    public function mailAnticipoPagado($orden, $observaciones)
+    {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
-        try{
+        try {
             //Server settings
             // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
             $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
+            $mail->Host = env('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = env('MAIL_USERNAME');
+            $mail->Password = env('MAIL_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->Port = env('MAIL_PORT', 587);
 
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Compras');
+            $mail->addAddress('Compras@bullmarketing.com.co', 'Compras');
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
-                // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
-                // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
-                $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
+            $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
+            $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+            // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
+            // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
+            $mail->addCC('nicol.riano@bullmarketing.com.co');
+            $mail->addCC('katherine.galvis@bullmarketing.com.co');
+            $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
             /* CONTABILIDAD */
-                $mail->addCC('contadores@bullmarketing.com.co');
-                $mail->addCC('tesoreria@bullmarketing.com.co');
+            $mail->addCC('contadores@bullmarketing.com.co');
+            $mail->addCC('tesoreria@bullmarketing.com.co');
             /* *** */
 
             $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-            $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
+            $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc" . $orden->proveedor->tercero . ".pdf");
 
             //Content
             $mail->isHTML(true);
             // $mail->Subject = "IGNORAR, PRUEBAS CRM";
-            $mail->Subject = "OC: ".$orden->cod_oc." ".$orden->proveedor->tercero;
-            $mail->Body    = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]);
+            $mail->Subject = "OC: " . $orden->cod_oc . " " . $orden->proveedor->tercero;
+            $mail->Body = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones]);
             $mail->AltBody = "Se ha generado el pago del anticipo de la orden: {$orden->cod_oc} para el proveedor {$orden->proveedor->tercero}";
 
             $mail->send();
@@ -1332,4 +1430,5 @@ trait Email
             return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
         }
     }
+
 }

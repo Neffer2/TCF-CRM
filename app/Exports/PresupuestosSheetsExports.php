@@ -33,7 +33,15 @@ class PresupuestosSheetsExports implements FromView, WithTitle, WithDrawings, Wi
             'items' => $this->info['items'],
             'presto' => $this->info['presto'],
             'tipo' => $this->info['tipo'],
-            'proveedores' => $this->info['proveedores']
+            'proveedores' => $this->info['proveedores'],
+
+            'margenItems' => $this->info['margenItems'],
+            'ventaProyecto' => $this->info['ventaProyecto'],
+            'costosProyecto' => $this->info['costosProyecto'],
+            'margenProyecto' => $this->info['margenProyecto'],
+            'margenBruto' => $this->info['margenBruto'],
+
+
         ]);
     }
 
@@ -47,7 +55,7 @@ class PresupuestosSheetsExports implements FromView, WithTitle, WithDrawings, Wi
         $drawing->setDescription('Bull marketing logo');
         $drawing->setPath(public_path('assets/img/bull-logo.png'));
         $drawing->setHeight(80);
-        $drawing->setCoordinates('A1'); // Asegúrate de que en tu Blade dejes las primeras filas vacías para que el logo no tape el texto
+        $drawing->setCoordinates('A1');
 
         return $drawing;
     }
@@ -61,6 +69,7 @@ class PresupuestosSheetsExports implements FromView, WithTitle, WithDrawings, Wi
             'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'B' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 
@@ -68,7 +77,9 @@ class PresupuestosSheetsExports implements FromView, WithTitle, WithDrawings, Wi
     {
         return [
             'K' => 18,
-            'L' => 18
+            'L' => 18,
+            'B' => 24,
+            'C' => 24,
         ];
     }
 

@@ -18,7 +18,7 @@
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet"/>
     <!-- Font Awesome Icons -->
     <script src="https://kit.fontawesome.com/274ff3eb36.js" crossorigin="anonymous"></script>
-    <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet"/>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet"/>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
@@ -85,7 +85,7 @@
                     <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
                 </a>
                 <div @class([
-              'show' => (request()->is('contactos') || request()->is('gestion-comercial') || request()->is('presupuestos')),
+              'show' => (request()->is('contactos') || request()->is('gestion-comercial') || request()->is('presupuestos') || request()->is('clientes')),
               'collapse' => true
               ]) id="dashboardsGestion">
                     <ul class="nav ms-4">
@@ -95,12 +95,21 @@
                                 <span class="sidenav-normal"> Contactos </span>
                             </a>
                         </li>
+
                         <li @class(['active' => request()->is('gestion-comercial'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('gestion-comercial'), 'nav-link' => true]) href="{{ route('gestion-comercial') }}">
                                 <span class="sidenav-mini-icon text-xs"> Pro </span>
                                 <span class="sidenav-normal"> Prospectos </span>
                             </a>
                         </li>
+
+                        <li @class(['active' => request()->is('clientes'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('clientes'), 'nav-item' => true]) href="{{ route('clientes')}}">
+                                <span class="sidenav-mini-icon text-xs"> cl </span>
+                                <span class="sidenav-normal"> Clientes </span>
+                            </a>
+                        </li>
+
                         <li @class(['active' => request()->is('presupuestos'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('presupuestos'), 'nav-link' => true]) href="{{ route('presupuestos') }}">
                                 <span class="sidenav-mini-icon text-xs"> Pre </span>
@@ -395,6 +404,11 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+
+<script src="{{ asset('assets/js/core/cdn.min.js') }}"></script>
+
+<script src="path/to/livewire-sortable.js"></script>
+<script src="{{ asset('js/argon-dashboard.min.js') }}"></script>
 @livewireScripts
 </body>
 </html>

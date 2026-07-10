@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Com\Presupuesto;
 
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Rules\CentroCostos;
 use App\Rules\SameCategory;
@@ -83,6 +84,9 @@ class Presupuesto extends Component
     // Variable global para la gestión
     public $id_gestion;
 
+
+    public $modoMoviento = false;
+
     // Renderiza la vista principal del presupuesto
     public function render()
     {
@@ -158,45 +162,46 @@ class Presupuesto extends Component
             'fee' => ['required', 'numeric'],
         ]);
 
-        // Crea el nuevo ítem
-        $item = new ItemPresupuesto;
-        $item->cod = $this->cod;
-        $item->presupuesto_id = $this->presupuesto_id;
-        $item->cantidad = $this->cantidad;
-        $item->dia = $this->dia;
-        $item->otros = $this->otros;
-        $item->descripcion = $this->descripcion;
-        $item->v_unitario = $this->valor_unitario;
-        $item->v_total = $this->valor_total;
-        $item->proveedor = serialize($this->proveedor);
-        $item->margen_utilidad = $this->utilidad;
-        $item->mes = $this->mes;
-        $item->dias = $this->dias;
-        $item->ciudad = $this->ciudad;
-        $item->v_total_cliente = $this->valor_total_cliente;
+        DB::transaction(function () use ($presto){
 
-        // Si el presupuesto ya tiene centro de costos, marca como actualizado
-        if ($this->presupuesto->cod_cc){
-            $item->actualizado = true;
-            $this->setEnEdicion($presto);
-        }
+            $maxOrden = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->lockForUpdate()
+                ->max('orden') ?? 0;
 
-        // Calcula valores de cotización y rentabilidad
-        $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-        $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
-        $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
+            // Crea el nuevo ítem
+            $item = new ItemPresupuesto;
+            $item->cod = $this->cod;
+            $item->presupuesto_id = $this->presupuesto_id;
+            $item->cantidad = $this->cantidad;
+            $item->dia = $this->dia;
+            $item->otros = $this->otros;
+            $item->descripcion = $this->descripcion;
+            $item->v_unitario = $this->valor_unitario;
+            $item->v_total = $this->valor_total;
+            $item->proveedor = serialize($this->proveedor);
+            $item->margen_utilidad = $this->utilidad;
+            $item->mes = $this->mes;
+            $item->dias = $this->dias;
+            $item->ciudad = $this->ciudad;
+            $item->v_total_cliente = $this->valor_total_cliente;
 
-        // Calcula el total de items del presupuesto y asigna el nuevo num_item y orden
-        $total_items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->count();
-        $item->num_item = $total_items + 1;
-        $item->orden = $this->num_item;
+            // Si el presupuesto ya tiene centro de costos, marca como actualizado
+            if ($this->presupuesto->cod_cc){
+                $item->actualizado = 1;
+                $this->setEnEdicion($presto);
+            }
 
-        $item->save();
+            // Calcula valores de cotización y rentabilidad
+            $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
+            $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
+            $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
 
-        // Valida si el item lleva un orden especifico
-        if ($this->ubicacion && $this->item_ubicacion) {
-            $this->changeOrden($item->id, $this->ubicacion, $this->item_ubicacion);
-        }
+            // Calcula el total de items del presupuesto y asigna el nuevo num_item y orden
+            $item->num_item = $maxOrden +1;
+            $item->orden = $maxOrden +1;
+
+            $item->save();
+        });
 
         $this->refresh();
         $this->limpiar();
@@ -308,6 +313,11 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
+    public function toogleModoMoviento()
+    {
+        $this->modoMoviento = ! $this->modoMoviento;
+    }
+
     // Obtiene la lista de ciudades disponibles
     public function getCiudades(){
         $this->ciudades = app('ciudades');
@@ -339,55 +349,86 @@ class Presupuesto extends Component
     }
 
     // Cambia el orden de un ítem
-    public function changeOrden($item_id, $ubicacion, $item_referencia_id) {
-        // Si el item de referencia es igual al item actual, sale de la función
+    public function changeOrden($item_id, $item_referencia_id) {
         if ($item_id == $item_referencia_id) {
             return;
         }
 
-        $item = ItemPresupuesto::find($item_id);
-        $item_referencia = ItemPresupuesto::find($item_referencia_id);
+        DB::transaction(function () use ($item_id, $item_referencia_id) {
 
-        // Calcular nuevo orden
-        if ($ubicacion == '<') {
-            $nuevo_orden = $item_referencia->orden;
-        }
-        else {
-            $nuevo_orden = $item_referencia->orden + 1;
-        }
+            $item = ItemPresupuesto::where('id', $item_id)->lockForUpdate()->first();
+            $referencia = ItemPresupuesto::where('id', $item_referencia_id)->lockForUpdate()->first();
 
-        // Ajustar cuando baja
-        if ($nuevo_orden > $item->orden) {
-            $nuevo_orden--;
-        }
+            if (!$item || !$referencia || $item->presupuesto_id != $referencia->presupuesto_id) {
+                return;
+            }
 
-        $orden_actual = $item->orden;
+            $ordenA = $item->orden;
+            $ordenB = $referencia->orden;
+            $numItemA = $item->num_item;
+            $numItemB = $referencia->num_item;
 
-        // Si el orden es el mismo, sale de la función
-        if ($nuevo_orden == $orden_actual) {
-            return;
-        }
+            if ($ordenA == $ordenB) {
+                return;
+            }
 
-        // Mover hacia arriba
-        if ($nuevo_orden < $orden_actual) {
-            ItemPresupuesto::where('presupuesto_id', $item->presupuesto_id)
-                ->whereBetween('orden', [$nuevo_orden, $orden_actual - 1])
-                ->increment('orden');
-        }
-        // Mover hacia abajo
-        else {
-            ItemPresupuesto::where('presupuesto_id', $item->presupuesto_id)
-                ->whereBetween('orden', [$orden_actual + 1, $nuevo_orden - 1])
-                ->increment('orden');
-        }
+            // Liberar temporalmente el slot de `item` para evitar chocar con el índice único
+            // (presupuesto_id, orden) al escribir `referencia` en el paso siguiente
+            $item->orden = -1;
+            $item->save();
 
-        $item->orden = $nuevo_orden;
-        $item->save();
+            // `referencia` toma la posición que tenía `item`
+            $referencia->orden = $ordenA;
+            $referencia->num_item = $numItemA;
+            $referencia->save();
+
+            // `item` toma la posición que tenía `referencia`
+            $item->orden = $ordenB;
+            $item->num_item = $numItemB;
+
+            if ($item->actualizado == 1) {
+                $item->actualizado = 3;
+            } else if ($item->actualizado == 0) {
+                $item->actualizado = 2;
+            }
+
+            $this->resyncNumItem($this->presupuesto_id);
+
+            $item->save();
+        });
     }
+
+    public function updateOrden($item_id) {
+        $this->validate([
+            'item_ubicacion' => ['required'],
+        ]);
+
+        $this->changeOrden($item_id, $this->item_ubicacion);
+
+        $this->refresh();
+        $this->item_ubicacion = '';
+    }
+
+    public function resyncNumItem($presupuesto_id){
+        $items = ItemPresupuesto::where('presupuesto_id', $presupuesto_id)
+            ->orderBy('orden')
+            ->get(['id', 'num_item']);
+
+        $numero = 1;
+        foreach ($items as $i) {
+            if($i->num_item !== $numero){
+                ItemPresupuesto::where('id', $i->id)->update(['num_item' => $numero]);
+            }
+            $numero++;
+        }
+    }
+
 
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
+
+        $this->resyncNumItem($id);
         $this->refresh();
     }
 
@@ -401,7 +442,11 @@ class Presupuesto extends Component
     public function getDataEdit($id){
         $this->selected_item = [];
         foreach ($this->items as $item) {
-            if ($item->id == $id){ $this->selected_item = $item; }
+            if ($item->id == $id) {
+                $this->selected_item = $item;
+                break;
+            }
+
         }
 
         $this->cod = $this->selected_item->cod;
@@ -514,7 +559,14 @@ class Presupuesto extends Component
                 'user_id'             => auth()->id(),
             ]);
 
-            $itemOriginal->actualizado = true;
+            if($itemOriginal->actualizado == 0)
+            {
+                $itemOriginal->actualizado = 1;
+            } elseif($itemOriginal->actualizado == 2)
+            {
+                $itemOriginal->actualizado = 3;
+            }
+
             $this->setEnEdicion($presto);
 
             $itemOriginal->cod = $this->cod;
@@ -545,6 +597,8 @@ class Presupuesto extends Component
         $this->refresh();
         $this->limpiar();
     }
+
+
 
 
     // Redirecciones para exportar cotizaciones y presupuestos

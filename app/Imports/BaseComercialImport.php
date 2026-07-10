@@ -12,13 +12,13 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 
 class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedFormulas, WithValidation
 {
-    /** 
+    /**
     * @param array $row
-    * 
+    *
     * @return \Illuminate\Database\Eloquent\Model|null
-    */ 
-    public function model(array $row)    
-    {   
+    */
+    public function model(array $row)
+    {
         // Éste código es compatible con el nuevo y antiguo formato.
         // El formato establecido sigue siedo el mismo. Es decir, el antiguo.
 
@@ -27,7 +27,7 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
         if ($estado == "ERROR"){
             echo "<b style='color: red;'>Éste estado no es válido<b>";
             dd($row);
-        } 
+        }
         /* --- */
 
         /* Cuenta: Bull o V2V */
@@ -36,30 +36,30 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
             if ($cuenta == "ERROR"){
                 echo "<b style='color: red;'>Ésta cuenta no es válida<b>";
                 dd($row);
-            } 
+            }
         }else {
             $cuenta = 1;
         }
-        
+
         /* --- */
 
-        return new Base_comercial([ 
+        return new Base_comercial([
             'fecha' => Date::excelToDateTimeObject($row['fecha']),
-            'nom_cliente' => $row['cliente'],
-            'nom_proyecto' => $row['nom_proy'], 
+            'nom_cliente' => $row['clientes'],
+            'nom_proyecto' => $row['nom_proy'],
             'cod_cc' => $row['cod_cc'],
             'valor_proyecto' => $row['vr_proy'],
             'com_1' => $row['com1'],
             'com_2' => $row['com2'],
             'com_3' => $row['com3'],
             'id_estado' => $estado,
-            'id_cuenta' => $cuenta, 
+            'id_cuenta' => $cuenta,
             'fecha_inicio' => Date::excelToDateTimeObject($row['f_inicio']),
-            'dura_mes' => Date::excelToDateTimeObject($row['dura_mes']), 
+            'dura_mes' => Date::excelToDateTimeObject($row['dura_mes']),
             'id_user' => Auth::user()->id,
-        ]); 
-    } 
- 
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -84,14 +84,14 @@ class BaseComercialImport implements ToModel, WithHeadingRow, WithCalculatedForm
                 break;
             case "PROPUESTA":
                 $estado = 5;
-                break; 
+                break;
             case "VENTA":
                 $estado = 6;
                 break;
             case "VENTAEJECUCION":
                 $estado = 7;
                 break;
-            default: 
+            default:
                 $estado = "ERROR";
             break;
         }

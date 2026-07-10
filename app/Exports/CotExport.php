@@ -17,7 +17,7 @@ class CotExport implements WithMultipleSheets
     {
         return [
             'Presupuestos'         => new PresupuestosSheetsExports($this->info),
-            'Historial de cambios' => new HistorialSheetsExports($this->info['historial'] ?? []),
+            //'Historial de cambios' => new HistorialSheetsExports($this->info['historial'] ?? []),
         ];
     }
 

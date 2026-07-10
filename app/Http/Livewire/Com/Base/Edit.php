@@ -15,7 +15,7 @@ class Edit extends Component
     use WithFileUploads; // Habilita la subida de archivos con Livewire
 
     // Models
-    public $nom_cliente; // Nombre del cliente
+    public $nom_cliente; // Nombre del clientes
     public $nom_proyecto; // Nombre del proyecto
     public $CC; // Código de centro de costos
     public $valor; // Valor original del proyecto
@@ -102,7 +102,7 @@ class Edit extends Component
         $this->getTotalPorcentaje();
     }
 
-    // Valida y actualiza el nombre del cliente
+    // Valida y actualiza el nombre del clientes
     public function updatedNomCliente(){
         $this->validate([
             'nom_cliente' => 'string|min:0'

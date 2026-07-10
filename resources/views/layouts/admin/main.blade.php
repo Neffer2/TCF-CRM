@@ -88,7 +88,7 @@
                     <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
                 </a>
                 <div @class([
-            'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones')),
+            'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones') || request()->is('validacionesCliente')),
             'collapse' => true
             ]) id="dashboardsGestion">
                     <ul class="nav ms-4">
@@ -108,6 +108,12 @@
                             <a @class(['active' => request()->is('validaciones'), 'nav-link' => true]) href="{{ route('validaciones') }}">
                                 <span class="sidenav-mini-icon text-xs"> V </span>
                                 <span class="sidenav-normal"> Validaciones </span>
+                            </a>
+                        </li>
+                        <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
+                                <span class="sidenav-mini-icon text-xs"> C </span>
+                                <span class="sidenav-normal"> Solicitudes </span>
                             </a>
                         </li>
                     </ul>

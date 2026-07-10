@@ -17,7 +17,7 @@ class NewProyecto extends Component
 {
     // MODELS
     public $fecha = ""; // Fecha del proyecto
-    public $nom_cliente = ""; // Nombre del cliente
+    public $nom_cliente = ""; // Nombre del clientes
     public $nom_proyecto = ""; // Nombre del proyecto
     public $cod_cc; // Código de centro de costos
     public $valor_proyecto = ""; // Valor total del proyecto

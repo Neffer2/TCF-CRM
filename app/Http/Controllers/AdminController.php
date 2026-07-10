@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Livewire\Com\GestionComercial\Clientes\Cliente;
+use App\Models\clientes;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\OrdenCompra;
@@ -15,9 +17,11 @@ use App\Exports\ConsumidosExport;
 use App\Exports\PlanoExport;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
+use App\Traits\Email;
 
 class AdminController extends Controller
 {
+    use Email;
     /*
     |--------------------------------------------------------------------------
     | Admin Controller
@@ -116,6 +120,11 @@ class AdminController extends Controller
 
     public function validaciones(){
         return view('admin.gestion.validaciones');
+    }
+
+    public function ValidacionesClientes()
+    {
+        return view('admin.gestion.validacionescliente');
     }
 
     /**
@@ -318,4 +327,72 @@ class AdminController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="cuenta_cobro'.$orden->id.'.pdf"');
     }
+
+    public function  abrirSolicitudRevision(Request $request, $id){
+        $solicitud = Cliente::findOrFail($id);
+
+        $request->valide([
+            'accion' => 'required',
+            'comentario' => 'nullable',
+        ]);
+
+        try {
+            $comercial = User::findOrFail($solicitud->user_id);
+
+            if($request->accion == 'Aprobar'){
+
+                $cliente = Clientes::where('CodigoCliente', $solicitud)
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                $nuevoConsecutivo = $cliente
+                    ? $this->generarSiguienteConsecutivo($cliente->codigoCliente)
+                    :'C4';
+
+                Cliente::create([
+                    'CodigoCliente'      => $nuevoConsecutivo,
+                    'TipoCliente'        => $solicitud->tipo_cliente,
+                    'NombreCliente'      => $solicitud->nombre_cliente,
+                    'ApellidoCliente'    => $solicitud->apellido_cliente,
+                    'EstadoCliente'      => 1, // Activo por defecto al aprobar
+                    'RazonCliente'       => $solicitud->nueva_empresa_datos ? json_decode($solicitud->nueva_empresa_datos)->razon_social : '',
+                    'DireccionCliente'   => $solicitud->direccion_cliente,
+                    'TelefonoCliente'    => $solicitud->telefono_cliente,
+                    'EmailCliente'       => $solicitud->email_cliente,
+                    'DescripcionCliente' => $solicitud->descripcion_cliente,
+                    'id_user'            => $solicitud->id_user, // Asignado al Comercial que lo solicitó
+                ]);
+
+                $solicitud->update(['estado' => 'Aprobada']);
+
+                $this->mailResultadoSolicitudComercial($solicitud, $comercial, 'Aprobada');
+
+                return redirect()->route('solicitudes.index')->with('success', 'Solicitud aprobada y cliente registrado con éxito.');
+
+            }
+            else {
+                $solicitud->update([
+                    'estado' => 'Rechazada',
+                    'comentario_controller' => $request->comentario_rechazo
+                ]);
+
+                $this->mailResultadoSolicitudComercial($solicitud, $comercial, 'Rechazada', $request->comentario_rechazo);
+
+                return redirect()->with('success', 'Solicitud rechazada correctamente.');
+        }
+        }catch (\Exception $e){
+            DB::rollBack();
+            return redirect()->with('error', 'Ocurrio un error al procesar la solicitud.'());
+        }
+
+    }
+    private function generarSiguienteConsecutivo($ultimoCodigo)
+    {
+        $numero = (int) str_replace('CC-', '', $ultimoCodigo);
+        $siguienteNumero = $numero + 1;
+        return 'CC-' . str_pad($siguienteNumero, 3, '0', STR_PAD_LEFT);
+    }
+
+
+
 }

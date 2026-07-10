@@ -56,6 +56,8 @@ Route::get('/', function () {
 
     Route::get('/cuenta-cobro/pdf/{orden}', [AdminController::class, 'cuentaCobroPdf'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro.pdf');
 
+    Route::get('/validacionesCliente', [AdminController::class, 'ValidacionesClientes'])->middleware(['auth'])->name('validacionesCliente');
+
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');
@@ -81,6 +83,9 @@ Route::get('/', function () {
     Route::get('/gestion-comercial', [ComercialController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-comercial');
     Route::get('/gestion-helisa', [ComercialController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-helisa');
     Route::get('/contactos', [ComercialController::class, 'Contactos'])->middleware(['auth'])->middleware(['comercial'])->name('contactos');
+
+    Route::get('/clientes', [ComercialController::class, 'gestionClientes'])->middleware(['auth'])->middleware(['comercial'])->name('clientes');
+
     Route::get('/consumidos-com', [ComercialController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['comercial'])->name('consumidos-com');
     Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload');
     Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export');

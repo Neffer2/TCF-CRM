@@ -11,9 +11,11 @@
 
     if (document.getElementsByClassName('sidenav')[0]) {
       var sidebar = document.querySelector('.sidenav');
-      var ps1 = new PerfectScrollbar(sidebar);
+      if(sidebar)
+      {
+          var ps = new PerfectScrollbar(sidebar);
+      }
     };
-
     if (document.getElementsByClassName('navbar-collapse')[0]) {
       var fixedplugin = document.querySelector('.navbar:not(.navbar-expand-lg) .navbar-collapse');
       var ps2 = new PerfectScrollbar(fixedplugin);

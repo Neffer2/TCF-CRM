@@ -139,9 +139,9 @@
                                 <div class="form-group">
                                     <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion')
-                                        <small id="justificacion" class="text-danger bold">
-                                            {{ $message }}
-                                        </small>
+                                    <small id="justificacion" class="text-danger bold">
+                                        {{ $message }}
+                                    </small>
                                     @enderror
                                 </div>
                             </div>
@@ -161,15 +161,15 @@
                                 <div class="form-group">
                                     <textarea name="justificacion_compras" @if(Auth::user()->rol != 1 || $presupuesto->estado_id == 4) disabled @endif id="justificacion_compras" cols="10" rows="2" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_compras')
-                                        <small id="justificacion_compras" class="text-danger bold">
-                                            {{ $message }}
-                                        </small>
+                                    <small id="justificacion_compras" class="text-danger bold">
+                                        {{ $message }}
+                                    </small>
                                     @enderror
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                        @if(Auth::user()->rol != 1 || $presupuesto->estado_id == 4) disabled @endif
-                                        wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
+                                            @if(Auth::user()->rol != 1 || $presupuesto->estado_id == 4) disabled @endif
+                                            wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>
                         </div>
@@ -187,8 +187,8 @@
                             <div class="card-body p-2">
                                 <div class="form-group">
                                     <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
-                                        id="justificacion_lider_comercial" cols="10" rows="2" class="form-control"
-                                        wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
+                                    id="justificacion_lider_comercial" cols="10" rows="2" class="form-control"
+                                              wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_lider_comercial')
                                     <small id="justificacion_lider_comercial" class="text-danger bold">
                                         {{ $message }}
@@ -197,8 +197,8 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                        @if (Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
-                                        wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
+                                            @if (Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
+                                            wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>
                         </div>
@@ -216,8 +216,8 @@
                             <div class="card-body p-2">
                                 <div class="form-group">
                                     <textarea name="justificacion_gerencia" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
-                                        id="justificacion_gerencia" cols="10" rows="2" class="form-control" wire:model="justificacion_gerencia"
-                                        class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
+                                    id="justificacion_gerencia" cols="10" rows="2" class="form-control" wire:model="justificacion_gerencia"
+                                              class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_gerencia')
                                     <small id="justificacion_gerencia" class="text-danger bold">
                                         {{ $message }}
@@ -226,8 +226,8 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                        @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
-                                        wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
+                                            @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
+                                            wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>
                         </div>
@@ -280,12 +280,12 @@
                                 <div class="card-body p-2">
                                     <div class="form-group">
                                         <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1) disabled @endif
-                                            id="justificacion_lider_comercial" cols="10" rows="1" class="form-control"
-                                            wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
+                                        id="justificacion_lider_comercial" cols="10" rows="1" class="form-control"
+                                                  wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
                                         @error('justificacion_lider_comercial')
-                                            <small id="justificacion_lider_comercial" class="text-danger bold">
-                                                {{ $message }}
-                                            </small>
+                                        <small id="justificacion_lider_comercial" class="text-danger bold">
+                                            {{ $message }}
+                                        </small>
                                         @enderror
                                     </div>
                                 </div>
@@ -309,13 +309,13 @@
                                 <div class="card-body p-2">
                                     <div class="form-group">
                                     <textarea name="justificacion_gerencia" @if(Auth::user()->rol != 1) disabled @endif
-                                        id="justificacion_gerencia" cols="10" rows="1" class="form-control"
-                                        wire:model="justificacion_gerencia" class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
-                                    @error('justificacion_gerencia')
+                                    id="justificacion_gerencia" cols="10" rows="1" class="form-control"
+                                              wire:model="justificacion_gerencia" class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
+                                        @error('justificacion_gerencia')
                                         <small id="justificacion_gerencia" class="text-danger bold">
                                             {{ $message }}
                                         </small>
-                                    @enderror
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -328,147 +328,149 @@
         <div class="table-responsive my-3 rounded bg-white">
             <table class="table mb-0">
                 <thead>
-                    <tr>
-                        <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
+                <tr>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
 
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
-                        @if ($presupuesto->gestion->claro)
-                            <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL CLIENTE</th>
-                        @endif
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
-                        <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
+                    @if ($presupuesto->gestion->claro)
+                        <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL CLIENTE</th>
+                    @endif
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
 
-                        <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
-                        <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
-                        <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
+                    <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
 
-                        @if ($rentabilidadView)
-                            <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO</th>
-                            <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL</th>
-                            <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
-                        @endif
+                    @if ($rentabilidadView)
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO</th>
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL</th>
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
+                    @endif
 
-                        @if (Auth::user()->rol != 1)
-                            <th colspan="3" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
-                        @endif
-                    </tr>
+                    @if (Auth::user()->rol != 1)
+                        <th colspan="3" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
+                    @endif
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach ($items as $key => $item)
-                        @if ($item->evento)
-                            <tr class="font-weight-bold font-table bg-gradient-info text-white">
-                                <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
-                                    {{ $item->descripcion }}
+                @foreach ($items as $key => $item)
+                    @if ($item->evento)
+                        <tr wire:key="item-{{ $item->id }}" class="font-weight-bold font-table bg-gradient-info text-white">
+                            <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
+                                {{ $item->descripcion }}
+                            </td>
+                            @if (Auth::user()->rol != 1)
+                                <td>
+                                    <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                                 </td>
-                                @if (Auth::user()->rol != 1)
-                                    <td>
-                                        <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                                    </td>
-                                @endif
-                                @if (Auth::user()->rol != 1)
-                                    <td>
-                                        <button wire:click="getDataEdit({{ $item->id }})">📝</button>
-                                    </td>
-                                @endif
-                            </tr>
-                        @else
-                            <tr @if ($item->actualizado) style="background-color: #ffbb17" class="text-white" @endif>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->cod }}
+                            @endif
+                            @if (Auth::user()->rol != 1)
+                                <td>
+                                    <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                 </td>
+                            @endif
+                        </tr>
+                    @else
+                        <tr wire:key="item-{{ $item->id }}"
+                            class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
+                            style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
+                            <td class="font-weight-bold font-table">
+                                {{ $item->cod }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->num_item }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->cantidad }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->dia }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->otros }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                $ {{ number_format($item->v_unitario) }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                $ {{ number_format($item->v_total) }}
+                            </td>
+                            @if ($presupuesto->gestion->claro)
                                 <td class="font-weight-bold font-table">
-                                    {{ $item->num_item }}
+                                    $ {{ number_format($item->v_total_cliente) }}
                                 </td>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->cantidad }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->dia }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->otros }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->v_unitario) }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->v_total) }}
-                                </td>
-                                @if ($presupuesto->gestion->claro)
-                                    <td class="font-weight-bold font-table">
-                                        $ {{ number_format($item->v_total_cliente) }}
-                                    </td>
-                                @endif
-                                <td class="font-weight-bold font-table">
-                                    @if ($proveedores_item = @unserialize($item->proveedor))
-                                        @foreach ($proveedores_item as $proveedor)
-                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach
+                            @endif
+                            <td class="font-weight-bold font-table">
+                                @if ($proveedores_item = @unserialize($item->proveedor))
+                                    @foreach ($proveedores_item as $proveedor)
+                                        {{ @$proveedores->find($proveedor)->tercero }} <br>
+                                    @endforeach
+                                @else
+                                    @if ($proveedores->find($item->proveedor))
+                                        {{ $proveedores->find($item->proveedor)->tercero }}
                                     @else
-                                        @if ($proveedores->find($item->proveedor))
-                                            {{ $proveedores->find($item->proveedor)->tercero }}
-                                        @else
-                                            {{ $item->proveedor }}
-                                        @endif
+                                        {{ $item->proveedor }}
+                                    @endif
+                                @endif
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->margen_utilidad }}
+                            </td>
+
+                            <td class="font-weight-bold font-table">
+                                @if ($item->mesDescription)
+                                    {{ $item->mesDescription->description }}
+                                @endif
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->dias }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                {{ $item->ciudad }}
+                            </td>
+
+                            @if ($rentabilidadView)
+                                <td class="font-weight-bold font-table">
+                                    $ {{ number_format($item->v_unitario_cot) }}
+                                </td>
+                                <td class="font-weight-bold font-table">
+                                    $ {{ number_format($item->v_total_cot) }}
+                                </td>
+                                <td class="font-weight-bold font-table">
+                                    $ {{ number_format($item->rentabilidad) }}
+                                </td>
+                            @endif
+                            @if (Auth::user()->rol == 2)
+                                <td class="font-weight-bold">
+                                    <div class="form-check">
+                                        <input wire:change="changeDisponibilidad({{ $item->id }})"
+                                               class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
+                                    </div>
+                                </td>
+                                <td class="font-weight-bold font-table">
+                                    @if (!$presupuesto->cod_cc)
+                                        <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                                     @endif
                                 </td>
+                            @endif
+                            @if (Auth::user()->rol == 2)
                                 <td class="font-weight-bold font-table">
-                                    {{ $item->margen_utilidad }}
+                                    <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                 </td>
-
-                                <td class="font-weight-bold font-table">
-                                    @if ($item->mesDescription)
-                                        {{ $item->mesDescription->description }}
-                                    @endif
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->dias }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    {{ $item->ciudad }}
-                                </td>
-
-                                @if ($rentabilidadView)
-                                    <td class="font-weight-bold font-table">
-                                        $ {{ number_format($item->v_unitario_cot) }}
-                                    </td>
-                                    <td class="font-weight-bold font-table">
-                                        $ {{ number_format($item->v_total_cot) }}
-                                    </td>
-                                    <td class="font-weight-bold font-table">
-                                        $ {{ number_format($item->rentabilidad) }}
-                                    </td>
-                                @endif
-                                @if (Auth::user()->rol == 2)
-                                    <td class="font-weight-bold">
-                                        <div class="form-check">
-                                            <input wire:change="changeDisponibilidad({{ $item->id }})"
-                                                class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
-                                        </div>
-                                    </td>
-                                    <td class="font-weight-bold font-table">
-                                        @if (!$presupuesto->cod_cc)
-                                            <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                                        @endif
-                                    </td>
-                                @endif
-                                @if (Auth::user()->rol == 2)
-                                    <td class="font-weight-bold font-table">
-                                        <button wire:click="getDataEdit({{ $item->id }})">📝</button>
-                                    </td>
-                                @endif
-                            </tr>
-                        @endif
-                    @endforeach
+                            @endif
+                        </tr>
+                    @endif
+                @endforeach
                 </tbody>
             </table>
         </div>
@@ -673,47 +675,28 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group mb-0">
-                                    <label for="ubicacion">UBICACIÓN (ORDEN QUE TENDRÁ EL ITEM EN EL PRESUPUESTO)</label>
-                                    <select class="form-control" wire:model="ubicacion"
-                                            placeholder="Ubicación" required>
-                                        <option selected value="">Seleccionar</option>
-                                        <option value="<">ANTES DE</option>
-                                        <option value=">">DESPUES DE</option>
-                                    </select>
-                                    @error('ubicacion')
-                                        <div id="ubicacion" class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
                             <div class="col-md-2">
                                 <div class="form-group mb-0">
-                                    <label for="item_ubicacion">ITEM</label>
-                                    <select class="form-control" wire:model="item_ubicacion"
-                                            placeholder="Item" required>
+                                    <label for="item_ubicacion">INTERCAMBIAR POSICIÓN CON</label>
+                                    <select class="form-control" wire:model="item_ubicacion" required>
                                         <option selected value="">Seleccionar</option>
                                         @foreach ($items as $key => $item)
-                                            @if (!$item->event)
-                                                <option value="{{ $item->id }}" @if ($item->evento) style="font-weight: bold" @endif
-                                                    @if ($selected_item && $selected_item->id === $item->id) disabled @endif>
+                                            @if (!$item->evento)
+                                                <option value="{{ $item->id }}"
+                                                        @if ($selected_item && $selected_item->id === $item->id) disabled @endif>
                                                     {{ $item->num_item }}
-                                                    @if ($item->evento)
-                                                        {{ ' - (' . $item->descripcion . ')' }}
-                                                    @endif
                                                 </option>
                                             @endif
                                         @endforeach
                                     </select>
                                     @error('item_ubicacion')
-                                        <div id="item_ubicacion" class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
+                                    <div id="item_ubicacion" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
                                     @enderror
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -732,6 +715,12 @@
                             <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                             <span class="btn-inner--text">Editar</span>
                         </button>
+
+                        @if(Auth::user()->rol == 2)
+                            <button wire:click="updateOrden({{ $item->id }})" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" title="Aplicar nuevo orden" type="button">
+                                ↕️ Mover
+                            </button>
+                        @endif
 
                         <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
                             <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>

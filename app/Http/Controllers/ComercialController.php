@@ -7,6 +7,10 @@ use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
 use App\Exports\BaseExport;
 use App\Models\HistorialItemPresupuesto;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 
 // Importación de clases base de Laravel
@@ -24,6 +28,10 @@ use App\Models\Contacto;
 use App\Models\Helisa;
 use App\Models\Asistente;
 
+
+// Importación Para servicio de correos
+use App\Traits\Email;
+
 // Importación de librería para generación de PDFs
 use Dompdf\Dompdf;
 
@@ -39,6 +47,7 @@ use Dompdf\Dompdf;
  */
 class ComercialController extends Controller
 {
+    use WithFileUploads, Email;
     /*
     |--------------------------------------------------------------------------
     | Comercial Controller
@@ -62,6 +71,10 @@ class ComercialController extends Controller
      */
     public function gestionComercial(){
         return view('comercial.gestion');
+    }
+
+    public function gestionClientes(){
+        return view('comercial.gestion.clientes');
     }
 
     /**
@@ -154,7 +167,7 @@ class ComercialController extends Controller
      * @param string $tipo Tipo de cotización (Interno/Cliente)
      * @return \Illuminate\Http\Response Descarga del PDF
      */
-    /* Tipo: Interno, cliente */
+    /* Tipo: Interno, clientes */
     public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
         // Obtener el presupuesto y sus items relacionados
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
@@ -197,6 +210,19 @@ class ComercialController extends Controller
 
         $allItems = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
+        $costosProyecto = $allItems->sum('v_total');
+
+        $ventaProyecto = $allItems->sum('v_total_cliente');
+
+        // Margen Bruto en Pesos (Venta menos Costos)
+        $margenBruto = $ventaProyecto - $costosProyecto;
+
+        // Margen del Proyecto en Porcentaje
+        $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
+
+        // Margen Items (Suma o promedio ponderado de la utilidad, ajusta según tu lógica)
+        $margenItems = $allItems->avg('margen_utilidad') ?? 0;
+
         $itemIds = $allItems->pluck('id');
 
         $itemsHistorial = HistorialItemPresupuesto::whereIn('item_presupuesto_id', $itemIds)
@@ -211,6 +237,13 @@ class ComercialController extends Controller
             'items'       => $allItems,
             'tipo'        => $tipo,
             'proveedores' => $proveedores,
+
+            'margenItems' => $margenItems,
+            'ventaProyecto' => $ventaProyecto,
+            'costosProyecto' => $costosProyecto,
+            'margenProyecto' => $margenProyecto,
+            'margenBruto' => $margenBruto,
+
             'historial'   => $itemsHistorial
         ];
 
@@ -231,7 +264,7 @@ class ComercialController extends Controller
         $dompdf->stream();
     }
 
-    /**
+    /**000-
      * Elimina un proyecto de la base comercial
      *
      * @param int $user_id ID del proyecto a eliminar
@@ -344,5 +377,63 @@ class ComercialController extends Controller
         $contacto->update();
 
         return redirect()->back()->with('success', 'Contacto actualizado exitosamente!');
+    }
+
+    public function solicitarCreacionContacto(Request $request)
+    {
+        $validateData = $request->validate([
+            'tipo_cliente'      => 'required|string|max:11',
+            'nombre_cliente'    => 'required|string|max:255',
+            'apellido_cliente'  => 'required|string|max:255',
+            'direccion_cliente' => 'nullable|string|max:255',
+            'telefono_cliente'  => 'nullable|string|max:255',
+            'email_cliente'     => 'required|email|max:255',
+            'descripcion'       => 'nullable|string|max:255',
+
+            'empresa_id'        => 'nullable|exists:empresas,id',
+            'nueva_empresa_nombre' => 'required_if:empresa_id,null|nullable|string|max:255',
+            'nueva_empresa_razon'  => 'required_if:empresa_id,null|nullable|string|max:255',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $solicitud = SolicitudContacto::create([
+                'id_user' => Auth::user()->id,
+                'tipo_cliente'        => $validatedData['tipo_cliente'],
+                'nombre_cliente'      => $validatedData['nombre_cliente'],
+                'apellido_cliente'    => $validatedData['apellido_cliente'],
+                'direccion_cliente'   => $validatedData['direccion_cliente'],
+                'telefono_cliente'    => $validatedData['telefono_cliente'],
+                'email_cliente'       => $validatedData['email_cliente'],
+                'descripcion_cliente' => $validatedData['descripcion'],
+
+                'empresa_id'          => $validatedData['empresa_id'] ?? null,
+                'nueva_empresa_datos' => $validatedData['empresa_id'] ? null : json_encode([
+                    'nombre' => $validatedData['nueva_empresa_nombre'],
+                    'razon_social' => $validatedData['nueva_empresa_razon'],
+                ]),
+
+                'estado'              => 'Pendiente',
+            ]);
+            DB::commit();
+
+            $controller = User::find(Auth::user()->id);
+
+            if($controller->isNotEmpty()){
+                $this->SolicitudCreacionCliente($solicitud, $controller->email, $controller->name);
+            }
+            else
+            {
+                return 'No se pudo registrar la solicitud';
+            }
+
+            return redirect()->back()->whit('success', 'Solicitud enviada exitosamente.');
+
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return back()->withErrors(['error' => "Hubo un problema al crear la solicitud."]);
+        }
     }
 }

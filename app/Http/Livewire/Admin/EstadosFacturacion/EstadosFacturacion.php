@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Componente Livewire para mostrar los estados de facturación
  * Genera reportes de ventas agrupados por estado: por facturar, en ejecución y ventas
- * Los datos se agrupan por cliente y se pueden filtrar por año, mes y comercial
+ * Los datos se agrupan por clientes y se pueden filtrar por año, mes y comercial
  */
 class EstadosFacturacion extends Component
 {
@@ -105,7 +105,7 @@ class EstadosFacturacion extends Component
 
     /**
      * Obtiene la sumatoria de registros en estado "Por Facturar" (estado 3)
-     * Agrupa los resultados por cliente y suma el valor de los proyectos
+     * Agrupa los resultados por clientes y suma el valor de los proyectos
      * @param int|null $comercial_id ID del comercial para filtrar
      * @param \App\Models\Mes|null $mes Objeto del mes para filtrar fechas
      * @param \App\Models\Año $año Objeto del año para filtrar fechas
@@ -150,7 +150,7 @@ class EstadosFacturacion extends Component
 
     /**
      * Obtiene la sumatoria de registros en estado "Venta en Ejecución" (estado 7)
-     * Agrupa los resultados por cliente y suma el valor de los proyectos
+     * Agrupa los resultados por clientes y suma el valor de los proyectos
      * @param int|null $comercial_id ID del comercial para filtrar
      * @param \App\Models\Mes|null $mes Objeto del mes para filtrar fechas
      * @param \App\Models\Año $año Objeto del año para filtrar fechas
@@ -181,7 +181,7 @@ class EstadosFacturacion extends Component
             array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
-        // Consulta que agrupa por cliente y suma los valores de proyectos en ejecución
+        // Consulta que agrupa por clientes y suma los valores de proyectos en ejecución
         $Base_results = DB::table('base_comerciales')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
@@ -194,7 +194,7 @@ class EstadosFacturacion extends Component
 
     /**
      * Obtiene la sumatoria de registros en estado "Venta" (estado 6)
-     * Agrupa los resultados por cliente y suma el valor de los proyectos
+     * Agrupa los resultados por clientes y suma el valor de los proyectos
      * @param int|null $comercial_id ID del comercial para filtrar
      * @param \App\Models\Mes|null $mes Objeto del mes para filtrar fechas
      * @param \App\Models\Año $año Objeto del año para filtrar fechas
@@ -225,7 +225,7 @@ class EstadosFacturacion extends Component
             array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
-        // Consulta que agrupa por cliente y suma los valores de proyectos vendidos
+        // Consulta que agrupa por clientes y suma los valores de proyectos vendidos
         $Base_results = DB::table('base_comerciales')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
