@@ -110,5 +110,27 @@
             </div>
         </div>
     </form>
-        
+    @if($errors->any())
+        <script>
+            Swal.fire({
+                title: '!Oppss tenemos un problema',
+                html: `<ul style="text-align: initial; list-style-type: none; padding-left: 0;">
+                @foreach($errors->all() as $error)
+                <li>• {{ $error }}</li>
+                @endforeach
+                </ul>`,
+                icon: 'error'
+            });
+        </script>
+    @endif
+
+    @if (session('success'))
+        <script>
+            Swal.fire(
+                'Hecho',
+                `{{ session('success') }}`,
+                'success'
+            );
+        </script>
+    @endif
 </div>

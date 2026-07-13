@@ -3,9 +3,13 @@
 namespace App\Http\Livewire\Admin\GestionComercial;
 
 use App\Http\Livewire\Com\GestionComercial\Clientes\Cliente;
+
 use App\Models\clientes;
 use App\Models\Año;
+use App\Models\SolicitudCliente;
+
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -49,10 +53,62 @@ class ValidacionesCliente extends Component
         else {
             $clientes = [];
         }
+
+        $solicitudes = SolicitudCliente::with('comercial')
+            ->when($this->cod_cliente, function($query) {
+                $query->where('nombre_cliente', 'like', "%{$this->cod_cliente}%")
+                    ->orWhere('apellido_cliente', 'like', "%{$this->cod_cliente}%");
+            })
+            ->orderBy('created_at', $this->fecha)
+            ->paginate(15);
+
         return view('livewire.admin.gestion-comercial.validaciones-cliente', [
+            'solicitudes' => $solicitudes,
             'clientes' => $clientes,
             'añosList' => Año::all(),
             'estadosList' => $this->getEstados()]);
+    }
+
+    public function aprobarSolicitud($solicitudId)
+    {
+        try {
+            DB::beginTransaction();
+
+            $solicitud = SolicitudCliente::findOrFail($solicitudId);
+
+            $ultimoCliente = clientes::latest('id')->first();
+            $siguienteNumero = $ultimoCliente ? ($ultimoCliente->id + 1) : 1;
+            $codigoOficial = 'CLI-' .date('Y') . '-' .str_pad($siguienteNumero, 3, '0', STR_PAD_LEFT);
+
+            $datosEmpresa = json_decode($solicitud->datos_empresa, true);
+            $razonSocial = $datosEmpresa ['razon_social'] ?? 'Sin razon Social';
+
+            $clienteNuevo = new clientes();
+            $clienteNuevo->codigocliente = $codigoOficial;
+            $clienteNuevo->tipocliente = $solicitud->tipo_cliente;
+            $clienteNuevo->nombreCliente = $solicitud->nombre_cliente;
+            $clienteNuevo->apellidoCliente = $solicitud->apellido_cliente;
+            $clienteNuevo->razonCliente = $razonSocial;
+            $clienteNuevo->direccionCliente = $solicitud->direccion_cliente;
+            $clienteNuevo->telefonoCliente = $solicitud->telefono_cliente;
+            $clienteNuevo->emailCliente = $solicitud->email_cliente;
+            $clienteNuevo->descripcionCliente = $solicitud->descripcion_cliente;
+            $clienteNuevo->id_user = $solicitud->id_user;
+            $clienteNuevo->estadoCliente = 1;
+            $clienteNuevo->save();
+
+            $solicitud->update([
+                'estado' => 'Aprobado'
+            ]);
+
+            DB::commit();
+
+            session()->flash('success', "Solicitud Aprobada el codigo de cliente es: {$codigoOficial}");
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+            $this->addError('Error de aprobación', 'Error al procesar la aprobacion' . $e->getMessage());
+        }
     }
 
     public function mount(){

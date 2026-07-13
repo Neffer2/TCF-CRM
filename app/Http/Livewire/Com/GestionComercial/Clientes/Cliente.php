@@ -100,7 +100,7 @@ class Cliente extends Component
             \Illuminate\Support\Facades\DB::commit();
 
             // Notificación limpia al Controller (RN-010 / HU-001)
-            $controller = User::where('role', 'Controller')->first();
+            $controller = User::where('rol', '2')->first();
             if ($controller && method_exists($this, 'mailNuevaSolicitudController')) {
                 $this->mailNuevaSolicitudController($solicitud, $controller->email, $controller->name);
             }
@@ -112,6 +112,9 @@ class Cliente extends Component
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
+
+            dd($e->getMessage(), $e->getFile(), $e->getLine());
+
             $this->addError('error_proceso', 'Hubo un fallo al procesar la solicitud: ' . $e->getMessage());
         }
     }
