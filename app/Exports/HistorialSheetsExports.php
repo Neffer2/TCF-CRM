@@ -2,49 +2,31 @@
 
 namespace App\Exports;
 
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class HistorialSheetsExports implements fromView, WithTitle, WithColumnFormatting, WithColumnWidths
+class HistorialSheetsExports implements WithMultipleSheets
 {
-    protected $historial;
+    protected $payloadActual;
+    protected $payloadHistoricos;
 
-    public function __construct($historial)
+    public function __construct(array $payloadActual, array $payloadHistoricos)
     {
-        $this->historial = $historial;
+        $this->payloadActual = $payloadActual;
+        $this->payloadHistoricos = $payloadHistoricos;
     }
 
-    public function title(): string
+    public function sheets(): array
     {
-        return 'Historial de cambios';
-    }
+        $sheets = [];
 
-    public function view(): View
-    {
-        return view('exports.historial_cambios', [
-            'items' => $this->historial
-        ]);
-    }
+        // 1. Hoja 1: El estado vivo/actual
+        $sheets[] = new PresupuestoSheet($this->payloadActual, 'Presupuesto Actual');
 
-    public function columnFormats(): array
-    {
-        return [
-          'D' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-          'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-          'F' => NumberFORMAT::FORMAT_NUMBER_COMMA_SEPARATED1,
-        ];
-    }
+        // 2. Hojas de historial dinámicas (V1, V2, V3...)
+        foreach ($this->payloadHistoricos as $historico) {
+            $sheets[] = new PresupuestoSheet($historico, $historico['titulo_pestana']);
+        }
 
-    public function columnWidths(): array
-    {
-        return [
-            'D' => 18,
-            'E' => 18,
-            'F' => 16
-        ];
+        return $sheets;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Com\Presupuesto;
 
+use App\Exports\HistorialSheetsExports;
+use App\Models\clientes;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Rules\CentroCostos;
@@ -18,6 +20,8 @@ use App\Models\Tarifario;
 use App\Models\PresupuestoProyecto;
 use App\Traits\Email;
 use App\Models\HistorialItemPresupuesto;
+
+use Maatwebsite\Excel\Facades\Excel;
 
 class Presupuesto extends Component
 {
@@ -90,7 +94,11 @@ class Presupuesto extends Component
     // Renderiza la vista principal del presupuesto
     public function render()
     {
-        return view('livewire.com.presupuesto.presupuesto');
+        $clientes = clientes::orderBy('NombreCliente', 'asc')->get();
+
+        return view('livewire.com.presupuesto.presupuesto', [
+            'clientes' => $clientes
+            ]);
     }
 
     // Inicializa el componente y carga datos principales
@@ -598,8 +606,88 @@ class Presupuesto extends Component
         $this->limpiar();
     }
 
+    public function exportarFijo()
+    {
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
+        if (!$presto) {
+            return session()->flash('error', 'El presupuesto no existe.');
+        }
 
+        // 1. OBTENER ESTADO ACTUAL (Pestaña Principal)
+        $itemsActuales = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+        $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
+
+        // Cálculos del estado actual
+        $costosProyecto = $itemsActuales->sum('v_total');
+        $ventaProyecto = $itemsActuales->sum('v_total_cliente');
+        $margenBruto = $ventaProyecto - $costosProyecto;
+        $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
+        $margenItems = $itemsActuales->avg('margen_utilidad') ?? 0;
+
+        $payloadActual = [
+            'presupuesto'    => $presto,
+            'items'          => $itemsActuales,
+            'proveedores'    => $proveedores,
+            'margenItems'    => $margenItems,
+            'ventaProyecto'  => $ventaProyecto,
+            'costosProyecto' => $costosProyecto,
+            'margenProyecto' => $margenProyecto,
+            'margenBruto'    => $margenBruto,
+            'rentabilidadView' => $this->rentabilidadView,
+        ];
+
+        // 2. OBTENER HISTÓRICOS AGRUPADOS POR LOTE DE CAMBIO
+        $itemIds = $itemsActuales->pluck('id');
+
+        // Traemos todo el histórico y lo agrupamos por la fecha/hora del cambio (redondeado al minuto)
+        $historiales = HistorialItemPresupuesto::whereIn('item_presupuesto_id', $itemIds)
+            ->latest()
+            ->get()
+            ->groupBy(function($item) {
+                // Agrupamos por año-mes-día hora:minuto para que los cambios hechos al mismo tiempo salgan en la misma pestaña
+                return $item->created_at->format('Y-m-d H:i');
+            });
+
+        $payloadHistoricos = [];
+        $version = 1;
+
+        // Reconstruimos "la foto" de cada versión histórica guardada
+        foreach ($historiales as $fechaHora => $registrosHistorial) {
+            // En cada versión histórica, los ítems son los almacenados en el JSON 'valores_anteriores'
+            $itemsHistoricosDeEstaVersion = $registrosHistorial->map(function($reg) {
+                // Convertimos el array JSON de vuelta a un objeto tipo stdClass o ItemPresupuesto para que el Blade no cambie
+                return (object) $reg->valores_anteriores;
+            });
+
+            // Calculamos los totales de esa versión histórica específica utilizando los datos del JSON
+            $costosHistorial = $itemsHistoricosDeEstaVersion->sum('v_total');
+            $ventaHistorial = $itemsHistoricosDeEstaVersion->sum('v_total_cliente');
+            $margenBrutoHistorial = $ventaHistorial - $costosHistorial;
+            $margenProyectoHistorial = $ventaHistorial > 0 ? ($margenBrutoHistorial / $ventaHistorial) * 100 : 0;
+            $margenItemsHistorial = $itemsHistoricosDeEstaVersion->avg('margen_utilidad') ?? 0;
+
+            $payloadHistoricos[] = [
+                'titulo_pestana' => "V{$version} (" . date('d-M H:i', strtotime($fechaHora)) . ")",
+                'presupuesto'    => $presto,
+                'items'          => $itemsHistoricosDeEstaVersion,
+                'proveedores'    => $proveedores,
+                'margenItems'    => $margenItemsHistorial,
+                'ventaProyecto'  => $ventaHistorial,
+                'costosProyecto' => $costosHistorial,
+                'margenProyecto' => $margenProyectoHistorial,
+                'margenBruto'    => $margenBrutoHistorial,
+                'rentabilidadView' => $this->rentabilidadView,
+            ];
+
+            $version++;
+        }
+
+        $nombreArchivo = ($presto->gestion->nom_proyecto_cot ?? 'presupuesto') . '.xlsx';
+
+        // 3. Enviamos el estado actual y la lista de versiones históricas a Maatwebsite Excel
+        return Excel::download(new HistorialSheetsExports($payloadActual, $payloadHistoricos), $nombreArchivo);
+    }
 
     // Redirecciones para exportar cotizaciones y presupuestos
     public function cotizacionPdf(){

@@ -19,12 +19,16 @@
     @else
         @foreach($items as $registro)
             <tr>
-                <td>{{ $registro->valores_anteriores['cod'] }}</td>
-                <td>{{ $registro->valores_anteriores['descripcion'] }}</td>
-                <td>{{ $registro->valores_anteriores['cantidad'] }}</td>
-                <td>{{ number_format($registro->valores_anteriores['v_unitario'], 2) }}</td>
-                <td>{{ number_format($registro->valores_anteriores['v_total'], 2) }}</td>
-                <td>{{ $registro->created_at->format('Y-m-d H:i') }}</td>
+                {{-- Usamos ?? '-' para que si es null muestre una raya --}}
+                <td>{{ $registro->valores_anteriores['cod'] ?? '-' }}</td>
+                <td>{{ $registro->valores_anteriores['descripcion'] ?? 'Sin descripción' }}</td>
+                <td>{{ $registro->valores_anteriores['cantidad'] ?? 0 }}</td>
+
+                {{-- Para number_format, aseguramos un valor numérico por defecto (0) si viene nulo --}}
+                <td>{{ number_format($registro->valores_anteriores['v_unitario'] ?? 0, 2) }}</td>
+                <td>{{ number_format($registro->valores_anteriores['v_total'] ?? 0, 2) }}</td>
+
+                <td>{{ $registro->created_at ? $registro->created_at->format('Y-m-d H:i') : '-' }}</td>
             </tr>
         @endforeach
     @endif
