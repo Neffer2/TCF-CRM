@@ -28,7 +28,6 @@
                 <td>{{ number_format($registro->valores_anteriores['v_unitario'] ?? 0, 2) }}</td>
                 <td>{{ number_format($registro->valores_anteriores['v_total'] ?? 0, 2) }}</td>
 
-                <td>{{ $registro->created_at ? $registro->created_at->format('Y-m-d H:i') : '-' }}</td>
             </tr>
         @endforeach
     @endif

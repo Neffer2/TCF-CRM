@@ -191,31 +191,6 @@
             <tr>
                 <td colspan="1"></td>
             </tr>
-
-            <table>
-                <tr>
-                    <td class="font-weight-bold font-table" style="text-align: center">MARGEN ITEMS</td>
-                    <td class="font-table" style="text-align: center">{{ number_format($margenItems, 4) }}</td>
-                </tr>
-                <tr>
-                    <td class="font-weight-bold font-table" style="text-align: center">VENTA PROYECTO</td>
-                    <td class="font-table" style="text-align: center">{{ number_format($ventaProyecto) }}</td>
-                </tr>
-                <tr>
-                    <td class="font-weight-bold font-table" style="text-align: center">COSTOS DEL PROYECTO</td>
-                    <td class="font-table" style="text-align: center">{{ number_format($costosProyecto) }}</td>
-                </tr>
-                <tr>
-                    <td class="font-weight-bold font-table" style="text-align: center">MARGEN DEL PROYECTO</td>
-                    <td class="font-table" style="text-align: center">{{ number_format($margenProyecto, 2) }} %</td>
-                </tr>
-                <tr>
-                    <td class="font-weight-bold font-table" style="text-align: center">MARGEN BRUTO (PESOS)</td>
-                    <td class="font-table" style="text-align: center">{{ number_format($margenBruto) }}</td>
-                </tr>
-            </table>
-
-
             <tr>
                 <td colspan="14"></td>
             </tr>
