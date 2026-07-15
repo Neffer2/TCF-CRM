@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Com\GestionComercial\Clientes;
 
-use App\Models\Solicitudcliente;
+use App\Models\SolicitudCliente;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -81,7 +81,7 @@ class Cliente extends Component
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
-            $solicitud = Solicitudcliente::create([
+            $solicitud = SolicitudCliente::create([
                 'id_user'             => Auth::id(), // Comercial (RN-008)
                 'tipo_cliente'        => $this->TipoCliente,
                 'nombre_cliente'      => $this->nombreCliente,
