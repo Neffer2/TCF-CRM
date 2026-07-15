@@ -1,17 +1,22 @@
 <div class="card">
-    <div class="card-header p-0 px-3 mt-3">
-        <div class="row">
-            <div class="col-md-12">
-                <h3 class="mb-0">Validaciones de Contactos</h3>
-                <p class="text-sm mb-0">Solicitudes enviadas por comerciales pendientes de aprobación.</p>
+    <div class="card-header pb-0">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h6 class="mb-0">Validaciones de clientes</h6>
+                <p class="text-sm text-secondary mb-0">Solicitudes enviadas por comerciales pendientes de aprobaci&oacute;n.</p>
             </div>
-            <!-- Filtros existentes -->
-            <div class="col-md-3 mb-0 mt-2">
-                <label for="cod_cliente">Buscar Solicitante o Contacto:</label>
-                <input type="text" wire:model="cod_cliente" class="form-control" placeholder="Nombre del contacto...">
+            <span class="badge bg-gradient-warning">{{ $solicitudes->count() }} pendientes</span>
+        </div>
+    </div>
+
+    <div class="card-body pt-3 pb-0">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="cod_cliente" class="form-control-label">Buscar solicitante o cliente</label>
+                <input id="cod_cliente" type="text" wire:model="cod_cliente" class="form-control" placeholder="Nombre del cliente o comercial...">
             </div>
-            <div class="col-md-2 mb-0 mt-2">
-                <label for="filtro_fecha">Fecha:</label>
+            <div class="col-md-3">
+                <label for="filtro_fecha" class="form-control-label">Orden por fecha</label>
                 <select id="filtro_fecha" class="form-control" wire:model="fecha">
                     <option value="asc">M&aacute;s antiguos</option>
                     <option value="desc">M&aacute;s recientes</option>
@@ -22,7 +27,7 @@
 
     <div class="card-body p-0 mt-3">
         <div class="table-responsive">
-            <table class="table mb-0">
+            <table class="table align-items-center mb-0">
                 <thead>
                 <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Contacto Solicitado</th>
@@ -42,6 +47,9 @@
                     <tr wire:key="solicitud-{{ $sol->id }}">
                         <td>
                             <div class="d-flex px-2 py-1">
+                                <div class="avatar avatar-sm bg-gradient-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    {{ strtoupper(substr($sol->nombre_cliente ?? 'C', 0, 1)) }}
+                                </div>
                                 <div class="d-flex flex-column justify-content-center">
                                     <h6 class="mb-0 text-sm">{{ $sol->nombre_cliente }} {{ $sol->apellido_cliente }}</h6>
                                     <p class="text-xs text-secondary mb-0">{{ $sol->email_cliente }}</p>
@@ -59,15 +67,13 @@
                             <span class="badge badge-sm bg-gradient-warning">{{ $sol->estado }}</span>
                         </td>
                         <td class="align-middle text-center">
-                            <!-- Botón Ver Detalles (Abre el Modal) -->
-                            <button type="button" class="btn bg-gradient-info btn-sm m-0" data-bs-toggle="modal" data-bs-target="#verModal{{ $sol->id }}">Ver Detalles</button>
+                            <button type="button" class="btn bg-gradient-info btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#verModal{{ $sol->id }}">Ver detalles</button>
 
-                            <!-- Botón de Procesar Aprobación Directa -->
                             @if($sol->estado == 'Pendiente')
                                 <button type="button"
                                         wire:click="aprobarSolicitud({{ $sol->id }})"
                                         wire:loading.attr="disabled"
-                                        class="btn bg-gradient-success btn-sm m-0">
+                                        class="btn bg-gradient-success btn-sm mb-0">
                                     <span wire:loading.remove wire:target="aprobarSolicitud({{ $sol->id }})">Aprobar</span>
                                     <span wire:loading wire:target="aprobarSolicitud({{ $sol->id }})">Procesando...</span>
                                 </button>
@@ -75,7 +81,6 @@
                         </td>
                     </tr>
 
-                    <!-- Modal de Detalles y Campos Complementarios -->
                     <div class="modal fade" id="verModal{{ $sol->id }}" tabindex="-1" role="dialog" aria-labelledby="verModalLabel{{ $sol->id }}" aria-hidden="true" wire:ignore.self>
                         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
@@ -85,48 +90,46 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-                                        <!-- Datos Reales del Formulario -->
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label font-weight-bold">Nombre Completo:</label>
+                                            <label class="form-label font-weight-bold">Nombre completo</label>
                                             <input type="text" class="form-control" value="{{ $sol->nombre_cliente }} {{ $sol->apellido_cliente }}" disabled>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label font-weight-bold">Razón Social:</label>
+                                            <label class="form-label font-weight-bold">Raz&oacute;n social</label>
                                             <input type="text" class="form-control" value="{{ $razonSocial }}" disabled>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label font-weight-bold">Correo Electrónico:</label>
+                                            <label class="form-label font-weight-bold">Correo electr&oacute;nico</label>
                                             <input type="text" class="form-control" value="{{ $sol->email_cliente }}" disabled>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label font-weight-bold">Dirección de Contacto:</label>
+                                            <label class="form-label font-weight-bold">Direcci&oacute;n de contacto</label>
                                             <input type="text" class="form-control" value="{{ $sol->direccion_cliente ?? 'No registra' }}" disabled>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label font-weight-bold">Teléfono:</label>
+                                            <label class="form-label font-weight-bold">Tel&eacute;fono</label>
                                             <input type="text" class="form-control" value="{{ $sol->telefono_cliente ?? 'No registra' }}" disabled>
                                         </div>
 
-                                        <!-- 📌 CAMPOS COMPLEMENTARIOS (SOLO VISUALES / FRONTEND POR AHORA) -->
-                                        <div class="col-md-12"><hr class="horizontal dark"><h6>Campos Complementarios (Fase de Diseño)</h6></div>
+                                        <div class="col-md-12"><hr class="horizontal dark"><h6 class="mb-0">Campos Complementarios (Fase de Dise&ntilde;o)</h6></div>
 
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label text-primary">Sector Económico:</label>
+                                            <label class="form-label text-primary">Sector econ&oacute;mico</label>
                                             <input type="text" class="form-control border-primary" placeholder="Por definir (Solo visual)" disabled>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label text-primary">Límite de Crédito Propuesto:</label>
+                                            <label class="form-label text-primary">L&iacute;mite de cr&eacute;dito propuesto</label>
                                             <input type="text" class="form-control border-primary" placeholder="$ 0.00 (Solo visual)" disabled>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label text-primary">Segmentación / Tag:</label>
+                                            <label class="form-label text-primary">Segmentaci&oacute;n / Tag</label>
                                             <select class="form-control border-primary" disabled>
                                                 <option>Selección bloqueada (Solo visual)</option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-12 mb-3">
-                                            <label class="form-label font-weight-bold">Comentarios del Comercial:</label>
+                                            <label class="form-label font-weight-bold">Comentarios del comercial</label>
                                             <textarea class="form-control" rows="2" disabled>{{ $sol->descripcion_cliente ?? 'Sin comentarios' }}</textarea>
                                         </div>
                                     </div>
@@ -138,7 +141,7 @@
                                                 wire:click="aprobarSolicitud({{ $sol->id }})"
                                                 data-bs-dismiss="modal"
                                                 class="btn bg-gradient-success">
-                                            Aprobar e Inscribir Cliente
+                                            Aprobar e inscribir cliente
                                         </button>
                                     @endif
                                 </div>
@@ -146,6 +149,14 @@
                         </div>
                     </div>
                 @endforeach
+
+                @if($solicitudes->isEmpty())
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-sm text-secondary">
+                            No hay solicitudes pendientes para validar.
+                        </td>
+                    </tr>
+                @endif
                 </tbody>
             </table>
         </div>

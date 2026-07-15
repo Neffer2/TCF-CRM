@@ -44,10 +44,10 @@
                         <p class="text-xs font-weight-bold mb-0">{{ $cliente->EmailCliente }}</p>
                         <p class="text-xs text-secondary">{{ $cliente->TelefonoCliente }}</p>
                     </td>
-                    <td class="text-center">
+                    {{-- <td class="text-center">
                         <button class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $cliente->id }}">Editar</button>
                         <button class="btn btn-sm bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $cliente->id }}">Eliminar</button>
-                    </td>
+                    </td> --}}
                 </tr>
                 <!-- Edit Modal -->
                 <div class="modal fade" id="editModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
