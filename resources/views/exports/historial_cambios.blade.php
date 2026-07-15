@@ -19,15 +19,21 @@
     @else
         @foreach($items as $registro)
             <tr>
-                {{-- Usamos ?? '-' para que si es null muestre una raya --}}
-                <td>{{ $registro->valores_anteriores['cod'] ?? '-' }}</td>
-                <td>{{ $registro->valores_anteriores['descripcion'] ?? 'Sin descripción' }}</td>
-                <td>{{ $registro->valores_anteriores['cantidad'] ?? 0 }}</td>
-
-                {{-- Para number_format, aseguramos un valor numérico por defecto (0) si viene nulo --}}
-                <td>{{ number_format($registro->valores_anteriores['v_unitario'] ?? 0, 2) }}</td>
-                <td>{{ number_format($registro->valores_anteriores['v_total'] ?? 0, 2) }}</td>
-
+                @php
+                    $base = data_get($registro, 'valores_anteriores', $registro);
+                    $cod = data_get($base, 'cod', '-');
+                    $descripcion = data_get($base, 'descripcion', 'Sin descripción');
+                    $cantidad = data_get($base, 'cantidad', 0);
+                    $vUnitario = (float) data_get($base, 'v_unitario', 0);
+                    $vTotal = (float) data_get($base, 'v_total', 0);
+                    $estado = data_get($base, 'actualizado');
+                @endphp
+                <td>{{ $cod }}</td>
+                <td>{{ $descripcion }}</td>
+                <td>{{ $cantidad }}</td>
+                <td>{{ number_format($vUnitario, 2) }}</td>
+                <td>{{ number_format($vTotal, 2) }}</td>
+                <td>{{ is_null($estado) ? '-' : $estado }}</td>
             </tr>
         @endforeach
     @endif

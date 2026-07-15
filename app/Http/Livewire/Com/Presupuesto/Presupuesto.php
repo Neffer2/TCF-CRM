@@ -356,62 +356,23 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
-    // Cambia el orden de un ítem
-    public function changeOrden($item_id, $item_referencia_id) {
-        if ($item_id == $item_referencia_id) {
-            return;
-        }
-
-        DB::transaction(function () use ($item_id, $item_referencia_id) {
-
-            $item = ItemPresupuesto::where('id', $item_id)->lockForUpdate()->first();
-            $referencia = ItemPresupuesto::where('id', $item_referencia_id)->lockForUpdate()->first();
-
-            if (!$item || !$referencia || $item->presupuesto_id != $referencia->presupuesto_id) {
-                return;
-            }
-
-            $ordenA = $item->orden;
-            $ordenB = $referencia->orden;
-            $numItemA = $item->num_item;
-            $numItemB = $referencia->num_item;
-
-            if ($ordenA == $ordenB) {
-                return;
-            }
-
-            // Liberar temporalmente el slot de `item` para evitar chocar con el índice único
-            // (presupuesto_id, orden) al escribir `referencia` en el paso siguiente
-            $item->orden = -1;
-            $item->save();
-
-            // `referencia` toma la posición que tenía `item`
-            $referencia->orden = $ordenA;
-            $referencia->num_item = $numItemA;
-            $referencia->save();
-
-            // `item` toma la posición que tenía `referencia`
-            $item->orden = $ordenB;
-            $item->num_item = $numItemB;
-
-            if ($item->actualizado == 1) {
-                $item->actualizado = 3;
-            } else if ($item->actualizado == 0) {
-                $item->actualizado = 2;
-            }
-
-            $this->resyncNumItem($this->presupuesto_id);
-
-            $item->save();
-        });
-    }
-
-    public function updateOrden($item_id) {
+    public function updateOrden() {
         $this->validate([
             'item_ubicacion' => ['required'],
         ]);
 
-        $this->changeOrden($item_id, $this->item_ubicacion);
+        foreach ($this->items as $item) {
+            if ($item->id == $this->selected_item->id) {
+                $item->orden = $this->item_ubicacion;
+                $item->save();
+            } elseif ($item->orden >= $this->item_ubicacion) {
+                $item->orden += 1;
+                $item->save();
+            }
+        }
+        // dd($this->items);
+        // dd($this->selected_item->id);
+        // dd($this->item_ubicacion);
 
         $this->refresh();
         $this->item_ubicacion = '';
@@ -780,36 +741,45 @@ class Presupuesto extends Component
             ]);
         }
 
-        $item = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+
+        // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 30%,
+        // se envia a validación de gerencia (estado_id = 5),
+        // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
+        if ($presupuesto->margen_proy < 30.00) {
+            $presupuesto->estado_id = 5;
+            $presupuesto->update();
+            return redirect()->route('presupuesto-proyecto')->with('success', 'Presupuesto aprobado y enviado a validación de gerencia');
+        }
 
         // Si es la primera vez que se asigna centro de costos, cambia el estado de la gestión comercial
-        if (is_null($item->cod_cc)){
+        if (is_null($presupuesto->cod_cc)){
             $gestion = GestionComercial::find($this->id_gestion);
             $gestion->id_estado = 4;
             $gestion->update();
         }
 
         // Marca todos los ítems como no actualizados
-        ItemPresupuesto::where('presupuesto_id', $item->id)->get()->map(function ($item){
+        ItemPresupuesto::where('presupuesto_id', $presupuesto->id)->get()->map(function ($item){
             $item->actualizado = false;
             $item->update();
         });
 
         // Actualiza datos del presupuesto
-        $item->cod_cc = $this->centroCostos;
-        $item->fecha_cc = date("Y-m-d");
-        $item->estado_id = 1;
-        $item->justificacion_compras = null;
-        $item->justificacion = null;
-        $item->update();
+        $presupuesto->cod_cc = $this->centroCostos;
+        $presupuesto->fecha_cc = date("Y-m-d");
+        $presupuesto->estado_id = 1;
+        $presupuesto->justificacion_compras = null;
+        $presupuesto->justificacion = null;
+        $presupuesto->update();
 
         // Recalcula valores de la base y gestión comercial
-        $this->reCalculate($item);
+        $this->reCalculate($presupuesto);
 
         // Envía email de aprobación
-        $this->presupuestoAprobado($item->gestion->comercial, $item->gestion, null, $item->cod_cc);
+        $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
 
-        return redirect()->route('presupuesto-proyecto')->with('success', 'Centro de costos asignado');
+        return redirect()->route('presupuesto-proyecto')->with('success', 'Presupuesto aprobado y Centro de costos asignado');
     }
 
     // Recalcula los valores de la base comercial y gestión comercial

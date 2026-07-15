@@ -58,8 +58,8 @@ class ActualizacionesPresto extends Component
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        // Para rol 1 (administrador): solo presupuestos con estado 2 (pendientes)
-        if ($this->rol == 1){ array_push($filtros, ['estado_id', 2]); }
+        // Para rol 1 (administrador): solo presupuestos con estado 4 (revision líder comercial)
+        if ($this->rol == 1){ array_push($filtros, ['estado_id', 4]); }
 
         // Para rol 2 (comercial): solo presupuestos propios
         if ($this->rol == 2){

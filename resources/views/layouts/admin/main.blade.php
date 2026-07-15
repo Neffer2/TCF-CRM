@@ -104,12 +104,13 @@
                                 <span class="sidenav-normal"> Actualizaciones </span>
                             </a>
                         </li>
-                        <li @class(['active' => request()->is('validaciones'), 'nav-item' => true])>
+                        {{-- TODO : Revisar si se deja la opción de validaciones o se elimina, ya que no se está usando. --}}
+                        {{-- <li @class(['active' => request()->is('validaciones'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('validaciones'), 'nav-link' => true]) href="{{ route('validaciones') }}">
                                 <span class="sidenav-mini-icon text-xs"> V </span>
                                 <span class="sidenav-normal"> Validaciones </span>
                             </a>
-                        </li>
+                        </li> --}}
                         <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
                                 <span class="sidenav-mini-icon text-xs"> C </span>

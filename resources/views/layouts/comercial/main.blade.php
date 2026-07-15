@@ -103,17 +103,17 @@
                             </a>
                         </li>
 
-                        <li @class(['active' => request()->is('clientes'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('clientes'), 'nav-item' => true]) href="{{ route('clientes')}}">
-                                <span class="sidenav-mini-icon text-xs"> cl </span>
-                                <span class="sidenav-normal"> Clientes </span>
-                            </a>
-                        </li>
-
                         <li @class(['active' => request()->is('presupuestos'), 'nav-item' => true])>
                             <a @class(['active' => request()->is('presupuestos'), 'nav-link' => true]) href="{{ route('presupuestos') }}">
                                 <span class="sidenav-mini-icon text-xs"> Pre </span>
                                 <span class="sidenav-normal"> Presupuestos </span>
+                            </a>
+                        </li>
+
+                        <li @class(['active' => request()->is('clientes'), 'nav-item' => true])>
+                            <a @class(['active' => request()->is('clientes'), 'nav-link' => true]) href="{{ route('clientes')}}">
+                                <span class="sidenav-mini-icon text-xs"> cl </span>
+                                <span class="sidenav-normal"> Clientes </span>
                             </a>
                         </li>
                     </ul>

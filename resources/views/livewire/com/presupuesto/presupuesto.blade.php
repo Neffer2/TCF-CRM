@@ -804,7 +804,7 @@
                 @elseif (Auth::user()->rol == 1)
                     @if ($estadoValidator == 2)
                         {{-- CONTROLLER --}}
-                        <div class="col-md-12 p-2">
+                        {{-- <div class="col-md-12 p-2">
                             <div class="row gy-0">
                                 <div class="col-md-3">
                                     <div class="form-group mb-0">
@@ -893,23 +893,52 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     @elseif ($estadoValidator == 4)
                         {{-- LIDER COMERCIAL --}}
                         <div class="col-md-12 p-2">
                             <div class="row gy-0">
                                 <div class="col-md-3">
+                                    <div class="form-group mb-0">
+                                        <label for="centroCostos">CENTRO DE COSTOS</label>
+                                        <select id="centroCostos"
+                                                class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
+                                                required
+                                                wire:model.lazy="centroCostos"
+                                                @if($this->presupuesto && $this->presupuesto->cod_cc) disabled @endif>
+                                                <option value="">-- Seleccione un Centro de Costos / Cliente --</option>
+                                                @forelse($clientes ?? [] as $cliente)
+                                                    <option value="{{ $cliente->CodigoCliente }}">
+                                                        ({{ $cliente->CodigoCliente }})
+                                                    </option>
+                                                @empty
+                                                    <option value="" disabled>No hay clientes registrados en la base de datos</option>
+                                                @endforelse
+                                        </select>
+                                        @error('centroCostos')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                        <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-2" type="button">
+                                            <span class="btn-inner--icon" wire:loading.remove wire:target="updateCentro">
+                                                <i class="ni ni-ruler-pencil"></i>
+                                            </span>
+                                                <span class="btn-inner--icon" wire:loading wire:target="updateCentro">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            </span>
+                                                <span class="btn-inner--text">Aprobar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                {{-- <div class="col-md-3">
                                     <button wire:click="validacionLiderComercial" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">
                                         <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                                         <span class="btn-inner--text">Aprobar</span>
                                     </button>
-                                </div>
-                                <div class="col-md-6 py-1">
-                                    <div class="form-check form-switch me-1">
-                                        <div class="form-check form-switch me-1">
-                                            <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                            <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label>
-                                        </div>
+                                </div> --}}
+                                <div class="col-md-6 d-flex align-items-center justify-content-start pb-2">
+                                    <div class="form-check form-switch p-0 me-1">
                                         <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
                                             <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                             <span class="btn-inner--text">Exportar</span>
@@ -954,6 +983,10 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="form-check form-switch me-1">
+                                            <input wire:click="toggelRentabilidad" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                            <label class="form-check-label" for="flexSwitchCheckDefault">Vista rentabilidad</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1025,30 +1058,29 @@
                                 </div>
                             </div>
                         </div>
-                    @endif>
+                    @endif
 
-                        <div class="col-md-6 py-1 d-flex justify-content-md-end justify-content-start">
-                            @if ($presupuesto && $presupuesto->cod_cc)
-                                <!-- Botón Activo cuando hay Centro de Costos -->
-                                <button wire:click="exportarFijo" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
-                                    <span class="btn-inner--icon" wire:loading.remove wire:target="exportarFijo">
-                                        <i class="ni ni-cloud-download-95"></i>
-                                    </span>
-                                    <!-- Spinner de carga de Livewire mientras se genera el Excel con todas las hojas -->
-                                    <span class="btn-inner--icon" wire:loading wire:target="exportarFijo">
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    </span>
-                                    <span class="btn-inner--text">Exportar Historial</span>
-                                </button>
-                            @else
-                                <!-- Botón Deshabilitado si falta el Centro de Costos -->
-                                <button class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button" disabled title="Debe guardar el Centro de Costos primero para habilitar el historial">
-                                    <span class="btn-inner--icon"><i class="ni ni-cloud-download-95"></i></span>
-                                    <span class="btn-inner--text">Exportar Historial</span>
-                                </button>
-                            @endif
-                        </div>
-
+                    <div class="col-md-12 py-1 d-flex justify-content-center">
+                        @if ($presupuesto && $presupuesto->cod_cc)
+                            <!-- Botón Activo cuando hay Centro de Costos -->
+                            <button wire:click="exportarFijo" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" type="button">
+                                <span class="btn-inner--icon" wire:loading.remove wire:target="exportarFijo">
+                                    <i class="ni ni-cloud-download-95"></i>
+                                </span>
+                                <!-- Spinner de carga de Livewire mientras se genera el Excel con todas las hojas -->
+                                <span class="btn-inner--icon" wire:loading wire:target="exportarFijo">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                </span>
+                                <span class="btn-inner--text">Exportar Historial</span>
+                            </button>
+                        @else
+                            <!-- Botón Deshabilitado si falta el Centro de Costos -->
+                            <button class="btn btn-icon btn-3 bg-gradient-secondary mb-0 me-1" type="button" disabled title="Debe guardar el Centro de Costos primero para habilitar el historial">
+                                <span class="btn-inner--icon"><i class="ni ni-cloud-download-95"></i></span>
+                                <span class="btn-inner--text">Exportar Historial</span>
+                            </button>
+                        @endif
+                    </div>
                 @endif
             </div>
         </div>
