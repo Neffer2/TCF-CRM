@@ -1,11 +1,23 @@
 <div class="card">
+    <div class="card-header pb-0">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h6 class="mb-0">Clientes registrados</h6>
+                <p class="text-sm text-secondary mb-0">Consulta la informaci&oacute;n comercial y de contacto.</p>
+            </div>
+            <span class="badge bg-gradient-warning">{{ $clientes->total() }} registros</span>
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table">
+        <table class="table align-items-center mb-0">
             <thead>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n personal</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">TIPO</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">RAZ&Oacute;N SOCIAL</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">CONTACTO</th>
+            <tr>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n personal</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tipo</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Raz&oacute;n social</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contacto</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+            </tr>
             </thead>
             <tbody>
             @foreach ($clientes as $cliente)
@@ -16,7 +28,7 @@
                                 <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                             </div>
                             <div class="d-flex flex-column justify-content-center">
-                                <h6 class="mb-0 text-xs">{{ $cliente->NombreCLiente }} {{ $cliente->ApellidoCliente }}</h6>
+                                <h6 class="mb-0 text-xs">{{ $cliente->NombreCliente }} {{ $cliente->ApellidoCliente }}</h6>
                                 <p class="text-xs text-secondary mb-0">{{ $cliente->CodigoCliente }}</p>
                             </div>
                         </div>
@@ -31,6 +43,10 @@
                     <td>
                         <p class="text-xs font-weight-bold mb-0">{{ $cliente->EmailCliente }}</p>
                         <p class="text-xs text-secondary">{{ $cliente->TelefonoCliente }}</p>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $cliente->id }}">Editar</button>
+                        <button class="btn btn-sm bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $cliente->id }}">Eliminar</button>
                     </td>
                 </tr>
                 <!-- Edit Modal -->
@@ -194,7 +210,7 @@
                 </div>
             @endforeach
             <tr>
-                <td colspan="5">{{ $clientes->links() }}</td>
+                <td colspan="5" class="pt-3">{{ $clientes->links() }}</td>
             </tr>
             </tbody>
         </table>
