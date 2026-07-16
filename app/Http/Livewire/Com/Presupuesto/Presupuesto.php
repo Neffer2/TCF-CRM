@@ -567,8 +567,7 @@ class Presupuesto extends Component
         $this->limpiar();
     }
 
-    public function exportarFijo()
-    {
+    public function exportarFijo(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
         if (!$presto) {
@@ -579,15 +578,16 @@ class Presupuesto extends Component
         $itemsActuales = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
         $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
 
-        // Cálculos del estado actual
         $costosProyecto = $itemsActuales->sum('v_total');
         $ventaProyecto = $itemsActuales->sum('v_total_cliente');
         $margenBruto = $ventaProyecto - $costosProyecto;
         $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
         $margenItems = $itemsActuales->avg('margen_utilidad') ?? 0;
 
+        // NOTA: Ajustamos las llaves para que coincidan EXACTAMENTE con tu 'PresupuestosSheetsExports'
         $payloadActual = [
-            'presupuesto'    => $presto,
+            'presto'         => $presto, // Cambiado de 'presupuesto' a 'presto'
+            'tipo'           => $this->rentabilidadView, // Mapeado a 'tipo'
             'items'          => $itemsActuales,
             'proveedores'    => $proveedores,
             'margenItems'    => $margenItems,
@@ -595,33 +595,47 @@ class Presupuesto extends Component
             'costosProyecto' => $costosProyecto,
             'margenProyecto' => $margenProyecto,
             'margenBruto'    => $margenBruto,
-            'rentabilidadView' => $this->rentabilidadView,
         ];
 
-        // 2. OBTENER HISTÓRICOS AGRUPADOS POR LOTE DE CAMBIO
-        $itemIds = $itemsActuales->pluck('id');
-
-        // Traemos todo el histórico y lo agrupamos por la fecha/hora del cambio (redondeado al minuto)
-        $historiales = HistorialItemPresupuesto::whereIn('item_presupuesto_id', $itemIds)
-            ->latest()
+        // 2. OBTENER LAS VERSIONES HISTÓRICAS DE APROBACIONES
+        // Para no perder ningún histórico (incluso si eliminas o creas ítems nuevos),
+        // buscaremos TODOS los registros del historial que tengan el JSON con tipo_registro = 'snapshot_aprobacion'
+        $aprobacionesHistoricas = HistorialItemPresupuesto::orderBy('created_at', 'asc')
             ->get()
-            ->groupBy(function($item) {
-                // Agrupamos por año-mes-día hora:minuto para que los cambios hechos al mismo tiempo salgan en la misma pestaña
-                return $item->created_at->format('Y-m-d H:i');
-            });
+            ->filter(function($historial) use ($presto) {
+                $datos = is_array($historial->valores_anteriores)
+                    ? $historial->valores_anteriores
+                    : json_decode($historial->valores_anteriores, true);
+
+                // 1. Validamos que el JSON sea un array y tenga la llave 'tipo_registro'
+                if (is_array($datos) && isset($datos['tipo_registro'])) {
+                    if ($datos['tipo_registro'] === 'snapshot_aprobacion') {
+                        if (isset($datos['items'][0]['presupuesto_id'])) {
+                            return $datos['items'][0]['presupuesto_id'] == $presto->id;
+                        }
+                    }
+                }
+                return false;
+            })
+            // Aseguramos que no queden duplicados basados en el ID único del historial
+            ->unique('id');
 
         $payloadHistoricos = [];
         $version = 1;
 
-        // Reconstruimos "la foto" de cada versión histórica guardada
-        foreach ($historiales as $fechaHora => $registrosHistorial) {
-            // En cada versión histórica, los ítems son los almacenados en el JSON 'valores_anteriores'
-            $itemsHistoricosDeEstaVersion = $registrosHistorial->map(function($reg) {
-                // Convertimos el array JSON de vuelta a un objeto tipo stdClass o ItemPresupuesto para que el Blade no cambie
-                return (object) $reg->valores_anteriores;
+        foreach ($aprobacionesHistoricas as $aprobacion) {
+            $datosSello = is_array($aprobacion->valores_anteriores)
+                ? $aprobacion->valores_anteriores
+                : json_decode($aprobacion->valores_anteriores, true);
+
+            // Convertimos los ítems a objetos stdClass para que la vista los lea sin problemas
+            $itemsHistoricosDeEstaVersion = collect($datosSello['items'])->map(function($item) {
+                return (object) $item;
             });
 
-            // Calculamos los totales de esa versión histórica específica utilizando los datos del JSON
+            $fechaAprobacion = $datosSello['fecha_aprobacion'] ?? $aprobacion->created_at->format('Y-m-d H:i:s');
+
+            // Totales de la versión histórica
             $costosHistorial = $itemsHistoricosDeEstaVersion->sum('v_total');
             $ventaHistorial = $itemsHistoricosDeEstaVersion->sum('v_total_cliente');
             $margenBrutoHistorial = $ventaHistorial - $costosHistorial;
@@ -629,8 +643,9 @@ class Presupuesto extends Component
             $margenItemsHistorial = $itemsHistoricosDeEstaVersion->avg('margen_utilidad') ?? 0;
 
             $payloadHistoricos[] = [
-                'titulo_pestana' => "V{$version} (" . date('d-M H:i', strtotime($fechaHora)) . ")",
-                'presupuesto'    => $presto,
+                'titulo_pestana' => "V{$version} (" . date('d-M-Y', strtotime($fechaAprobacion)) . ")",
+                'presto'         => $presto, // Cambiado de 'presupuesto' a 'presto'
+                'tipo'           => $this->rentabilidadView, // Mapeado a 'tipo'
                 'items'          => $itemsHistoricosDeEstaVersion,
                 'proveedores'    => $proveedores,
                 'margenItems'    => $margenItemsHistorial,
@@ -638,15 +653,28 @@ class Presupuesto extends Component
                 'costosProyecto' => $costosHistorial,
                 'margenProyecto' => $margenProyectoHistorial,
                 'margenBruto'    => $margenBrutoHistorial,
-                'rentabilidadView' => $this->rentabilidadView,
             ];
-
             $version++;
+        }
+
+        if (!empty($payloadHistoricos)) {
+            $ultimoHistorico = end($payloadHistoricos);
+
+            // Comparamos un dato clave (por ejemplo, el costo total o la suma de totales)
+            $totalesActuales = $payloadActual['items']->sum('v_total');
+            $totalesHistoricos = collect($ultimoHistorico['items'])->sum('v_total');
+
+            // Si los totales y la cantidad de ítems son exactamente iguales,
+            // significa que no se ha modificado nada desde la última aprobación.
+            // Removemos el último histórico del array para no mostrarlo duplicado.
+            if ($totalesActuales === $totalesHistoricos && count($payloadActual['items']) === count($ultimoHistorico['items'])) {
+                array_pop($payloadHistoricos);
+            }
         }
 
         $nombreArchivo = ($presto->gestion->nom_proyecto_cot ?? 'presupuesto') . '.xlsx';
 
-        // 3. Enviamos el estado actual y la lista de versiones históricas a Maatwebsite Excel
+        // 3. Enviamos a Maatwebsite con las clases correctas
         return Excel::download(new HistorialSheetsExports($payloadActual, $payloadHistoricos), $nombreArchivo);
     }
 
@@ -712,8 +740,13 @@ class Presupuesto extends Component
     // Guarda la gestión de validación de Gerencia
     public function validacionGerencia() {
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presto->estado_id = 2;
+        $presto->estado_id = 1;
         $presto->justificacion_lider = null;
+
+        $gestion = GestionComercial::find($this->id_gestion);
+        $gestion->id_estado = 4;
+
+        $gestion->update();
         $presto->update();
 
         // Envía notificación de revisión
@@ -743,11 +776,29 @@ class Presupuesto extends Component
 
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
+        $itemsParaAprobar = ItemPresupuesto::where('presupuesto_id', $presupuesto->id)->get();
+
+        if ($itemsParaAprobar->isNotEmpty()) {
+            $firstItem = $itemsParaAprobar->first();
+
+            HistorialItemPresupuesto::create([
+                'item_presupuesto_id' => $firstItem->id, // ID real y existente en la BD
+                'valores_anteriores'  => json_encode([
+                    'tipo_registro'    => 'snapshot_aprobacion', // Flag para identificar que es una aprobación completa
+                    'items'            => $itemsParaAprobar->toArray(),
+                    'cod_cc'           => $this->centroCostos,
+                    'fecha_aprobacion' => date("Y-m-d H:i:s")
+                ]),
+                'user_id'             => auth()->id(),
+            ]);
+        }
+
         // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 30%,
         // se envia a validación de gerencia (estado_id = 5),
         // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
         if ($presupuesto->margen_proy < 30.00) {
             $presupuesto->estado_id = 5;
+            $presupuesto->cod_cc = $this->centroCostos;
             $presupuesto->update();
             return redirect()->route('presupuesto-proyecto')->with('success', 'Presupuesto aprobado y enviado a validación de gerencia');
         }

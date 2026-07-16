@@ -992,7 +992,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($estadoValidator == 5 && (Auth::user()->id == 8 || Auth::user()->id == 10))
+                    @elseif ($estadoValidator == 5 && (Auth::user()->id == 8 || Auth::user()->id == 10 || Auth::user()->id == 2))
                         {{-- GERENCIA --}}
                         <div class="col-md-12 p-2">
                             <div class="row gy-0">

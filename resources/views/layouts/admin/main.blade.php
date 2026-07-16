@@ -111,12 +111,14 @@
                                 <span class="sidenav-normal"> Validaciones </span>
                             </a>
                         </li> --}}
-                        <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
-                                <span class="sidenav-mini-icon text-xs"> C </span>
-                                <span class="sidenav-normal"> Solicitudes </span>
-                            </a>
-                        </li>
+                        @if(Auth::user()->id == 8 || Auth::user()->id == 10)
+                            <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
+                                    <span class="sidenav-mini-icon text-xs"> C </span>
+                                    <span class="sidenav-normal"> Solicitudes </span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </li>

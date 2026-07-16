@@ -18,15 +18,12 @@ class HistorialSheetsExports implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-
-        // 1. Hoja 1: El estado vivo/actual
-        $sheets[] = new PresupuestoSheet($this->payloadActual, 'Presupuesto Actual');
-
-        // 2. Hojas de historial dinámicas (V1, V2, V3...)
+        // 1. Hoja 1: El estado vivo/actual (Instancia la clase correcta)
+        $sheets[] = new PresupuestoSheet($this->payloadActual, 'Presupuesto actual');
+        // 2. Hojas de historial dinámicas (V1, V2, V3...) (Instancia la clase correcta)
         foreach ($this->payloadHistoricos as $historico) {
             $sheets[] = new PresupuestoSheet($historico, $historico['titulo_pestana']);
         }
-
         return $sheets;
     }
 }

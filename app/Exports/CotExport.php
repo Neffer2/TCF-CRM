@@ -16,7 +16,7 @@ class CotExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            'Presupuestos'         => new PresupuestosSheetsExports($this->info),
+            'Presupuestos'  => new PresupuestosSheetsExports($this->info)
         ];
     }
 
