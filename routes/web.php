@@ -76,6 +76,11 @@ Route::get('/', function () {
     })->middleware(['auth'])->middleware(['admin'])->name('anticipo-admin');
 /* --- */
 
+
+
+
+
+/* -- */
 /* commercial */
     Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');
     Route::get('/dashboard-base', [ComercialController::class, 'base'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-base');

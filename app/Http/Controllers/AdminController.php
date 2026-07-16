@@ -67,6 +67,21 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
     public function showBaseComercialGeneral (Request $request){
+        $user = Auth::user();
+        $comercialFiltro = $request->comercial;
+
+        if($user->id == 9 || $user->id == 38 || $user->id == 192){
+            $idsEquipo = \DB::table('lider_comercial_user')
+                ->where('lider_id', $user->id)
+                ->pluck('comercial_id')
+                ->toArray();
+
+            $idsEquipo[] = $user->id;
+
+            if($comercialFiltro && !in_array($comercialFiltro, $idsEquipo)){
+                $comercialFiltro = 'equipo_lider';
+            }
+        }
         // Crear array con los filtros recibidos del request
         $filtro = ['año' => $request->año, 'mes' => $request->mes, 'comercial' => $request->comercial, 'estado' => $request->estado];
         return view('admin.data.base-comercial', ['filtros' => $filtro]);
@@ -153,6 +168,33 @@ class AdminController extends Controller
         return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
     }
 
+
+    /* Temporal metodos lider comercial*/
+
+    /**
+     * Muestra la página del equipo con la lista de todos los usuarios
+     *
+     * @return \Illuminate\View\View
+     */
+    public  function showEquipo(){
+        $user = Auth::user();
+
+        if($user->id == 9 || $user->id == 38 || $user->id == 192){
+            $listUsers = \DB::table('lider_comercial_user')
+            ->join('users','lider_comercial_user.comercial_id', '=', 'users.id')
+                ->where('lider_comercial_user.lider_id',$user->id)
+                ->select('users.*')
+                ->get();
+        }else{
+            $listUsers = User::all();
+        }
+
+        return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['listUsers' => $listUsers]);
+
+
+    }
+
+
     /**
      * Muestra la página de orden nómina específica
      *
@@ -185,7 +227,7 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
     public function reporteConsumidos($mes = null, $anio = null){
-        if (Auth::user()->rol == 1  || Auth::user()->rol == 6){
+        if (Auth::user()->rol == 1  || Auth::user()->rol == 6 ) {
             return Excel::download(new ConsumidosExport($mes, $anio), "reporte_consumidos-{$mes}.xlsx");
         }else {
             return redirect()->route('dashboard');
