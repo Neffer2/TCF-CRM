@@ -11,16 +11,21 @@ class clientes extends Model
     protected $table = 'clientes';
 
     protected $fillable = [
-        'CodigoCliente',
-        'TipoCliente',
-        'NombreCliente',
-        'ApellidoCliente',
-        'RazonCliente',
-        'DireccionCliente',
-        'TelefonoCliente',
-        'EmailCliente',
-        'DescripcionCliente',
-        'id_user',
-        'estado_id'
+        'nombre',
+        'razon_social',
+        'nit',
+        'direccion',
+        'telefono',
+        'numero_telefono',
+        'cargo',
+        'correo',
+        'pagina_web',
+        'correo_recpcion_facturas',
+        'adjuntar_archivos'
     ];
+    public function parametroCC()
+    {
+        return $this->hasOne(cliente_parametros_cc::class, 'cliente_id');
+
+    }
 }

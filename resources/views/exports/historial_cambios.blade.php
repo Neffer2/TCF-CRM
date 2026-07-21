@@ -77,6 +77,9 @@
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Cantidad</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Total Actual</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Proveedor</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Utilidad</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Rentabilidad</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Estado</th>
         </tr>
         </thead>
@@ -97,6 +100,9 @@
                         $cantidad = data_get($base, 'cantidad', 0);
                         $vUnitario = (float) data_get($base, 'v_unitario', 0);
                         $vTotal = (float) data_get($base, 'v_total', 0);
+                        $proveedor = data_get($base, 'proveedor');
+                        $utilidad = (float) data_get($base, 'margen_utilidad');
+                        $rentabilidad = (float) data_get($base, 'rentabilidad', 0);
                         $estado = data_get($base, 'actualizado');
                     @endphp
                     <td>{{ $num_item }}</td>
@@ -104,6 +110,9 @@
                     <td>{{ $cantidad }}</td>
                     <td>{{ number_format($vUnitario, 2) }}</td>
                     <td>{{ number_format($vTotal, 2) }}</td>
+                    <td>{{ $proveedor }}</td>
+                    <td>{{ number_format($utilidad, 2) }}</td>
+                    <td>{{ number_format($rentabilidad, 2) }}</td>
                     <td>{{ is_null($estado) ? '-' : $estado }}</td>
                 </tr>
             @endforeach

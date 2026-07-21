@@ -5,25 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SolicitudCliente extends Model{
+class SolicitudCliente extends Model
+{
     use HasFactory;
     protected $table = 'solicitud_contactos';
 
     protected $fillable = [
         'id_user',
-        'tipo_cliente',
-        'nombre_cliente',
-        'apellido_cliente',
-        'direccion_cliente',
-        'telefono_cliente',
-        'email_cliente',
-        'descripcion_cliente',
         'estado',
-        'nueva_empresa_datos',
-    ];
-
-    protected $casts = [
-        'nueva_empresa_datos' => 'array',
+        'nombre',
+        'razon_social',
+        'nit',
+        'direccion',
+        'telefono',
+        'numero_telefono',
+        'cargo',
+        'correo',
+        'pagina_web',
+        'correo_recpcion_facturas',
+        'adjuntar_archivos',
     ];
 
     public function comercial()

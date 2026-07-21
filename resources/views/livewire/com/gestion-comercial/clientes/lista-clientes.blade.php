@@ -3,216 +3,189 @@
         <div class="d-flex align-items-center justify-content-between">
             <div>
                 <h6 class="mb-0">Clientes registrados</h6>
-                <p class="text-sm text-secondary mb-0">Consulta la informaci&oacute;n comercial y de contacto.</p>
+                <p class="text-sm text-secondary mb-0">Consulta la información comercial, corporativa y de facturación.</p>
             </div>
             <span class="badge bg-gradient-warning">{{ $clientes->total() }} registros</span>
         </div>
     </div>
+
     <div class="table-responsive">
         <table class="table align-items-center mb-0">
             <thead>
             <tr>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Informaci&oacute;n personal</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tipo</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Raz&oacute;n social</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contacto</th>
-                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Empresa (Nombre Comercial)</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIT / Razón Social</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ubicación / Sitio Web</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contacto & Facturación</th>
+                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Acciones</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($clientes as $cliente)
-                <tr>
+                <tr wire:key="cliente-{{ $cliente->id }}">
                     <td>
                         <div class="d-flex px-2 py-1">
                             <div>
-                                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3" alt="logo">
                             </div>
                             <div class="d-flex flex-column justify-content-center">
-                                <h6 class="mb-0 text-xs">{{ $cliente->NombreCliente }} {{ $cliente->ApellidoCliente }}</h6>
-                                <p class="text-xs text-secondary mb-0">{{ $cliente->CodigoCliente }}</p>
+                                <h6 class="mb-0 text-sm">{{ $cliente->nombre }}</h6>
+                                <p class="text-xs text-secondary mb-0">ID Sistema: #{{ $cliente->id }}</p>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->TipoCliente }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->nit }}</p>
+                        <p class="text-xs text-secondary mb-0">{{ $cliente->razon_social }}</p>
                     </td>
                     <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->RazonSocialCliente }}</p>
-                        <p class="text-xs text-secondary mb-0">{{ $cliente->DireccionCliente }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->direccion }}</p>
+                        <p class="text-xs text-secondary mb-0">
+                            @if($cliente->pagina_web)
+                                <a href="{{ $cliente->pagina_web }}" target="_blank" class="text-secondary">{{ $cliente->pagina_web }}</a>
+                            @else
+                                No registra web
+                            @endif
+                        </p>
                     </td>
                     <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->EmailCliente }}</p>
-                        <p class="text-xs text-secondary">{{ $cliente->TelefonoCliente }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ $cliente->correo }} ({{ $cliente->cargo }})</p>
+                        <p class="text-xs text-secondary mb-0">Facturación: {{ $cliente->correo_recpcion_facturas }}</p>
+                        <p class="text-xs text-secondary mb-0">Móvil: {{ $cliente->numero_telefono }}</p>
                     </td>
-                    {{-- <td class="text-center">
-                        <button class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $cliente->id }}">Editar</button>
-                        <button class="btn btn-sm bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $cliente->id }}">Eliminar</button>
-                    </td> --}}
+                    <td class="text-center align-middle">
+                        <button class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#editModal{{ $cliente->id }}">Ver</button>
+                    </td>
                 </tr>
+
                 <!-- Edit Modal -->
-                <div class="modal fade" id="editModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        {{-- action="{{ route('update-cliente', $cliente->id) }}" method="POST" --}}
-                        <form >
+                <div class="modal fade" id="editModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ $cliente->id }}" aria-hidden="true" wire:ignore.self>
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <form wire:submit.prevent="update({{ $cliente->id }})">
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Editar</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <h5 class="modal-title" id="editModalLabel{{ $cliente->id }}">Ver Información del Cliente</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="row">
+                                    <div class="row g-3">
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="CodigoCliente">C&oacute;digo: </label>
-                                                <input id="CodigoCliente" name="CodigoCliente_edit" class="form-control @error('CodigoCliente_edit') is-invalid @enderror" placeholder="C&oacute;digo"
-                                                       value="{{ $cliente->CodigoCliente }}">
-                                                @error('CodigoCliente_edit')
-                                                <div id="CodigoCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Nombre Comercial</label>
+                                                <input type="text" name="nombre" class="form-control" value="{{ $cliente->nombre }}" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="TipoCliente">Tipo de Cliente: </label>
-                                                <select id="TipoCliente" name="TipoCliente_edit" class="form-control @error('TipoCliente_edit') is-invalid @enderror">
-                                                    <option value="">Seleccionar</option>
-                                                    <option value="NATURAL" {{ $cliente->TipoCliente == 'NATURAL' ? 'selected' : '' }}>NATURAL</option>
-                                                    <option value="JUR&Iacute;DICO" {{ $cliente->TipoCliente == 'JUR&Iacute;DICO' ? 'selected' : '' }}>JUR&Iacute;DICO</option>
-                                                </select>
-                                                @error('TipoCliente_edit')
-                                                <div id="TipoCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Razón Social</label>
+                                                <input type="text" name="razon_social" class="form-control" value="{{ $cliente->razon_social }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">NIT / Identificación</label>
+                                                <input type="text" name="nit" class="form-control" value="{{ $cliente->nit }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Teléfono Fijo</label>
+                                                <input type="text" name="telefono" class="form-control" value="{{ $cliente->telefono }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Número Celular</label>
+                                                <input type="text" name="numero_telefono" class="form-control" value="{{ $cliente->numero_telefono }}" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="nombreCliente">Nombre: </label>
-                                                <input id="nombreCliente" name="nombreCliente_edit" class="form-control @error('nombreCliente_edit') is-invalid @enderror" placeholder="Nombre"
-                                                       value="{{ $cliente->nombreCliente }}">
-                                                @error('nombreCliente_edit')
-                                                <div id="nombreCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Dirección</label>
+                                                <input type="text" name="direccion" class="form-control" value="{{ $cliente->direccion }}" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="apellidoCliente">Apellido: </label>
-                                                <input id="apellidoCliente" name="apellidoCliente_edit" class="form-control @error('apellidoCliente_edit') is-invalid @enderror" placeholder="Apellido"
-                                                       value="{{ $cliente->apellidoCliente }}">
-                                                @error('apellidoCliente_edit')
-                                                <div id="apellidoCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Página Web</label>
+                                                <input type="url" name="pagina_web" class="form-control" value="{{ $cliente->pagina_web }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="RazonSocialCliente">Raz&oacute;n Social: </label>
-                                                <input id="RazonSocialCliente" type="text" name="RazonSocialCliente_edit" class="form-control @error('RazonSocialCliente_edit') is-invalid @enderror" placeholder="Raz&oacute;n Social"
-                                                       value="{{ $cliente->RazonSocialCliente }}">
-                                                @error('RazonSocialCliente_edit')
-                                                <div id="RazonSocialCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Cargo del Contacto</label>
+                                                <input type="text" name="cargo" class="form-control" value="{{ $cliente->cargo }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="DireccionCliente">Direcci&oacute;n: </label>
-                                                <input id="DireccionCliente" type="text" name="DireccionCliente_edit" class="form-control @error('DireccionCliente_edit') is-invalid @enderror" placeholder="Direcci&oacute;n"
-                                                       value="{{ $cliente->DireccionCliente }}">
-                                                @error('DireccionCliente_edit')
-                                                <div id="DireccionCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label" disabled="">Correo de Contacto</label>
+                                                <input type="email" name="correo" class="form-control" value="{{ $cliente->correo }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="telefonoCliente">Tel&eacute;fono: </label>
-                                                <input id="telefonoCliente" type="number" name="telefonoCliente_edit" class="form-control @error('telefonoCliente_edit') is-invalid @enderror" placeholder="Tel&eacute;fono"
-                                                       value="{{ $cliente->telefonoCliente }}">
-                                                @error('telefonoCliente_edit')
-                                                <div id="telefonoCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-0">
+                                                <label class="form-control-label">Recepción de Facturas</label>
+                                                <input type="email" name="correo_recpcion_facturas" class="form-control" value="{{ $cliente->correo_recpcion_facturas }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="emailCliente">Correo: </label>
-                                                <input id="emailCliente" type="email" name="emailCliente_edit" class="form-control @error('emailCliente_edit') is-invalid @enderror" placeholder="Correo"
-                                                       value="{{ $cliente->emailCliente }}">
-                                                @error('emailCliente_edit')
-                                                <div id="emailCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
+                                        @if($cliente->adjuntar_archivos)
+                                            <div class="col-md-12 mt-2">
+                                                <label class="form-control-label d-block">Documentación Adjunta</label>
+                                                <a href="{{ asset('storage/' . $cliente->adjuntar_archivos) }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
+                                                    <i class="fas fa-file-pdf me-2"></i>Ver documento actual
+                                                </a>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="DescripcionCliente">Descripci&oacute;n: </label>
-                                                <textarea id="DescripcionCliente" name="DescripcionCliente_edit" rows="3" class="form-control @error('DescripcionCliente_edit') is-invalid @enderror" placeholder="Descripci&oacute;n">{{ $cliente->DescripcionCliente }}</textarea>
-                                                @error('DescripcionCliente_edit')
-                                                <div id="DescripcionCliente_edit" class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                                @enderror
-                                            </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn bg-gradient-primary">Guardar cambios</button>
+                                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Volver</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
+
                 <!-- Delete Modal -->
-                <div class="modal fade" id="deleteModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="deleteModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $cliente->id }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
-                        {{-- action="{{ route('delete-cliente', $cliente->id) }}" method="POST" --}}
-                        <form >
+                        <form wire:submit.prevent="destroy({{ $cliente->id }})">
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <h5 class="modal-title" id="deleteModalLabel{{ $cliente->id }}">Eliminar Registro de Cliente</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
-                                    ¿Desea eliminar a: {{ $cliente->nombreCliente }} {{ $cliente->apellidoCliente }}?
+                                <div class="modal-body text-start">
+                                    ¿Está completamente seguro de que desea eliminar permanentemente al cliente corporativo <strong>{{ $cliente->nombre }}</strong> con NIT <strong>{{ $cliente->nit }}</strong>? Esta acción no se puede deshacer.
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn bg-gradient-danger">Eliminar</button>
+                                    <button type="submit" class="btn bg-gradient-danger" data-bs-dismiss="modal">Eliminar de forma permanente</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             @endforeach
-            <tr>
-                <td colspan="5" class="pt-3">{{ $clientes->links() }}</td>
-            </tr>
+
+            @if($clientes->isEmpty())
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-sm text-secondary">
+                        No hay clientes registrados en la plataforma.
+                    </td>
+                </tr>
+            @endif
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación con estilo Bootstrap en el pie de la tabla -->
+    @if($clientes->hasPages())
+        <div class="card-footer py-3">
+            {{ $clientes->links() }}
+        </div>
+    @endif
 </div>

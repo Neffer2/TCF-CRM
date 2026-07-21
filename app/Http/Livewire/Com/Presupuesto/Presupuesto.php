@@ -3,7 +3,9 @@
 namespace App\Http\Livewire\Com\Presupuesto;
 
 use App\Exports\HistorialSheetsExports;
+use App\Http\Livewire\Com\GestionComercial\Clientes\Cliente;
 use App\Models\clientes;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Rules\CentroCostos;
@@ -17,6 +19,7 @@ use App\Models\CategoriaProveedor;
 use App\Models\Proveedor;
 use App\Models\ItemPresupuesto;
 use App\Models\Tarifario;
+use App\Models\cliente_parametros_cc;
 use App\Models\PresupuestoProyecto;
 use App\Traits\Email;
 use App\Models\HistorialItemPresupuesto;
@@ -53,7 +56,7 @@ class Presupuesto extends Component
     public $administracion = 0;
     public $fee = 0;
 
-    public $centroCostos;
+    public $centroCostos = '';
     public $justificacion;
     public $justificacion_compras;
     public $justificacion_lider_comercial;
@@ -88,16 +91,18 @@ class Presupuesto extends Component
     // Variable global para la gestión
     public $id_gestion;
 
+    public $clienteSeleccionado; // Almacena el ID elegido en el select
+    public $mesCC;
 
     public $modoMoviento = false;
 
     // Renderiza la vista principal del presupuesto
     public function render()
     {
-        $clientes = clientes::orderBy('NombreCliente', 'asc')->get();
+        $clientesParametros = cliente_parametros_cc::orderBy('codigo_cc', 'ASC')->get();
 
         return view('livewire.com.presupuesto.presupuesto', [
-            'clientes' => $clientes
+            'clientesParametros' => $clientesParametros
             ]);
     }
 
@@ -764,6 +769,10 @@ class Presupuesto extends Component
 
     // Actualiza el centro de costos y recalcula valores
     public function updateCentro(){
+        if (!$this->presupuesto->cod_cc) {
+            $this->calcularCentroCostos();
+        }
+
         if (!$this->presupuesto->cod_cc){
             $this->validate([
                 'centroCostos' => ['required', 'string', new CentroCostos]
@@ -1103,5 +1112,58 @@ class Presupuesto extends Component
     // Alterna la vista de rentabilidad
     public function toggelRentabilidad(){
         $this->rentabilidadView = !$this->rentabilidadView;
+    }
+
+    public function updatedMesCC($value){
+        $this->calcularCentroCostos();
+    }
+
+    public function updatedClienteSeleccionado($value)
+    {
+        $this->calcularCentroCostos();
+    }
+
+    public function calcularCentroCostos(){
+        if (!$this->clienteSeleccionado) {
+            $this->centroCostos = '';
+            return;
+        }
+
+        // 1. Buscamos directamente el registro en clientes_parametro_cc
+        $parametro = cliente_parametros_cc::find($this->clienteSeleccionado);
+
+        if (!$parametro || !$parametro->codigo_cc) {
+            $this->centroCostos = '';
+            return;
+        }
+
+        // 2. Tomamos el código de 2 dígitos (ej: 'C3', '09', '11')
+        $codigoCC = $parametro->codigo_cc;
+
+        // 3. Factores de fecha: Año actual y Mes por defecto actual (ej: '07')
+        $anio = date('y');
+        $mes = $this->mesCC ?? date('m');
+        $mesFormateado = str_pad($mes, 2, '0', STR_PAD_LEFT);
+
+        // Raíz de búsqueda: "C3-202607-"
+        $prefijoBusqueda = "{$codigoCC}-{$anio}{$mesFormateado}-";
+
+        // 4. Consultamos el último consecutivo en presupuestos_proyecto
+        $ultimoPresupuesto = PresupuestoProyecto::where('cod_cc', 'LIKE', "{$prefijoBusqueda}%")
+            ->orderBy('cod_cc', 'desc')
+            ->first();
+
+        $nuevoConsecutivo = 1;
+
+        if ($ultimoPresupuesto) {
+            $partes = explode('-', $ultimoPresupuesto->cod_cc);
+            $ultimoNumero = (int) end($partes);
+            $nuevoConsecutivo = $ultimoNumero + 1;
+        }
+
+        $consecutivoFormateado = str_pad($nuevoConsecutivo, 2, '0', STR_PAD_LEFT);
+
+        // 5. Asignamos la cadena final a la propiedad de previsualización
+        $this->centroCostos = "{$prefijoBusqueda}{$consecutivoFormateado}";
     }
 }

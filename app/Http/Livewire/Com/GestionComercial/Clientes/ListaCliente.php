@@ -17,7 +17,21 @@ class ListaCliente extends Component
 
     public function render(){
 
-        $clientes = clientes::select('id', 'CodigoCLiente', 'NombreCLiente', 'ApellidoCliente', 'TipoCliente','EstadoCliente', 'RazonCliente', 'DireccionCliente', 'TelefonoCliente', 'EmailCliente')
+        $clientes = clientes::select(
+            'id',
+            'id_user',
+            'estado_id',
+            'nombre',
+            'razon_social',
+            'nit',
+            'direccion',
+            'numero_telefono',
+            'cargo',
+            'correo',
+            'pagina_web',
+            'correo_recpcion_facturas', // Dejamos solo la columna real de la BD
+            'adjuntar_archivos'
+        )
             ->where('id_user', Auth::id())
             ->orderBy('id', 'desc')
             ->paginate(10);

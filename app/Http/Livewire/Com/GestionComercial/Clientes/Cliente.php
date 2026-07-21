@@ -2,142 +2,146 @@
 
 namespace App\Http\Livewire\Com\GestionComercial\Clientes;
 
+use App\Http\Livewire\Com\GestionComercial\Clientes\CrearSolicitudContacto;
 use App\Models\SolicitudCliente;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 use App\Models\clientes;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Cliente extends Component
 {
+    use WithPagination;
+    use WithFileUploads;
     //Model
-    public $CodigoCliente;
-    public $TipoCliente;
-    public $nombreCliente;
-    public $apellidoCliente;
-    public $RazonSocialCliente;
-    public $DireccionCliente;
-    public $telefonoCliente;
-    public $emailCliente;
-    public $DescripcionCliente;
+    public $nombre;
+    public $razon_social;
+    public $nit;
+    public $direccion;
+    public $telefono;
+    public $numero_telefono;
+    public $cargo;
+    public $correo;
+    public $pagina_web;
+    public $correo_recpcion_facturas; // Respetamos el nombre de tu campo de BD
+    public $adjuntar_archivos; // Para el manejo de adjuntos temporales
 
     public function render(){
         return view('livewire.com.gestion-comercial.clientes.nuevo-cliente');
     }
 
-    public function updatedCodigoCliente()
-    {
-        $this->validate(['CodigoCliente' => ['nullable', 'string']]); // Nullable por RN-006
+    // 2. Validaciones en tiempo real (Formato: updated + NombreExactoPropiedad)
+    public function updatedNombre(){
+        $this->validate(['nombre' => ['required', 'string', 'max:255']]);
     }
-    public function updatedTipoCliente()
-    {
-        $this->validate(['TipoCliente' => ['string', 'required']]);
+    public function updatedRazonSocial(){
+        $this->validate(['razon_social' => ['required', 'string', 'max:255']]);
     }
-    public function updatedNombreCliente()
-    {
-        $this->validate(['nombreCliente' => ['string', 'required']]);
+    public function updatedNit(){
+        $this->validate(['nit' => ['required', 'string', 'max:50']]);
     }
-    public function updatedApellidoCliente()
-    {
-        $this->validate(['apellidoCliente' => ['string', 'required']]);
+    public function updatedDireccion(){
+        $this->validate(['direccion' => ['required', 'string', 'max:255']]);
     }
-    public function updatedRazonSocialCliente()
-    {
-        $this->validate(['RazonSocialCliente' => ['string', 'required']]);
+    public function updatedTelefono(){
+        $this->validate(['telefono' => ['nullable', 'string', 'max:50']]);
     }
-    public function updatedDireccionCliente()
-    {
-        $this->validate(['DireccionCliente' => ['string', 'nullable']]);
+    public function updatedNumeroTelefono(){
+        $this->validate(['numero_telefono' => ['required', 'string', 'max:50']]);
     }
-    public function updatedTelefonoCliente()
-    {
-        $this->validate(['telefonoCliente' => ['string', 'nullable']]);
+    public function updatedCargo(){
+        $this->validate(['cargo' => ['required', 'string', 'max:100']]);
     }
-    public function updatedEmailCliente()
-    {
-        $this->validate(['emailCliente' => ['string', 'required', 'email']]);
+    public function updatedCorreo(){
+        $this->validate(['correo' => ['required', 'string', 'email:rfc', 'max:255']]);
     }
-    public function updatedDescripcionCliente()
-    {
-        $this->validate(['DescripcionCliente' => ['string', 'nullable']]);
+    public function updatedPaginaWeb(){
+        $this->validate(['pagina_web' => ['nullable', 'string', 'max:255']]);
+    }
+    public function updatedCorreoRecpcionFacturas(){
+        $this->validate(['correo_recpcion_facturas' => ['required', 'string', 'email:rfc', 'max:255']]);
     }
 
-    public function storage()
-    {
-        // Validamos usando exactamente los mismos nombres de las propiedades públicas
+    // 3. Método de guardado adaptado a la nueva matriz de datos corporativos
+    public function storage(){
         $this->validate([
-            'CodigoCliente'      => ['nullable', 'string'],
-            'TipoCliente'        => ['required', 'string'],
-            'nombreCliente'      => ['required', 'string'],
-            'apellidoCliente'    => ['required', 'string'],
-            'RazonSocialCliente' => ['required', 'string'],
-            'DireccionCliente'   => ['nullable', 'string'],
-            'telefonoCliente'    => ['nullable', 'string'],
-            'emailCliente'       => ['required', 'string', 'email', 'email:rfc'],
-            'DescripcionCliente' => ['nullable', 'string'],
+            'nombre'            => ['required', 'string', 'max:255'],
+            'razon_social'             => ['required', 'string', 'max:255'],
+            'nit'                      => ['required', 'string', 'max:50'],
+            'direccion'                => ['required', 'string', 'max:255'],
+            'telefono'                 => ['nullable', 'string', 'max:50'],
+            'numero_telefono'          => ['required', 'string', 'max:50'],
+            'cargo'                    => ['required', 'string', 'max:100'],
+            'correo'                   => ['required', 'string', 'email:rfc', 'max:255'],
+            'pagina_web'               => ['nullable', 'string', 'max:255'],
+            'correo_recpcion_facturas' => ['required', 'string', 'email:rfc', 'max:255'],
+            'adjuntar_archivos'        => ['nullable'],
         ]);
 
         try {
-            \Illuminate\Support\Facades\DB::beginTransaction();
+            DB::beginTransaction();
 
-            $solicitud = SolicitudCliente::create([
-                'id_user'             => Auth::id(), // Comercial (RN-008)
-                'tipo_cliente'        => $this->TipoCliente,
-                'nombre_cliente'      => $this->nombreCliente,
-                'apellido_cliente'    => $this->apellidoCliente,
-                'direccion_cliente'   => $this->DireccionCliente,
-                'telefono_cliente'    => $this->telefonoCliente,
-                'email_cliente'       => $this->emailCliente,
-                'descripcion_cliente' => $this->DescripcionCliente,
-                'estado'              => 'Pendiente', // RN-003
-                'nueva_empresa_datos' => json_encode([
-                    'nombre'       => $this->RazonSocialCliente,
-                    'razon_social' => $this->RazonSocialCliente,
-                ]),
+            // Mapeamos todo a la sala de espera estructurada
+
+            SolicitudCliente::create([
+                'id_user'                  => Auth::id(),
+                'estado'                   => 'Pendiente',
+                'nombre'                   => $this->nombre,
+                'razon_social'             => $this->razon_social,
+                'nit'                      => $this->nit,
+                'direccion'                => $this->direccion,
+                'telefono'                 => $this->telefono,
+                'numero_telefono'          => $this->numero_telefono,
+                'cargo'                    => $this->cargo,
+                'correo'                   => $this->correo,
+                'pagina_web'               => $this->pagina_web,
+                'correo_recpcion_facturas' => $this->correo_recpcion_facturas,
+                'adjuntar_archivos'        => $this->adjuntar_archivos,
             ]);
 
-            \Illuminate\Support\Facades\DB::commit();
+            DB::commit();
 
-            // Notificación limpia al Controller (RN-010 / HU-001)
-            $controller = User::where('rol', '2')->first();
-            if ($controller && method_exists($this, 'mailNuevaSolicitudController')) {
-                $this->mailNuevaSolicitudController($solicitud, $controller->email, $controller->name);
-            }
-
-            session()->flash('success', 'La solicitud de creación de contacto ha sido enviada al Controller en estado Pendiente.');
+            session()->flash('success', 'La información comercial del cliente ha sido registrada y enviada a validación con éxito.');
 
             $this->limpiar();
             $this->emit('list');
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
-
-            dd($e->getMessage(), $e->getFile(), $e->getLine());
-
-            $this->addError('error_proceso', 'Hubo un fallo al procesar la solicitud: ' . $e->getMessage());
+            DB::rollBack();
+            $this->addError('error_proceso', 'Fallo al procesar la información: ' . $e->getMessage());
         }
     }
 
-    // 4. Tus mensajes personalizados mapeados a las propiedades correctas
+    // 4. Mensajes de error personalizados para los nuevos campos fijos
     protected $messages = [
-        'TipoCliente.required'        => 'El tipo de cliente es obligatorio.',
-        'nombreCliente.required'      => 'El nombre es obligatorio.',
-        'apellidoCliente.required'    => 'El apellido es obligatorio.',
-        'RazonSocialCliente.required' => 'La razón social de la empresa es obligatoria.',
-        'emailCliente.required'       => 'El correo electrónico es obligatorio.',
-        'emailCliente.email'          => 'El formato del correo electrónico no es válido.',
+        'nombre.required'                   => 'El nombre es obligatorio.',
+        'razon_social.required'             => 'La razón social de la empresa es obligatoria.',
+        'nit.required'                      => 'El NIT es obligatorio para la facturación.',
+        'direccion.required'                => 'La dirección de correspondencia es obligatoria.',
+        'numero_telefono.required'          => 'El número de teléfono móvil es requerido.',
+        'cargo.required'                    => 'El cargo del contacto es obligatorio.',
+        'correo.required'                   => 'El correo electrónico es obligatorio.',
+        'correo.email'                      => 'El formato del correo electrónico no es válido.',
+        'correo_recpcion_facturas.required' => 'El correo de recepción de facturas es obligatorio.',
+        'correo_recpcion_facturas.email'    => 'El formato del correo de facturación no es válido.',
     ];
 
     public function limpiar(){
-        $this->CodigoCliente = "";
-        $this->TipoCliente = "";
-        $this->nombreCliente = "";
-        $this->apellidoCliente = "";
-        $this->RazonSocialCliente = "";
-        $this->DireccionCliente = "";
-        $this->telefonoCliente = "";
-        $this->emailCliente = "";
-        $this->DescripcionCliente = "";
+        $this->nombre = "";
+        $this->razon_social = "";
+        $this->nit = "";
+        $this->direccion = "";
+        $this->telefono = "";
+        $this->numero_telefono = "";
+        $this->cargo = "";
+        $this->correo = "";
+        $this->pagina_web = "";
+        $this->correo_recpcion_facturas = "";
+        $this->adjuntar_archivos = null;
     }
+
 }

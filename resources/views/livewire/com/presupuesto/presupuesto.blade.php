@@ -899,37 +899,58 @@
                         <div class="col-md-12 p-2">
                             <div class="row gy-0">
                                 <div class="col-md-3">
-                                    <div class="form-group mb-0">
-                                        <label for="centroCostos">CENTRO DE COSTOS</label>
-                                        <select id="centroCostos"
-                                                class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
-                                                required
-                                                wire:model.lazy="centroCostos"
-                                                @if($this->presupuesto && $this->presupuesto->cod_cc) disabled @endif>
-                                                <option value="">-- Seleccione un Centro de Costos / Cliente --</option>
-                                                @forelse($clientes ?? [] as $cliente)
-                                                    <option value="{{ $cliente->CodigoCliente }}">
-                                                        ({{ $cliente->CodigoCliente }})
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <!-- Selector apuntando a clientes_parametro_cc -->
+                                            <label for="clienteSeleccionado">CLIENTE</label>
+                                            <select id="clienteSeleccionado"
+                                                    class="form-control @error('centroCostos') is-invalid @enderror"
+                                                    required
+                                                    wire:model.live="clienteSeleccionado"
+                                                    @if($this->presupuesto && $this->presupuesto->cod_cc) disabled @endif>
+                                                <option value="">-- Seleccione un Cliente / CC --</option>
+                                                @forelse($clientesParametros ?? [] as $parametro)
+                                                    <option value="{{ $parametro->id }}">
+                                                        ({{ $parametro->codigo_cc }}) {{ $parametro->nombre_empresa ?? $parametro->cliente ?? '' }}
                                                     </option>
                                                 @empty
-                                                    <option value="" disabled>No hay clientes registrados en la base de datos</option>
+                                                    <option value="" disabled>No hay parámetros de CC registrados</option>
                                                 @endforelse
-                                        </select>
-                                        @error('centroCostos')
-                                            <div class="invalid-feedback">
+                                            </select>
+
+                                            <!-- Input enlazado a la propiedad almacenada $centroCostos -->
+                                            <div class="mt-2">
+                                                <label class="small font-weight-bold text-muted">CENTRO DE COSTOS</label>
+                                                <input type="text"
+                                                       class="form-control @error('centroCostos') is-invalid @elseif(strlen($centroCostos) > 0) is-valid @enderror"
+                                                       wire:model="centroCostos"
+                                                       value="{{ $centroCostos }}"
+                                                       readonly
+                                                       style="background-color: #e9ecef; font-weight: bold; font-family: monospace;">
+                                            </div>
+
+                                            @error('centroCostos')
+                                            <div class="invalid-feedback d-block">
                                                 {{ $message }}
                                             </div>
-                                        @enderror
-                                        <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-2" type="button">
-                                            <span class="btn-inner--icon" wire:loading.remove wire:target="updateCentro">
-                                                <i class="ni ni-ruler-pencil"></i>
-                                            </span>
+                                            @enderror
+
+                                            <!-- Botón de Aprobación -->
+                                            <button wire:click="updateCentro" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-3" type="button">
+                                                <span class="btn-inner--icon" wire:loading.remove wire:target="updateCentro">
+                                                    <i class="ni ni-ruler-pencil"></i>
+                                                </span>
                                                 <span class="btn-inner--icon" wire:loading wire:target="updateCentro">
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            </span>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </span>
                                                 <span class="btn-inner--text">Aprobar</span>
-                                        </button>
+                                            </button>
+                                        </div>
                                     </div>
+
+
                                 </div>
                                 {{-- <div class="col-md-3">
                                     <button wire:click="validacionLiderComercial" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">

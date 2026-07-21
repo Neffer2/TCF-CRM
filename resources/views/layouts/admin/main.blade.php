@@ -37,189 +37,264 @@
         </a>
     </div>
     <hr class="horizontal dark mt-0">
-    <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active"
-                   aria-controls="dashboardsExamples" role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="ni ni-shop text-primary text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Inicio</span>
-                </a>
-                <div @class([
-            'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
-            'collapse' => true
-            ]) id="dashboardsExamples">
-                    <ul class="nav ms-4">
-                        <li @class(['active' => request()->is('dashboard-admin'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('dashboard-admin'), 'nav-link' => true]) href="{{ route('dashboard-admin') }}">
-                                <span class="sidenav-mini-icon"> D </span>
-                                <span class="sidenav-normal"> Dashboard </span>
-                            </a>
-                        </li>
-                        {{-- <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
-                          <a @class(['active' => request()->is('estado-facturacion'), 'nav-link' => true]) href="{{ route('estado-facturacion') }}">
-                            <span class="sidenav-mini-icon"> E </span>
-                            <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
-                          </a>
-                        </li> --}}
-                        <li @class(['active' => request()->is('base-comercial-general'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
-                                <span class="sidenav-mini-icon"> B </span>
-                                <span class="sidenav-normal"> Base comercial general </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('helisa-general'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">
-                                <span class="sidenav-mini-icon"> B </span>
-                                <span class="sidenav-normal"> Helisa general </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link"
-                   aria-controls="dashboardsGestion" role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="ni ni-badge text-primary text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
-                </a>
-                <div @class([
-            'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones') || request()->is('validacionesCliente')),
-            'collapse' => true
-            ]) id="dashboardsGestion">
-                    <ul class="nav ms-4">
-                        <li @class(['active' => request()->is('presupuesto-proyecto'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('presupuesto-proyecto'), 'nav-link' => true]) href="{{ route('presupuesto-proyecto') }}">
-                                <span class="sidenav-mini-icon text-xs"> P </span>
-                                <span class="sidenav-normal"> Presupuestos </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('actualizaciones'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('actualizaciones'), 'nav-link' => true]) href="{{ route('actualizaciones') }}">
-                                <span class="sidenav-mini-icon text-xs"> A </span>
-                                <span class="sidenav-normal"> Actualizaciones </span>
-                            </a>
-                        </li>
-                        {{-- TODO : Revisar si se deja la opción de validaciones o se elimina, ya que no se está usando. --}}
-                        {{-- <li @class(['active' => request()->is('validaciones'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('validaciones'), 'nav-link' => true]) href="{{ route('validaciones') }}">
-                                <span class="sidenav-mini-icon text-xs"> V </span>
-                                <span class="sidenav-normal"> Validaciones </span>
-                            </a>
-                        </li> --}}
-                        @if(Auth::user()->id == 8 || Auth::user()->id == 10)
-                            <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
-                                <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
-                                    <span class="sidenav-mini-icon text-xs"> C </span>
-                                    <span class="sidenav-normal"> Solicitudes </span>
+    @if(Auth::user()->rol == 1 && in_array(Auth::user()->id, [9,38,192]))
+        <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active"
+                       aria-controls="dashboardsExamples" role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-shop text-primary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Inicio</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
+                'collapse' => true
+                ]) id="dashboardsExamples">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('dashboard-admin'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('dashboard-admin'), 'nav-link' => true]) href="{{ route('dashboard-admin') }}">
+                                    <span class="sidenav-mini-icon"> D </span>
+                                    <span class="sidenav-normal"> Dashboard </span>
                                 </a>
                             </li>
-                        @endif
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link"
-                   aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
+                            {{-- <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
+                              <a @class(['active' => request()->is('estado-facturacion'), 'nav-link' => true]) href="{{ route('estado-facturacion') }}">
+                                <span class="sidenav-mini-icon"> E </span>
+                                <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
+                              </a>
+                            </li> --}}
+                            <li @class(['active' => request()->is('base-comercial-general'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
+                                    <span class="sidenav-mini-icon"> B </span>
+                                    <span class="sidenav-normal"> Base comercial general </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('helisa-general'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">
+                                    <span class="sidenav-mini-icon"> B </span>
+                                    <span class="sidenav-normal"> Helisa general </span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <span class="nav-link-text ms-1">Producci&oacute;n</span>
-                </a>
-                <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal') || request()->is('lista-anticipos-admin')),
-            'collapse' => true
-            ]) id="dashboardsProduccion">
-                    <ul class="nav ms-4">
-                        <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
-                                <span class="sidenav-mini-icon text-xs"> AN </span>
-                                <span class="sidenav-normal"> Proveedores </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
-                                <span class="sidenav-mini-icon text-xs"> OC </span>
-                                <span class="sidenav-normal"> Ordenes de compra </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
-                                <span class="sidenav-mini-icon text-xs"> AN </span>
-                                <span class="sidenav-normal"> Anticipos </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
-                                <span class="sidenav-mini-icon text-xs"> C </span>
-                                <span class="sidenav-normal"> Consumidos </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
-                                <span class="sidenav-mini-icon"> P </span>
-                                <span class="sidenav-normal"> Personal </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button"
-                   aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link"
+                       aria-controls="dashboardsGestion" role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-badge text-primary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones') || request()->is('validacionesCliente')),
+                'collapse' => true
+                ]) id="dashboardsGestion">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('presupuesto-proyecto'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('presupuesto-proyecto'), 'nav-link' => true]) href="{{ route('presupuesto-proyecto') }}">
+                                    <span class="sidenav-mini-icon text-xs"> P </span>
+                                    <span class="sidenav-normal"> Presupuestos </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('actualizaciones'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('actualizaciones'), 'nav-link' => true]) href="{{ route('actualizaciones') }}">
+                                    <span class="sidenav-mini-icon text-xs"> A </span>
+                                    <span class="sidenav-normal"> Actualizaciones </span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <span class="nav-link-text ms-1">Acciones</span>
-                </a>
-                <div @class([
-            'show' => (request()->is('presupuesto') || request()->is('mi-equpo')),
-            'collapse' => true
-            ]) id="acciones" style="">
-                    <ul class="nav ms-4">
-                        <li @class(['active' => request()->is('presupuesto'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuesto') }}">
-                                <span class="sidenav-mini-icon"> P </span>
-                                <span class="sidenav-normal"> Presupuesto </span>
-                            </a>
-                        </li>
-                        <li @class(['active' => request()->is('mi-equpo'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('mi-equpo'), 'nav-link' => true]) href="{{ route('mi-equpo') }}">
-                                <span class="sidenav-mini-icon"> M </span>
-                                <span class="sidenav-normal"> Mi equipo </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples"
-                   role="button" aria-expanded="false">
-                    <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                        <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
+                </li>
+            </ul>
+        </div>
+    @elseif(Auth::user()->rol == 1)
+        <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active"
+                       aria-controls="dashboardsExamples" role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-shop text-primary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Inicio</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
+                'collapse' => true
+                ]) id="dashboardsExamples">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('dashboard-admin'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('dashboard-admin'), 'nav-link' => true]) href="{{ route('dashboard-admin') }}">
+                                    <span class="sidenav-mini-icon"> D </span>
+                                    <span class="sidenav-normal"> Dashboard </span>
+                                </a>
+                            </li>
+                            {{-- <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
+                              <a @class(['active' => request()->is('estado-facturacion'), 'nav-link' => true]) href="{{ route('estado-facturacion') }}">
+                                <span class="sidenav-mini-icon"> E </span>
+                                <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
+                              </a>
+                            </li> --}}
+                            <li @class(['active' => request()->is('base-comercial-general'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
+                                    <span class="sidenav-mini-icon"> B </span>
+                                    <span class="sidenav-normal"> Base comercial general </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('helisa-general'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">
+                                    <span class="sidenav-mini-icon"> B </span>
+                                    <span class="sidenav-normal"> Helisa general </span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <span class="nav-link-text ms-1">Ajustes</span>
-                </a>
-                <div @class([
-            'show' => (request()->is('actualizar-perfil-adm')),
-            'collapse' => true
-            ]) id="ajustes" style="">
-                    <ul class="nav ms-4">
-                        <li @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-item' => true])>
-                            <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">
-                                <span class="sidenav-mini-icon"> K </span>
-                                <span class="sidenav-normal"> Actualizar perfil </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-    </div>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dashboardsGestion" class="nav-link"
+                       aria-controls="dashboardsGestion" role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-badge text-primary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones') || request()->is('validacionesCliente')),
+                'collapse' => true
+                ]) id="dashboardsGestion">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('presupuesto-proyecto'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('presupuesto-proyecto'), 'nav-link' => true]) href="{{ route('presupuesto-proyecto') }}">
+                                    <span class="sidenav-mini-icon text-xs"> P </span>
+                                    <span class="sidenav-normal"> Presupuestos </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('actualizaciones'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('actualizaciones'), 'nav-link' => true]) href="{{ route('actualizaciones') }}">
+                                    <span class="sidenav-mini-icon text-xs"> A </span>
+                                    <span class="sidenav-normal"> Actualizaciones </span>
+                                </a>
+                            </li>
+                            {{-- TODO : Revisar si se deja la opción de validaciones o se elimina, ya que no se está usando. --}}
+                            {{-- <li @class(['active' => request()->is('validaciones'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('validaciones'), 'nav-link' => true]) href="{{ route('validaciones') }}">
+                                    <span class="sidenav-mini-icon text-xs"> V </span>
+                                    <span class="sidenav-normal"> Validaciones </span>
+                                </a>
+                            </li> --}}
+                            @if(Auth::user()->id == 8 || Auth::user()->id == 10)
+                                <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
+                                    <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
+                                        <span class="sidenav-mini-icon text-xs"> C </span>
+                                        <span class="sidenav-normal"> Solicitudes </span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dashboardsProduccion" class="nav-link"
+                       aria-controls="dashboardsProduccion" role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Producci&oacute;n</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal') || request()->is('lista-anticipos-admin')),
+                'collapse' => true
+                ]) id="dashboardsProduccion">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('proveedores'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('proveedores'), 'nav-link' => true]) href="{{ route('proveedores') }}">
+                                    <span class="sidenav-mini-icon text-xs"> AN </span>
+                                    <span class="sidenav-normal"> Proveedores </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
+                                    <span class="sidenav-mini-icon text-xs"> OC </span>
+                                    <span class="sidenav-normal"> Ordenes de compra </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
+                                    <span class="sidenav-mini-icon text-xs"> AN </span>
+                                    <span class="sidenav-normal"> Anticipos </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
+                                    <span class="sidenav-mini-icon text-xs"> C </span>
+                                    <span class="sidenav-normal"> Consumidos </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
+                                    <span class="sidenav-mini-icon"> P </span>
+                                    <span class="sidenav-normal"> Personal </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#acciones" class="nav-link" aria-controls="acciones" role="button"
+                       aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Acciones</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('presupuesto') || request()->is('mi-equpo')),
+                'collapse' => true
+                ]) id="acciones" style="">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('presupuesto'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuesto') }}">
+                                    <span class="sidenav-mini-icon"> P </span>
+                                    <span class="sidenav-normal"> Presupuesto </span>
+                                </a>
+                            </li>
+                            <li @class(['active' => request()->is('mi-equpo'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('mi-equpo'), 'nav-link' => true]) href="{{ route('mi-equpo') }}">
+                                    <span class="sidenav-mini-icon"> M </span>
+                                    <span class="sidenav-normal"> Mi equipo </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples"
+                       role="button" aria-expanded="false">
+                        <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                            <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Ajustes</span>
+                    </a>
+                    <div @class([
+                'show' => (request()->is('actualizar-perfil-adm')),
+                'collapse' => true
+                ]) id="ajustes" style="">
+                        <ul class="nav ms-4">
+                            <li @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-item' => true])>
+                                <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">
+                                    <span class="sidenav-mini-icon"> K </span>
+                                    <span class="sidenav-normal"> Actualizar perfil </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    @endif
 </aside>
 <!-- End Barra lateral -->
 
