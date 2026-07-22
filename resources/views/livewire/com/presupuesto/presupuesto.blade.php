@@ -8,7 +8,7 @@
                             <table class="table mb-0">
                                 <tr>
                                     <td class="font-weight-bold font-table">MARGEN ITEMS</td>
-                                    <td class="font-table">{{ number_format($margenItems, 4) }}</td>
+                                    <td class="font-table">{{ number_format(100-($margenItems * 100), 2) }} %</td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">VENTA PROYECTO</td>
@@ -424,7 +424,7 @@
                                 @endif
                             </td>
                             <td class="font-weight-bold font-table">
-                                {{ $item->margen_utilidad }}
+                                {{ number_format(100-($item->margen_utilidad * 100), 2) }} %
                             </td>
 
                             <td class="font-weight-bold font-table">
@@ -548,7 +548,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group mb-0">
-                                    <label for="valor_unitario">V. UNITARIO</label>
+                                    <label for="valor_unitario">V. UNITARIO (INTERNO)</label>
                                     <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
                                            placeholder="Valor unitario" required wire:model.lazy="valor_unitario" x-mask:dynamic="$money($input)">
                                     @error('valor_unitario')
@@ -560,7 +560,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group mb-0">
-                                    <label for="valor_total">V. TOTAL</label>
+                                    <label for="valor_total">V. TOTAL (INTERNO)</label>
                                     <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
                                            placeholder="Valor total" disabled required wire:model.lazy="valor_total" x-mask:dynamic="$money($input)">
                                     @error('valor_total')

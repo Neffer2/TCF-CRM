@@ -44,7 +44,7 @@
         <tr>
             <td colspan="0"></td>
             <td class="font-weight-bold font-table" style="text-align: center">MARGEN ITEMS</td>
-            <td class="font-table" style="text-align: center">{{ number_format($margenItems, 4) }}</td>
+            <td class="font-table" style="text-align: center">{{ number_format(100-($margenItems * 100), 4) }}</td>
         </tr>
         <tr>
             <td colspan="0"></td>
@@ -111,7 +111,7 @@
                     <td>{{ number_format($vUnitario, 2) }}</td>
                     <td>{{ number_format($vTotal, 2) }}</td>
                     <td>{{ $proveedor }}</td>
-                    <td>{{ number_format($utilidad, 2) }}</td>
+                    <td>{{ number_format(100-($utilidad * 100), 2) }}%</td>
                     <td>{{ number_format($rentabilidad, 2) }}</td>
                     <td>{{ is_null($estado) ? '-' : $estado }}</td>
                 </tr>

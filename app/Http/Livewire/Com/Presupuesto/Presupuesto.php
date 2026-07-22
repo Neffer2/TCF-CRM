@@ -375,9 +375,6 @@ class Presupuesto extends Component
                 $item->save();
             }
         }
-        // dd($this->items);
-        // dd($this->selected_item->id);
-        // dd($this->item_ubicacion);
 
         $this->refresh();
         $this->item_ubicacion = '';
