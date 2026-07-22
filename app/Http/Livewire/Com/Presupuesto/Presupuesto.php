@@ -64,7 +64,7 @@ class Presupuesto extends Component
 
     // Variables útiles para lógica y vistas
     public $presupuesto;
-    public $items = [];
+    //public $items = [];
     public $presupuesto_id;
     public $ciudades = [];
     public $meses = [];
@@ -96,10 +96,17 @@ class Presupuesto extends Component
 
     public $modoMoviento = false;
 
+
+    public $listeners = ['itemsReordered' => 'updateOrden'];
+
     // Renderiza la vista principal del presupuesto
     public function render()
     {
         $clientesParametros = cliente_parametros_cc::orderBy('codigo_cc', 'ASC')->get();
+
+        $this->items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->orderBy('orden')
+            ->get();
 
         return view('livewire.com.presupuesto.presupuesto', [
             'clientesParametros' => $clientesParametros
@@ -249,8 +256,15 @@ class Presupuesto extends Component
         $this->refresh();
         $this->limpiar();
     }
-
+    /*
+    public function getItemsProperty(){
+        return ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->orderBy('orden')
+            ->get();
+    }
+    */
     // Obtiene los ítems del presupuesto actual
+    /*
     public function getItems(){
         $this->items = ItemPresupuesto::query()
             ->where('presupuesto_id', $this->presupuesto_id)
@@ -258,7 +272,7 @@ class Presupuesto extends Component
                 return $query->orderBy('orden');
             })->get();
     }
-
+    */
     // Calcula y actualiza las métricas del presupuesto
     public function getMetricas(){
         $this->getInfoFacturas();
@@ -361,52 +375,50 @@ class Presupuesto extends Component
         $this->refresh();
     }
 
-    public function updateOrden() {
-        $this->validate([
-            'item_ubicacion' => ['required'],
-        ]);
+    public function updateOrden($orderedIds) {
 
-        foreach ($this->items as $item) {
-            if ($item->id == $this->selected_item->id) {
-                $item->orden = $this->item_ubicacion;
-                $item->save();
-            } elseif ($item->orden >= $this->item_ubicacion) {
-                $item->orden += 1;
-                $item->save();
-            }
+        $orderedIds = array_filter($orderedIds, function ($id) {
+            return !is_null($id) && $id !== '';
+        });
+
+        if (empty($orderedIds)) {
+            \Log::warning('updateOrder recibió un array vacío o inválido', ['orderedIds' => $orderedIds]);
+            return;
         }
 
-        $this->refresh();
-        $this->item_ubicacion = '';
-    }
+        $cases = [];
+        $bindings = [];
+        $ids = [];
 
-    public function resyncNumItem($presupuesto_id){
-        $items = ItemPresupuesto::where('presupuesto_id', $presupuesto_id)
-            ->orderBy('orden')
-            ->get(['id', 'num_item']);
-
-        $numero = 1;
-        foreach ($items as $i) {
-            if($i->num_item !== $numero){
-                ItemPresupuesto::where('id', $i->id)->update(['num_item' => $numero]);
-            }
-            $numero++;
+        foreach (array_values($orderedIds) as $index => $id) {
+            $cases[] = "WHEN ? THEN ?";
+            $bindings[] = $id;
+            $bindings[] = $index;
+            $ids[] = $id;
         }
-    }
 
+        $casesSql = implode(' ', $cases);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $allBindings = array_merge($bindings, $ids);
+
+        DB::update(
+            "UPDATE items_presupuesto SET orden = CASE id {$casesSql} END WHERE id IN ({$placeholders})",
+            $allBindings
+        );
+    }
 
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
 
-        $this->resyncNumItem($id);
         $this->refresh();
     }
 
     // Refresca métricas e ítems del presupuesto
     public function refresh(){
         $this->getMetricas();
-        $this->getItems();
+        //$this->getItems();
     }
 
     // Carga los datos de un ítem para edición
@@ -559,10 +571,6 @@ class Presupuesto extends Component
             $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $itemOriginal->v_unitario_cot : 0;
             $itemOriginal->rentabilidad = ($this->utilidad > 0) ? $itemOriginal->v_total_cot - $itemOriginal->v_total : 0;
             $itemOriginal->update();
-
-            if ($this->ubicacion && $this->item_ubicacion) {
-                $this->changeOrden($this->selected_item->id, $this->ubicacion, $this->item_ubicacion);
-            }
         }
 
         $this->refresh();

@@ -281,10 +281,51 @@
         );
     </script>
 @endif
+
+<script>
+    let sortableInstance = null;
+
+    function initSortable() {
+        const el = document.getElementById('sortable-body');
+        if (!el) return;
+
+        if (sortableInstance) {
+            sortableInstance.destroy();
+            sortableInstance = null;
+        }
+
+        sortableInstance = new Sortable(el, {
+            animation: 150,
+            handle: '.drag-handle',   // solo arrastra desde el ícono ☰
+            filter: '.no-drag',       // las filas "evento" no se arrastran vía handle normal (opcional: quita esto si quieres moverlas también)
+            draggable: 'tr',
+            onEnd: function () {
+                console.log('onEnd disparado', Date.now());
+                const ids = Array.from(el.querySelectorAll('tr')).map(
+                    tr => tr.dataset.id
+                );
+                Livewire.emit('itemsReordered', ids);
+            }
+        });
+    }
+
+    document.addEventListener('livewire:load', function () {
+        initSortable();
+
+        // Reinicializa Sortable cada vez que Livewire actualiza el DOM
+        // (necesario porque NO usamos wire:ignore, para no romper deleteItem/getDataEdit)
+        Livewire.hook('message.processed', (message, component) => {
+            initSortable();
+        });
+    });
+</script>
+
 <!-- Github buttons -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 @livewireScripts
 </body>
 </html>

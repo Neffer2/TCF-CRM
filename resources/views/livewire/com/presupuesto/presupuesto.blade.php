@@ -329,6 +329,7 @@
             <table class="table mb-0">
                 <thead>
                 <tr>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white"></th>
                     <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
 
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
@@ -359,10 +360,11 @@
                     @endif
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="sortable-body">
                 @foreach ($items as $key => $item)
                     @if ($item->evento)
                         <tr wire:key="item-{{ $item->id }}" class="font-weight-bold font-table bg-gradient-info text-white">
+                            <td class="text-center">⚬</td>
                             <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
                                 {{ $item->descripcion }}
                             </td>
@@ -381,6 +383,7 @@
                         <tr wire:key="item-{{ $item->id }}"
                             class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
                             style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
+                            <td class="text-center cursor-move drag-handle">☰</td>
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
                             </td>
@@ -675,28 +678,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group mb-0">
-                                    <label for="item_ubicacion">INTERCAMBIAR POSICIÓN CON</label>
-                                    <select class="form-control" wire:model="item_ubicacion" required>
-                                        <option selected value="">Seleccionar</option>
-                                        @foreach ($items as $key => $item)
-                                            @if (!$item->evento)
-                                                <option value="{{ $item->id }}"
-                                                        @if ($selected_item && $selected_item->id === $item->id) disabled @endif>
-                                                    {{ $item->num_item }}
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    @error('item_ubicacion')
-                                    <div id="item_ubicacion" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
-
                         </div>
                     </div>
 
@@ -1137,4 +1118,31 @@
             </div>
         </div>
     @endif
+
+        <style>
+            #sortable-body {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            /* El handle específicamente, por si acaso el problema es solo ahí */
+            .drag-handle {
+                cursor: move;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-touch-callout: none; /* iOS Safari */
+            }
+
+            /* Evita el "ghost" de imagen/texto al arrastrar en Firefox/Safari */
+            .drag-handle-row {
+                -webkit-user-drag: none;
+            }
+        </style>
 </div>
+
+
+
