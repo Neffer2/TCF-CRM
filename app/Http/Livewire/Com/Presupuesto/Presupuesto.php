@@ -382,30 +382,60 @@ class Presupuesto extends Component
         });
 
         if (empty($orderedIds)) {
-            \Log::warning('updateOrder recibió un array vacío o inválido', ['orderedIds' => $orderedIds]);
+            \Log::warning('updateOrden recibió un array vacío o inválido', ['orderedIds' => $orderedIds]);
             return;
         }
 
-        $cases = [];
-        $bindings = [];
-        $ids = [];
+        $orderedIds = array_map('intval', array_values($orderedIds));
 
-        foreach (array_values($orderedIds) as $index => $id) {
-            $cases[] = "WHEN ? THEN ?";
-            $bindings[] = $id;
-            $bindings[] = $index;
-            $ids[] = $id;
-        }
+        DB::transaction(function () use ($orderedIds) {
+            // 1. Trae TODOS los ids del presupuesto (incluye eventos y cualquier item
+            //    que no haya llegado en el array arrastrado), en su orden actual.
+            $todosLosIds = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->orderBy('orden')
+                ->pluck('id')
+                ->toArray();
 
-        $casesSql = implode(' ', $cases);
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            // 2. Filtra los que NO vinieron en el array arrastrado (ej. eventos fijos,
+            //    o cualquier fila que el JS no haya reportado).
+            $noArrastrados = array_values(array_diff($todosLosIds, $orderedIds));
 
-        $allBindings = array_merge($bindings, $ids);
+            // 3. Reconstruye el orden completo: primero los arrastrados en su nuevo
+            //    orden, luego los que quedaron fuera, al final, en su orden relativo previo.
+            //    (Ajusta esta lógica si necesitas otra regla de mezcla con eventos)
+            $ordenFinal = array_merge($orderedIds, $noArrastrados);
 
-        DB::update(
-            "UPDATE items_presupuesto SET orden = CASE id {$casesSql} END WHERE id IN ({$placeholders})",
-            $allBindings
-        );
+            // FASE 1: mover TODO a valores temporales negativos (evita cualquier colisión)
+            $casesTemp = [];
+            $bindingsTemp = [];
+            foreach ($ordenFinal as $index => $id) {
+                $casesTemp[] = "WHEN ? THEN ?";
+                $bindingsTemp[] = $id;
+                $bindingsTemp[] = -($index + 1);
+            }
+            $placeholders = implode(',', array_fill(0, count($ordenFinal), '?'));
+            $allBindingsTemp = array_merge($bindingsTemp, $ordenFinal);
+
+            DB::update(
+                "UPDATE items_presupuesto SET orden = CASE id " . implode(' ', $casesTemp) . " END WHERE id IN ({$placeholders})",
+                $allBindingsTemp
+            );
+
+            // FASE 2: asignar los valores finales reales (0, 1, 2, 3...n-1)
+            $casesFinal = [];
+            $bindingsFinal = [];
+            foreach ($ordenFinal as $index => $id) {
+                $casesFinal[] = "WHEN ? THEN ?";
+                $bindingsFinal[] = $id;
+                $bindingsFinal[] = $index;
+            }
+            $allBindingsFinal = array_merge($bindingsFinal, $ordenFinal);
+
+            DB::update(
+                "UPDATE items_presupuesto SET orden = CASE id " . implode(' ', $casesFinal) . " END WHERE id IN ({$placeholders})",
+                $allBindingsFinal
+            );
+        });
     }
 
     // Elimina un ítem del presupuesto

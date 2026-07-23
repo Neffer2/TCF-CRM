@@ -363,7 +363,7 @@
                 <tbody id="sortable-body">
                 @foreach ($items as $key => $item)
                     @if ($item->evento)
-                        <tr wire:key="item-{{ $item->id }}" class="font-weight-bold font-table bg-gradient-info text-white">
+                        <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}" class="font-weight-bold font-table bg-gradient-info text-white">
                             <td class="text-center">⚬</td>
                             <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
                                 {{ $item->descripcion }}
@@ -380,7 +380,7 @@
                             @endif
                         </tr>
                     @else
-                        <tr wire:key="item-{{ $item->id }}"
+                        <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
                             class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
                             style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
                             <td class="text-center cursor-move drag-handle">☰</td>
