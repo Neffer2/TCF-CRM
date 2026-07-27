@@ -1,6 +1,6 @@
 <div>
-    <form wire:submit.prevent="store"> 
-        <div class="row"> 
+    <form wire:submit.prevent="store">
+        <div class="row">
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="contacto">Nombre Proyecto:</label>
@@ -21,7 +21,7 @@
                             {{ $message }}
                         </div>
                     @enderror
-                </div> 
+                </div>
             </div>
             <div class="col-md-12">
                 <label for="fecha">Fecha estimada de respuesta:</label>

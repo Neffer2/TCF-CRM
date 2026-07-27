@@ -92,29 +92,38 @@
             </tr>
         @else
             @foreach($items as $registro)
-                <tr>
-                    @php
-                        $base = data_get($registro, 'valores_anteriores', $registro);
-                        $num_item = data_get($base, 'num_item', '-');
-                        $descripcion = data_get($base, 'descripcion', 'Sin descripción');
-                        $cantidad = data_get($base, 'cantidad', 0);
-                        $vUnitario = (float) data_get($base, 'v_unitario', 0);
-                        $vTotal = (float) data_get($base, 'v_total', 0);
-                        $proveedor = data_get($base, 'proveedor');
-                        $utilidad = (float) data_get($base, 'margen_utilidad');
-                        $rentabilidad = (float) data_get($base, 'rentabilidad', 0);
-                        $estado = data_get($base, 'actualizado');
-                    @endphp
-                    <td>{{ $num_item }}</td>
-                    <td>{{ $descripcion }}</td>
-                    <td>{{ $cantidad }}</td>
-                    <td>{{ number_format($vUnitario, 2) }}</td>
-                    <td>{{ number_format($vTotal, 2) }}</td>
-                    <td>{{ $proveedor }}</td>
-                    <td>{{ number_format(100-($utilidad * 100), 2) }}%</td>
-                    <td>{{ number_format($rentabilidad, 2) }}</td>
-                    <td>{{ is_null($estado) ? '-' : $estado }}</td>
-                </tr>
+                @if(!$registro->evento == 1)
+                    <tr>
+                        @php
+                            $base = data_get($registro, 'valores_anteriores', $registro);
+                            $num_item = data_get($base, 'num_item', '-');
+                            $descripcion = data_get($base, 'descripcion', 'Sin descripción');
+                            $cantidad = data_get($base, 'cantidad', 0);
+                            $vUnitario = (float) data_get($base, 'v_unitario', 0);
+                            $vTotal = (float) data_get($base, 'v_total', 0);
+                            $proveedor = data_get($base, 'proveedor');
+                            $utilidad = (float) data_get($base, 'margen_utilidad');
+                            $rentabilidad = (float) data_get($base, 'rentabilidad', 0);
+                            $estado = data_get($base, 'actualizado');
+                        @endphp
+                        <td>{{ $num_item }}</td>
+                        <td>{{ $descripcion }}</td>
+                        <td>{{ $cantidad }}</td>
+                        <td>{{ number_format($vUnitario, 2) }}</td>
+                        <td>{{ number_format($vTotal, 2) }}</td>
+                        <td>{{ $proveedor }}</td>
+                        <td>{{ number_format(100-($utilidad * 100), 2) }}%</td>
+                        <td>{{ number_format($rentabilidad, 2) }}</td>
+                        <td>{{ is_null($estado) ? '-' : $estado }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        @php
+                            $descripcion = data_get($base, 'descripcion', 'Sin descripcion')
+                        @endphp
+                        <td class="bold" style="text-align: center; font-weight: bold;" colspan="14">{{ $descripcion }}</td>
+                    </tr>
+                @endif
             @endforeach
         @endif
         </tbody>

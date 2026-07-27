@@ -41,11 +41,20 @@ class OrdenesCompra extends Component
     public $estado_id;             // ID especifico del estado de las OC
     public $tipo_oc;
 
+    public $items = [];
+    public $queriedOrden = null;
+    public $orden_id = null;
+    public $selected_item = null;
+
+
+    public $submódulo = '';
+
     /**
      * Renderiza la vista del componente con las órdenes filtradas
      * Aplica todos los filtros disponibles y retorna la vista paginada
      * @return \Illuminate\View\View
      */
+
     public function render(){
         // Inicia la consulta base
         $query = OrdenCompra::query();
@@ -186,5 +195,9 @@ class OrdenesCompra extends Component
         ]);
 
         $this->yearInfo = Año::find($this->año);
+    }
+
+    public function listados(){
+
     }
 }

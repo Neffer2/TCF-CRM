@@ -256,24 +256,7 @@ class Presupuesto extends Component
         $this->refresh();
         $this->limpiar();
     }
-    /*
-    public function getItemsProperty(){
-        return ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-            ->orderBy('orden')
-            ->get();
-    }
-    */
-    // Obtiene los ítems del presupuesto actual
-    /*
-    public function getItems(){
-        $this->items = ItemPresupuesto::query()
-            ->where('presupuesto_id', $this->presupuesto_id)
-            ->when('orden' != null, function($query) {
-                return $query->orderBy('orden');
-            })->get();
-    }
-    */
-    // Calcula y actualiza las métricas del presupuesto
+
     public function getMetricas(){
         $this->getInfoFacturas();
 
@@ -441,7 +424,6 @@ class Presupuesto extends Component
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
-
         $this->refresh();
     }
 
@@ -459,7 +441,6 @@ class Presupuesto extends Component
                 $this->selected_item = $item;
                 break;
             }
-
         }
 
         $this->cod = $this->selected_item->cod;

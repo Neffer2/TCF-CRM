@@ -84,4 +84,5 @@ class Consumidos extends Component
             ->where('id', '<>', 3)
             ->get();
     }
+
 }

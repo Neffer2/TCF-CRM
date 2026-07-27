@@ -262,7 +262,6 @@ class AdminController extends Controller
             // Si el rol es 2 es comercial, si no es productor
             $rol = (Auth::user()->rol == 2) ? 'comercial' : 'productor';
         }
-
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id, 'rol' => $rol]);
     }
 
@@ -434,7 +433,5 @@ class AdminController extends Controller
         $siguienteNumero = $numero + 1;
         return 'CC-' . str_pad($siguienteNumero, 3, '0', STR_PAD_LEFT);
     }
-
-
 
 }

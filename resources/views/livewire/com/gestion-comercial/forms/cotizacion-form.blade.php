@@ -1,18 +1,18 @@
 <div x-data="">
-    <form wire:submit.prevent="store"> 
-        <div class="row">  
+    <form wire:submit.prevent="store">
+        <div class="row">
             <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="nom_proyecto">Nombre Proyecto:</label>
                     <input type="text" id="nom_proyecto" class="form-control @error('nom_proyecto') is-invalid @elseif(strlen($nom_proyecto) > 0) is-valid @enderror" value="{{ old('nom_proyecto') }}" wire:model.lazy="nom_proyecto" required>
                     @error('nom_proyecto')
                         <div id="nom_proyecto" class="invalid-feedback">
-                            {{ $message }} 
+                            {{ $message }}
                         </div>
-                    @enderror 
+                    @enderror
                 </div>
-            </div>  
-            <div class="col-md-12"> 
+            </div>
+            <div class="col-md-12">
                 <div class="form-group mb-1">
                     <label for="presupuesto">Presupuesto:</label>
                     <input type="text" id="presupuesto" class="form-control
@@ -23,7 +23,7 @@
                             {{ $message }}
                         </div>
                     @enderror
-                </div> 
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-4">
@@ -35,8 +35,8 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div> 
-                </div> 
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <label for="testigoPorcentaje">Total %: </label>
                     <input disabled type="text" id="testigoPorcentaje" class="form-control @error('testigoPorcentaje') is-invalid @enderror" value="{{ old('testigoPorcentaje') }}" wire:model="testigoPorcentaje" required>
@@ -59,13 +59,13 @@
                                 @foreach ($comerciales as $comercial)
                                     <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
                                 @endforeach
-                            </select>                                    
+                            </select>
                             @if ($errors->has("comercial".$i))
                                 <div class="text-danger">
                                     <small>{{ $errors->first("comercial".$i) }}</small>
                                 </div>
                             @endif
-                        </div> 
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
@@ -76,7 +76,7 @@
                                     <small>{{ $errors->first("porcentaje".$i) }}</small>
                                 </div>
                             @endif
-                        </div> 
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
@@ -89,7 +89,7 @@
                                     <small>{{ $errors->first("valor".$i) }}</small>
                                 </div>
                             @endif
-                        </div> 
+                        </div>
                     </div>
                 @endfor
             </div>
@@ -101,14 +101,14 @@
                     <div id="fecha" class="invalid-feedback">
                         {{ $message }}
                     </div>
-                @enderror 
+                @enderror
             </div>
             {{-- <div class="col-md-12">
                 <label for="cotizacionFile">Archivo cotizaci&oacute;n:</label>
                 <input type="file" id="cotizacionFile" class="form-control @error('cotizacionFile') is-invalid @elseif(strlen($cotizacionFile) > 0) is-valid @enderror" value="{{ old('cotizacionFile') }}" wire:model.lazy="cotizacionFile" required>
                 @error('cotizacionFile')
                     <div id="cotizacionFile" class="invalid-feedback">
-                        {{ $message }} 
+                        {{ $message }}
                     </div>
                 @enderror
             </div> --}}
@@ -122,11 +122,11 @@
                 @enderror
             </div>
             <div class="col-md-12">
-                <div class="form-check mt-2"> 
+                <div class="form-check mt-2">
                     <input id="check" wire:model="claro" class="form-check-input" type="checkbox">
                     <label for="check" class="form-check-label ms-0 form-text" for="flexCheckDefault">
                         Este prospecto es cuenta de <b>Claro</b>?
-                    </label>                    
+                    </label>
                 </div>
             </div>
             <div class="col-md-12">

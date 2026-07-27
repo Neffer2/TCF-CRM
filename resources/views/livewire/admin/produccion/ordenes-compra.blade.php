@@ -1,74 +1,124 @@
 @if (Auth::user()->rol == 1)
     <div>
-        <div class="card">
-            <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h3 class="mb-0">Ordenes de compra</h3>
-                        <p class="text-sm mb-0">Lista de ordenes de compra por revisar.</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-1">
-                        <label for="año">Año:</label>
-                        <select wire:model="año" class="form-control">
-                            <option value="">Seleccionar</option>
-                            @foreach ($años as $año)
-                                <option value="{{ $año->id }}">{{ $año->description }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-1">
-                        <label for="comercial">COD OC:</label>
-                        <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="productor">Productor:</label>
-                        <select id="productor" class="form-control" wire:model="productor">
-                            <option value="">Seleccionar</option>
-                            @foreach ($productores as $productor)
-                                <option value="{{ $productor->id }}">{{ $productor->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="estado">Estados:</label>
-                        <select id="estado" class="form-control" wire:model="estado">
-                            <option value="">Seleccionar</option>
-                            @foreach ($estados as $estado)
-                                <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="Tipo">Tipo:</label>
-                        <select id="Tipo" class="form-control" wire:model="tipo">
-                            <option value="">Seleccionar</option>
-                            @foreach ($tipos as $tipo)
-                                <option value="{{ $tipo->id }}">{{ $tipo->description }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+        <!-- MENÚ DE NAVEGACIÓN SUPERIOR (TABS) -->
+        <div class="card mb-3">
+            <div class="card-body p-2">
+                <ul class="nav nav-pills nav-fill flex-row p-1">
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'listado') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'listado')" style="cursor: pointer;">
+                            <i class="fas fa-list me-2"></i> Listado de Órdenes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'anticipo') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'anticipo')" style="cursor: pointer;">
+                            <i class="fas fa-hand-holding-usd me-2"></i> Anticipo Colaborador
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'legalizacion') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'legalizacion')" style="cursor: pointer;">
+                            <i class="fas fa-file-invoice-dollar me-2"></i> Legalización
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'reintegros') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'reintegros')" style="cursor: pointer;">
+                            <i class="fas fa-undo me-2"></i> Reintegros
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'vehiculos_bodega') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'vehiculos_bodega')" style="cursor: pointer;">
+                            <i class="fas fa-truck-loading me-2"></i> Consumo Vehículos / Bodega
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 @if($submódulo == 'nomina') active bg-gradient-primary text-white @endif"
+                           wire:click="$set('submódulo', 'nomina')" style="cursor: pointer;">
+                            <i class="fas fa-users-cog me-2"></i> Nómina
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div class="table-responsive">
-                <table class="table align-items-center mb-0">
-                    <thead>
+        </div>
+
+        <!-- CONTENIDO DINÁMICO SEGÚN LA PESTAÑA SELECCIONADA -->
+        @if ($submódulo == 'listado')
+            <!-- AQUÍ VA TU CARD COMPLETA DE LISTADO/TABLA QUE YA TENÍAS -->
+            <div class="card">
+                <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="mb-0">Ordenes de compra</h3>
+                            <p class="text-sm mb-0">Lista de ordenes de compra por revisar.</p>
+                        </div>
+                    </div>
+                    <!-- Filtros existentes -->
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label for="año">Año:</label>
+                            <select wire:model="año" class="form-control">
+                                <option value="">Seleccionar</option>
+                                @foreach ($años as $año)
+                                    <option value="{{ $año->id }}">{{ $año->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <label for="comercial">COD OC:</label>
+                            <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="comercial">Buscar:</label>
+                            <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="comercial">Buscar:</label>
+                            <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="productor">Productor:</label>
+                            <select id="productor" class="form-control" wire:model="productor">
+                                <option value="">Seleccionar</option>
+                                @foreach ($productores as $productor)
+                                    <option value="{{ $productor->id }}">{{ $productor->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="estado">Estados:</label>
+                            <select id="estado" class="form-control" wire:model="estado">
+                                <option value="">Seleccionar</option>
+                                @foreach ($estados as $estado)
+                                    <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="Tipo">Tipo:</label>
+                            <select id="Tipo" class="form-control" wire:model="tipo">
+                                <option value="">Seleccionar</option>
+                                @foreach ($tipos as $tipo)
+                                    <option value="{{ $tipo->id }}">{{ $tipo->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <!-- Tu tabla previa -->
+                        <thead>
                         <tr>
                             <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">DATOS DE PROYECTO</th>
                             <th colspan="6" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                             <th colspan="2" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         @foreach ($ordenes as $orden)
                             @if ($orden->tipo_oc == 1)
                                 <tr>
@@ -156,8 +206,8 @@
                                     </td> --}}
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
-                                            <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
-                                        </td>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                    </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
@@ -243,21 +293,43 @@
                                 </tr>
                             @endif
                         @endforeach
-                        <tr>
-                            @php
-                                $ordenesArray = $ordenes->toArray();
-                                $registros_page = sizeof($ordenesArray['data']);
-                                $total = $ordenesArray['total'];
-                            @endphp
-                            <td colspan="1" class="d-flex text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mb-3 ms-2">
+                    {{ $ordenes->links() }}
+                </div>
             </div>
-            <div class="mb-3 ms-2">
-                {{ $ordenes->links() }}
+
+        @elseif ($submódulo == 'anticipo')
+            <!-- VISTA DEL FORMULARIO ANTICIPO COLABORADOR -->
+            @livewire('admin.produccion.ordenes_-compra.ordenes-compra-anticipo', ['orden_id' => $orden_id], key('anticipo-'.$orden_id))
+
+        @elseif ($submódulo == 'legalizacion')
+            <!-- VISTA DE LEGALIZACIÓN -->
+            @include('livewire.admin.produccion.ordenes-compra.orden-compra-legalizacion')
+
+        @elseif ($submódulo == 'reintegros')
+            <!-- VISTA DE REINTEGROS -->
+            <div class="card card-body">
+                <h3>Módulo de Reintegros</h3>
+                <p>Próximamente carga desde Excel...</p>
             </div>
-        </div>
+
+        @elseif ($submódulo == 'vehiculos_bodega')
+            <!-- VISTA DE VEHÍCULOS / BODEGA -->
+            <div class="card card-body">
+                <h3>Módulo de Consumo de Vehículos / Bodega</h3>
+                <p>Próximamente carga desde Excel...</p>
+            </div>
+
+        @elseif ($submódulo == 'nomina')
+            <!-- VISTA DE NÓMINA -->
+            <div class="card card-body">
+                <h3>Módulo de Nómina</h3>
+                <p>Próximamente carga desde Excel...</p>
+            </div>
+        @endif
     </div>
 @elseif(Auth::user()->rol == 6)
     <div>

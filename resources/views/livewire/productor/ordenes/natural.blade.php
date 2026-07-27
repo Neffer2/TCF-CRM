@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-12 mb-3">
             <h3 class="m-0">Orden de compra natural @if($queriedOrden) #{{ $queriedOrden->id }} @endif</h3>
-            <p class="text-sm m-0">Selecciona tu personal y asigna los items nesesarios.</p>
+            <p class="text-sm m-0">Selecciona tu personal y asigna los items necesarios.</p>
         </div>
         <div class="col-md-6" style="border-right: 1px solid #eee;">
             <div class="row">
