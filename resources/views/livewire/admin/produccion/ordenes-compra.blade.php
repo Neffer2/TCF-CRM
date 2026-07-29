@@ -291,6 +291,155 @@
                                         <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-nomina', ['orden' => $orden->id]) }}" target="_blank">Ver</a>
                                     </td>
                                 </tr>
+                            @elseif($orden->tipo_oc == 4)
+                                <td style="width: 16rem;">
+                                    <div class="d-flex px-2 py-1" title="{{ $orden->presupuesto->gestion->nom_proyecto_cot }}">
+                                        <div>
+                                            <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            @if (strlen($orden->presupuesto->gestion->nom_proyecto_cot) > 80)
+                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
+                                            @else
+                                                <h6 class="mb-0 text-xs" >{{ substr($orden->presupuesto->gestion->nom_proyecto_cot, 0, 80) }}</h6>
+                                            @endif
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->contacto->empresa }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Tipo</p>
+                                    <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Proveedor</p>
+                                    <span class="text-xs text-secondary mb-0">{{ $orden->proveedor->tercero }}</span>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
+                                    <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Productor</p>
+                                    <p class="text-xs text-secondary mb-0">
+                                        @if ($orden->presupuesto->productor_info)
+                                            {{ $orden->presupuesto->productor_info->name }}
+                                        @else
+                                            NO ASIGNADO
+                                        @endif
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Comercial</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">Estado</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $orden->estado_oc->description }}</p>
+                                </td>
+                                <td class="d-flex align-items-center justify-content-center">
+                                    <button type="button" class="btn bg-gradient-secondary m-0 me-1 mb-1 position-relative" data-bs-toggle="collapse" data-bs-target="#collapseOrden{{ $orden->id }}" aria-expanded="false" aria-controls="collapseOrden{{ $orden->id }}">
+                                        Consultar @if ($orden->ordenItems->isNotEmpty()) ítems @else datos @endif
+                                        @if ($orden->ordenItems->isNotEmpty())
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                                                {{ $orden->ordenItems->count() }}
+                                            </span>
+                                        @endif
+                                    </button>
+                                </td>
+
+                                <!-- TR COLAPSABLE CON EL DETALLE DE LA ORDEN Y PDFS -->
+                                <tr id="collapseOrden{{ $orden->id }}" class="collapse">
+                                    <td colspan="9" class="bg-light p-3">
+                                        <div class="card card-body shadow-none border m-0">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h6 class="font-weight-bold text-xs text-primary mb-0">
+                                                    <i class="fas fa-list-alt me-1"></i> Detalle de Ítems / Datos - OC #{{ $orden->id }}
+                                                </h6>
+
+                                                <!-- BOTONES DE ARCHIVOS ADJUNTOS / PDF -->
+                                                <div class="d-flex gap-2">
+                                                    @if ($orden->archivo_cot)
+                                                        <a href="{{ Storage::url($orden->archivo_cot) }}" target="_blank" class="btn btn-xs btn-outline-info mb-0">
+                                                            <i class="fas fa-file-pdf me-1"></i> Ver Cotización / Soporte
+                                                        </a>
+                                                    @endif
+
+                                                    @if ($orden->archivo_orden_helisa)
+                                                        <a href="{{ Storage::url($orden->archivo_orden_helisa) }}" target="_blank" class="btn btn-xs btn-outline-success mb-0">
+                                                            <i class="fas fa-file-invoice me-1"></i> Ver OC Helisa (PDF)
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <!-- TABLA DE ÍTEMS -->
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered bg-white align-items-center mb-0">
+                                                    <thead class="bg-secondary text-white">
+                                                    <tr>
+                                                        <th class="text-xs text-center">#</th>
+                                                        <th class="text-xs">DESCRIPCIÓN</th>
+                                                        <th class="text-xs text-center">CANTIDAD</th>
+                                                        <th class="text-xs text-end">V. UNITARIO</th>
+                                                        <th class="text-xs text-end">V. TOTAL</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse ($orden->ordenItems as $idx => $item)
+                                                        <tr>
+                                                            <td class="text-xs text-center">{{ $idx + 1 }}</td>
+                                                            <td class="text-xs">{{ $item->desc_oc ?? 'Sin descripción' }}</td>
+                                                            <td class="text-xs text-center">{{ $item->cant_oc }}</td>
+                                                            <td class="text-xs text-end">${{ number_format($item->vunit_oc, 2) }}</td>
+                                                            <td class="text-xs text-end font-weight-bold">${{ number_format($item->vtotal_oc, 2) }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-xs text-muted py-2">
+                                                                No hay ítems registrados para esta orden de compra.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- VISOR INCRUSTADO DE PDF (SI EXISTE ARCHIVO) -->
+                                            @php
+                                                $pdfPath = $orden->archivo_orden_helisa ?? $orden->archivo_cot;
+                                            @endphp
+
+                                            @if ($pdfPath)
+                                                <div class="mt-3">
+                                                    <button class="btn btn-xs btn-link text-secondary p-0 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#pdfViewer{{ $orden->id }}">
+                                                        <i class="fas fa-eye me-1"></i> Previsualizar Documento PDF integradamente
+                                                    </button>
+
+                                                    <div id="pdfViewer{{ $orden->id }}" class="collapse mt-1">
+                                                        <iframe src="{{ Storage::url($pdfPath) }}"
+                                                                style="width: 100%; height: 450px;"
+                                                                class="border rounded"
+                                                                frameborder="0">
+                                                        </iframe>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <!-- OBSERVACIONES O DATOS ADICIONALES -->
+                                            @if($orden->presupuesto)
+                                                <div class="mt-2 text-xs text-muted border-top pt-2">
+                                                    <strong>Proyecto:</strong> {{ $orden->presupuesto->cod_cc }} - {{ $orden->presupuesto->nombre ?? '' }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+
                             @endif
                         @endforeach
                         </tbody>
@@ -303,18 +452,15 @@
 
         @elseif ($submódulo == 'anticipo')
             <!-- VISTA DEL FORMULARIO ANTICIPO COLABORADOR -->
-            @livewire('admin.produccion.ordenes_-compra.ordenes-compra-anticipo', ['orden_id' => $orden_id], key('anticipo-'.$orden_id))
+            @livewire('admin.produccion.ordenes_-compra.ordenes-compra-anticipo', ['orden_id' => $orden_id ?? null])
 
         @elseif ($submódulo == 'legalizacion')
             <!-- VISTA DE LEGALIZACIÓN -->
-            @include('livewire.admin.produccion.ordenes-compra.orden-compra-legalizacion')
+            @livewire('admin.produccion.ordenes_-compra.ordenes-legalización-anticipo')
 
         @elseif ($submódulo == 'reintegros')
             <!-- VISTA DE REINTEGROS -->
-            <div class="card card-body">
-                <h3>Módulo de Reintegros</h3>
-                <p>Próximamente carga desde Excel...</p>
-            </div>
+            @livewire('admin.produccion.ordenes_-compra.ordenes-reintegros')
 
         @elseif ($submódulo == 'vehiculos_bodega')
             <!-- VISTA DE VEHÍCULOS / BODEGA -->

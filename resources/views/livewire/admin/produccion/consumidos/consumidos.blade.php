@@ -1,28 +1,28 @@
 <div>
     <div class="card">
         <div class="card-header p-0 px-3 mt-3 col-md-12">
-            <div class="row">            
+            <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Consumidos</h3>
                     <p class="text-sm mb-0">Lista completa de presupuestos consumidos.</p>
-                </div> 
+                </div>
                 <div class="form-group col-md-3 mb-0">
-                    <label for="comercial">Buscar:</label> 
+                    <label for="comercial">Buscar:</label>
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                 </div>
-            </div> 
-        </div>  
+            </div>
+        </div>
         <div class="card-body p-0 pt-1">
-            <div class="table-responsive">  
+            <div class="table-responsive">
                 <table class="table align-items-center mb-0">
-                    <thead> 
+                    <thead>
                         <tr>
                             <th colspan="1" class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">PRESUPUESTOS</th>
                             <th colspan="5" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">M&eacute;tricas</th>
                             <th colspan="1" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody> 
+                    <tbody>
                         @foreach ($presupuestos as $presupuesto)
                             <tr>
                                 <td style="width: 16rem;">
@@ -30,7 +30,7 @@
                                         <div>
                                             <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" class="avatar avatar-sm me-3">
                                         </div>
-                                        <div class="d-flex flex-column justify-content-center">                                        
+                                        <div class="d-flex flex-column justify-content-center">
                                             @if (strlen($presupuesto->gestion->nom_proyecto_cot) > 80)
                                                 <h6 class="mb-0 text-xs" >{{ substr($presupuesto->gestion->nom_proyecto_cot, 0, 80) }}...</h6>
                                             @else
@@ -39,15 +39,15 @@
                                             <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->contacto->empresa }}</p>
                                         </div>
                                     </div>
-                                </td>                            
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Fecha</p>
                                     <p class="text-xs text-secondary mb-0">{{ $presupuesto->created_at }}</p>
-                                </td> 
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Comercial</p>
                                     <p class="text-xs text-secondary mb-0">{{ $presupuesto->gestion->comercial->name }}</p>
-                                </td>  
+                                </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Centro de costos</p>
                                     <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $presupuesto->cod_cc }}</textarea>
@@ -59,11 +59,11 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                     <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
-                                </td> 
-                                <td class="d-flex align-items-center justify-content-center"> 
+                                </td>
+                                <td class="d-flex align-items-center justify-content-center">
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('consumido', $presupuesto->id) }}">Ver</a>
                                 </td>
-                            </tr> 
+                            </tr>
                         @endforeach
                         <tr>
                             @php

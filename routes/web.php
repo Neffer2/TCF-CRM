@@ -53,6 +53,7 @@ Route::get('/', function () {
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['admin'])->name('orden-natural');
     Route::get('/orden-nomina/{orden?}', [AdminController::class, 'showOrdenNomina'])->middleware(['auth'])->middleware(['admin'])->name('orden-nomina');
+    Route::get('/orden-compra_anticipó', [AdminController::class, 'showOrdenCompra_Anticipo'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra_anticipate');
 
     Route::get('/cuenta-cobro/pdf/{orden}', [AdminController::class, 'cuentaCobroPdf'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro.pdf');
 

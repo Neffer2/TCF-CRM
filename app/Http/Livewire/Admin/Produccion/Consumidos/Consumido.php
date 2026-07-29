@@ -9,7 +9,6 @@ use App\Models\Proveedor;
 
 class Consumido extends Component
 {
-
     //public temporales
     public $cod;
     public $concepto;

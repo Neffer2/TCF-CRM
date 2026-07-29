@@ -168,6 +168,11 @@ class AdminController extends Controller
         return view('admin.produccion.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
     }
 
+    public function showOrdenCompra_Anticipo()
+    {
+        return view('livewire.admin.produccion.ordenes-compra.orden_compra_anticipo');
+    }
+
 
     /* Temporal metodos lider comercial*/
 

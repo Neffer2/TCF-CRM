@@ -196,8 +196,4 @@ class OrdenesCompra extends Component
 
         $this->yearInfo = Año::find($this->año);
     }
-
-    public function listados(){
-
-    }
 }

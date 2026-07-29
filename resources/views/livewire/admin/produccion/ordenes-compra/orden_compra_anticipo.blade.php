@@ -1,11 +1,43 @@
 <div class="card card-body mb-3">
+    <!-- MENSAJES DE ALERTA REACTIVOS -->
+    @if ($successMessage || session()->has('success'))
+        <div class="alert alert-success alert-dismissible fade show text-white mb-3" role="alert">
+            <i class="fas fa-check-circle me-1"></i> {{ $successMessage ?? session('success') }}
+            <button type="button" class="btn-close text-white" data-bs-dismiss="alert" aria-label="Close" wire:click="$set('successMessage', null)">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if ($errorMessage || session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show text-white mb-3" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> {{ $errorMessage ?? session('error') }}
+            <button type="button" class="btn-close text-white" data-bs-dismiss="alert" aria-label="Close" wire:click="$set('errorMessage', null)">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
     <!-- ENCABEZADO -->
     <div class="row mb-3 border-bottom pb-2">
-        <div class="col-md-12">
-            <h4 class="m-0 text-primary font-weight-bold">
-                Anticipo Colaborador @if($queriedOrden) #{{ $queriedOrden->id }} @endif
-            </h4>
-            <p class="text-sm text-muted m-0">Selecciona el productor para cargar los proyectos asignados y generar la Orden de Compra.</p>
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="m-0 text-primary font-weight-bold">
+                    @if($modo === 'ver')
+                        Detalle de Orden de Compra #{{ $orden_id }}
+                    @else
+                        Nuevo Anticipo Colaborador
+                    @endif
+                </h4>
+                <p class="text-sm text-muted m-0">
+                    {{ $modo === 'ver' ? 'Consulta la información de la orden generada.' : 'Selecciona el productor para cargar los proyectos asignados.' }}
+                </p>
+            </div>
+
+            @if($modo === 'ver')
+                <button type="button" wire:click="resetearFormulario" class="btn btn-sm btn-outline-secondary mb-0">
+                    <i class="fas fa-plus me-1"></i> Crear Nueva Orden
+                </button>
+            @endif
         </div>
     </div>
 
@@ -18,7 +50,7 @@
                 </label>
                 <select id="productor_id" class="form-control form-control-sm text-dark" wire:model="productor_id">
                     <option value="" class="text-secondary">-- Seleccionar Productor --</option>
-                    @foreach ($productores as $prod)
+                    @foreach ($productores ?? [] as $prod)
                         <option value="{{ $prod->id }}" class="text-dark bg-white" style="color: #000 !important;">
                             {{ $prod->nombre ?? $prod->name }} {{ $prod->apellido ?? $prod->last_name }}
                         </option>
@@ -37,7 +69,7 @@
                     <option value="">
                         {{ empty($productor_id) ? '-- Primero selecciona un Productor --' : '-- Seleccionar Proyecto --' }}
                     </option>
-                    @foreach ($proyectos_productor as $proj)
+                    @foreach ($proyectos_productor ?? [] as $proj)
                         <option value="{{ $proj->id }}">{{ $proj->cod_cc }} - {{ $proj->nombre }}</option>
                     @endforeach
                 </select>
@@ -55,7 +87,7 @@
                     <label for="item_presupuesto" class="form-label font-weight-bold text-xs">Ítem Presupuesto:</label>
                     <select id="item_presupuesto" class="form-control form-control-sm" wire:model="item_presupuesto" @if(empty($items_presupuesto) || count($items_presupuesto) == 0) disabled @endif>
                         <option value="">-- Seleccionar Ítem --</option>
-                        @foreach ($items_presupuesto as $item_p)
+                        @foreach ($items_presupuesto ?? [] as $item_p)
                             <option value="{{ $item_p->id }}">
                                 {{ $item_p->descripcion }}
                             </option>
@@ -99,7 +131,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse ($items as $index => $item)
+                @forelse ($items ?? [] as $index => $item)
                     <tr>
                         <td class="text-center text-xs">{{ $index + 1 }}</td>
                         <td class="text-xs">{{ $item['cod_cc'] }} - {{ $item['nombre_cc'] }}</td>
@@ -151,10 +183,14 @@
 
         <div class="row mt-2">
             <div class="col-md-12 text-end">
-                @if(!$orden_id)
+                @if($modo === 'nuevo')
                     <button type="button" wire:click="uploadOC" class="btn bg-gradient-warning text-white mb-0">
                         <i class="fas fa-file-invoice me-1"></i> GENERAR ORDEN DE COMPRA
                     </button>
+                @else
+                    <span class="badge bg-gradient-success p-2">
+                <i class="fas fa-check-circle me-1"></i> ORDEN #{{ $orden_id }} APROBADA
+            </span>
                 @endif
             </div>
         </div>
