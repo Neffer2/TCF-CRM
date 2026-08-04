@@ -16,8 +16,8 @@
             </div>
             <div class="col-md-7">
                 <div class="form-group">
-                    <label for="nom_cliente">Nombre Cliente:</label>
-                    <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Cliente" required>
+                    <label for="nom_cliente">Nombre Contacto:</label>
+                    <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Contacto" required>
                     @error('nom_cliente')
                         <div id="nom_cliente" class="invalid-feedback">
                             {{ $message }}
@@ -25,6 +25,33 @@
                     @enderror
                 </div>
             </div>
+
+
+            <div class="row">
+
+        <!-- 1. DESPLEGABLE: SELECCIÓN DE CLIENTE / EMPRESA -->
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="cliente_id">Cliente / Empresa:</label>
+                <select wire:model.lazy="cliente_id" 
+                        id="cliente_id" 
+                        class="form-control @error('cliente_id') is-invalid @enderror" 
+                        required>
+                    <option value="">-- Seleccione Cliente --</option>
+                    @foreach($listaClientes as $client)
+                        <option value="{{ $client->id }}">{{ $client->nombre_empresa }}</option>
+                    @endforeach
+                </select>
+
+                @error('cliente_id')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+
+
             <div class="col-md-6">
                 <div class="form-grup">
                     <label for="nom_proyecto">Nombre Proyecto:</label>
@@ -146,17 +173,26 @@
                     @enderror
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="id_cuenta">Cuenta: </label>
-                    <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado" required>
+                    <select wire:model.lazy="id_cuenta" 
+                            id="id_cuenta" 
+                            name="id_cuenta" 
+                            class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" 
+                            required>
                         <option value="">Seleccionar</option>
                         @foreach ($cuentas as $cuenta)
-                            <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
+                            {{-- Muestra la cuenta con id 1 O si coincide con la cuenta que ya tenía el proyecto --}}
+                            @if ($cuenta->id == 1 || $cuenta->id == $id_cuenta)
+                                <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
+                            @endif
                         @endforeach
                     </select>
+                    
                     @error('id_cuenta')
-                        <div id="id_cuenta" class="invalid-feedback">
+                        <div id="id_cuenta" class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
                     @enderror

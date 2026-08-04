@@ -39,6 +39,7 @@ class Presupuesto extends Component
     public $otros;
     public $descripcion;
     public $valor_unitario = 0;
+    public $valor_unitario_cliente;
     public $valor_total = 0;
     public $valor_total_cliente = 0;
     public $proveedor = [];
@@ -161,22 +162,17 @@ class Presupuesto extends Component
     public function new_item(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-        // Valida los campos requeridos
+    // Valida los campos requeridos
         $this->validate([
             'cod' => ['required'],
             'cantidad' => ['required'],
             'dia' => ['required'],
-            'otros' => ['required'],
             'descripcion' => ['required'],
             'valor_unitario' => ['required'],
             'valor_total' => ['required'],
-            // 'proveedor' => ['required', new SameCategory],
             'proveedor' => ['required'],
             'valor_total_cliente' => ['numeric', 'required'],
             'utilidad' => ['required', 'numeric'],
-            'mes' => ['required'],
-            'dias' => ['required'],
-            'ciudad' => ['required'],
             'imprevistos' => ['required', 'numeric'],
             'administracion' => ['required', 'numeric'],
             'fee' => ['required', 'numeric'],
@@ -184,45 +180,54 @@ class Presupuesto extends Component
 
         DB::transaction(function () use ($presto){
 
+            // 1. Obtenemos el máximo num_item y el máximo orden actuales de este presupuesto
+            $maxNumItem = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->lockForUpdate()
+                ->max('num_item') ?? 0;
+
             $maxOrden = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
                 ->lockForUpdate()
                 ->max('orden') ?? 0;
 
-            // Crea el nuevo ítem
+            // 2. Crea el nuevo ítem
             $item = new ItemPresupuesto;
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
             $item->cantidad = $this->cantidad;
             $item->dia = $this->dia;
-            $item->otros = $this->otros;
+            $item->otros = $this->otros ?? 1;
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
             $item->v_total = $this->valor_total;
             $item->proveedor = serialize($this->proveedor);
             $item->margen_utilidad = $this->utilidad;
-            $item->mes = $this->mes;
-            $item->dias = $this->dias;
-            $item->ciudad = $this->ciudad;
+            $item->mes = !empty($this->mes) ? $this->mes : null;
+            $item->dias = !empty($this->dias) ? (int)$this->dias : 0;
+            $item->ciudad = !empty($this->ciudad) ? $this->ciudad : null;
             $item->v_total_cliente = $this->valor_total_cliente;
 
-            // Si el presupuesto ya tiene centro de costos, marca como actualizado
+            // 3. Asignación consecutiva de num_item y orden
+            $nuevoNumItem = $maxNumItem + 1;
+            $nuevoOrden = $maxOrden + 1;
+
             if ($this->presupuesto->cod_cc){
-                $item->actualizado = 1;
+                $item->actualizado = 3;
                 $this->setEnEdicion($presto);
             }
 
-            // Calcula valores de cotización y rentabilidad
-            $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $item->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $item->v_unitario_cot : 0;
-            $item->rentabilidad = ($this->utilidad > 0) ? $item->v_total_cot - $item->v_total : 0;
+            // Asigna los valores consecutivos garantizados
+            $item->num_item = $nuevoNumItem;
+            $item->orden = $nuevoOrden;
 
-            // Calcula el total de items del presupuesto y asigna el nuevo num_item y orden
-            $item->num_item = $maxOrden +1;
-            $item->orden = $maxOrden +1;
+            // 4. --- CÁLCULOS ---
+            $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
+            $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
+            $item->rentabilidad = ($this->utilidad > 0) ? ($item->v_total_cot - $item->v_total) : 0;
 
             $item->save();
         });
 
+        $this->marcarConCambiosPendientes();
         $this->refresh();
         $this->limpiar();
     }
@@ -424,6 +429,7 @@ class Presupuesto extends Component
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
+        $this->marcarConCambiosPendientes();
         $this->refresh();
     }
 
@@ -451,12 +457,18 @@ class Presupuesto extends Component
         $this->descripcion = $this->selected_item->descripcion;
         $this->valor_unitario = $this->selected_item->v_unitario;
         $this->valor_total = $this->selected_item->v_total;
+        $this->valor_unitario_cliente = $this->selected_item->v_unitario_cot;
         $this->valor_total_cliente = $this->selected_item->v_total_cliente;
         $this->proveedor = (@unserialize($this->selected_item->proveedor)) ? @unserialize($this->selected_item->proveedor) : [$this->selected_item->proveedor];
         $this->utilidad = $this->selected_item->margen_utilidad;
         $this->mes = $this->selected_item->mes;
         $this->dias = $this->selected_item->dias;
         $this->ciudad = $this->selected_item->ciudad;
+    }
+
+    public function items()
+    {
+        return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id');
     }
 
     public function actualizarItem($id, array $nuevosDatos)
@@ -469,7 +481,7 @@ class Presupuesto extends Component
             'user_id'             => auth()->id(),
         ]);
 
-        $item->update(array_merge($nuevosDatos, ['actualizado' => 1]));
+        $item->update(array_merge($nuevosDatos, ['actualizado' => 1])); // Marca como actualizado
     }
 
     // Guarda los cambios al editar un ítem
@@ -506,11 +518,12 @@ class Presupuesto extends Component
             $itemOriginal->descripcion = $this->descripcion;
             $itemOriginal->v_unitario = 0;
             $itemOriginal->v_total = 0;
+            $itemOriginal->v_total_cliente = 0;
             $itemOriginal->proveedor = serialize([]);
             $itemOriginal->margen_utilidad = 0;
-            $itemOriginal->mes = 1;
-            $itemOriginal->dias = 0;
-            $itemOriginal->ciudad = 0;
+            //$itemOriginal->mes = 1;
+            //$itemOriginal->dias = 0;
+            //$itemOriginal->ciudad = 0;
             $itemOriginal->update();
         }
         else{
@@ -518,13 +531,13 @@ class Presupuesto extends Component
             $this->validate([
                 'cod' => ['required'],
                 'dia' => ['required'],
-                'otros' => ['required'],
+                //'otros' => ['required'],
                 'descripcion' => ['required'],
                 'proveedor' => ['required'],
                 'utilidad' => ['required'],
-                'mes' => ['required'],
-                'dias' => ['required'],
-                'ciudad' => ['required']
+                //'mes' => ['required'],
+                //'dias' => ['required'],
+                //'ciudad' => ['required']
             ]);
 
             $this->validate([
@@ -572,18 +585,20 @@ class Presupuesto extends Component
             $itemOriginal->v_unitario = $this->valor_unitario;
             $itemOriginal->v_total = $this->valor_total;
             $itemOriginal->v_total_cliente = $this->valor_total_cliente;
+            $itemOriginal->v_unitario_cot = $this->valor_unitario_cliente;
             $itemOriginal->proveedor = serialize($this->proveedor);
             $itemOriginal->margen_utilidad = $this->utilidad;
             $itemOriginal->mes = $this->mes;
-            $itemOriginal->dias = $this->dias;
+            //$itemOriginal->dias = $this->dias;
             $itemOriginal->ciudad = $this->ciudad;
 
             $itemOriginal->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->otros * $itemOriginal->v_unitario_cot : 0;
+            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $itemOriginal->v_unitario_cot : 0;
             $itemOriginal->rentabilidad = ($this->utilidad > 0) ? $itemOriginal->v_total_cot - $itemOriginal->v_total : 0;
             $itemOriginal->update();
         }
 
+        $this->marcarConCambiosPendientes();
         $this->refresh();
         $this->limpiar();
     }
@@ -743,14 +758,14 @@ class Presupuesto extends Component
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
         // Si el margen del proyecto es menor al 30%, se envia a validación de gerencia (estado_id = 5),
-        // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
+        // de lo contrario se aprueba el proyecto directamente (estado_id = 1)
         if ($presto->margen_proy < 30.00) {
             $presto->estado_id = 5;
         }
         else {
-            $presto->estado_id = 2;
+            $presto->estado_id = 1;
             // Envía notificación de revisión
-            $this->presupuestoAprobacion($presto, Auth::user());
+            // $this->presupuestoAprobacion($presto, Auth::user());
         }
 
         $presto->justificacion_lider = null;
@@ -912,7 +927,7 @@ class Presupuesto extends Component
         }
         else {
             $this->validate([
-                'justificacion_compras' => ['required', 'string']
+                'justificacion_compras' => ['nullable', 'string']
             ]);
 
             $presupuesto->justificacion_compras = $this->justificacion_compras;
@@ -944,6 +959,7 @@ class Presupuesto extends Component
             'cantidad' => ['required']
         ]);
         $this->getValorTotal();
+        $this->getValorTotalCliente();
     }
 
     public function updatedDia(){
@@ -952,6 +968,7 @@ class Presupuesto extends Component
             'dia' => ['required']
         ]);
         $this->getValorTotal();
+        $this->getValorTotalCliente();
     }
 
     public function updatedOtros(){
@@ -997,6 +1014,25 @@ class Presupuesto extends Component
         }
     }
 
+    public function updatedValorUnitarioCliente()
+    {
+        $this->valor_unitario_cliente = trim($this->valor_unitario_cliente);
+        $this->valor_unitario_cliente = str_replace(",", '', $this->valor_unitario_cliente);
+        $this->validate([
+            'valor_unitario_cliente' => ['required', 'numeric']
+        ]);
+        $this->getValorTotalCliente();
+    }
+
+    // Nuevo método, análogo a getValorTotal()
+    public function getValorTotalCliente()
+    {
+        if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario_cliente)) {
+            $this->valor_total_cliente = $this->cantidad * $this->dia * $this->valor_unitario_cliente;
+            $this->getUtilidad();
+        }
+    }
+
     public function updatedProveedor(){
         $this->validate([
             // 'proveedor' => ['required', new SameCategory]
@@ -1018,14 +1054,14 @@ class Presupuesto extends Component
             'mes' => ['required']
         ]);
     }
-
+    /*
     public function updatedDias(){
         $this->dias = trim($this->dias);
         $this->validate([
             'dias' => ['required']
         ]);
     }
-
+    */
     public function updatedCiudad(){
         $this->validate([
             'ciudad' => ['required']
@@ -1075,8 +1111,8 @@ class Presupuesto extends Component
 
     // Calcula el valor total del ítem
     public function getValorTotal(){
-        if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->otros) && !is_null($this->valor_unitario)){
-            $this->valor_total = $this->cantidad * $this->dia * $this->otros * $this->valor_unitario;
+        if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario)){
+            $this->valor_total = $this->cantidad * $this->dia * $this->valor_unitario;
         }
         if ($this->valor_total_cliente != 0){
             $this->getUtilidad();
@@ -1117,6 +1153,7 @@ class Presupuesto extends Component
         $this->proveedor = [];
         $this->utilidad = "";
         $this->valor_total_cliente = 0;
+        $this->valor_unitario_cliente = 0;
         $this->mes = "";
         $this->dias = "";
         $this->ciudad = "";
@@ -1139,7 +1176,8 @@ class Presupuesto extends Component
         $this->calcularCentroCostos();
     }
 
-    public function calcularCentroCostos(){
+   public function calcularCentroCostos()
+   {
         if (!$this->clienteSeleccionado) {
             $this->centroCostos = '';
             return;
@@ -1147,6 +1185,7 @@ class Presupuesto extends Component
 
         // 1. Buscamos directamente el registro en clientes_parametro_cc
         $parametro = cliente_parametros_cc::find($this->clienteSeleccionado);
+        $nomProyecto = gestionComercial::find($this->id_gestion)->nom_proyecto_cot ?? '';
 
         if (!$parametro || !$parametro->codigo_cc) {
             $this->centroCostos = '';
@@ -1156,13 +1195,13 @@ class Presupuesto extends Component
         // 2. Tomamos el código de 2 dígitos (ej: 'C3', '09', '11')
         $codigoCC = $parametro->codigo_cc;
 
-        // 3. Factores de fecha: Año actual y Mes por defecto actual (ej: '07')
+        // 3. Factores de fecha: Año actual y Mes por defecto actual (ej: '08')
         $anio = date('y');
         $mes = $this->mesCC ?? date('m');
         $mesFormateado = str_pad($mes, 2, '0', STR_PAD_LEFT);
 
-        // Raíz de búsqueda: "C3-202607-"
-        $prefijoBusqueda = "{$codigoCC}-{$anio}{$mesFormateado}-";
+        // Prefijo de búsqueda sin guiones (ej: "C32608")
+        $prefijoBusqueda = "{$codigoCC}{$anio}{$mesFormateado}";
 
         // 4. Consultamos el último consecutivo en presupuestos_proyecto
         $ultimoPresupuesto = PresupuestoProyecto::where('cod_cc', 'LIKE', "{$prefijoBusqueda}%")
@@ -1172,14 +1211,23 @@ class Presupuesto extends Component
         $nuevoConsecutivo = 1;
 
         if ($ultimoPresupuesto) {
-            $partes = explode('-', $ultimoPresupuesto->cod_cc);
-            $ultimoNumero = (int) end($partes);
-            $nuevoConsecutivo = $ultimoNumero + 1;
+            // Extrae los 2 dígitos del consecutivo que vienen inmediatamente después del prefijo
+            $sinPrefijo = substr($ultimoPresupuesto->cod_cc, strlen($prefijoBusqueda));
+            if (preg_match('/^(\d{2})/', $sinPrefijo, $coincidencias)) {
+                $nuevoConsecutivo = (int) $coincidencias[1] + 1;
+            }
         }
 
         $consecutivoFormateado = str_pad($nuevoConsecutivo, 2, '0', STR_PAD_LEFT);
 
-        // 5. Asignamos la cadena final a la propiedad de previsualización
-        $this->centroCostos = "{$prefijoBusqueda}{$consecutivoFormateado}";
+        // 5. Asignamos la cadena final sin guiones y con el nombre del proyecto al final
+        $this->centroCostos = "{$prefijoBusqueda}{$consecutivoFormateado} {$nomProyecto}";
     }
+
+    private function marcarConCambiosPendientes()
+    {
+        PresupuestoProyecto::where('id', $this->presupuesto_id)
+            ->update(['notificacion_actualizacion' => true]);
+    }
+
 }

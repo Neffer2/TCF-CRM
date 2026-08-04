@@ -17,6 +17,9 @@ class PresupuestosList extends Component
     // Trait para manejar la paginación de los resultados
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = [
+        'Actualizacion' => 'notificarActualizacion', 
+        'marcarVisto' => 'marcarComoVisto'];
 
     // Propiedades públicas para los filtros del formulario
     public $cod_cc;        // Código de centro de costos para filtrar
@@ -30,6 +33,9 @@ class PresupuestosList extends Component
     public $estados = [];     // Estados de los presupuestos (no utilizado actualmente)
     public $años = [];        // Lista de años disponibles
     public $comerciales = []; // Lista de comerciales/usuarios
+
+    public $presupuesto;
+    public $id_gestion;
 
     /**
      * Método principal que renderiza el componente con los presupuestos filtrados
@@ -119,5 +125,29 @@ class PresupuestosList extends Component
 
         // Carga la información completa del año incluyendo sus meses
         $this->yearInfo = Año::find($this->año);
+    }
+
+    public function notificarActualizacion()
+    {
+        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        if ($presto) {
+            $presto->update(['notificacion_actualizacion' => true]);
+            $this->presupuesto = $presto;
+        }
+    }
+
+    /**
+ * Marca el presupuesto como visto pasando su ID directamente
+ */
+    public function marcarComoVisto($presupuestoId)
+    {
+        $presto = PresupuestoProyecto::find($presupuestoId);
+        
+        if ($presto && $presto->notificacion_actualizacion) {
+            $presto->update(['notificacion_actualizacion' => false]);
+        }
+
+        // Si tu botón redirige a otra pantalla/ruta, la redirección se realiza aquí:
+        return redirect()->route('presupuesto', $presto->id_gestion);
     }
 }

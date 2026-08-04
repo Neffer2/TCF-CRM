@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Middleware\productor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -50,5 +51,9 @@ class OrdenCompra extends Model
 
     public function anticipos(){
         return $this->hasMany(Anticipo::class, 'oc_id', 'id');
+    }
+
+    public function provedor(){
+        return $this->belongsTo(User::class, 'presupuesto_id', 'id');
     }
 }

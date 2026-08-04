@@ -73,14 +73,17 @@
         <thead>
         <tr>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Item</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Codigo</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Descripción del Ítem Actual</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Cantidad</th>
-            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario</th>
-            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Total Actual</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario Interno</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Total Interno</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario Cliente</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Total Cliente</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Proveedor</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Utilidad</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Rentabilidad</th>
-            <th style="background-color: #ef4444; color: white; font-weight: bold;">Estado</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Disponible</th>
         </tr>
         </thead>
         <tbody>
@@ -97,29 +100,55 @@
                         @php
                             $base = data_get($registro, 'valores_anteriores', $registro);
                             $num_item = data_get($base, 'num_item', '-');
+                            $codigo_item = data_get($base, 'cod', '-');
                             $descripcion = data_get($base, 'descripcion', 'Sin descripción');
                             $cantidad = data_get($base, 'cantidad', 0);
                             $vUnitario = (float) data_get($base, 'v_unitario', 0);
                             $vTotal = (float) data_get($base, 'v_total', 0);
-                            $proveedor = data_get($base, 'proveedor');
+                            $vUnitarioCliente = (float) data_get($base, 'v_unitario_cot', 0);
+                            $vTotalCliente = (float) data_get($base, 'v_total_cliente', 0);
+                            $proveedorRaw = data_get($base, 'proveedor');
                             $utilidad = (float) data_get($base, 'margen_utilidad');
                             $rentabilidad = (float) data_get($base, 'rentabilidad', 0);
-                            $estado = data_get($base, 'actualizado');
+                            $disponibleRaw = data_get($base, 'disponible', null);
+                
+                            if (is_null($disponibleRaw)) {
+                                $disponible = '-';
+                            } else {
+                                $disponible = ((int) $disponibleRaw === 1) ? 'Sí' : 'No';
+                            }
                         @endphp
                         <td>{{ $num_item }}</td>
+                        <td>{{ $codigo_item }}</td>
                         <td>{{ $descripcion }}</td>
                         <td>{{ $cantidad }}</td>
                         <td>{{ number_format($vUnitario, 2) }}</td>
                         <td>{{ number_format($vTotal, 2) }}</td>
-                        <td>{{ $proveedor }}</td>
+                        <td>{{ number_format($vUnitarioCliente, 2) }}</td>
+                        <td>{{ number_format($vTotalCliente, 2) }}</td>
+                        <td class="font-weight-bold font-table">
+                            @if ($proveedores_item = @unserialize($proveedorRaw))
+                                @foreach ($proveedores_item as $p)
+                                    {{ @$proveedores->find($p)->tercero }} <br>
+                                @endforeach
+                            @else
+                                @if ($proveedores->find($proveedorRaw))
+                                    {{ $proveedores->find($proveedorRaw)->tercero }}
+                                @else
+                                    {{ $proveedorRaw }}
+                                @endif
+                            @endif
+                        </td>
                         <td>{{ number_format(100-($utilidad * 100), 2) }}%</td>
                         <td>{{ number_format($rentabilidad, 2) }}</td>
-                        <td>{{ is_null($estado) ? '-' : $estado }}</td>
+                        <td>{{ is_null($disponible) ? '-' : $disponible }}</td>
                     </tr>
                 @else
                     <tr>
                         @php
-                            $descripcion = data_get($base, 'descripcion', 'Sin descripcion')
+                            // Ojo: Aseguramos definir $base también en el else por si acaso
+                            $base = data_get($registro, 'valores_anteriores', $registro);
+                            $descripcion = data_get($base, 'descripcion', 'Sin descripción');
                         @endphp
                         <td class="bold" style="text-align: center; font-weight: bold;" colspan="14">{{ $descripcion }}</td>
                     </tr>
@@ -128,7 +157,5 @@
         @endif
         </tbody>
     </table>
-
-    <table></table>
 </body>
 </html>

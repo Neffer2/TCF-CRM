@@ -43,70 +43,125 @@
 
     <!-- PASO 1: PRODUCTOR Y PROYECTO -->
     <div class="row bg-light p-3 rounded mb-3">
-        <div class="col-md-6 mb-2">
-            <div class="form-group">
-                <label for="productor_id" class="form-label font-weight-bold text-xs">
-                    1. Productor Encargado: <span class="text-danger">*</span>
-                </label>
-                <select id="productor_id" class="form-control form-control-sm text-dark" wire:model="productor_id">
-                    <option value="" class="text-secondary">-- Seleccionar Productor --</option>
-                    @foreach ($productores ?? [] as $prod)
-                        <option value="{{ $prod->id }}" class="text-dark bg-white" style="color: #000 !important;">
-                            {{ $prod->nombre ?? $prod->name }} {{ $prod->apellido ?? $prod->last_name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('productor_id') <span class="text-danger text-xs">{{ $message }}</span> @enderror
-            </div>
+
+        <!-- SELECT PRODUCTOR -->
+        <div class="col-md-3">
+            <label class="text-xxs font-weight-bold text-secondary mb-1">Productor:</label>
+            <select class="form-select form-select-sm" wire:model="filtro_productor_id">
+                <option value="">-- Seleccionar Productor --</option>
+                @foreach ($productores as $prod)
+                    <option value="{{ $prod->id }}">{{ $prod->name ?? $prod->nombre }}</option>
+                @endforeach
+            </select>
         </div>
 
-        <div class="col-md-6 mb-2">
-            <div class="form-group">
-                <label for="presupuesto" class="form-label font-weight-bold text-xs">
-                    2. Proyecto / Centro de Costos: <span class="text-danger">*</span>
-                </label>
-                <select id="presupuesto" class="form-control form-control-sm" wire:model="presupuesto" @if(empty($proyectos_productor) || count($proyectos_productor) == 0) disabled @endif>
-                    <option value="">
-                        {{ empty($productor_id) ? '-- Primero selecciona un Productor --' : '-- Seleccionar Proyecto --' }}
-                    </option>
-                    @foreach ($proyectos_productor ?? [] as $proj)
-                        <option value="{{ $proj->id }}">{{ $proj->cod_cc }} - {{ $proj->nombre }}</option>
-                    @endforeach
-                </select>
-                @error('presupuesto') <span class="text-danger text-xs">{{ $message }}</span> @enderror
-            </div>
+        <!-- SELECT AÑO -->
+        <div class="col-md-2">
+            <label class="text-xxs font-weight-bold text-secondary mb-1">Año:</label>
+            <select class="form-select form-select-sm" wire:model="filtro_anio_id">
+                <option value="">-- Año --</option>
+                @foreach ($catalogo_anos as $a)
+                    <option value="{{ $a->id }}">{{ $a->description }}</option>
+                @endforeach
+            </select>
         </div>
+
+        <!-- SELECT MES -->
+        <div class="col-md-2">
+            <label class="text-xxs font-weight-bold text-secondary mb-1">Mes:</label>
+            <select class="form-select form-select-sm" wire:model="filtro_mes">
+                <option value="">-- Mes --</option>
+                @foreach ($catalogo_meses as $m)
+                    <option value="{{ $m->id }}">{{ $m->description ?? $m->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- SELECT PROYECTO (APROBADO) -->
+        <div class="col-md-5">
+            <label class="text-xxs font-weight-bold text-secondary mb-1">Proyecto (Aprobados):</label>
+
+            @php
+                $proyectos_productor = $this->proyectosFiltrados;
+            @endphp
+
+            <select class="form-select form-select-sm"
+                    wire:model="filtro_presupuesto_id"
+                    @if(!$filtro_productor_id || $proyectos_productor->isEmpty()) disabled @endif>
+
+                @if(!$filtro_productor_id)
+                    <option value="">-- Seleccione un Productor primero --</option>
+                @elseif($proyectos_productor->isEmpty())
+                    <option value="">-- Sin proyectos aprobados en este periodo --</option>
+                @else
+                    <option value="">-- Seleccione un Proyecto --</option>
+                    @foreach ($proyectos_productor as $proyecto)
+                        <option value="{{ $proyecto->id }}">
+                            {{ $proyecto->cod_cc }}
+                        </option>
+                    @endforeach
+                @endif
+            </select>
+        </div>
+
     </div>
 
     <!-- PASO 2: AGREGAR ÍTEMS DEL PROYECTO -->
     <div class="border-top pt-3">
         <h6 class="text-xs font-weight-bold text-uppercase text-secondary mb-2">Ítems del Proyecto</h6>
         <div class="row">
-            <div class="col-md-5 mb-2">
+            <div class="col-md-4 mb-2">
                 <div class="form-group">
                     <label for="item_presupuesto" class="form-label font-weight-bold text-xs">Ítem Presupuesto:</label>
-                    <select id="item_presupuesto" class="form-control form-control-sm" wire:model="item_presupuesto" @if(empty($items_presupuesto) || count($items_presupuesto) == 0) disabled @endif>
+                    <select id="item_presupuesto" class="form-control form-control-sm" wire:model.live="item_presupuesto" @if(empty($items_presupuesto) || count($items_presupuesto) == 0) disabled @endif>
                         <option value="">-- Seleccionar Ítem --</option>
                         @foreach ($items_presupuesto ?? [] as $item_p)
                             <option value="{{ $item_p->id }}">
-                                {{ $item_p->descripcion }}
+                                {{ $item_p->descripcion ?? $item_p->nombre }}
                             </option>
                         @endforeach
                     </select>
+                    @error('item_presupuesto') <span class="text-danger text-xxs">{{ $message }}</span> @enderror
                 </div>
             </div>
+
+            <!-- CANTIDAD -->
             <div class="col-md-2 mb-2">
                 <div class="form-group">
                     <label class="form-label font-weight-bold text-xs">Cantidad</label>
-                    <input type="number" class="form-control form-control-sm" wire:model.defer="cantidad" placeholder="0">
+                    <input type="number" step="any" class="form-control form-control-sm" wire:model.live="cantidad" placeholder="0">
+                    @error('cantidad') <span class="text-danger text-xxs">{{ $message }}</span> @enderror
                 </div>
             </div>
-            <div class="col-md-3 mb-2">
+
+            <!-- VALOR UNITARIO -->
+            <div class="col-md-2 mb-2">
                 <div class="form-group">
                     <label class="form-label font-weight-bold text-xs">Valor Unitario</label>
-                    <input type="text" class="form-control form-control-sm" wire:model.defer="valor_unitario" placeholder="$ 0">
+                    <input type="number" step="any" class="form-control form-control-sm" wire:model.live="valor_unitario" placeholder="$ 0">
+                    @error('valor_unitario') <span class="text-danger text-xxs">{{ $message }}</span> @enderror
                 </div>
             </div>
+
+            <!-- dia -->
+            <div class="col-md-2 mb-2">
+                <div class="form-group">
+                    <label class="form-label font-weight-bold text-xs">Días</label>
+                    <input type="number" step="any" class="form-control form-control-sm" wire:model.live="dia" placeholder="0">
+                    @error('dia') <span class="text-danger text-xxs">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <!-- VISTA PREVIA TOTAL CALCULADO -->
+            <div class="col-md-2 mb-2">
+                <div class="form-group">
+                    <label class="form-label font-weight-bold text-xs text-primary">Valor Total (Previo)</label>
+                    <input type="text" class="form-control form-control-sm bg-light font-weight-bold text-primary"
+                           value="${{ number_format($this->valorTotalPreview, 2) }}" readonly>
+                </div>
+            </div>
+
+            <!-- BOTÓN AGREGAR -->
             <div class="col-md-2 mb-2 d-flex align-items-end">
                 <button type="button" wire:click="newItem" class="btn btn-sm bg-gradient-primary w-100 mb-0">
                     <i class="fas fa-plus me-1"></i> Agregar
@@ -156,13 +211,13 @@
     <!-- PASO 3: COMERCIAL Y GENERAR OC -->
     <div class="border-top pt-3 mt-3 bg-light p-3 rounded">
         <h6 class="text-xs font-weight-bold text-uppercase text-secondary mb-3">
-            3. Datos Comerciales para la Orden de Compra
+            3. Datos del productor para la Orden de Compra
         </h6>
         <div class="row">
             <div class="col-md-4 mb-2">
                 <div class="form-group">
-                    <label for="comercial_encargado" class="form-label font-weight-bold text-xs">Comercial Asignado: <span class="text-danger">*</span></label>
-                    <input id="comercial_encargado" type="text" class="form-control form-control-sm" wire:model.defer="comercial_encargado" placeholder="Nombre del comercial">
+                    <label for="comercial_encargado" class="form-label font-weight-bold text-xs">Productor Asignado: <span class="text-danger">*</span></label>
+                    <input id="comercial_encargado" type="text" class="form-control form-control-sm" wire:model.defer="comercial_encargado" placeholder="Nombre del productor">
                     @error('comercial_encargado') <span class="text-danger text-xs">{{ $message }}</span> @enderror
                 </div>
             </div>

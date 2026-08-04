@@ -91,8 +91,21 @@
                                     <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                                 </td> 
                                 <td class="d-flex align-items-center justify-content-center">
+                                @if (Auth::User()->rol == 1 && Auth::User()->id == 10 || Auth::User()->rol == 1 && Auth::User()->id == 9 || Auth::User()->rol == 1 && Auth::User()->id == 38 || Auth::User()->rol == 1 && Auth::User()->id == 192 || Auth::User()->rol == 1 && Auth::User()->id == 17)
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
                                 </td>
+                                @elseif (Auth::User()->rol == 1)
+                                    <a href="{{ route('presupuesto', $presupuesto->id_gestion) }}"
+                                        wire:click="marcarComoVisto({{ $presupuesto->id }})"
+                                        class="btn btn-primary position-relative">
+                                        <i class="fas fa-eye"></i> Ver
+                                        @if(optional($presupuesto)->notificacion_actualizacion)
+                                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                <span class="visually-hidden">Nuevo cambio</span>
+                                            </span>
+                                        @endif
+                                    </a>
+                                @endif
                             </tr> 
                         @endforeach
                     </tbody>

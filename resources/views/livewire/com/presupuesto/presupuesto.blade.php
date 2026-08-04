@@ -147,33 +147,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-header p-0 mt-3 col-md-12">
-                                <div class="row px-3">
-                                    <div class="col-md-12">
-                                        <h3 class="mb-0">Justificaci&oacute;n compras</h3>
-                                        <p class="text-sm mb-0">Expl&iacute;cale al comercial porqu&eacute; ha sido rechazado el presupuesto.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="form-group">
-                                    <textarea name="justificacion_compras" @if(Auth::user()->rol != 1 || $presupuesto->estado_id == 4) disabled @endif id="justificacion_compras" cols="10" rows="2" class="form-control" wire:model="justificacion_compras" class="form-control @error('justificacion_compras') is-invalid @elseif(strlen($justificacion_compras) > 0) is-valid @enderror"></textarea>
-                                    @error('justificacion_compras')
-                                    <small id="justificacion_compras" class="text-danger bold">
-                                        {{ $message }}
-                                    </small>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn bg-gradient-warning m-0"
-                                            @if(Auth::user()->rol != 1 || $presupuesto->estado_id == 4) disabled @endif
-                                            wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div class="col-md-3">
                         <div class="card">
                             <div class="card-header p-0 mt-3 col-md-12">
@@ -335,23 +309,25 @@
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
+                    <!--<th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>-->
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO INTERNO</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL INTERNO</th>
+                    <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO CLIENTE</th>
+                    <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL CLIENTE</th>
                     @if ($presupuesto->gestion->claro)
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL CLIENTE</th>
                     @endif
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
 
+                    <!--
                     <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
-
+                    -->
+                    
                     @if ($rentabilidadView)
-                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO</th>
-                        <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL</th>
                         <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
                     @endif
 
@@ -396,9 +372,11 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->dia }}
                             </td>
+                            <!--
                             <td class="font-weight-bold font-table">
                                 {{ $item->otros }}
                             </td>
+                            -->
                             <td class="font-weight-bold font-table">
                                 <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
                             </td>
@@ -408,11 +386,12 @@
                             <td class="font-weight-bold font-table">
                                 $ {{ number_format($item->v_total) }}
                             </td>
-                            @if ($presupuesto->gestion->claro)
-                                <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->v_total_cliente) }}
-                                </td>
-                            @endif
+                            <td class="font-weight-bold font-table">
+                                $ {{ number_format($item->v_unitario_cot) }}
+                            </td>
+                            <td class="font-weight-bold font-table">
+                                $ {{ number_format($item->v_total_cliente) }}
+                            </td>        
                             <td class="font-weight-bold font-table">
                                 @if ($proveedores_item = @unserialize($item->proveedor))
                                     @foreach ($proveedores_item as $proveedor)
@@ -429,7 +408,7 @@
                             <td class="font-weight-bold font-table">
                                 {{ number_format(100-($item->margen_utilidad * 100), 2) }} %
                             </td>
-
+                            <!--
                             <td class="font-weight-bold font-table">
                                 @if ($item->mesDescription)
                                     {{ $item->mesDescription->description }}
@@ -441,14 +420,8 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->ciudad }}
                             </td>
-
+                            -->
                             @if ($rentabilidadView)
-                                <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->v_unitario_cot) }}
-                                </td>
-                                <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->v_total_cot) }}
-                                </td>
                                 <td class="font-weight-bold font-table">
                                     $ {{ number_format($item->rentabilidad) }}
                                 </td>
@@ -481,9 +454,9 @@
         <div class="card card-frame p-3">
             <div class="row mt-2">
                 @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)
-                    <div class="col-md-12 p-2">
+                    <div class="col-md-11 p-2">
                         <div class="row gy-0 mb-3" style="gap: 5px 0">
-                            <div class="col-md-1">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="cod">COD</label>
                                     <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
@@ -525,6 +498,7 @@
                                     @enderror
                                 </div>
                             </div>
+                            <!--
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="otros">OTROS</label>
@@ -537,7 +511,8 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            -->
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="descripcion">DESCRIPCI&Oacute;N</label>
                                     <textarea id="descripcion" cols="30" rows="1" class="form-control @error('descripcion') is-invalid @elseif(strlen($descripcion) > 0) is-valid @enderror"
@@ -549,7 +524,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="valor_unitario">V. UNITARIO (INTERNO)</label>
                                     <input type="text" class="form-control @error('valor_unitario') is-invalid @elseif(strlen($valor_unitario) > 0) is-valid @enderror"
@@ -561,7 +536,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="valor_total">V. TOTAL (INTERNO)</label>
                                     <input type="text" class="form-control @error('valor_total') is-invalid @elseif(strlen($valor_total) > 0) is-valid @enderror"
@@ -573,11 +548,25 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-2">
+
+                            <div class="col-md-1">
+                                <div class="form-group mb-0">
+                                    <label for="valor_unitario_cliente">V. UNITARIO CLIENTE</label>
+                                    <input id="valor_unitario_cliente" type="text" class="form-control @error('valor_unitario_cliente') is-invalid @elseif(strlen($valor_unitario_cliente) > 0) is-valid @enderror"
+                                           placeholder="Valor unitario cliente" required wire:model.lazy="valor_unitario_cliente" x-mask:dynamic="$money($input)">
+                                    @error('valor_unitario_cliente')
+                                    <div id="valor_unitario_cliente" class="invalid-feedback">
+                                        {{ $message }}  
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="valor_total_cliente">V. TOTAL CLIENTE</label>
                                     <input id="valor_total_cliente" type="text" class="form-control @error('valor_total_cliente') is-invalid @elseif(strlen($valor_total_cliente) > 0) is-valid @enderror"
-                                           placeholder="Valor total cliente" required wire:model.lazy="valor_total_cliente" x-mask:dynamic="$money($input)">
+                                           placeholder="Valor total cliente" disabled required wire:model.lazy="valor_total_cliente" x-mask:dynamic="$money($input)">
                                     @error('valor_total_cliente')
                                     <div id="valor_total_cliente" class="invalid-feedback">
                                         {{ $message }}
@@ -585,18 +574,26 @@
                                     @enderror
                                 </div>
                             </div>
+
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="utilidad">UTILIDAD</label>
-                                    <input type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
-                                           placeholder="Utilidad" required wire:model.lazy="utilidad">
+                                    
+                                    <!-- Muestra el cálculo visualmente sin permitir escribir -->
+                                    <input type="text" 
+                                        class="form-control bg-light font-weight-bold text-center @error('utilidad') is-invalid @enderror" 
+                                        value="{{ !empty($utilidad) && (float)$utilidad > 0 ? number_format(100 - ((float)$utilidad * 100), 2) : '0.00' }} %" 
+                                        readonly>
+
                                     @error('utilidad')
-                                    <div id="utilidad" class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
+
+                            <!--
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="mes">MES</label>
@@ -643,6 +640,8 @@
                                     @enderror
                                 </div>
                             </div>
+                            -->
+
                             <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="proveedor">PROVEEDOR</label>
@@ -696,13 +695,6 @@
                             <span class="btn-inner--icon"><i class="ni ni-ruler-pencil"></i></span>
                             <span class="btn-inner--text">Editar</span>
                         </button>
-
-                        @if(Auth::user()->rol == 2)
-                            <button wire:click="updateOrden({{ $item->id }})" class="btn btn-icon btn-3 bg-gradient-primary mb-0 me-1" title="Aplicar nuevo orden" type="button">
-                                ↕️ Mover
-                            </button>
-                        @endif
-
                         <button class="btn btn-icon btn-3 bg-gradient-success mb-0 me-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" type="button">
                             <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                             <span class="btn-inner--text">Exportar</span>
@@ -882,7 +874,7 @@
                                 <div class="col-md-3">
 
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-7">
                                         <div class="form-group mb-0">
                                             <!-- Selector apuntando a clientes_parametro_cc -->
                                             <label for="clienteSeleccionado">CLIENTE</label>

@@ -10,12 +10,14 @@ use App\Models\User;
 use App\Models\Asistente;
 use App\Rules\CentroCostos;
 use App\Models\GestionComercial;
+use App\Models\cliente_parametros_cc;
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {
     // MODELS
+    public $cliente_id;
     public $fecha = ""; // Fecha del proyecto
     public $nom_cliente = ""; // Nombre del clientes
     public $nom_proyecto = ""; // Nombre del proyecto
@@ -58,6 +60,8 @@ class NewProyecto extends Component
     // Se decide utilizar "lead" como referencia a los registros de la tabla Gestion Comercial
     public $lead_id = 0; // ID del registro en Gestión Comercial
 
+    public $listaClientes = [];
+
     // Renderiza la vista principal del formulario de nuevo proyecto
     public function render()
     {
@@ -68,6 +72,7 @@ class NewProyecto extends Component
     public function mount(){
         $this->getEstados();
         $this->getCuentas();
+        $this->cargarClientes();
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
         $this->nom_proyecto = $informacionGeneral->nom_proyecto_cot;
@@ -153,6 +158,9 @@ class NewProyecto extends Component
     public function updateFechaFacturacion() {
         $this->validate(['fecha_facturacion' => ['present']]);
     }
+    public function updatedClienteId(){
+        $this->validate(['cliente_id' => ['required']]);
+    }
 
     // Carga los estados posibles
     public function getEstados(){
@@ -185,6 +193,13 @@ class NewProyecto extends Component
         $this->getValor();
         $this->getTotalPorcentaje();
         $this->updatedTestigoPorcentaje();
+    }
+
+    public function cargarClientes()
+    {
+        $this->listaClientes = cliente_parametros_cc::select('id', 'nombre_empresa', 'codigo_cc')
+            ->orderBy('nombre_empresa', 'asc')
+            ->get();
     }
 
     // Valida y actualiza el comercial principal
@@ -338,6 +353,7 @@ class NewProyecto extends Component
             'fecha_inicio' => ['present'],
             'dura_mes' => ['present'],
             'fecha_facturacion' => ['present'],
+            'cliente_id' => ['required'],
 
             // PARTICIPACIONES
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
@@ -376,6 +392,7 @@ class NewProyecto extends Component
             $base_comercial->dura_mes = $this->dura_mes;
             $base_comercial->fecha_facturacion = $this->fecha_facturacion;
             $base_comercial->id_user = $this->{'comercial'.$i};
+            $base_comercial->cliente_id = $this->cliente_id;
 
             $base_comercial->save();
             $i++;
@@ -403,5 +420,6 @@ class NewProyecto extends Component
         $this->fecha_inicio = null;
         $this->dura_mes = null;
         $this->fecha_facturacion = null;
+        $this->cliente_id = null;
     }
 }
