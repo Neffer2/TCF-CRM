@@ -7,6 +7,9 @@ use App\Models\SolicitudCliente;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 
 class CrearSolicitudContacto extends Component
 {
@@ -86,7 +89,8 @@ class CrearSolicitudContacto extends Component
             $rutaArchivo = null;
             if ($this->adjuntar_archivos) {
                 // Lo guarda en storage/app/public/solicitudes_adjuntos de forma automática y segura
-                $rutaArchivo = $this->adjuntar_archivos->store('solicitudes_adjuntos', 'public');
+                $rutaArchivo = $this->adjuntar_archivos->store('public/solicitudes_adjuntos');
+                \Log::info('Ruta guardada: ' . $rutaArchivo);
             }
             // Inserción directa en la tabla relacional
             SolicitudCliente::create([
