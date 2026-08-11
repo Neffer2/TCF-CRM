@@ -521,9 +521,9 @@ class Presupuesto extends Component
             $itemOriginal->v_total_cliente = 0;
             $itemOriginal->proveedor = serialize([]);
             $itemOriginal->margen_utilidad = 0;
-            //$itemOriginal->mes = 1;
-            //$itemOriginal->dias = 0;
-            //$itemOriginal->ciudad = 0;
+            $itemOriginal->mes = 1;
+            $itemOriginal->dias = 0;
+            $itemOriginal->ciudad = 0;
             $itemOriginal->update();
         }
         else{
@@ -531,13 +531,13 @@ class Presupuesto extends Component
             $this->validate([
                 'cod' => ['required'],
                 'dia' => ['required'],
-                //'otros' => ['required'],
+                'otros' => ['required'],
                 'descripcion' => ['required'],
                 'proveedor' => ['required'],
                 'utilidad' => ['required'],
-                //'mes' => ['required'],
-                //'dias' => ['required'],
-                //'ciudad' => ['required']
+                'mes' => ['required'],
+                'dias' => ['required'],
+                'ciudad' => ['required']
             ]);
 
             $this->validate([
@@ -589,7 +589,7 @@ class Presupuesto extends Component
             $itemOriginal->proveedor = serialize($this->proveedor);
             $itemOriginal->margen_utilidad = $this->utilidad;
             $itemOriginal->mes = $this->mes;
-            //$itemOriginal->dias = $this->dias;
+            $itemOriginal->dias = $this->dias;
             $itemOriginal->ciudad = $this->ciudad;
 
             $itemOriginal->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
@@ -993,6 +993,10 @@ class Presupuesto extends Component
             'valor_unitario' => ['required', 'numeric']
         ]);
         $this->getValorTotal();
+
+        if (!empty($this->utilidad)) {
+            $this->calcularPorUtilidad();
+        }
     }
 
     public function updatedValorTotal(){
@@ -1022,6 +1026,10 @@ class Presupuesto extends Component
             'valor_unitario_cliente' => ['required', 'numeric']
         ]);
         $this->getValorTotalCliente();
+
+        if (!empty($this->utilidad)) {
+            $this->calcularPorUtilidad();
+        }
     }
 
     // Nuevo método, análogo a getValorTotal()
@@ -1032,6 +1040,22 @@ class Presupuesto extends Component
             $this->getUtilidad();
         }
     }
+
+    private function calcularPorUtilidad()
+    {
+        if ($this->utilidad <= 0) {
+            return;
+        }
+
+        if (!empty($this->valor_unitario_cliente)) {
+            $this->valor_unitario = $this->valor_unitario_cliente * $this->utilidad;
+            $this->getValorTotal();
+        // Si no, pero sí hay valor_unitario (interno), calculamos el cliente a partir de él.
+        }elseif (!empty($this->valor_unitario)) {
+            $this->valor_unitario_cliente = $this->valor_unitario / $this->utilidad;
+            $this->getValorTotalCliente();
+        }
+}
 
     public function updatedProveedor(){
         $this->validate([
@@ -1046,6 +1070,8 @@ class Presupuesto extends Component
         $this->validate([
             'utilidad' => ['required', 'numeric']
         ]);
+
+        $this->calcularPorUtilidad();
     }
 
     public function updatedMes(){

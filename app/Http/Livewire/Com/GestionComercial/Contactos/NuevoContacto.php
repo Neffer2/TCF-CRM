@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Com\GestionComercial\Contactos;
 
 use App\Models\Contacto;
+use App\Models\clientes;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,6 +22,8 @@ class NuevoContacto extends Component
     public $pbx;       // PBX del contacto
     public $ciudad;    // Ciudad del contacto
     public $direccion; // Dirección del contacto
+    public $cliente_id; // ID del cliente asociado al contacto
+    public $listaClientes; // Colección de clientes para la lista
 
     // Renderiza la vista principal del formulario de nuevo contacto
     public function render()
@@ -60,12 +63,12 @@ class NuevoContacto extends Component
 
     // Valida el campo web cuando se actualiza
     public function updatedWeb(){
-        $this->validate(['web' => ['string']]);
+        $this->validate(['web' => ['nullable', 'string']]);
     }
 
     // Valida el campo pbx cuando se actualiza
     public function updatedPbx(){
-        $this->validate(['pbx' => ['string']]);
+        $this->validate(['pbx' => ['nullable', 'string']]);
     }
 
     // Valida el campo dirección cuando se actualiza
@@ -78,17 +81,30 @@ class NuevoContacto extends Component
         $this->validate(['ciudad' => ['string']]);
     }
 
+    // Validación individual para cliente_id
+    public function updatedClienteId()
+    {
+        $this->validate(['cliente_id' => ['exists:clientes,id']]);
+    }
+
+    public function mount()
+    {
+        // Trae los clientes de la BD (solo id y nombre para optimizar memoria)
+        $this->listaClientes = clientes::select('id', 'nombre')->get();
+    }
+
     // Guarda el contacto en la base de datos
     public function store(){
         $this->validate([
             'nombre' => ['required', 'string'],
             'apellido' => ['required', 'string'],
             'empresa' => ['required', 'string'],
+            'cliente_id' => ['nullable', 'exists:clientes,id'],
             'cargo' => ['string'],
             'celular' => ['string'],
             'correo' => ['string'],
-            'pbx' => ['string'],
-            'web' => ['string'],
+            'pbx' => ['nullable', 'string'],
+            'web' => ['nullable', 'string'],
             'direccion' => ['string'],
             'ciudad' => ['string']
         ]);
@@ -98,6 +114,7 @@ class NuevoContacto extends Component
         $gestiones->nombre = $this->nombre;
         $gestiones->apellido = $this->apellido;
         $gestiones->empresa = $this->empresa;
+        $gestiones->id_cliente = $this->cliente_id;
         $gestiones->cargo = $this->cargo;
         $gestiones->correo = $this->correo;
         $gestiones->celular = $this->celular;
@@ -119,6 +136,7 @@ class NuevoContacto extends Component
         $this->nombre = "";
         $this->apellido = "";
         $this->empresa = "";
+        $this->cliente_id = "";
         $this->cargo = "";
         $this->celular = "";
         $this->correo = "";

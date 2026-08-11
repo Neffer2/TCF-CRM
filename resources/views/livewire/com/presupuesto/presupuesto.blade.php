@@ -602,10 +602,8 @@
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="utilidad">UTILIDAD</label>
-                                    <input type="text" 
-                                        class="form-control bg-light font-weight-bold text-center @error('utilidad') is-invalid @enderror" 
-                                        value="{{ !empty($utilidad) && (float)$utilidad > 0 ? number_format(100 - ((float)$utilidad * 100), 2) : '0.00' }} %" 
-                                        readonly>
+                                    <input id="utilidad" type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
+                                        placeholder="Utilidad" required wire:model.lazy="utilidad">
                                     @error('utilidad')
                                     <div id="utilidad_error" class="invalid-feedback">
                                         {{ $message }}

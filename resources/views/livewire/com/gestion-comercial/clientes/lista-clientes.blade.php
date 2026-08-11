@@ -142,6 +142,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Volver</button>
+                                    <button type="button" class="btn bg-gradient-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $cliente->id }}" data-bs-dismiss="modal">Eliminar</button>
                                 </div>
                             </div>
                         </form>
@@ -151,7 +152,7 @@
                 <!-- Delete Modal -->
                 <div class="modal fade" id="deleteModal{{ $cliente->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $cliente->id }}" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
-                        <form wire:submit.prevent="destroy({{ $cliente->id }})">
+                        <form wire:submit.prevent="eliminarCliente({{ $cliente->id }})">
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">

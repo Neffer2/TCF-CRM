@@ -211,4 +211,50 @@
             </div>
         </div>
     </form>
+    <div class="col-md-12">
+        @if($mostrarModalDocumentos)
+
+            <div class="alert alert-warning">
+                <h6 class="mb-2">
+                    El cliente no tiene documentación completa
+                </h6>
+
+                <p class="mb-3">
+                    Debe adjuntar el RUT y la Cámara de Comercio para continuar.
+                </p>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <label>RUT</label>
+                        <input type="file"
+                            wire:model="rutArchivo"
+                            class="form-control">
+
+                        @error('rutArchivo')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Cámara de Comercio</label>
+                        <input type="file"
+                            wire:model="camaraArchivo"
+                            class="form-control">
+
+                        @error('camaraArchivo')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                </div>
+
+                <button type="button"
+                        class="btn btn-warning mt-3"
+                        wire:click="guardarDocumentosCliente">
+                    Guardar documentación
+                </button>
+            </div>
+        @endif
+    </div>
 </div>

@@ -135,7 +135,6 @@
                         @enderror
                     </div>
                 </div>
-
                 <!-- 10. Correo de Recepción de Facturas -->
                 <div class="col-md-6">
                     <div class="form-group mb-0">

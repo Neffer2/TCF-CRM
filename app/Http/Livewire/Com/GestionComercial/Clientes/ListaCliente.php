@@ -12,6 +12,7 @@ class ListaCliente extends Component
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
+    public $cliente_id; // ID del cliente seleccionado para eliminar
 
     protected $listeners = ['list' => 'render'];
 
@@ -38,5 +39,17 @@ class ListaCliente extends Component
 
         return view('livewire.com.gestion-comercial.clientes.lista-clientes', compact('clientes'));
 
+    }
+
+    public function eliminarCliente()
+    {
+        $cliente = clientes::find($this->cliente_id);
+        if ($cliente) {
+            $cliente->delete();
+            session()->flash('success', 'Cliente eliminado exitosamente.');
+            $this->emit('list');
+        } else {
+            session()->flash('error', 'Cliente no encontrado.');
+        }
     }
 }

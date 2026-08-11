@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Com\GestionComercial\Clientes;
 
 use App\Http\Livewire\Com\GestionComercial\Clientes\CrearSolicitudContacto;
 use App\Models\SolicitudCliente;
+use App\Models\cliente_parametros_cc;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class Cliente extends Component
     public $pagina_web;
     public $correo_recpcion_facturas; // Respetamos el nombre de tu campo de BD
     public $adjuntar_archivos; // Para el manejo de adjuntos temporales
+
 
     public function render(){
         return view('livewire.com.gestion-comercial.clientes.nuevo-cliente');
@@ -84,6 +86,13 @@ class Cliente extends Component
 
         try {
             DB::beginTransaction();
+
+            $rutaArchivo = null;
+            if ($this->adjuntar_archivos) {
+                // Lo guarda en storage/app/public/solicitudes_adjuntos de forma automática y segura
+                $rutaArchivo = $this->adjuntar_archivos->store('public/solicitudes_adjuntos');
+                \Log::info('Ruta guardada: ' . $rutaArchivo);
+            }
 
             // Mapeamos todo a la sala de espera estructurada
 

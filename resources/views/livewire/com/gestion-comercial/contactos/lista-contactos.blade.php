@@ -62,6 +62,26 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
+                                                    <label for="cliente_id">Cliente: </label>
+                                                    @if ($contacto->id_cliente)
+                                                        <input type="text" class="form-control" value="{{ $listaClientes->where('id', $contacto->id_cliente)->first()->nombre }}" disabled>
+                                                    @else
+                                                    <select id="cliente_id" name="id_cliente" class="form-select @error('id_cliente') is-invalid @enderror">
+                                                        <option value="">-- Seleccione un cliente --</option>
+                                                        @foreach($listaClientes as $cliente)
+                                                            <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @endif
+                                                    @error('id_cliente')
+                                                        <div id="id_cliente" class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
                                                     <label for="celular">Celular: </label>
                                                     <input id="celular" type="number" name="celular_edit" class="form-control @error('celular_edit') is-invalid @enderror" placeholder="Celular"
                                                     value="{{ $contacto->celular }}"> 

@@ -367,6 +367,7 @@ class ComercialController extends Controller
         $request->validate([
             "cargo_edit" => 'required|string',
             "celular_edit" => 'required|numeric',
+            "id_cliente" => 'required|exists:clientes,id',
             "correo_edit" => 'required|email',
             "pbx_edit" => 'required|string',
             "web_edit" => 'required|string',
@@ -378,9 +379,10 @@ class ComercialController extends Controller
         $contacto->cargo = $request->cargo_edit;
         $contacto->celular = $request->celular_edit;
         $contacto->correo = $request->correo_edit;
+        $contacto->id_cliente = $request->id_cliente;
         // Nota: Hay un intercambio en la asignación de pbx y web
-        $contacto->web = $request->pbx_edit;    // Debería ser web_edit
-        $contacto->pbx = $request->web_edit;    // Debería ser pbx_edit
+        $contacto->web = $request->web_edit;    // Debería ser web_edit
+        $contacto->pbx = $request->pbx_edit;    // Debería ser pbx_edit
         $contacto->direccion = $request->direccion_edit;
         $contacto->update();
 

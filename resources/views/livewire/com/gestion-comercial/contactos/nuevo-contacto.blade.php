@@ -1,119 +1,135 @@
 <div>
-    <form wire:submit.prevent="store">  
-        <div class="row"> 
-            <div class="col-md-4"> 
+    <form wire:submit.prevent="store">
+        <div class="row g-3">
+            {{-- Nombre --}}
+            <div class="col-md-4">
                 <div class="form-group">
-                    <label for="nombre">Nombre: </label>
-                    <input id="nombre" wire:model.lazy="nombre" class="form-control @error('nombre') is-invalid @elseif(strlen($nombre) > 0) is-valid @enderror" value="{{ old('nombre') }}" placeholder="Nombre">
+                    <label for="nombre" class="form-label">Nombre *</label>
+                    <input id="nombre" type="text" wire:model.blur="nombre" class="form-control @error('nombre') is-invalid @enderror" placeholder="Nombre">
                     @error('nombre')
-                        <div id="nombre" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4"> 
+
+            {{-- Apellido --}}
+            <div class="col-md-4">
                 <div class="form-group">
-                    <label for="apellido">Apellido: </label>
-                    <input id="apellido" wire:model.lazy="apellido" class="form-control @error('apellido') is-invalid @elseif(strlen($apellido) > 0) is-valid @enderror" value="{{ old('apellido') }}" placeholder="Apellido">
+                    <label for="apellido" class="form-label">Apellido *</label>
+                    <input id="apellido" type="text" wire:model.blur="apellido" class="form-control @error('apellido') is-invalid @enderror" placeholder="Apellido">
                     @error('apellido')
-                        <div id="apellido" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
+
+            {{-- Empresa --}}
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="empresa">Empresa: </label>
-                    <input id="empresa" wire:model.lazy="empresa" class="form-control @error('empresa') is-invalid @elseif(strlen($empresa) > 0) is-valid @enderror" value="{{ old('empresa') }}" placeholder="Empresa">
+                    <label for="empresa" class="form-label">Empresa *</label>
+                    <input id="empresa" type="text" wire:model.blur="empresa" class="form-control @error('empresa') is-invalid @enderror" placeholder="Empresa">
                     @error('empresa')
-                        <div id="empresa" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
+
+            {{-- Cargo --}}
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="cargo">Cargo: </label>
-                    <input id="cargo" wire:model.lazy="cargo" class="form-control @error('cargo') is-invalid @elseif(strlen($cargo) > 0) is-valid @enderror" value="{{ old('cargo') }}" placeholder="Cargo">                
+                    <label for="cargo" class="form-label">Cargo</label>
+                    <input id="cargo" type="text" wire:model.blur="cargo" class="form-control @error('cargo') is-invalid @enderror" placeholder="Cargo">
                     @error('cargo')
-                        <div id="cargo" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
+
+            {{-- Celular --}}
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="celular">Celular: </label>
-                    <input id="celular" type="number" wire:model.lazy="celular" class="form-control @error('celular') is-invalid @elseif(strlen($celular) > 0) is-valid @enderror" value="{{ old('celular') }}" placeholder="Celular">                
+                    <label for="celular" class="form-label">Celular</label>
+                    <input id="celular" type="text" wire:model.blur="celular" class="form-control @error('celular') is-invalid @enderror" placeholder="Celular">
                     @error('celular')
-                        <div id="celular" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
+
+            {{-- Correo --}}
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="correo">Correo: </label>
-                    <input id="correo" type="email" wire:model.lazy="correo" class="form-control @error('correo') is-invalid @elseif(strlen($correo) > 0) is-valid @enderror" value="{{ old('correo') }}" placeholder="Correo">                
+                    <label for="correo" class="form-label">Correo</label>
+                    <input id="correo" type="email" wire:model.blur="correo" class="form-control @error('correo') is-invalid @enderror" placeholder="ejemplo@correo.com">
                     @error('correo')
-                        <div id="correo" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
+
+            {{-- Cliente --}}
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="pbx">PBX EXT: </label>
-                    <input id="pbx" type="text" wire:model.lazy="pbx" class="form-control @error('pbx') is-invalid @elseif(strlen($pbx) > 0) is-valid @enderror" value="{{ old('pbx') }}" placeholder="PBX">                
+                    <label for="cliente_id" class="form-label">Seleccionar Cliente *</label>
+                    <select id="cliente_id" wire:model.blur="cliente_id" class="form-select @error('cliente_id') is-invalid @enderror">
+                        <option value="">-- Seleccione un cliente --</option>
+                        @foreach($listaClientes as $cliente)
+                            <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                        @endforeach
+                    </select>
+                    @error('cliente_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- PBX --}}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="pbx" class="form-label">PBX EXT</label>
+                    <input id="pbx" type="text" wire:model.blur="pbx" class="form-control @error('pbx') is-invalid @enderror" placeholder="PBX">
                     @error('pbx')
-                        <div id="pbx" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4"> 
+
+            {{-- Web --}}
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label for="web">Web: </label>
-                    <input id="web" type="text" wire:model.lazy="web" class="form-control @error('web') is-invalid @elseif(strlen($web) > 0) is-valid @enderror" value="{{ old('web') }}" placeholder="Web">                
+                    <label for="web" class="form-label">Web</label>
+                    <input id="web" type="text" wire:model.blur="web" class="form-control @error('web') is-invalid @enderror" placeholder="https://sitio.com">
                     @error('web')
-                        <div id="web" class="invalid-feedback">
-                            {{ $message }}
-                        </div> 
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="form-group"> 
-                    <label for="direccion">Direcci&oacute;n: </label>
-                    <input id="direccion" type="text" wire:model.lazy="direccion" class="form-control @error('direccion') is-invalid @elseif(strlen($direccion) > 0) is-valid @enderror" value="{{ old('direccion') }}" placeholder="Direccion">                
-                    @error('direccion')
-                        <div id="direccion" class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-md-4"> 
+
+            {{-- Dirección --}}
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label for="ciudad">Ciudad: </label>
-                    <select id="ciudad" type="text" wire:model.lazy="ciudad"
-                    class="form-control @error('ciudad') is-invalid @elseif(strlen($ciudad) > 0) is-valid @enderror" placeholder="Direccion">                
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <input id="direccion" type="text" wire:model.blur="direccion" class="form-control @error('direccion') is-invalid @enderror" placeholder="Dirección">
+                    @error('direccion')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- Ciudad --}}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="ciudad" class="form-label">Ciudad</label>
+                    <select id="ciudad" wire:model.blur="ciudad" class="form-select @error('ciudad') is-invalid @enderror">
                         <option value="">Seleccionar</option>
-                        <option value="BOGOT&Aacute; D.C">BOGOT&Aacute; D.C.</option>
-                        <option value="MEDELL&Iacute;N">MEDELL&Iacute;N</option>
+                        <option value="BOGOTÁ D.C.">BOGOTÁ D.C.</option>
+                        <option value="MEDELLÍN">MEDELLÍN</option>
                         <option value="CALI">CALI</option>
                         <option value="BARRANQUILLA">BARRANQUILLA</option>
                         <option value="CARTAGENA">CARTAGENA</option>
                         <option value="SOLEDAD">SOLEDAD</option>
-                        <option value="C&Uacute;CUTA">C&Uacute;CUTA</option>
-                        <option value="IBAGU&Eacute;">IBAGU&Eacute;</option>
+                        <option value="CÚCUTA">CÚCUTA</option>
+                        <option value="IBAGUÉ">IBAGUÉ</option>
                         <option value="SOACHA">SOACHA</option>
                         <option value="VILLAVICENCIO">VILLAVICENCIO</option>
                         <option value="BUCARAMANGA">BUCARAMANGA</option>
@@ -128,18 +144,17 @@
                         <option value="PALMIRA">PALMIRA</option>
                         <option value="RIOHACHA">RIOHACHA</option>
                         <option value="SINCELEJO">SINCELEJO</option>
-                        <option value="POPAY&Aacute;N">POPAY&Aacute;N</option>
-                        <option value="ITAGÜ&Iacute;">ITAGÜ&Iacute;</option>
+                        <option value="POPAYÁN">POPAYÁN</option>
+                        <option value="ITAGÜÍ">ITAGÜÍ</option>
                         <option value="FLORIDABLANCA">FLORIDABLANCA</option>
                         <option value="ENVIGADO">ENVIGADO</option>
-                        <option value="TULU&Aacute;">TULU&Aacute;</option>
-                        <option value="SAN ANDR&Eacute;S">SAN ANDR&Eacute;S</option>
+                        <option value="TULUÁ">TULUÁ</option>
+                        <option value="SAN ANDRÉS">SAN ANDRÉS</option>
                         <option value="DOSQUEBRADAS">DOSQUEBRADAS</option>
-                        <option value="APARTAD&Oacute;">APARTAD&Oacute;</option>
+                        <option value="APARTADÓ">APARTADÓ</option>
                         <option value="TUNJA">TUNJA</option>
-                        <option value="GIR&Oacute;N">GIR&Oacute;N</option>
+                        <option value="GIRÓN">GIRÓN</option>
                         <option value="URIBIA">URIBIA</option>
-                        <option value="BARRANQUILLA">BARRANQUILLA</option>
                         <option value="BARRANCABERMEJA">BARRANCABERMEJA</option>
                         <option value="FLORENCIA">FLORENCIA</option>
                         <option value="TURBO">TURBO</option>
@@ -147,10 +162,22 @@
                         <option value="PIEDECUESTA">PIEDECUESTA</option>
                         <option value="YOPAL">YOPAL</option>
                     </select>
+                    @error('ciudad')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
-            <div class="col-md-5">
-                <button class="btn bg-gradient-warning mb-0">Nuevo contacto</button>
+
+            {{-- Botón de envío --}}
+            <div class="col-12 mt-4 d-flex justify-content-end">
+                <button type="submit" class="btn bg-gradient-warning mb-0" wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="store">
+                        <i class="fas fa-plus me-1"></i> Guardar contacto
+                    </span>
+                    <span wire:loading wire:target="store">
+                        <i class="fas fa-spinner fa-spin me-1"></i> Guardando...
+                    </span>
+                </button>
             </div>
         </div>
     </form>

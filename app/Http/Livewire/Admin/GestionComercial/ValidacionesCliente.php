@@ -7,6 +7,7 @@ use App\Http\Livewire\Com\GestionComercial\Clientes\CrearSolicitudContacto;
 use App\Models\clientes;
 use App\Models\Año;
 use App\Models\SolicitudCliente;
+use App\Models\cliente_parametros_cc;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -47,6 +48,15 @@ class ValidacionesCliente extends Component
             $clienteNuevo->correo_recpcion_facturas = $solicitud->correo_recpcion_facturas;
             $clienteNuevo->adjuntar_archivos        = $solicitud->adjuntar_archivos;
             $clienteNuevo->save();
+
+
+            $codigoCC = $this->generarCodigoCC($clienteNuevo->nombre);
+
+            cliente_parametros_cc::create([
+                'cliente_id' => $clienteNuevo->id,
+                'nombre_empresa' => $clienteNuevo->razon_social,
+                'codigo_cc' => $codigoCC,
+            ]);
 
             // 3. Cambiar el estado de la solicitud en la sala de espera
             $solicitud->update([
@@ -114,5 +124,25 @@ class ValidacionesCliente extends Component
 
         // Obtiene la información completa del año incluyendo sus meses
         $this->yearInfo = Año::find($this->año);
+    }
+
+    private function generarCodigoCC($nombreCliente)
+    {
+        $nombre = \Illuminate\Support\Str::ascii(trim($nombreCliente));
+
+        // Primera letra
+        $prefijo = strtoupper(substr($nombre, 0, 1));
+
+        // Buscar el mayor consecutivo para esa letra
+        $ultimo = cliente_parametros_cc::where('codigo_cc', 'LIKE', $prefijo . '%')
+            ->get()
+            ->map(function ($item) use ($prefijo) {
+                return (int) str_replace($prefijo, '', $item->codigo_cc);
+            })
+            ->max();
+
+        $consecutivo = ($ultimo ?? 0) + 1;
+
+        return $prefijo . $consecutivo;
     }
 }

@@ -28,11 +28,6 @@ class CrearSolicitudContacto extends Component
     public $correo_recpcion_facturas;
     public $adjuntar_archivos; // Manejará la instancia del archivo cargado temporalmente
 
-    public function render()
-    {
-        return view('livewire.com.gestion-comercial.clientes.nuevo-cliente');
-    }
-
     // Validaciones en tiempo real para mantener la UX limpia y reactiva en el Blade
     public function updatedNomComercial() {
         $this->validate(['nombre' => ['required', 'string', 'max:255']]);
@@ -64,7 +59,7 @@ class CrearSolicitudContacto extends Component
 
     /**
      * Procesa y almacena la nueva solicitud comercial
-     */
+    */
     public function storage()
     {
         // Validación en bloque antes de ejecutar el insert en BD

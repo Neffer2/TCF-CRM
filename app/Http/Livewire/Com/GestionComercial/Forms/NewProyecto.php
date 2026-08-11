@@ -11,11 +11,15 @@ use App\Models\Asistente;
 use App\Rules\CentroCostos;
 use App\Models\GestionComercial;
 use App\Models\cliente_parametros_cc;
+use App\Models\clientes;
+use Livewire\WithFileUploads;
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {
+
+    use WithFileUploads;
     // MODELS
     public $cliente_id;
     public $fecha = ""; // Fecha del proyecto
@@ -61,6 +65,11 @@ class NewProyecto extends Component
     public $lead_id = 0; // ID del registro en Gestión Comercial
 
     public $listaClientes = [];
+
+    public $mostrarModalDocumentos = false;
+    public $clientePendienteDocumentos;
+    public $rutArchivo;
+    public $camaraArchivo;
 
     // Renderiza la vista principal del formulario de nuevo proyecto
     public function render()
@@ -175,8 +184,57 @@ class NewProyecto extends Component
     // Actualiza el estado en gestión comercial a "Venta"
     public function storeVenta(){
         $lead = GestionComercial::where('id', $this->lead_id)->first();
+
+        $cliente = clientes::find($this->cliente_id);
+
+        if (empty($cliente->adjuntar_archivos)) {
+
+            $this->clientePendienteDocumentos = $cliente->id;
+            $this->mostrarModalDocumentos = true;
+        
+            return;
+        }
+
         $lead->id_estado = 5;
         $lead->update();
+    }
+    public function guardarDocumentosCliente()
+    {
+        $this->validate([
+            'rutArchivo' => 'required|file|mimes:pdf|max:10240',
+            'camaraArchivo' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        $cliente = clientes::findOrFail($this->clientePendienteDocumentos);
+
+        $rut = $this->rutArchivo->store('public/clientes/rut');
+        $camara = $this->camaraArchivo->store('public/clientes/camara');
+
+        $cliente->update([
+            'adjuntar_archivos' => json_encode([
+                'rut' => $rut,
+                'camara' => $camara
+            ])
+        ]);
+
+        // Resetear variables de archivos y ocultar la sección
+        $this->reset(['rutArchivo', 'camaraArchivo']);
+        $this->mostrarModalDocumentos = false;
+
+        session()->flash('success', 'Documentación cargada correctamente.');
+
+        // Opcional: Ejecutar automáticamente el guardado de venta tras adjuntar
+        $this->storeVenta();
+    }
+    public function updatedClienteSeleccionado()
+    {
+        $parametro = cliente_parametros_cc::find($this->clienteSeleccionado);
+
+        $cliente = clientes::find($parametro->cliente_id);
+
+        $this->mostrarModalDocumentos =
+            empty($cliente->rut_archivo) ||
+            empty($cliente->camara_comercio_archivo);
     }
 
     /****** PARTICIPACIONES ******/
@@ -392,7 +450,7 @@ class NewProyecto extends Component
             $base_comercial->dura_mes = $this->dura_mes;
             $base_comercial->fecha_facturacion = $this->fecha_facturacion;
             $base_comercial->id_user = $this->{'comercial'.$i};
-            $base_comercial->cliente_id = $this->cliente_id;
+            //$base_comercial->cliente_id = $this->cliente_id;
 
             $base_comercial->save();
             $i++;
