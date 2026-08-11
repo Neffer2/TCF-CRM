@@ -173,19 +173,6 @@
                         @enderror
                     </div>
                 </div>
-
-                <div class="col-md-12">
-                    <div class="form-group mb-0">
-                        <label for="adjuntar_archivos" class="form-control-label">Adjuntar Documentación (Certificación bancaria)</label>
-                        <input id="adjuntar_archivos" type="file" wire:model="adjuntar_archivos" class="form-control @error('adjuntar_archivos') is-invalid @enderror">
-                        @error('adjuntar_archivos')
-                        <div class="invalid-feedback d-block">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
-                </div>
-
                 <!-- Botón de Envío -->
                 <div class="col-12 d-flex justify-content-end mt-3">
                     <button class="btn bg-gradient-warning mb-0" type="submit">Enviar solicitud</button>

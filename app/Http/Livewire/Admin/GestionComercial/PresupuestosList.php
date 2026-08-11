@@ -19,7 +19,8 @@ class PresupuestosList extends Component
     protected $paginationTheme = 'bootstrap';
     protected $listeners = [
         'Actualizacion' => 'notificarActualizacion', 
-        'marcarVisto' => 'marcarComoVisto'];
+        'marcarVisto' => 'marcarComoVisto',
+    ];
 
     // Propiedades públicas para los filtros del formulario
     public $cod_cc;        // Código de centro de costos para filtrar
@@ -134,20 +135,5 @@ class PresupuestosList extends Component
             $presto->update(['notificacion_actualizacion' => true]);
             $this->presupuesto = $presto;
         }
-    }
-
-    /**
- * Marca el presupuesto como visto pasando su ID directamente
- */
-    public function marcarComoVisto($presupuestoId)
-    {
-        $presto = PresupuestoProyecto::find($presupuestoId);
-        
-        if ($presto && $presto->notificacion_actualizacion) {
-            $presto->update(['notificacion_actualizacion' => false]);
-        }
-
-        // Si tu botón redirige a otra pantalla/ruta, la redirección se realiza aquí:
-        return redirect()->route('presupuesto', $presto->id_gestion);
     }
 }

@@ -206,6 +206,38 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header p-0 mt-3 col-md-12">
+                                <div class="row px-3">
+                                    <div class="col-md-12">
+                                        <h3 class="mb-0">Revisión de Cambios</h3>
+                                        <p class="text-sm mb-0">Confirms que has revisado las últimas actualizaciones.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-2 text-center">
+                                @if(optional($presupuesto)->notificacion_actualizacion)
+                                    <div class="alert alert-warning text-white text-sm mb-2 p-2" role="alert">
+                                        <i class="fas fa-exclamation-circle me-1"></i> Modificaciones pendientes.
+                                    </div>
+                                    
+                                    {{-- Emitir evento global a Livewire para disparar 'marcarVisto' --}}
+                                    <button class="btn bg-gradient-info w-100 mb-0" 
+                                            wire:click="marcarComoVisto({{ $presupuesto->id_gestion }})"
+                                            wire:loading.attr="disabled">
+                                        <i class="fas fa-check-circle me-1"></i> Confirmar Revisión
+                                    </button>
+                                @else
+                                    <div class="alert alert-success text-white text-sm mb-0 p-2" role="alert">
+                                        <i class="fas fa-check-double me-1"></i> Presupuesto revisado
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             @endif
 
@@ -309,7 +341,7 @@
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
-                    <!--<th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>-->
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO INTERNO</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL INTERNO</th>
@@ -321,11 +353,9 @@
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
 
-                    <!--
                     <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
-                    -->
                     
                     @if ($rentabilidadView)
                         <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
@@ -372,11 +402,9 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->dia }}
                             </td>
-                            <!--
                             <td class="font-weight-bold font-table">
                                 {{ $item->otros }}
                             </td>
-                            -->
                             <td class="font-weight-bold font-table">
                                 <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
                             </td>
@@ -406,9 +434,8 @@
                                 @endif
                             </td>
                             <td class="font-weight-bold font-table">
-                                {{ number_format(100-($item->margen_utilidad * 100), 2) }} %
+                                {{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %
                             </td>
-                            <!--
                             <td class="font-weight-bold font-table">
                                 @if ($item->mesDescription)
                                     {{ $item->mesDescription->description }}
@@ -420,7 +447,6 @@
                             <td class="font-weight-bold font-table">
                                 {{ $item->ciudad }}
                             </td>
-                            -->
                             @if ($rentabilidadView)
                                 <td class="font-weight-bold font-table">
                                     $ {{ number_format($item->rentabilidad) }}
@@ -456,7 +482,7 @@
                 @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)
                     <div class="col-md-11 p-2">
                         <div class="row gy-0 mb-3" style="gap: 5px 0">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group mb-0">
                                     <label for="cod">COD</label>
                                     <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
@@ -498,10 +524,9 @@
                                     @enderror
                                 </div>
                             </div>
-                            <!--
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
-                                    <label for="otros">OTROS</label>
+                                    <label for="otros">OTROS (MESES)</label>
                                     <input type="number" class="form-control @error('otros') is-invalid @elseif(strlen($otros) > 0) is-valid @enderror"
                                            placeholder="Otros" required wire:model.lazy="otros">
                                     @error('otros')
@@ -511,7 +536,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            -->
                             <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="descripcion">DESCRIPCI&Oacute;N</label>
@@ -578,22 +602,17 @@
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="utilidad">UTILIDAD</label>
-                                    
-                                    <!-- Muestra el cálculo visualmente sin permitir escribir -->
                                     <input type="text" 
                                         class="form-control bg-light font-weight-bold text-center @error('utilidad') is-invalid @enderror" 
                                         value="{{ !empty($utilidad) && (float)$utilidad > 0 ? number_format(100 - ((float)$utilidad * 100), 2) : '0.00' }} %" 
                                         readonly>
-
                                     @error('utilidad')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                    <div id="utilidad_error" class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
                                     @enderror
                                 </div>
                             </div>
-
-                            <!--
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
                                     <label for="mes">MES</label>
@@ -640,8 +659,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            -->
-
                             <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="proveedor">PROVEEDOR</label>
@@ -1135,6 +1152,3 @@
             }
         </style>
 </div>
-
-
-

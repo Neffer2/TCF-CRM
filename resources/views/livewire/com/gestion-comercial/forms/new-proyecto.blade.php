@@ -25,33 +25,7 @@
                     @enderror
                 </div>
             </div>
-
-
             <div class="row">
-
-        <!-- 1. DESPLEGABLE: SELECCIÓN DE CLIENTE / EMPRESA -->
-        <div class="col-md-5">
-            <div class="form-group">
-                <label for="cliente_id">Cliente / Empresa:</label>
-                <select wire:model.lazy="cliente_id" 
-                        id="cliente_id" 
-                        class="form-control @error('cliente_id') is-invalid @enderror" 
-                        required>
-                    <option value="">-- Seleccione Cliente --</option>
-                    @foreach($listaClientes as $client)
-                        <option value="{{ $client->id }}">{{ $client->nombre_empresa }}</option>
-                    @endforeach
-                </select>
-
-                @error('cliente_id')
-                    <div class="invalid-feedback d-block">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-
-
             <div class="col-md-6">
                 <div class="form-grup">
                     <label for="nom_proyecto">Nombre Proyecto:</label>

@@ -35,17 +35,22 @@ class PrestoConsumido implements Rule
                 }
             }
 
-            if ($cantidad >= $this->cantidadConsumido){
-                return true;
-            }
-        }elseif ($attribute == 'valor_total'){
-            foreach ($this->item->consumidos as $consumido){
-                if ($consumido->OrdenCompra->estado_id != 6){
+                if ($cantidad >= $this->cantidadConsumido){
+                    return true;
+                }
+        }elseif ($attribute == 'valor_total') {
+            // 1. Suma de consumos por Órdenes de Compra válidas
+            foreach ($this->item->consumidos as $consumido) {
+                if ($consumido->OrdenCompra->estado_id != 6) {
                     $this->valorTotalConsumido += $consumido->vtotal_oc;
                 }
             }
 
-            if ($value >= $this->valorTotalConsumido){
+            // 2. Sumamos el consumo manual registrado directamente en el ítem de presupuesto
+            $this->valorTotalConsumido += (float) $this->item->consumo_manual;
+
+            // Validamos que el nuevo valor_total presupuestado sea mayor o igual al consumo total acumulado
+            if ($value >= $this->valorTotalConsumido) {
                 return true;
             }
         }

@@ -1229,5 +1229,21 @@ class Presupuesto extends Component
         PresupuestoProyecto::where('id', $this->presupuesto_id)
             ->update(['notificacion_actualizacion' => true]);
     }
+    
+    public function marcarComoVisto($id_gestion = null)
+    {
+        // Si no se envía ID por el evento, toma el $this->id_gestion cargado en el componente
+        $id = $id_gestion ?? $this->id_gestion;
 
+        if ($id) {
+            $presto = PresupuestoProyecto::where('id_gestion', $id)->first();
+
+            if ($presto) {
+                $presto->update(['notificacion_actualizacion' => false]);
+                
+                // Si la propiedad $this->presupuesto existe en este componente, la actualizamos
+                $this->presupuesto = $presto;
+            }
+        }
+    }
 }

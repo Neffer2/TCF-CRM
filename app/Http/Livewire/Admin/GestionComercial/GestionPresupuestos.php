@@ -17,9 +17,6 @@ class GestionPresupuestos extends Component
 {
     use WithPagination, Email;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = [
-        'Actualizacion' => 'notificarActualizacion', 
-        'marcarVisto' => 'marcarComoVisto'];
 
     // Propiedades del modelo para filtros y ordenamiento
     public $filter = 0; // Filtro por estado (0 = todos)
@@ -32,9 +29,6 @@ class GestionPresupuestos extends Component
     public $margenOperator; // Operador para filtro de margen
     public $estadoProyecto; // Estado específico del proyecto según rol
     // public $comerciales = []; // Lista de comerciales (comentado)
-
-    public $presupuesto;
-    public $id_gestion;
 
     public $rol; // Rol del usuario autenticado
 
@@ -124,29 +118,5 @@ class GestionPresupuestos extends Component
         }
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
-    }
-
-    public function notificarActualizacion()
-    {
-        $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        if ($presto) {
-            $presto->update(['notificacion_actualizacion' => true]);
-            $this->presupuesto = $presto;
-        }
-    }
-
-    /**
- * Marca el presupuesto como visto pasando su ID directamente
- */
-    public function marcarComoVisto($presupuestoId)
-    {
-        $presto = PresupuestoProyecto::find($presupuestoId);
-        
-        if ($presto && $presto->notificacion_actualizacion) {
-            $presto->update(['notificacion_actualizacion' => false]);
-        }
-
-        // Si tu botón redirige a otra pantalla/ruta, la redirección se realiza aquí:
-        return redirect()->route('presupuesto', $presto->id_gestion);
     }
 }

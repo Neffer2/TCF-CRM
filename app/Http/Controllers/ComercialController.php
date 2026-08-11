@@ -171,7 +171,15 @@ class ComercialController extends Controller
     public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
         // Obtener el presupuesto y sus items relacionados
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
-        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+        
+        if (!$presto) {
+            abort(404, 'Presupuesto no encontrado.');
+        }
+
+        // Obtener sus items relacionados ORDENADOS por el campo 'orden'
+        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)
+            ->orderBy('orden', 'asc')
+            ->get();
 
         // Configurar Dompdf para permitir recursos remotos
         $dompdf = new Dompdf(array('enable_remote' => true));
