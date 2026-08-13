@@ -335,7 +335,9 @@
             <table class="table mb-0">
                 <thead>
                 <tr>
+                    @if(Auth::user()->rol == 2)
                     <th class="font-weight-bold font-table bg-gradient-info text-white"></th>
+                    @endif
                     <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
 
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
@@ -389,7 +391,9 @@
                         <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
                             class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
                             style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
+                            @if(Auth::user()->rol == 2)
                             <td class="text-center cursor-move drag-handle">☰</td>
+                            @endif
                             <td class="font-weight-bold font-table">
                                 {{ $item->cod }}
                             </td>

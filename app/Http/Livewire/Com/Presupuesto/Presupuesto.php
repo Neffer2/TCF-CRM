@@ -1026,10 +1026,6 @@ class Presupuesto extends Component
             'valor_unitario_cliente' => ['required', 'numeric']
         ]);
         $this->getValorTotalCliente();
-
-        if (!empty($this->utilidad)) {
-            $this->calcularPorUtilidad();
-        }
     }
 
     // Nuevo método, análogo a getValorTotal()
@@ -1046,12 +1042,8 @@ class Presupuesto extends Component
         if ($this->utilidad <= 0) {
             return;
         }
-
-        if (!empty($this->valor_unitario_cliente)) {
-            $this->valor_unitario = $this->valor_unitario_cliente * $this->utilidad;
-            $this->getValorTotal();
         // Si no, pero sí hay valor_unitario (interno), calculamos el cliente a partir de él.
-        }elseif (!empty($this->valor_unitario)) {
+        if (!empty($this->valor_unitario)) {
             $this->valor_unitario_cliente = $this->valor_unitario / $this->utilidad;
             $this->getValorTotalCliente();
         }
@@ -1247,7 +1239,7 @@ class Presupuesto extends Component
         $consecutivoFormateado = str_pad($nuevoConsecutivo, 2, '0', STR_PAD_LEFT);
 
         // 5. Asignamos la cadena final sin guiones y con el nombre del proyecto al final
-        $this->centroCostos = "{$prefijoBusqueda}{$consecutivoFormateado} {$nomProyecto}";
+        $this->centroCostos = mb_strtoupper("{$prefijoBusqueda}{$consecutivoFormateado} {$nomProyecto}");
     }
 
     private function marcarConCambiosPendientes()
