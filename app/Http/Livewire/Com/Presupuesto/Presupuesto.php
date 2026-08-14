@@ -618,7 +618,12 @@ class Presupuesto extends Component
         $ventaProyecto = $itemsActuales->sum('v_total_cliente');
         $margenBruto = $ventaProyecto - $costosProyecto;
         $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
-        $margenItems = $itemsActuales->avg('margen_utilidad') ?? 0;
+        $margenItems = ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                    ->where('evento', 0)
+                    ->where('margen_utilidad', '>', 0)
+                    ->sum('v_total') ) / ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                    ->where('evento', 0)
+                    ->sum('v_total_cot') );
 
         // NOTA: Ajustamos las llaves para que coincidan EXACTAMENTE con tu 'PresupuestosSheetsExports'
         $payloadActual = [
@@ -1239,7 +1244,7 @@ class Presupuesto extends Component
         $consecutivoFormateado = str_pad($nuevoConsecutivo, 2, '0', STR_PAD_LEFT);
 
         // 5. Asignamos la cadena final sin guiones y con el nombre del proyecto al final
-        $this->centroCostos = mb_strtoupper("{$prefijoBusqueda}{$consecutivoFormateado} {$nomProyecto}");
+        $this->centroCostos = mb_strtoupper("{$prefijoBusqueda}{$consecutivoFormateado}-{$nomProyecto}");
     }
 
     private function marcarConCambiosPendientes()
