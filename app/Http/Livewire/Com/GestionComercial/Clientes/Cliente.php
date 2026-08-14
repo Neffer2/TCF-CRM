@@ -30,10 +30,30 @@ class Cliente extends Component
     public $pagina_web;
     public $correo_recpcion_facturas; // Respetamos el nombre de tu campo de BD
     public $adjuntar_archivos; // Para el manejo de adjuntos temporales
+    public $rutArchivo;
+    public $camaraArchivo;
 
 
     public function render(){
         return view('livewire.com.gestion-comercial.clientes.nuevo-cliente');
+    }
+
+     protected function rules()
+    {
+        return [
+            'nombre'                   => ['required', 'string', 'max:255'],
+            'razon_social'             => ['required', 'string', 'max:255'],
+            'nit'                      => ['required', 'string', 'max:50'],
+            'direccion'                => ['required', 'string', 'max:255'],
+            'telefono'                 => ['nullable', 'string', 'max:50'],
+            'numero_telefono'          => ['required', 'string', 'max:50'],
+            'cargo'                    => ['required', 'string', 'max:100'],
+            'correo'                   => ['required', 'string', 'email:rfc', 'max:255'],
+            'pagina_web'               => ['nullable', 'string', 'max:255'],
+            'correo_recpcion_facturas' => ['required', 'string', 'email:rfc', 'max:255'],
+            'rutArchivo'               => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'camaraArchivo'            => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+        ];
     }
 
     // 2. Validaciones en tiempo real (Formato: updated + NombreExactoPropiedad)
@@ -67,34 +87,28 @@ class Cliente extends Component
     public function updatedCorreoRecpcionFacturas(){
         $this->validate(['correo_recpcion_facturas' => ['required', 'string', 'email:rfc', 'max:255']]);
     }
+    public function updatedRutArchivo(){
+        $this->validateOnly('rutArchivo');
+    }
+    public function updatedCamaraArchivo(){
+        $this->validateOnly('camaraArchivo');
+    }
 
     // 3. Método de guardado adaptado a la nueva matriz de datos corporativos
     public function storage(){
-        $this->validate([
-            'nombre'            => ['required', 'string', 'max:255'],
-            'razon_social'             => ['required', 'string', 'max:255'],
-            'nit'                      => ['required', 'string', 'max:50'],
-            'direccion'                => ['required', 'string', 'max:255'],
-            'telefono'                 => ['nullable', 'string', 'max:50'],
-            'numero_telefono'          => ['required', 'string', 'max:50'],
-            'cargo'                    => ['required', 'string', 'max:100'],
-            'correo'                   => ['required', 'string', 'email:rfc', 'max:255'],
-            'pagina_web'               => ['nullable', 'string', 'max:255'],
-            'correo_recpcion_facturas' => ['required', 'string', 'email:rfc', 'max:255'],
-            'adjuntar_archivos'        => ['nullable'],
-        ]);
+        $this->validate();
 
         try {
             DB::beginTransaction();
 
-            $rutaArchivo = null;
-            if ($this->adjuntar_archivos) {
-                // Lo guarda en storage/app/public/solicitudes_adjuntos de forma automática y segura
-                $rutaArchivo = $this->adjuntar_archivos->store('public/solicitudes_adjuntos');
-                \Log::info('Ruta guardada: ' . $rutaArchivo);
-            }
+            // Solo llamamos store() si el archivo realmente fue adjuntado
+            $rut    = $this->rutArchivo    ? $this->rutArchivo->store('public/clientes/rut')       : null;
+            $camara = $this->camaraArchivo ? $this->camaraArchivo->store('public/clientes/camara')  : null;
 
-            // Mapeamos todo a la sala de espera estructurada
+            $adjuntosJson = json_encode([
+                'rut'    => $rut,
+                'camara' => $camara,
+            ]);
 
             SolicitudCliente::create([
                 'id_user'                  => Auth::id(),
@@ -109,7 +123,7 @@ class Cliente extends Component
                 'correo'                   => $this->correo,
                 'pagina_web'               => $this->pagina_web,
                 'correo_recpcion_facturas' => $this->correo_recpcion_facturas,
-                'adjuntar_archivos'        => $this->adjuntar_archivos,
+                'adjuntar_archivos'        => $adjuntosJson,
             ]);
 
             DB::commit();
@@ -137,6 +151,8 @@ class Cliente extends Component
         'correo.email'                      => 'El formato del correo electrónico no es válido.',
         'correo_recpcion_facturas.required' => 'El correo de recepción de facturas es obligatorio.',
         'correo_recpcion_facturas.email'    => 'El formato del correo de facturación no es válido.',
+        'rutArchivo.mimes'                  => 'El RUT debe ser un archivo PDF.',
+        'camaraArchivo.mimes'               => 'La Cámara de Comercio debe ser un archivo PDF.',
     ];
 
     public function limpiar(){
@@ -150,7 +166,8 @@ class Cliente extends Component
         $this->correo = "";
         $this->pagina_web = "";
         $this->correo_recpcion_facturas = "";
-        $this->adjuntar_archivos = null;
+        $this->rutArchivo = null;
+        $this->camaraArchivo = null;
     }
 
 }
