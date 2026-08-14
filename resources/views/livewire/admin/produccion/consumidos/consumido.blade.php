@@ -235,8 +235,8 @@
                             @if (count($item->consumidos) > 0)
                                 <td class="font-weight-bold font-table">
                                     <button data-bs-toggle="collapse" href="#collapseOrden{{ $key }}" role="button" aria-expanded="false"
-                                        aria-controls="collapseOrden" class="m-0 p-0 d-flex justify-content-center" style="width: 100%;">
-                                        <i class="fa-solid fa-caret-down"></i>
+                                        aria-controls="collapseOrden" class="m-0 p-0 d-flex justify-content-center" style="width: 50%;">
+                                        <i class="fa-solid fa-caret-down">📝</i>
                                     </button>
                                 </td>
 
