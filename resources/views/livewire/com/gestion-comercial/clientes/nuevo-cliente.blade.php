@@ -148,12 +148,11 @@
                     </div>
                 </div>
 
-                <!-- 11. Adjuntar Archivos -->
                 <div class="col-md-12">
                     <div class="form-group mb-0">
-                        <label for="adjuntar_archivos" class="form-control-label">Adjuntar Documentación (RUT)</label>
-                        <input id="adjuntar_archivos" type="file" wire:model="adjuntar_archivos" class="form-control @error('adjuntar_archivos') is-invalid @enderror">
-                        @error('adjuntar_archivos')
+                        <label for="rutArchivo" class="form-control-label">Adjuntar Documentación (RUT)</label>
+                        <input id="rutArchivo" type="file" wire:model="rutArchivo" class="form-control @error('rutArchivo') is-invalid @enderror">
+                        @error('rutArchivo')
                         <div class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
@@ -161,11 +160,12 @@
                     </div>
                 </div>
 
+                <!-- 12. Adjuntar Cámara de Comercio -->
                 <div class="col-md-12">
                     <div class="form-group mb-0">
-                        <label for="adjuntar_archivos" class="form-control-label">Adjuntar Documentación (Cámara de Comercio)</label>
-                        <input id="adjuntar_archivos" type="file" wire:model="adjuntar_archivos" class="form-control @error('adjuntar_archivos') is-invalid @enderror">
-                        @error('adjuntar_archivos')
+                        <label for="camaraArchivo" class="form-control-label">Adjuntar Documentación (Cámara de Comercio)</label>
+                        <input id="camaraArchivo" type="file" wire:model="camaraArchivo" class="form-control @error('camaraArchivo') is-invalid @enderror">
+                        @error('camaraArchivo')
                         <div class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
