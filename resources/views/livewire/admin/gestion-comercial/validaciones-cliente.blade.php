@@ -141,9 +141,41 @@
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label font-weight-bold d-block">Documentos Adjuntos (RUT / Cámara de Comercio)</label>
                                             @if($sol->adjuntar_archivos)
-                                                <a href="{{ asset('storage/' . $sol->adjuntar_archivos) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-0">
-                                                    <i class="fas fa-file-download me-2"></i>Ver / Descargar Documento Cargado
-                                                </a>
+                                                @php
+                                                    // Decodificamos el JSON alojado en la BD a un array/objeto PHP
+                                                    $archivos = is_string($sol->adjuntar_archivos) 
+                                                        ? json_decode($sol->adjuntar_archivos, true) 
+                                                        : [];
+
+                                                    // Storage::store('public/...') guarda el path como "public/clientes/...".
+                                                    // Para que asset() funcione bien, debemos reemplazar "public/" por "storage/" o usar Storage::url()
+                                                    $rutPath = isset($archivos['rut']) ? Storage::url($archivos['rut']) : null;
+                                                    $camaraPath = isset($archivos['camara']) ? Storage::url($archivos['camara']) : null;
+                                                @endphp
+
+                                                <div class="col-md-12 mt-2">
+                                                    <label class="form-control-label d-block">Documentación Adjunta</label>
+                                                    <div class="d-flex gap-2 flex-wrap">
+                                                        {{-- Botón para el RUT --}}
+                                                        @if($rutPath)
+                                                            <a href="{{ $rutPath }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
+                                                                <i class="fas fa-file-pdf me-2"></i>Ver RUT
+                                                            </a>
+                                                        @endif
+
+                                                        {{-- Botón para la Cámara de Comercio --}}
+                                                        @if($camaraPath)
+                                                            <a href="{{ $camaraPath }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
+                                                                <i class="fas fa-file-pdf me-2"></i>Ver Cámara de Comercio
+                                                            </a>
+                                                        @endif
+
+                                                        {{-- Mensaje en caso de que no haya ningún archivo registrado --}}
+                                                        @if(!$rutPath && !$camaraPath)
+                                                            <span class="text-muted small">No hay documentos adjuntos.</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @else
                                                 <span class="text-sm text-secondary font-italic">El comercial no adjuntó ningún archivo.</span>
                                             @endif
