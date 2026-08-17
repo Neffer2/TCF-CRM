@@ -605,7 +605,7 @@
 
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
-                                    <label for="utilidad">UTILIDAD</label>
+                                    <label for="utilidad">UTILIDAD {{ is_numeric($utilidad) ? '(' . ($utilidad * 100) . '%)' : '(0%)' }}</label>
                                     <input id="utilidad" type="text" class="form-control @error('utilidad') is-invalid @elseif(strlen($utilidad) > 0) is-valid @enderror"
                                         placeholder="Utilidad" required wire:model.lazy="utilidad">
                                     @error('utilidad')
@@ -941,8 +941,6 @@
                                             </button>
                                         </div>
                                     </div>
-
-
                                 </div>
                                 {{-- <div class="col-md-3">
                                     <button wire:click="validacionLiderComercial" wire:loading.attr="disabled" class="btn btn-icon btn-3 bg-gradient-warning mb-0 mt-1" type="button">

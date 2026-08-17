@@ -1052,7 +1052,7 @@ class Presupuesto extends Component
             $this->valor_unitario_cliente = $this->valor_unitario / $this->utilidad;
             $this->getValorTotalCliente();
         }
-}
+    }
 
     public function updatedProveedor(){
         $this->validate([

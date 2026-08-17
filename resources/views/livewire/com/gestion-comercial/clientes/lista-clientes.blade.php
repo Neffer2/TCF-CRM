@@ -131,11 +131,40 @@
                                             </div>
                                         </div>
                                         @if($cliente->adjuntar_archivos)
+                                            @php
+                                                // Decodificamos el JSON alojado en la BD a un array/objeto PHP
+                                                $archivos = is_string($cliente->adjuntar_archivos) 
+                                                    ? json_decode($cliente->adjuntar_archivos, true) 
+                                                    : [];
+
+                                                // Storage::store('public/...') guarda el path como "public/clientes/...".
+                                                // Para que asset() funcione bien, debemos reemplazar "public/" por "storage/" o usar Storage::url()
+                                                $rutPath = isset($archivos['rut']) ? Storage::url($archivos['rut']) : null;
+                                                $camaraPath = isset($archivos['camara']) ? Storage::url($archivos['camara']) : null;
+                                            @endphp
+
                                             <div class="col-md-12 mt-2">
                                                 <label class="form-control-label d-block">Documentación Adjunta</label>
-                                                <a href="{{ asset('storage/' . $cliente->adjuntar_archivos) }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
-                                                    <i class="fas fa-file-pdf me-2"></i>Ver documento actual
-                                                </a>
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    {{-- Botón para el RUT --}}
+                                                    @if($rutPath)
+                                                        <a href="{{ $rutPath }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
+                                                            <i class="fas fa-file-pdf me-2"></i>Ver RUT
+                                                        </a>
+                                                    @endif
+
+                                                    {{-- Botón para la Cámara de Comercio --}}
+                                                    @if($camaraPath)
+                                                        <a href="{{ $camaraPath }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-0">
+                                                            <i class="fas fa-file-pdf me-2"></i>Ver Cámara de Comercio
+                                                        </a>
+                                                    @endif
+
+                                                    {{-- Mensaje en caso de que no haya ningún archivo registrado --}}
+                                                    @if(!$rutPath && !$camaraPath)
+                                                        <span class="text-muted small">No hay documentos adjuntos.</span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
