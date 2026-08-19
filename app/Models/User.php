@@ -51,4 +51,22 @@ class User extends Authenticatable
     public function asistente(){
         return $this->hasMany(Asistente::class, 'comercial_id', 'id');
     }
+
+    public function comerciales() {
+        return $this->belongsToMany(
+            User::class,
+            'lider_comercial_user',
+            'lider_id',
+            'comercial_id'
+        );
+    }
+
+    public function lideres() {
+        return $this->belongsToMany(
+            User::class,
+            'lider_comercial_user',
+            'comercial_id',
+            'lider_id'
+        );
+    }
 }

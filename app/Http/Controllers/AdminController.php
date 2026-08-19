@@ -111,6 +111,15 @@ class AdminController extends Controller
         return view('admin.gestion.actualizaciones');
     }
 
+    public function validaciones(){
+        return view('admin.gestion.validaciones');
+    }
+
+    public function ValidacionesClientes()
+    {
+        return view('admin.gestion.validacionescliente');
+    }
+
     /**
      * Muestra la página principal de órdenes de compra (producción)
      *

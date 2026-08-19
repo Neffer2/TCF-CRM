@@ -9,6 +9,10 @@ class PresupuestoProyecto extends Model
 { 
     use HasFactory; 
     protected $table = "presupuesto_proyecto";
+    protected $fillable = [
+        'notificacion_actualizacion'
+    ];
+
  
     public function gestion(){ 
         return $this->hasOne(GestionComercial::class, 'id', 'id_gestion'); 

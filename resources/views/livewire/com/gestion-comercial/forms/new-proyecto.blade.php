@@ -16,8 +16,8 @@
             </div>
             <div class="col-md-7">
                 <div class="form-group">
-                    <label for="nom_cliente">Nombre Cliente:</label>
-                    <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Cliente" required>
+                    <label for="nom_cliente">Nombre Contacto:</label>
+                    <input wire:model.lazy="nom_cliente" id="nom_cliente" type="text" name="nom_cliente" class="form-control @error('nom_cliente') is-invalid @elseif(strlen($nom_cliente) > 0) is-valid @enderror" value="{{ old('nom_cliente') }}" placeholder="Nombre Contacto" required>
                     @error('nom_cliente')
                         <div id="nom_cliente" class="invalid-feedback">
                             {{ $message }}
@@ -25,6 +25,7 @@
                     @enderror
                 </div>
             </div>
+            <div class="row">
             <div class="col-md-6">
                 <div class="form-grup">
                     <label for="nom_proyecto">Nombre Proyecto:</label>
@@ -146,24 +147,33 @@
                     @enderror
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="id_cuenta">Cuenta: </label>
-                    <select wire:model.lazy="id_cuenta" id="id_cuenta" name="id_cuenta" class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" value="{{ old('id_cuenta') }}" placeholder="Estado" required>
+                    <select wire:model.lazy="id_cuenta" 
+                            id="id_cuenta" 
+                            name="id_cuenta" 
+                            class="form-control @error('id_cuenta') is-invalid @elseif(strlen($id_cuenta) > 0) is-valid @enderror" 
+                            required>
                         <option value="">Seleccionar</option>
                         @foreach ($cuentas as $cuenta)
-                            <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
+                            {{-- Muestra la cuenta con id 1 O si coincide con la cuenta que ya tenía el proyecto --}}
+                            @if ($cuenta->id == 1 || $cuenta->id == $id_cuenta)
+                                <option value="{{ $cuenta->id }}">{{ $cuenta->description }}</option>
+                            @endif
                         @endforeach
                     </select>
+                    
                     @error('id_cuenta')
-                        <div id="id_cuenta" class="invalid-feedback">
+                        <div id="id_cuenta" class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
                     @enderror
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="fecha_inicio">Fecha inicio:</label>
                     <input wire:model="fecha_inicio" id="fecha_inicio" type="date" name="fecha_inicio" class="form-control @error('fecha_inicio') is-invalid @elseif(strlen($fecha_inicio) > 0) is-valid @enderror" value="{{ old('fecha_inicio') }}">
@@ -174,7 +184,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="dura_mes">Fecha fin: </label>
                     <input wire:model="dura_mes" id="dura_mes" type="date" name="dura_mes" class="form-control @error('dura_mes') is-invalid @elseif(strlen($dura_mes) > 0) is-valid @enderror" value="{{ old('dura_mes') }}">
@@ -185,7 +195,47 @@
                     @enderror
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha facturación:</label>
+                    <input wire:model="fecha_facturacion" id="fecha_facturacion" type="date" name="fecha_facturacion" class="form-control @error('fecha_facturacion') is-invalid @elseif(strlen($fecha_facturacion) > 0) is-valid @enderror" value="{{ old('fecha_facturacion') }}">
+                    @error('fecha_facturacion')
+                        <div id="fecha_facturacion" class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </div>
             <div class="col-md-12">
+                @if($mostrarModalDocumentos)
+                    <div class="border rounded p-3 bg-light mb-3">
+                        <h6 class="mb-2">El cliente no tiene documentación completa</h6>
+                        <p class="mb-3">Debe adjuntar el RUT y la Cámara de Comercio.</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>RUT</label>
+                                <input type="file" wire:model="rutArchivo" class="form-control">
+                                @error('rutArchivo')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label>Cámara de Comercio</label>
+                                <input type="file" wire:model="camaraArchivo" class="form-control">
+                                @error('camaraArchivo')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-warning mt-3" wire:click="guardarDocumentosCliente">
+                            Guardar documentación
+                        </button>
+                    </div>
+                @endif
+            </div>
+            <div class="col-md-12 mt-3">
                 <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
             </div>
         </div>

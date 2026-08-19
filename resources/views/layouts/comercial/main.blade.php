@@ -77,7 +77,7 @@
               <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
             </a>
             <div @class([
-              'show' => (request()->is('contactos') || request()->is('gestion-comercial') || request()->is('presupuestos')),
+              'show' => (request()->is('contactos') || request()->is('gestion-comercial') || request()->is('presupuestos') || request()->is('clientes')),
               'collapse' => true
               ]) id="dashboardsGestion">
               <ul class="nav ms-4">
@@ -98,7 +98,13 @@
                     <span class="sidenav-mini-icon text-xs"> Pre </span>
                     <span class="sidenav-normal"> Presupuestos </span>
                   </a>
-                </li>            
+                </li>
+                <li @class(['active' => request()->is('clientes'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('clientes'), 'nav-link' => true]) href="{{ route('clientes')}}">
+                    <span class="sidenav-mini-icon text-xs"> cl </span>
+                    <span class="sidenav-normal"> Clientes </span>
+                  </a>
+                </li>         
               </ul> 
             </div> 
           </li>

@@ -47,8 +47,36 @@ trait Email
             'email'=> 'auxiliar.contable@bullmarketing.com.co'
         ]
     ];
+    public $lider_comercial = [
+        [
+            'name' => 'Nefer Barragan',
+            'email' => 'Neffer.Barragan@bullmarketing.com.co'
+        ],
+    ];
 
     /* PRESUPEUSTOS */
+    public function presupuestoValidacionLiderComercial($presto, $user)
+    {
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN CRM";
+
+        if ($presto->cod_cc) {
+            $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
+        } else {
+            $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
+        }
+
+        if ($presto->justificacion) {
+            $body .= "<br><b>{$user->name}</b> ha realizado las siguientes observaciones: {$presto->justificacion}.";
+        }
+
+        array_push($recipients, ...$this->lider_comercial);
+
+        $altBody = "NOTIFICACIÓN CRM";
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+    
     public function presupuestoAprobacion($presto, $user){
         $subject = "NOTIFICACIÓN CRM";
         $recipients = [];

@@ -6,6 +6,11 @@ namespace App\Http\Controllers;
 use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
 use App\Exports\BaseExport;
+use App\Models\HistorialItemPresupuesto;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 
 // Importación de clases base de Laravel
@@ -23,6 +28,9 @@ use App\Models\Contacto;
 use App\Models\Helisa;
 use App\Models\Asistente;
 
+
+use App\Traits\Email;
+
 // Importación de librería para generación de PDFs
 use Dompdf\Dompdf;
 
@@ -38,6 +46,7 @@ use Dompdf\Dompdf;
  */
 class ComercialController extends Controller
 {
+    use WithFileUploads, Email;
     /*
     |--------------------------------------------------------------------------
     | Comercial Controller
@@ -61,6 +70,10 @@ class ComercialController extends Controller
      */
     public function gestionComercial(){
         return view('comercial.gestion');
+    }
+
+    public function gestionClientes(){
+        return view('comercial.gestion.clientes');
     }
 
     /**
@@ -157,7 +170,15 @@ class ComercialController extends Controller
     public function cotizacionPdf($prespuesto, $nom_proyecto, $tipo){
         // Obtener el presupuesto y sus items relacionados
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
-        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+        
+        if (!$presto) {
+            abort(404, 'Presupuesto no encontrado.');
+        }
+
+        // Obtener sus items relacionados ORDENADOS por el campo 'orden'
+        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)
+            ->orderBy('orden', 'asc')
+            ->get();
 
         // Configurar Dompdf para permitir recursos remotos
         $dompdf = new Dompdf(array('enable_remote' => true));
@@ -180,13 +201,52 @@ class ComercialController extends Controller
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse Descarga del Excel
      */
     public function cotizacionExcel($prespuesto, $nom_proyecto, $tipo) {
-        // Obtener datos necesarios para la exportación
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
-        $items = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+
+        if (!$presto) {
+            return session()->flash('error', 'El presupuesto no existe.');
+        }
+
+        $allItems = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
+
+        $costosProyecto = $allItems->sum('v_total');
+
+        $ventaProyecto = $allItems->sum('v_total_cliente');
+
+        // Margen Bruto en Pesos (Venta menos Costos)
+        $margenBruto = $ventaProyecto - $costosProyecto;
+
+        // Margen del Proyecto en Porcentaje
+        $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
+
+        // Margen Items (Suma o promedio ponderado de la utilidad, ajusta según tu lógica)
+        $margenItems = $allItems->avg('margen_utilidad') ?? 0;
+
+        $itemIds = $allItems->pluck('id');
+
+        $itemsHistorial = HistorialItemPresupuesto::whereIn('item_presupuesto_id', $itemIds)
+            ->with('itemPresupuesto') // Trae la relación por si necesitas el código actual
+            ->latest()
+            ->get();
+
         $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
 
-        // Generar y descargar archivo Excel usando la clase CotExport
-        return Excel::download(new CotExport(['presto' => $presto, 'items' => $items, 'tipo' => $tipo, 'proveedores' => $proveedores]), $nom_proyecto.".xlsx");
+        $payload = [
+            'presto'      => $presto,
+            'items'       => $allItems,
+            'tipo'        => $tipo,
+            'proveedores' => $proveedores,
+
+            'margenItems' => $margenItems,
+            'ventaProyecto' => $ventaProyecto,
+            'costosProyecto' => $costosProyecto,
+            'margenProyecto' => $margenProyecto,
+            'margenBruto' => $margenBruto,
+
+            'historial'   => $itemsHistorial
+        ];
+
+        return Excel::download(new CotExport($payload), $nom_proyecto.".xlsx");
     }
 
     /**

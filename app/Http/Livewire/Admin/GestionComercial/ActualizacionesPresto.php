@@ -12,6 +12,7 @@ use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Email;
+use App\Models\User;
 
 /**
  * Componente Livewire para gestionar actualizaciones de presupuestos
@@ -58,8 +59,16 @@ class ActualizacionesPresto extends Component
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        // Para rol 1 (administrador): solo presupuestos con estado 2 (pendientes)
-        if ($this->rol == 1){ array_push($filtros, ['estado_id', 2]); }
+        //Admin Gerencia
+        $admin = Auth::user()->id == 10;
+        // Para rol 1 (administrador): solo presupuestos con estado 4 (revision líder comercial)
+        if ($this->rol == 1 && !$admin){
+            $filtros[] = ['estado_id', 4];
+        } else if($this->rol == 1 && $admin){
+            $filtros[] = ['estado_id', 5];
+        }
+
+        //if ($this->rol == 1){ array_push($filtros, ['estado_id', 5]); }
 
         // Para rol 2 (comercial): solo presupuestos propios
         if ($this->rol == 2){

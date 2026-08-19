@@ -10,14 +10,20 @@ use App\Models\User;
 use App\Models\Asistente;
 use App\Rules\CentroCostos;
 use App\Models\GestionComercial;
+use App\Models\cliente_parametros_cc;
+use App\Models\clientes;
+use Livewire\WithFileUploads;
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 
 class NewProyecto extends Component
 {
+
+    use WithFileUploads;
     // MODELS
+    public $cliente_id;
     public $fecha = ""; // Fecha del proyecto
-    public $nom_cliente = ""; // Nombre del cliente
+    public $nom_cliente = ""; // Nombre del clientes
     public $nom_proyecto = ""; // Nombre del proyecto
     public $cod_cc; // Código de centro de costos
     public $valor_proyecto = ""; // Valor total del proyecto
@@ -27,6 +33,7 @@ class NewProyecto extends Component
     public $id_cuenta = ""; // Cuenta asociada
     public $fecha_inicio = null; // Fecha de inicio
     public $dura_mes = null; // Duración en meses
+    public $fecha_facturacion = null; // Fecha de facturacion
 
     // Variables para comerciales y porcentajes
     public $comercial0; // Comercial principal
@@ -57,6 +64,13 @@ class NewProyecto extends Component
     // Se decide utilizar "lead" como referencia a los registros de la tabla Gestion Comercial
     public $lead_id = 0; // ID del registro en Gestión Comercial
 
+    public $listaClientes = [];
+
+    public $mostrarModalDocumentos = false;
+    public $clientePendienteDocumentos;
+    public $rutArchivo;
+    public $camaraArchivo;
+
     // Renderiza la vista principal del formulario de nuevo proyecto
     public function render()
     {
@@ -67,7 +81,13 @@ class NewProyecto extends Component
     public function mount(){
         $this->getEstados();
         $this->getCuentas();
+        $this->cargarClientes();
+
         $informacionGeneral = GestionComercial::where('id', $this->lead_id)->first();
+
+        // 1. Asigna cliente_id ANTES de verificar documentos
+        //$this->cliente_id = $informacionGeneral->contacto->id_cliente;
+
         $this->nom_cliente = $informacionGeneral->contacto->nombre." ".$informacionGeneral->contacto->apellido." ".$informacionGeneral->contacto->empresa;
         $this->nom_proyecto = $informacionGeneral->nom_proyecto_cot;
 
@@ -84,7 +104,6 @@ class NewProyecto extends Component
 
         $this->participaciones = $informacionGeneral->participaciones;
 
-        // Asigna el comercial principal según el rol
         if (Auth::user()->rol == 2){
             $this->comercial0 = Auth::id();
         }else if(Auth::user()->rol == 5){
@@ -92,7 +111,6 @@ class NewProyecto extends Component
             $this->comercial0 = $asistente->comercial_id;
         }
 
-        // Asigna comerciales secundarios y porcentajes
         $this->comercial1 = $informacionGeneral->comercial_2;
         $this->comercial2 = $informacionGeneral->comercial_3;
         $this->comercial3 = $informacionGeneral->comercial_4;
@@ -102,7 +120,6 @@ class NewProyecto extends Component
         $this->porcentaje2 = $informacionGeneral->porcentaje_3;
         $this->porcentaje3 = $informacionGeneral->porcentaje_4;
 
-        // Trae código de centro de costos y fecha si existe
         $prestoInfo = PresupuestoProyecto::select('cod_cc', 'fecha_cc')->where('id_gestion', $this->lead_id)->first();
         if ($prestoInfo){
             $this->cod_cc = $prestoInfo->cod_cc;
@@ -111,6 +128,9 @@ class NewProyecto extends Component
 
         $this->getValor();
         $this->getTotalPorcentaje();
+
+        // 2. Verifica documentos AL FINAL, ya con cliente_id asignado
+        //$this->verificarDocumentosCliente();
     }
 
     // Validaciones para los campos del formulario
@@ -144,10 +164,19 @@ class NewProyecto extends Component
     public function updateFechaInicio(){
         $this->validate(['fecha_inicio' => ['present']]);
     }
+
     public function updateDuraMes(){
         $this->validate(['dura_mes' => ['present']]);
     }
 
+    public function updateFechaFacturacion() {
+        $this->validate(['fecha_facturacion' => ['present']]);
+    }
+    /*
+    public function updatedClienteId(){
+        $this->verificarDocumentosCliente();
+    }
+    */
     // Carga los estados posibles
     public function getEstados(){
         $this->estados = EstadoCuenta::select('id', 'description')->where('id', 6)->get();
@@ -163,7 +192,51 @@ class NewProyecto extends Component
         $lead = GestionComercial::where('id', $this->lead_id)->first();
         $lead->id_estado = 5;
         $lead->update();
+
+        return;        
     }
+    /*
+    public function guardarDocumentosCliente()
+    {
+        $this->validate([
+            'rutArchivo' => 'required|file|mimes:pdf|max:10240',
+            'camaraArchivo' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        $cliente = clientes::findOrFail($this->clientePendienteDocumentos);
+
+        $rut = $this->rutArchivo->store('public/clientes/rut');
+        $camara = $this->camaraArchivo->store('public/clientes/camara');
+
+        $cliente->update([
+            'adjuntar_archivos' => json_encode([
+                'rut' => $rut,
+                'camara' => $camara
+            ])
+        ]);
+
+        $this->reset(['rutArchivo', 'camaraArchivo']);
+        $this->mostrarModalDocumentos = false; // Ya no hace falta, oculta el bloque
+        session()->flash('success', 'Documentación cargada correctamente.');
+    }
+    */
+    /*
+    public function verificarDocumentosCliente()
+    {
+        if (!$this->cliente_id) {
+            $this->mostrarModalDocumentos = false;
+            return;
+        }
+
+        $cliente = clientes::find($this->cliente_id);
+
+        $this->mostrarModalDocumentos = $cliente && empty($cliente->adjuntar_archivos);
+
+        if ($this->mostrarModalDocumentos) {
+            $this->clientePendienteDocumentos = $cliente->id;
+        }
+    }
+    */
 
     /****** PARTICIPACIONES ******/
     // Valida y actualiza el número de participaciones
@@ -179,6 +252,13 @@ class NewProyecto extends Component
         $this->getValor();
         $this->getTotalPorcentaje();
         $this->updatedTestigoPorcentaje();
+    }
+
+    public function cargarClientes()
+    {
+        $this->listaClientes = cliente_parametros_cc::select('id', 'nombre_empresa', 'codigo_cc')
+            ->orderBy('nombre_empresa', 'asc')
+            ->get();
     }
 
     // Valida y actualiza el comercial principal
@@ -331,6 +411,8 @@ class NewProyecto extends Component
             'id_cuenta' => ['required','numeric'],
             'fecha_inicio' => ['present'],
             'dura_mes' => ['present'],
+            'fecha_facturacion' => ['present'],
+            //'cliente_id' => ['required'],
 
             // PARTICIPACIONES
             'testigoPorcentaje' => 'required|numeric|min:100|max:100',
@@ -350,7 +432,6 @@ class NewProyecto extends Component
             'valor2' => 'nullable|numeric',
             'valor3' => 'nullable|numeric',
         ]);
-
         // Crea un registro en base_comercial por cada participante
         $i  = 0;
         while($i < $this->participaciones){
@@ -367,13 +448,15 @@ class NewProyecto extends Component
             $base_comercial->id_estado = $this->id_estado;
             $base_comercial->fecha_inicio = $this->fecha_inicio;
             $base_comercial->dura_mes = $this->dura_mes;
+            $base_comercial->fecha_facturacion = $this->fecha_facturacion;
             $base_comercial->id_user = $this->{'comercial'.$i};
+            //$base_comercial->id_cliente = $this->id_cliente;
 
             $base_comercial->save();
             $i++;
         }
 
-        $this->storeVenta(); // Actualiza el estado de la gestión comercial
+        //$this->storeVenta(); // Actualiza el estado de la gestión comercial
 
         // Redirige según el rol del usuario
         if (Auth::user()->rol == 2){
@@ -394,5 +477,7 @@ class NewProyecto extends Component
         $this->id_estado = "";
         $this->fecha_inicio = null;
         $this->dura_mes = null;
+        $this->fecha_facturacion = null;
+        $this->cliente_id = null;
     }
 }

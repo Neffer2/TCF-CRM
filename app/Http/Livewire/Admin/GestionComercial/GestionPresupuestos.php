@@ -69,9 +69,9 @@ class GestionPresupuestos extends Component
      */
     public function mount(){
         $this->getEstados();
-        // Para rol 1 (administrador): solo presupuestos con estado 2 (pendientes)
+        // Para rol 1 (administrador): solo presupuestos con estado 2 (pendientes) || 4 (validación líder)
         if ($this->rol == 1){
-            $this->estadoProyecto = 2;
+            $this->estadoProyecto = 4;
         }
         // $this->getComerciales(); // Método comentado
     }
@@ -103,6 +103,7 @@ class GestionPresupuestos extends Component
 
             // Limpia las justificaciones
             $presupuesto->justificacion_compras = null;
+            $presupuesto->justificacion_lider = null;
             $presupuesto->justificacion = null;
         }
         $presupuesto->update();

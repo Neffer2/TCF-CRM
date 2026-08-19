@@ -81,9 +81,9 @@
             <span class="nav-link-text ms-1">Gesti&oacute;n comercial</span>
           </a>
           <div @class([
-            'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones')),
-            'collapse' => true
-            ]) id="dashboardsGestion">
+                'show' => (request()->is('presupuesto-proyecto') || request()->is('actualizaciones') || request()->is('validaciones') || request()->is('validacionesCliente')),
+                'collapse' => true
+              ]) id="dashboardsGestion">
             <ul class="nav ms-4">
               <li @class(['active' => request()->is('presupuesto-proyecto'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('presupuesto-proyecto'), 'nav-link' => true]) href="{{ route('presupuesto-proyecto') }}">
@@ -97,6 +97,14 @@
                   <span class="sidenav-normal"> Actualizaciones </span>
                 </a>
               </li>
+              @if(Auth::user()->id == 8 || Auth::user()->id == 10)
+                  <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
+                      <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
+                          <span class="sidenav-mini-icon text-xs"> C </span>
+                          <span class="sidenav-normal"> Solicitudes </span>
+                      </a>
+                  </li>
+              @endif
             </ul>
           </div>
         </li>
