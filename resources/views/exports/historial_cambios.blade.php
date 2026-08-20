@@ -76,6 +76,8 @@
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Item</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Descripción del Ítem Actual</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">Cantidad</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Dias</th>
+            <th style="background-color: #ef4444; color: white; font-weight: bold;">Otros</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario Interno</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Total Interno</th>
             <th style="background-color: #ef4444; color: white; font-weight: bold;">V. Unitario Cliente</th>
@@ -116,6 +118,8 @@
                         $num_item = data_get($base, 'num_item', '-');
                         $descripcion = data_get($base, 'descripcion', 'Sin descripción');
                         $cantidad = data_get($base, 'cantidad', 0);
+                        $dias = data_get($base, 'dia', 0);
+                        $otros = data_get($base, 'otros', 0);
                         $vUnitario = (float) data_get($base, 'v_unitario', 0);
                         $vTotal = (float) data_get($base, 'v_total', 0);
                         $vUnitarioCliente = (float) data_get($base, 'v_unitario_cot', 0);
@@ -136,6 +140,8 @@
                         <td style="{{ $rowStyle }}">{{ $num_item }}</td>
                         <td style="{{ $rowStyle }}">{{ $descripcion }}</td>
                         <td style="{{ $rowStyle }}">{{ $cantidad }}</td>
+                        <td style="{{ $rowStyle }}">{{ $dias }}</td>
+                        <td style="{{ $rowStyle }}">{{ $otros }}</td>
                         <td style="{{ $rowStyle }}">{{ number_format($vUnitario, 2) }}</td>
                         <td style="{{ $rowStyle }}">{{ number_format($vTotal, 2) }}</td>
                         <td style="{{ $rowStyle }}">{{ number_format($vUnitarioCliente, 2) }}</td>

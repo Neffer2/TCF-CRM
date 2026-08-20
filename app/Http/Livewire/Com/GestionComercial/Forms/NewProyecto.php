@@ -456,7 +456,7 @@ class NewProyecto extends Component
             $i++;
         }
 
-        //$this->storeVenta(); // Actualiza el estado de la gestión comercial
+        $this->storeVenta(); // Actualiza el estado de la gestión comercial
 
         // Redirige según el rol del usuario
         if (Auth::user()->rol == 2){

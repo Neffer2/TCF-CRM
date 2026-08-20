@@ -236,7 +236,7 @@
                 @endif
             </div>
             <div class="col-md-12 mt-3">
-                <button class="btn bg-gradient-warning">Crear nuevo proyecto</button>
+                <button class="btn bg-gradient-warning">Crear nuevo proyecto JAJAJA</button>
             </div>
         </div>
     </form>
