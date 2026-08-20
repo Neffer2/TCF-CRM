@@ -43,65 +43,73 @@ class OrdenesCompra extends Component
      * Aplica todos los filtros disponibles y retorna la vista paginada
      * @return \Illuminate\View\View
      */
-    public function render(){
-        // Array para almacenar todos los filtros aplicados
-        $filtros = [];
+    public function render()
+    {
+        $query = OrdenCompra::query();
 
-        // Filtro por estado de la orden de compra
-        if ($this->estado){
-            array_push($filtros, ['estado_id', $this->estado]);
+        // Filtro por Estado
+        if ($this->estado) {
+            $query->where('estado_id', $this->estado);
         }
 
-        // Filtro por año: aplica rango de fechas del año seleccionado
-        if($this->año){
-            array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
-            array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
+        // Filtro por Año
+        if ($this->año && $this->yearInfo) {
+            $query->whereBetween('created_at', [
+                $this->yearInfo->meses->first()->f_inicio,
+                $this->yearInfo->meses->last()->f_fin
+            ]);
         }
 
-        // Filtro por tipo de orden de compra
-        if($this->tipo){
-            array_push($filtros, ['tipo_oc', $this->tipo]);
+        // Filtro por Tipo
+        if ($this->tipo) {
+            $query->where('tipo_oc', $this->tipo);
         }
 
-        // Filtro por código de centro de costo del presupuesto
-        if ($this->cod_cc){
-            $ordenes = OrdenCompra::whereHas('presupuesto', function ($presto) {
-                    $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
-                })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
-        }else {
-            // Sin filtro de código, consulta básica
-            $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        // Filtro por Centro de Costo
+        if ($this->cod_cc) {
+            $query->whereHas('presupuesto', function ($presto) {
+                $presto->where('cod_cc', 'LIKE', '%' . $this->cod_cc . '%');
+            });
         }
 
-        // Filtro por cedula: información natural
         if ($this->cedula) {
-            $ordenes = OrdenCompra::where(function($query) {
-                $query->WhereHas('naturalInfo', function ($natural) {
-                    $natural->WhereHas('tercero', function ($tercero) {
-                        $tercero->where('cedula', 'LIKE', "%$this->cedula%");
-                    });
+            $term = trim($this->cedula);
+
+            $query->where(function ($q) use ($term) {
+                // A) Si es un Proveedor (usando proveedor_id -> relación proveedor)
+                $q->whereHas('proveedor', function ($prov) use ($term) {
+                    // Busca en las columnas nit o tercero de la tabla proveedores
+                    $prov->where('documento', 'LIKE', "%{$term}%")
+                        ->orWhere('tercero', 'LIKE', "%{$term}%");
+                })
+                // B) Si es una Persona Natural (vía naturalInfo -> relación tercero)
+                ->orWhereHas('naturalInfo.tercero', function ($tercero) use ($term) {
+                    $tercero->where('cedula', 'LIKE', "%{$term}%");
                 });
-            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+            });
         }
 
-        // Filtro por productor: busca en presupuesto o información natural
+        // Filtro por Productor (Seleccionado en Select)
         if ($this->productor) {
-            $ordenes = OrdenCompra::where(function($query) {
-                $query->whereHas('presupuesto', function ($presupuesto) {
+            $query->where(function ($q) {
+                $q->whereHas('presupuesto', function ($presupuesto) {
                     $presupuesto->where('productor', $this->productor);
                 })
                 ->orWhereHas('naturalInfo', function ($natural) {
                     $natural->where('productor_id', $this->productor);
                 });
-            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+            });
         }
 
-        // Filtro específico para usuario productor autenticado
-        if ($this->productor_id){
-            $ordenes = OrdenCompra::whereHas('naturalInfo', function ($natural) {
-                        $natural->where('productor_id', $this->productor_id);
-                    })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        // Filtro por Productor Autenticado
+        if ($this->productor_id) {
+            $query->whereHas('naturalInfo', function ($natural) {
+                $natural->where('productor_id', $this->productor_id);
+            });
         }
+
+        // Ordenamiento y Paginación
+        $ordenes = $query->orderBy('created_at', $this->fecha)->paginate(15);
 
         return view('livewire.admin.produccion.ordenes-compra', ['ordenes' => $ordenes]);
     }
