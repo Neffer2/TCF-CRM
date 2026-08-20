@@ -45,6 +45,36 @@
             font-size: 24px;
             font-style: italic
         }
+
+        .table-cols {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-title {
+            padding: 4px;
+            font-weight: bold;
+            text-align: center;
+            background-color: lightgray;
+        }
+
+        .table-cols td, .table-cols th {
+            border-left: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-cols td:last-child, .table-cols th:last-child {
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-cols td {
+            padding: 0.1rem 0.2rem;
+            word-wrap: break-word;
+            white-space: pre-wrap
+        }
     </style>
 </head>
 <body>
@@ -64,11 +94,35 @@
         <p>
             <b>PRIMERA.- OBJETO DEL CONTRATO:</b> El objeto del contrato será la prestación por parte de EL
             CONTRATISTA de la actividad de <b> @foreach ($contratoInfo['items'] as $item) {{ $item->tipo_servicio }}, @endforeach</b>
-            quien para el presente contrato es profesional en el procedimiento de extensión de pestañas semipermanentes, por esta razón EL
+            quien para el presente contrato es profesional en el procedimiento. Por esta razón EL
             CONTRATISTA asumirá la responsabilidad de todos las obligaciones emanadas del presente contrato,
             dada la índole profesional y especializada que ostenta, características del EL CONTRATISTA necesarias
             para poder cumplir con el objeto del presente contrato.
         </p>
+        <br>
+        <p>
+            EL CONTRATISTA prestará a EL CONTRATANTE los servicios objeto del presente contrato, conforme a lo acordado entre las partes.
+            El detalle, alcance y condiciones de dichos servicios se establecen en la tabla que forma parte integral del presente documento.
+        </p>
+        <br>
+        <div style="padding: 0 3rem">
+            <table class="table-cols">
+                <tr>
+                    <th class="table-title">DESCRIPCIÓN</th>
+                    <th class="table-title">CANTIDAD</th>
+                    <th class="table-title">VALOR UNITARIO</th>
+                    <th class="table-title">VALOR TOTAL</th>
+                </tr>
+                @foreach ($contratoInfo['items'] as $item)
+                    <tr>
+                        <td>{{ $item->desc_oc }}</td>
+                        <td>{{ $item->cant_oc }}</td>
+                        <td>{{ number_format( $item->vunit_oc ) }}</td>
+                        <td>{{ number_format( $item->vtotal_oc ) }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
         <br>
         <p>
             <b>SEGUNDA.- NATURALEZA JURÍDICA:</b> El presente contrato es de orden mercantil, y no conlleva para EL
@@ -190,6 +244,10 @@
             presente contrato son de propiedad exclusiva de LA SOCIEDAD CONTRATANTE y no podrá hacer uso de
             ellos sin la autorización previa y escrita de LA SOCIEDAD CONTRATANTE.
         </p>
+        <br>
+        <p>
+            En cumplimiento con al Ley 1819 de 2016 y el paragrafo segundo del articulo 383 del E.T. manifiesto bajo gravedad de juramento que: Para efectos de la aplicación de la tabla de retención en la fuente establecida en elarticulo 383 del E.T, la cual se aplica a los pagos o abonos en cuenta por concepto de honorarios y por compensación por servicios personales , SI( ) No ( ) He contratado o vinculado más de un trabajados asociado a mi actividad económica por al menos noventa (90) días continuos (Parágrafo 2 art 383 E.T.)
+        </p>
         <table class="table" style="padding: 0 3rem;">
             <tr>
                 <td>
@@ -216,7 +274,7 @@
             <tr>
                 <td style="text-align: center;">
                     <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br></p>
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign.png'))) }}" alt="Firma">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign__.png'))) }}" alt="Firma">
                     <p class="bold">__________________________</p>
                     <p class="bold">BULL MARKETING S.A.S.</p>
                     <p>Representante Legal</p>

@@ -66,6 +66,7 @@ Route::get('/', function () {
 
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
     Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('reporte-consumidos');
+    Route::get('/reporte-plano-helisa/{mes?}', [AdminController::class, 'reportePlanoHelisa'])->middleware(['auth'])->name('reporte-plano-helisa');
 /* --- */
 
 /* commercial */

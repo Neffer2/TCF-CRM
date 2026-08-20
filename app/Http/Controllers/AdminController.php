@@ -9,6 +9,7 @@ use App\Models\Proveedor;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HelisaExport;
+use App\Exports\PlanoExport;
 use App\Http\Livewire\Com\Presupuesto\Presupuesto;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ConsumidosExport;
@@ -212,5 +213,13 @@ class AdminController extends Controller
 
         // Generar y descargar el archivo Excel usando la clase HelisaExport
         return Excel::download(new HelisaExport(['registros_helisa' => $registros_helisa]), $title);
+    }
+
+    public function reportePlanoHelisa($mes = null){
+        if (Auth::user()->rol == 1 || Auth::user()->rol == 10){
+            return Excel::download(new PlanoExport($mes), "reporte_plano_helisa-{$mes}.xlsx");
+        }else {
+            return redirect()->route('dashboard');
+        }
     }
 }

@@ -44,7 +44,7 @@
         <tr>
             <td colspan="0"></td>
             <td class="font-weight-bold font-table" style="text-align: center">MARGEN ITEMS</td>
-            <td class="font-table" style="text-align: center">{{ number_format(100 - ($margenItems * 100), 2) }} %</td>
+            <td class="font-table" style="text-align: center">{{ number_format(100-($margenItems * 100), 4) }}</td>
         </tr>
         <tr>
             <td colspan="0"></td>

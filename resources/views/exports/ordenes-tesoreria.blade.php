@@ -16,18 +16,11 @@
             <td style="text-align: center; font-weight: bold;">PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">NIT PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">TIPO</td>
-            <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
-            <td style="text-align: center; font-weight: bold;">CANT</td>
-            <td style="text-align: center; font-weight: bold;">HORAS</td>
-            <td style="text-align: center; font-weight: bold;">DIAS</td>
-            <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (OC)</td>
             <td style="text-align: center; font-weight: bold;">VALOR TOTAL (OC)</td>
-            <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (ITEM)</td>
-            <td style="text-align: center; font-weight: bold;">VALOR TOTAL (ITEM)</td>
-            <td style="text-align: center; font-weight: bold;">SALDO</td>
+            <td style="text-align: center; font-weight: bold;">CAUSACION</td>
+            <td style="text-align: center; font-weight: bold;">OBSERVACIONES</td>
             <td style="text-align: center; font-weight: bold;">FECHA CREACION</td>
             <td style="text-align: center; font-weight: bold;">FECHA ENVIO (PRODUCCI&Oacute;N)</td>
-            <td style="text-align: center; font-weight: bold;">FECHA APROBACI&Oacute;N (CONTROLLER)</td>
             <td style="text-align: center; font-weight: bold;">ESTADO</td>
         </tr>
         @foreach ($ordenes as $orden)
@@ -53,19 +46,18 @@
                         <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
                     @endif
                     <td>{{ $ocItem->OrdenCompra->tipo->description }}</td>
-                    <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
-                    <td>{{ $ocItem->cant_oc }}</td>
-                    <td>{{ $ocItem->dias_oc }}</td>
-                    <td>{{ $ocItem->otros_oc }}</td>
-                    <td>{{ $ocItem->vunit_oc }}</td>
                     <td>{{ $ocItem->vtotal_oc }}</td>
-                    <td>{{ $ocItem->itemPresupuesto->v_unitario }}</td>
-                    <td>{{ $ocItem->itemPresupuesto->v_total }}</td>
-                    <td>{{ ($ocItem->itemPresupuesto->v_total - $ocItem->vtotal_oc) }}</td>
+                    <td>{{ $ocItem->OrdenCompra->cod_causal }}</td>
+                    <td>{{ $ocItem->OrdenCompra->observacion_causal }}</td>
                     <td>{{ $ocItem->created_at }}</td>
-                    <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
-                    <td>{{ $ocItem->OrdenCompra->estado_oc->description }}</td>
+                    <td>
+                        @if ($ocItem->OrdenCompra->archivo_comprobante_pago)
+                            Pagado
+                        @else
+                            Por pagar
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         @endforeach
