@@ -158,9 +158,9 @@
                                                 aria-controls="collapseOrden" @endif class="m-0 p-0 d-flex justify-content-center"
                                                 style="width: 100%; color: #825ee4;">
                                                 @if ($orden->estado_id == 2)
-                                                    <i class="fa-solid fa-ban"></i>
+                                                    <button class="fa-solid fa-ban">ver</button>
                                                 @else
-                                                    <i class="fa-solid fa-caret-down"></i>
+                                                    <button class="fa-solid fa-caret-down">ver</button>
                                                 @endif
                                             </div>
                                         </div>
