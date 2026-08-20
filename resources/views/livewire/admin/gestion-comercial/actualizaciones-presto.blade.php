@@ -1,3 +1,4 @@
+@if(Auth::user()->rol == 1)
 <div class="card">
     <div class="card-header p-0 px-3 mt-3">
         <div class="row">

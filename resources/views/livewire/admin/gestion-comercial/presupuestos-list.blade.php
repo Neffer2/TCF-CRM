@@ -91,10 +91,12 @@
                                     <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                                 </td> 
                                 <td class="d-flex align-items-center justify-content-center">
-                                @if (Auth::User()->rol == 1)
-                                    <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
-                                </td>
-                                @elseif (Auth::User()->rol == 1 && Auth::user()->id == 208 || Auth::user()->id == 197 || Auth::user()->id == 214 || Auth::user()->id == 145 || Auth::user()->id == 181 || Auth::user()->id == 210 || Auth::user()->id == 206 || Auth::user()->id == 171 || Auth::user()->id == 2)
+                                @php
+                                    $idsEspeciales = [208, 197, 214, 145, 181, 210, 206, 171, 2];
+                                @endphp
+
+                                @if (Auth::user()->rol == 1 && in_array(Auth::user()->id, $idsEspeciales))
+                                    {{-- Botón grande con notificación para los IDs específicos --}}
                                     <a href="{{ route('presupuesto', $presupuesto->id_gestion) }}"
                                         wire:click="marcarComoVisto({{ $presupuesto->id }})"
                                         class="btn btn-primary position-relative">
@@ -105,6 +107,9 @@
                                             </span>
                                         @endif
                                     </a>
+                                @elseif (Auth::user()->rol == 1)
+                                    {{-- Botón normal para los demás de rol 1 --}}
+                                    <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
                                 @endif
                             </tr>
                         @endforeach

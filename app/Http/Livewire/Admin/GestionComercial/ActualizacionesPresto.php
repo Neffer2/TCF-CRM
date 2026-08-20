@@ -60,7 +60,7 @@ class ActualizacionesPresto extends Component
         }
 
         //Admin Gerencia
-        $admin = Auth::user()->id == 10;
+        $admin = in_array(Auth::user()->id, [10, 8, 26, 71, 198]);
         // Para rol 1 (administrador): solo presupuestos con estado 4 (revision líder comercial)
         if ($this->rol == 1 && !$admin){
             $filtros[] = ['estado_id', 4];
