@@ -346,13 +346,13 @@ trait Email
 
     /* **** */
 
-    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients, $cc = null, $attachment = null){
+    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
+    {
         require base_path("vendor/autoload.php");
-        $mail = new PHPMailer(true);     // Passing `true` enables exceptions
+        $mail = new PHPMailer(true); // Activa las excepciones
 
-        try{
-            //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        try {
+            // Configuración del servidor SMTP
             $mail->isSMTP();
             $mail->Host       = env('MAIL_HOST');
             $mail->SMTPAuth   = true;
@@ -363,23 +363,31 @@ trait Email
 
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
 
-            /* Recipients */
+            /* Destinatarios principales */
+            if (is_iterable($recipients)) {
                 foreach ($recipients as $recipient) {
-                    $mail->addAddress($recipient['email'], $recipient['name']);
+                    if (is_array($recipient) && isset($recipient['email'])) {
+                        $mail->addAddress($recipient['email'], $recipient['name'] ?? '');
+                    }
                 }
-
-                foreach ($cc as $copiados) {
-                    $mail->addCC($copiados['email'], $copiados['name']);
-                }
-            /* *** */
-
-            if ($attachment){
-                // $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
-                $archivo_pago = str_replace('public/', '', $attachment);
-                $mail->addAttachment("storage/{$archivo_pago}", "COMPROBANTE_PAGO_ANTICIPO $orden->cod_oc".$orden->proveedor->tercero.".pdf");
             }
 
-            //Content
+            /* Copias (CC) */
+            if (is_iterable($cc)) {
+                foreach ($cc as $copiados) {
+                    if (is_array($copiados) && isset($copiados['email'])) {
+                        $mail->addCC($copiados['email'], $copiados['name'] ?? '');
+                    }
+                }
+            }
+
+            /* Archivos adjuntos */
+            if ($attachment) {
+                $archivo_pago = str_replace('public/', '', $attachment);
+                $mail->addAttachment("storage/{$archivo_pago}");
+            }
+
+            // Contenido del mensaje
             $mail->isHTML(true);
             $mail->Subject = utf8_decode($subject);
             $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]);

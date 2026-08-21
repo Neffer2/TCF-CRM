@@ -9,6 +9,7 @@ use App\Models\GestionComercial;
 use App\Traits\Email;
 use Livewire\WithPagination;
 use Auth;
+use DB;
 
 /**
  * Componente Livewire para gestionar presupuestos de proyectos
@@ -38,47 +39,36 @@ class GestionPresupuestos extends Component
      * Aplica filtros por estado, margen y excluye presupuestos con código de centro de costo
      * @return \Illuminate\View\View
      */
-    public function render()
-    {
+    public function render() {
         $filtros = [];
 
-        // Filtro por estado si se especifica (0 = todos los estados)
         if ($this->filter != 0){
             array_push($filtros, ['estado_id', $this->filter]);
         }
 
-        // Filtro por margen de proyecto
         if ($this->margen == '<'){
-            // Margen menor o igual a 35%
             array_push($filtros, ['margen_proy', '<=', 35]);
-        }elseif ($this->margen == '>'){
-            // Margen mayor o igual a 35%
+        } elseif ($this->margen == '>'){
             array_push($filtros, ['margen_proy', '>=', 35]);
         }
 
-        // Solo presupuestos SIN código de centro de costo (diferencia con ActualizacionesPresto)
         array_push($filtros, ['cod_cc', null]);
 
         $query = PresupuestoProyecto::query();
 
-        // Aplicar estado según la propiedad
         if (!empty($this->estadoProyecto)) {
             $query->where('estado_id', $this->estadoProyecto);
         }
 
         $query->where($filtros);
 
-        // --- FILTRADO MEDIANTE TABLA PIVOTE ---
         $user = Auth::user();
 
-        // Verificamos si el usuario actual está registrado como líder en la tabla pivote
         if ($user && $user->comercialesAsignados()->exists()) {
-            // Extraer los IDs de sus comerciales asignados
             $comercialesIds = $user->comercialesAsignados()->pluck('users.id')->toArray();
 
-            // Filtrar presupuestos cuya gestión pertenezca a sus comerciales
             $query->whereHas('gestion', function ($q) use ($comercialesIds) {
-                $q->whereIn('comercial_id', $comercialesIds);
+                $q->whereIn('id_user', $comercialesIds); // <-- corregido
             });
         }
 
@@ -93,7 +83,8 @@ class GestionPresupuestos extends Component
      * Método de inicialización del componente
      * Configura estados y establece estado específico según el rol del usuario
      */
-    public function mount(){
+    public function mount()
+    {
         $this->getEstados();
 
         $user = Auth::user();
@@ -104,14 +95,14 @@ class GestionPresupuestos extends Component
         } else {
             $this->estadoProyecto = 4; // Cambiar según el estado inicial requerido para admin general
         }
-        // $this->getComerciales(); // Método comentado
     }
 
     /**
      * Obtiene la lista de estados de presupuesto disponibles
      * Excluye el estado con ID 3
      */
-    public function getEstados(){
+    public function getEstados()
+    {
         $this->estados = EstadosPresupuesto::select('id', 'description')
             ->where('id', '<>', 3)
             ->get();
@@ -123,7 +114,8 @@ class GestionPresupuestos extends Component
      * @param int|null $estado Nuevo estado del presupuesto
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function cambioEstado($id = null, $estado = null){
+    public function cambioEstado($id = null, $estado = null)
+    {
         $presupuesto = PresupuestoProyecto::find($id);
         $presupuesto->estado_id = $estado;
 

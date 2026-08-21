@@ -97,7 +97,8 @@ class OrdenesCompra extends Component
             $query->where(function ($q) use ($term) {
                 // Busca en la columna propia de la orden
                 $q->where('cod_oc', 'LIKE', "%{$term}%")
-                ->orWhere('gr', 'LIKE', "%{$term}%");
+                ->orWhere('gr', 'LIKE', "%{$term}%")
+                ->orWhere('id', 'LIKE',"%{$term}%");
             });
         }
 

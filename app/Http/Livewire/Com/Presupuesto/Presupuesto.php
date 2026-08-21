@@ -163,7 +163,6 @@ class Presupuesto extends Component
     public function new_item(){
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-    // Valida los campos requeridos
         $this->validate([
             'cod' => ['required'],
             'cantidad' => ['required'],
@@ -181,7 +180,6 @@ class Presupuesto extends Component
 
         DB::transaction(function () use ($presto){
 
-            // 1. Obtenemos el máximo num_item y el máximo orden actuales de este presupuesto
             $maxNumItem = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
                 ->lockForUpdate()
                 ->max('num_item') ?? 0;
@@ -190,7 +188,6 @@ class Presupuesto extends Component
                 ->lockForUpdate()
                 ->max('orden') ?? 0;
 
-            // 2. Crea el nuevo ítem
             $item = new ItemPresupuesto;
             $item->cod = $this->cod;
             $item->presupuesto_id = $this->presupuesto_id;
@@ -207,7 +204,6 @@ class Presupuesto extends Component
             $item->ciudad = !empty($this->ciudad) ? $this->ciudad : null;
             $item->v_total_cliente = $this->valor_total_cliente;
 
-            // 3. Asignación consecutiva de num_item y orden
             $nuevoNumItem = $maxNumItem + 1;
             $nuevoOrden = $maxOrden + 1;
 
@@ -216,11 +212,9 @@ class Presupuesto extends Component
                 $this->setEnEdicion($presto);
             }
 
-            // Asigna los valores consecutivos garantizados
             $item->num_item = $nuevoNumItem;
             $item->orden = $nuevoOrden;
 
-            // 4. --- CÁLCULOS ---
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
             $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
             $item->rentabilidad = ($this->utilidad > 0) ? ($item->v_total_cot - $item->v_total) : 0;
@@ -229,10 +223,12 @@ class Presupuesto extends Component
         });
 
         $this->marcarConCambiosPendientes();
-        $this->refresh();
+        
+        // Invocación explícita para recalcular y actualizar las métricas en la base de datos
+        $this->getMetricas();
+
         $this->limpiar();
     }
-
     // Agrega un nuevo evento al presupuesto (ítem especial)
     public function new_event(){
         $this->validate([
@@ -259,64 +255,65 @@ class Presupuesto extends Component
         $item->rentabilidad = 0;
         $item->save();
 
-        $this->refresh();
+        // Invocación explícita
+        $this->getMetricas();
+
         $this->limpiar();
     }
 
     public function getMetricas() {
         $this->getInfoFacturas();
 
-        // Traemos los items del presupuesto en una sola consulta
-        $items = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->get();
+        $sumTotalConMargen = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->where('evento', 0)
+            ->where('margen_utilidad', '>', 0)
+            ->sum('v_total');
 
-        // Filtramos en memoria los que tienen evento == 0
-        $itemsSinEvento = $items->where('evento', 0);
+        $sumTotalCot = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->where('evento', 0)
+            ->sum('v_total_cot');
 
-        // Calculamos los totales sobre la colección obtenida
-        $sumTotalCot = $itemsSinEvento->sum('v_total_cot');
-        $sumTotalConMargen = $itemsSinEvento->where('margen_utilidad', '>', 0)->sum('v_total');
-
-        // Validamos que el divisor sea mayor a 0 para evitar la división por cero
+        // Validación segura de división por cero
         if ($sumTotalCot > 0) {
             $this->margenItems = $sumTotalConMargen / $sumTotalCot;
         } else {
             $this->margenItems = 0;
         }
 
-        // Reutilizamos los valores ya calculados
         $this->ventaProyecto = $sumTotalCot;
         $this->ventaProyecto += ($this->ventaProyecto * ($this->imprevistos / 100)) 
                             + ($this->ventaProyecto * ($this->administracion / 100)) 
                             + ($this->ventaProyecto * ($this->fee / 100));
 
-        $this->costosProyecto = $itemsSinEvento->sum('v_total');
+        $this->costosProyecto = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->where('evento', 0)
+            ->sum('v_total');
 
-        if ($this->ventaProyecto > 0) {
+        if ($this->ventaProyecto > 0){
             $this->margenProyecto = (($this->ventaProyecto - $this->costosProyecto) / $this->ventaProyecto) * 100;
         } else {
-            $this->margenProyecto = 0; // Se asigna valor por defecto si es 0
+            $this->margenProyecto = 0;
         }
 
         $this->margenBruto = $this->ventaProyecto - $this->costosProyecto;
 
-        // Actualiza los valores en el modelo de presupuesto
+        // Actualización directa en la BD
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        
-        if ($presto) {
-            $presto->update([
-                'margen_general' => $this->margenItems,
-                'venta_proy'     => $this->ventaProyecto,
-                'costos_proy'    => $this->costosProyecto,
-                'margen_proy'    => $this->margenProyecto,
-                'margen_bruto'   => $this->margenBruto,
-            ]);
 
-            $this->centroCostos   = $this->presupuesto->cod_cc;
-            $this->imprevistos    = $presto->imprevistos;
+        if ($presto) {
+            $presto->margen_general = $this->margenItems;
+            $presto->venta_proy     = $this->ventaProyecto;
+            $presto->costos_proy    = $this->costosProyecto;
+            $presto->margen_proy    = $this->margenProyecto;
+            $presto->margen_bruto   = $this->margenBruto;
+            $presto->save();
+
+            $this->centroCostos  = optional($this->presupuesto)->cod_cc;
+            $this->imprevistos   = $presto->imprevistos;
             $this->administracion = $presto->administracion;
-            $this->fee            = $presto->fee;
-            $this->tiempoFactura  = $presto->tiempo_factura;
-            $this->notas          = $presto->notas;
+            $this->fee           = $presto->fee;
+            $this->tiempoFactura = $presto->tiempo_factura;
+            $this->notas         = $presto->notas;
         }
     }
 
