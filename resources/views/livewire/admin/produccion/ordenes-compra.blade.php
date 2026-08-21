@@ -27,6 +27,10 @@
                         <input type="text" wire:model.live.debounce.300ms="cedula" class="form-control" placeholder="Cédula tercero">
                     </div>
                     <div class="col-md-2">
+                        <label for="comercial">Buscar:</label>
+                        <input type="text" wire:model.live.debounce.300ms="ordencompra" class="form-control" placeholder="Orden Compra">
+                    </div>
+                    <div class="col-md-2">
                         <label for="productor">Productor:</label>
                         <select id="productor" class="form-control" wire:model="productor">
                             <option value="">Seleccionar</option>
@@ -42,14 +46,6 @@
                             @foreach ($estados as $estado)
                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-1">
-                        <label for="filtro_fecha">Fecha:</label>
-                        <select id="filtro_fecha" class="form-control" wire:model="fecha">
-                            <option value="asc">Seleccionar</option>
-                            <option value="asc">M&aacute;s antiguos</option>
-                            <option value="desc">M&aacute;s recientes</option>
                         </select>
                     </div>
                     <div class="col-md-1">

@@ -22,7 +22,17 @@
                 <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="nom_proyecto" class="form-control" placeholder="Nombre proyecto">
-                </div> 
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="notificacion">Notificaciones:</label>
+                    <select wire:model="notificacion" id="notificacion" class="form-control">
+                        <option value="">-- Todos --</option>
+                        <option value="1">Con notificación</option>
+                        <option value="0">Sin notificación</option>
+                    </select>
+                </div>
+                
                 <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Comercial:</label> 
                     <select wire:model="comercial" class="form-control">

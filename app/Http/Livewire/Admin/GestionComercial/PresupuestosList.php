@@ -7,6 +7,7 @@ use App\Models\PresupuestoProyecto;
 use App\Models\Año;
 use App\Models\User;
 use Livewire\WithPagination;
+use Auth;
 
 /**
  * Componente Livewire para mostrar y filtrar la lista de presupuestos
@@ -30,6 +31,7 @@ class PresupuestosList extends Component
     public $estados = [];     // Estados de los presupuestos (no utilizado actualmente)
     public $años = [];        // Lista de años disponibles
     public $comerciales = []; // Lista de comerciales/usuarios
+    public $notificacion = '';
 
     /**
      * Método principal que renderiza el componente con los presupuestos filtrados
@@ -37,40 +39,59 @@ class PresupuestosList extends Component
      */
     public function render()
     {
-        // Array para almacenar filtros de la tabla presupuestos
-        $filtros = [];
-        // Array para almacenar filtros de la tabla gestión comercial (relación)
-        $filtrosGestion = [];
+        $user = Auth::user();
+        $query = PresupuestoProyecto::query()->with('gestion');
 
-        // Filtro por código de centro de costos (búsqueda parcial)
-        if ($this->cod_cc){
-            array_push($filtros, ['cod_cc', 'like', "%$this->cod_cc%"]);
+        // Filtro por código de centro de costos
+        if ($this->cod_cc) {
+            $query->where('cod_cc', 'LIKE', "%{$this->cod_cc}%");
         }
 
-        // Filtro por año: busca registros entre el primer día del año y el último
-        if($this->año){
-            array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
-            array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
+        // Filtro por año
+        if ($this->año && $this->yearInfo) {
+            $query->whereBetween('created_at', [
+                $this->yearInfo->meses->first()->f_inicio,
+                $this->yearInfo->meses->last()->f_fin
+            ]);
         }
 
-        // Filtro por nombre de proyecto en la tabla gestión comercial
-        if ($this->nom_proyecto){
-            array_push($filtrosGestion, ['nom_proyecto_cot', 'like', "%$this->nom_proyecto%"]);
+        // NUEVO: Filtro por notificaciones
+        if ($this->notificacion !== '' && $this->notificacion !== null) {
+            if ($this->notificacion == '1') {
+                // Opción A: Si el campo guarda un booleano/flag (1/0 o true/false)
+                $query->where('notificacion_actualizacion', 1);
+
+                // Opción B (Si el campo es fecha/texto y buscas que NO esté nulo, usa esta línea en su lugar):
+                // $query->whereNotNull('notificacion_actualizacion');
+            } elseif ($this->notificacion == '0') {
+                $query->where(function ($q) {
+                    $q->where('notificacion_actualizacion', 0)
+                      ->orWhereNull('notificacion_actualizacion');
+                });
+            }
         }
 
-        // Filtro por comercial/usuario en la tabla gestión comercial
-        if ($this->comercial){
-            array_push($filtrosGestion, ['id_user', $this->comercial]);
+        // Filtros en la relación 'gestion'
+        if ($this->nom_proyecto || $this->comercial || ($user && $user->comercialesAsignados()->exists())) {
+            $query->whereHas('gestion', function ($gestion) use ($user) {
+                
+                if ($this->nom_proyecto) {
+                    $gestion->where('nom_proyecto_cot', 'LIKE', "%{$this->nom_proyecto}%");
+                }
+
+                if ($this->comercial) {
+                    $gestion->where('id_user', $this->comercial);
+                }
+
+                // Restricción para líder comercial
+                if ($user && $user->comercialesAsignados()->exists()) {
+                    $comercialesIds = $user->comercialesAsignados()->pluck('users.id')->toArray();
+                    $gestion->whereIn('id_user', $comercialesIds);
+                }
+            });
         }
 
-        // Consulta principal: obtiene presupuestos con su gestión comercial aplicando todos los filtros
-        $presupuestos = PresupuestoProyecto::with('gestion')
-                        ->whereHas('gestion', function ($gestion) use ($filtrosGestion) {
-                            $gestion->where($filtrosGestion);
-                        })
-                        ->where($filtros)
-                        ->orderBy('created_at', $this->orderBy)
-                        ->paginate(15);
+        $presupuestos = $query->orderBy('created_at', $this->orderBy)->paginate(15);
 
         return view('livewire.admin.gestion-comercial.presupuestos-list', ['presupuestos' => $presupuestos]);
     }
@@ -89,7 +110,15 @@ class PresupuestosList extends Component
      * Los comerciales son usuarios que pueden crear gestiones comerciales
      */
     public function getComerciales(){
-        $this->comerciales = User::where('rol', 2)->get();
+        $user = Auth::user();
+
+        if ($user && $user->comercialesAsignados()->exists()) {
+            // Cargar únicamente los comerciales asociados al líder en la pivote
+            $this->comerciales = $user->comercialesAsignados()->get();
+        } else {
+            // Si es un Admin global, carga todos los comerciales
+            $this->comerciales = User::where('rol', 2)->get();
+        }
     }
 
     /**

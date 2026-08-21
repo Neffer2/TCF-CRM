@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Ordenes de compra</h3>
-                    <p class="text-sm mb-0">Lista de ordenes de compra <b>APROBADAS</b>.</p>
+                    <p class="text-sm mb-0">Lista de ordenes de compra jajaj <b>APROBADAS</b>.</p>
                 </div>
             </div>
             <div class="row">

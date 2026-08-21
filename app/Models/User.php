@@ -52,6 +52,12 @@ class User extends Authenticatable
         return $this->hasMany(Asistente::class, 'comercial_id', 'id');
     }
 
+    public function comercialesAsignados()
+    {   
+        // Parámetros: Modelo Destino, Tabla Pivote, FK Local (lider_id), FK Destino (comercial_id)
+        return $this->belongsToMany(User::class, 'lider_comercial_user', 'lider_id', 'comercial_id');
+    }
+
     public function comerciales() {
         return $this->belongsToMany(
             User::class,

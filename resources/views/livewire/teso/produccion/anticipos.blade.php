@@ -19,8 +19,12 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="comercial">Buscar:</label>
+                        <label for="comercial">Buscar CC:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
+                    </div> 
+                    <div class="col-md-2">
+                        <label for="comercial">Buscar Tercero</label>
+                        <input type="text" wire:model="cedula" class="form-control" placeholder="Tercero">
                     </div> 
                     <div class="col-md-2">
                         <label for="productor">Productor:</label>

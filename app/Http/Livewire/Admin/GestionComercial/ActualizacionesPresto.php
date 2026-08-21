@@ -48,51 +48,69 @@ class ActualizacionesPresto extends Component
         // Filtros base: solo presupuestos con código de centro de costo
         $filtros = [['cod_cc', '<>', null]];
 
-        // Filtro por código de centro de costo si se especifica
+        // Filtro por código de centro de costo
         if ($this->cod_cc){
             array_push($filtros, ['cod_cc', 'like', "%$this->cod_cc%"]);
         }
 
-        // Filtro por año si se especifica
-        if($this->año){
+        // Filtro por año
+        if($this->año && $this->yearInfo){
             array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        //Admin Gerencia
-        $admin = in_array(Auth::user()->id, [10, 8, 26, 71, 198]);
-        // Para rol 1 (administrador): solo presupuestos con estado 4 (revision líder comercial)
+        // Admin Gerencia
+        $admin = in_array(Auth::id(), [10, 8, 26, 71, 198]);
+        
+        // Para rol 1: ajustar según si es gerencia o revisión líder
         if ($this->rol == 1 && !$admin){
             $filtros[] = ['estado_id', 4];
         } else if($this->rol == 1 && $admin){
             $filtros[] = ['estado_id', 5];
         }
 
-        //if ($this->rol == 1){ array_push($filtros, ['estado_id', 5]); }
+        $user = Auth::user();
 
-        // Para rol 2 (comercial): solo presupuestos propios
+        // --- MANEJO DE CONSULTAS SEGÚN ROL / PIVOTE ---
+
         if ($this->rol == 2){
-            $presupuestos = PresupuestoProyecto::
-                where($filtros)->orderBy('id', $this->fecha)->
-                whereHas('gestion', function (Builder $query){
+            // Rol 2 (Comercial): solo presupuestos propios
+            $presupuestos = PresupuestoProyecto::where($filtros)
+                ->whereHas('gestion', function ($query){
                     $query->where('id_user', Auth::id());
-                })->paginate(15);
-        }elseif ($this->rol == 5){
-            // Para rol 5 (asistente): presupuestos del comercial asignado
-            $presupuestos = PresupuestoProyecto::
-                where($filtros)->orderBy('id', $this->fecha)->
-                whereHas('gestion', function (Builder $query){
-                    $query->where('id_user', Asistente::select('comercial_id')->where('asistente_id', Auth::id())->first()->comercial_id);
-                })->paginate(15);
+                })
+                ->orderBy('id', $this->fecha)
+                ->paginate(15);
+
+        } elseif ($this->rol == 5){
+            // Rol 5 (Asistente): presupuestos del comercial asignado
+            $presupuestos = PresupuestoProyecto::where($filtros)
+                ->whereHas('gestion', function ($query){
+                    $comercialId = Asistente::where('asistente_id', Auth::id())->value('comercial_id');
+                    $query->where('id_user', $comercialId);
+                })
+                ->orderBy('id', $this->fecha)
+                ->paginate(15);
+
+        } elseif ($this->rol == 1){
+            // Rol 1 (Administrador / Líder)
+            $query = PresupuestoProyecto::where($filtros);
+
+            // RESTRICCIÓN PIVOTE: Si está registrado como líder comercial en la tabla pivote
+            if ($user && $user->comercialesAsignados()->exists()) {
+                $comercialesIds = $user->comercialesAsignados()->pluck('users.id')->toArray();
+
+                $query->whereHas('gestion', function ($q) use ($comercialesIds) {
+                    $q->whereIn('id_user', $comercialesIds);
+                });
+            }
+
+            $presupuestos = $query->orderBy('id', $this->fecha)->paginate(15);
         }
 
-        // Para rol 1 (administrador): todos los presupuestos con actualizaciones
-        if ($this->rol == 1){
-            $presupuestos = PresupuestoProyecto::
-                where($filtros)->orderBy('id', $this->fecha)->paginate(15);
-        }
-
-        return view('livewire.admin.gestion-comercial.actualizaciones-presto', ['presupuestos' => $presupuestos]);
+        return view('livewire.admin.gestion-comercial.actualizaciones-presto', [
+            'presupuestos' => $presupuestos
+        ]);
     }
 
     /**

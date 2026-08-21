@@ -14,6 +14,7 @@
             <td style="text-align: center; font-weight: bold;">C.C</td>
             <td style="text-align: center; font-weight: bold;">NIT PROVEEDOR</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
+            <td style="text-align: center; font-weight: bold;">DESCRIPCION ITEM</td>
             <td style="text-align: center; font-weight: bold;">CANT</td>
             <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (OC)</td>
             <td style="text-align: center; font-weight: bold;">ARTICULO/SERVICIO</td>
@@ -47,6 +48,7 @@
                         <td>{{ $ocItem->OrdenCompra->naturalInfo->tercero->cedula }}</td>
                     @endif
                     <td>{{ $ocItem->itemPresupuesto->displayItem() }}</td>
+                    <td>{{ $ocItem->desc_oc }}</td>
                     <td>{{ $ocItem->cant_oc }}</td>
                     <td>{{ $ocItem->vunit_oc }}</td>
                     <td>{{ $ocItem->tipo_servicio }} IT {{ $ocItem->itemPresupuesto->displayItem() }} {{ $ocItem->OrdenCompra->naturalInfo->tercero->ciudad }} # {{ $ocItem->OrdenCompra->id }} </td>

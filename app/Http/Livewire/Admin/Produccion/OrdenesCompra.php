@@ -7,6 +7,7 @@ use App\Models\OrdenCompra;
 use App\Models\EstadoOrdenesCompra;
 use Livewire\WithPagination;
 use App\Models\Año;
+use App\Models\Presupuesto;
 use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
@@ -37,6 +38,7 @@ class OrdenesCompra extends Component
     // PROPIEDADES ADICIONALES
     public $productor_id;          // ID específico del productor autenticado
     public $yearInfo;              // Información del año seleccionado
+    public $ordencompra;
 
     /**
      * Renderiza la vista del componente con las órdenes filtradas
@@ -86,6 +88,16 @@ class OrdenesCompra extends Component
                 ->orWhereHas('naturalInfo.tercero', function ($tercero) use ($term) {
                     $tercero->where('cedula', 'LIKE', "%{$term}%");
                 });
+            });
+        }
+
+        if($this->ordencompra){
+            $term = trim($this->ordencompra);
+
+            $query->where(function ($q) use ($term) {
+                // Busca en la columna propia de la orden
+                $q->where('cod_oc', 'LIKE', "%{$term}%")
+                ->orWhere('gr', 'LIKE', "%{$term}%");
             });
         }
 

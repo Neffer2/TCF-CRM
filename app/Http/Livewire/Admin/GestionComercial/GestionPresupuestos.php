@@ -8,6 +8,7 @@ use App\Models\EstadosPresupuesto;
 use App\Models\GestionComercial;
 use App\Traits\Email;
 use Livewire\WithPagination;
+use Auth;
 
 /**
  * Componente Livewire para gestionar presupuestos de proyectos
@@ -58,9 +59,34 @@ class GestionPresupuestos extends Component
         // Solo presupuestos SIN código de centro de costo (diferencia con ActualizacionesPresto)
         array_push($filtros, ['cod_cc', null]);
 
-        $presupuestos = PresupuestoProyecto::where('estado_id', $this->estadoProyecto)->where($filtros)->orderBy('id', $this->fecha)->paginate(10);
+        $query = PresupuestoProyecto::query();
 
-        return view('livewire.admin.gestion-comercial.gestion-presupuestos', ['presupuestos' => $presupuestos]);
+        // Aplicar estado según la propiedad
+        if (!empty($this->estadoProyecto)) {
+            $query->where('estado_id', $this->estadoProyecto);
+        }
+
+        $query->where($filtros);
+
+        // --- FILTRADO MEDIANTE TABLA PIVOTE ---
+        $user = Auth::user();
+
+        // Verificamos si el usuario actual está registrado como líder en la tabla pivote
+        if ($user && $user->comercialesAsignados()->exists()) {
+            // Extraer los IDs de sus comerciales asignados
+            $comercialesIds = $user->comercialesAsignados()->pluck('users.id')->toArray();
+
+            // Filtrar presupuestos cuya gestión pertenezca a sus comerciales
+            $query->whereHas('gestion', function ($q) use ($comercialesIds) {
+                $q->whereIn('comercial_id', $comercialesIds);
+            });
+        }
+
+        $presupuestos = $query->orderBy('id', $this->fecha)->paginate(10);
+
+        return view('livewire.admin.gestion-comercial.gestion-presupuestos', [
+            'presupuestos' => $presupuestos
+        ]);
     }
 
     /**
@@ -69,9 +95,14 @@ class GestionPresupuestos extends Component
      */
     public function mount(){
         $this->getEstados();
-        // Para rol 1 (administrador): solo presupuestos con estado 2 (pendientes) || 4 (validación líder)
-        if ($this->rol == 1){
-            $this->estadoProyecto = 4;
+
+        $user = Auth::user();
+
+        // Si existe en la tabla pivote como líder, ajustamos el estado por defecto a validar (ejemplo: 4)
+        if ($user && $user->comercialesAsignados()->exists()) {
+            $this->estadoProyecto = 4; 
+        } else {
+            $this->estadoProyecto = 4; // Cambiar según el estado inicial requerido para admin general
         }
         // $this->getComerciales(); // Método comentado
     }
@@ -81,7 +112,9 @@ class GestionPresupuestos extends Component
      * Excluye el estado con ID 3
      */
     public function getEstados(){
-        $this->estados = EstadosPresupuesto::select('id', 'description')->where('id', '<>', 3)->get();
+        $this->estados = EstadosPresupuesto::select('id', 'description')
+            ->where('id', '<>', 3)
+            ->get();
     }
 
     /**
@@ -94,26 +127,20 @@ class GestionPresupuestos extends Component
         $presupuesto = PresupuestoProyecto::find($id);
         $presupuesto->estado_id = $estado;
 
-        // Si el presupuesto es aprobado (estado = 1)
-        if ($estado == 1){
-            // Actualiza el estado de la gestión comercial a estado 4
+        if ($estado == 1) {
             $gestion = GestionComercial::find($presupuesto->id_gestion);
             $gestion->id_estado = 4;
             $gestion->update();
 
-            // Limpia las justificaciones
             $presupuesto->justificacion_compras = null;
             $presupuesto->justificacion_lider = null;
             $presupuesto->justificacion = null;
         }
         $presupuesto->update();
 
-        // Envía notificaciones por email según el estado
-        if ($presupuesto->estado_id == 1){
-            // Notificación de aprobación
+        if ($presupuesto->estado_id == 1) {
             $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
-        }elseif ($presupuesto->estado_id == 3){
-            // Notificación de rechazo
+        } elseif ($presupuesto->estado_id == 3) {
             $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
         }
 

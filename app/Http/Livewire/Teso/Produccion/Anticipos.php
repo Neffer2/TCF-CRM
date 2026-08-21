@@ -13,7 +13,7 @@ use App\Models\TipoOrdenCompra;
 class Anticipos extends Component
 {
     // Modelos para los filtros y campos del formulario
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor;
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $cedula;
 
     // Variables útiles para los selectores y catálogos
     public $estados = [], $años = [], $tipos = [], $productores = [];
@@ -24,51 +24,72 @@ class Anticipos extends Component
     // Renderiza la vista principal del componente y filtra las órdenes según los filtros seleccionados
     public function render()
     {
-        $filtros = []; // Arreglo de filtros para la consulta
+        $query = OrdenCompra::query();
 
-        // Filtra por estado si está seleccionado
-        if ($this->estado){
-            array_push($filtros, ['estado_id', $this->estado]);
+        // Filtra por estado
+        if ($this->estado) {
+            $query->where('estado_id', $this->estado);
         }
 
-        // Filtra por año si está seleccionado (rango de fechas del año)
-        if($this->año){
-            array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
-            array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
+        // Filtra por año (rango de fechas del año)
+        if ($this->año && $this->yearInfo) {
+            $query->whereBetween('created_at', [
+                $this->yearInfo->meses->first()->f_inicio,
+                $this->yearInfo->meses->last()->f_fin
+            ]);
         }
 
-        // Filtra por tipo de orden si está seleccionado
-        if($this->tipo){
-            array_push($filtros, ['tipo_oc', $this->tipo]);
+        // Filtra por tipo de orden
+        if ($this->tipo) {
+            $query->where('tipo_oc', $this->tipo);
         }
 
-        // Solo muestra órdenes con causal (anticipo)
-        array_push($filtros, ['cod_causal', '<>', 'NULL']);
+        // Filtro obligatorio: Solo órdenes con causal (anticipo) y sin comprobante de pago
+        $query->whereNotNull('cod_causal')
+            ->where('cod_causal', '<>', 'NULL')
+            ->whereNull('archivo_comprobante_pago');
 
-        // Si se ingresa código de centro de costos, filtra por ese código
-        if ($this->cod_cc){
-            $ordenes = OrdenCompra::with('presupuesto')
-                ->whereHas('presupuesto', function ($presto) {
-                    $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
-                })->where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
-        }else {
-            // Si no hay filtro de centro de costos, consulta normal
-            $ordenes = OrdenCompra::where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+        // Filtra por código de centro de costos
+        if ($this->cod_cc) {
+            $query->whereHas('presupuesto', function ($presto) {
+                $presto->where('cod_cc', 'LIKE', '%' . $this->cod_cc . '%');
+            });
         }
 
-        // Si se selecciona un productor, filtra por productor (en presupuesto o naturalInfo)
+        // NUEVO: Filtra por tercero / cédula / nit
+        if ($this->cedula) {
+            $term = trim($this->cedula);
+
+            $query->where(function ($q) use ($term) {
+                // Proveedor (nit o nombre de tercero)
+                $q->whereHas('proveedor', function ($prov) use ($term) {
+                    $prov->where('documento', 'LIKE', "%{$term}%")
+                        ->orWhere('tercero', 'LIKE', "%{$term}%");
+                })
+                // Persona Natural (vía naturalInfo -> relación tercero)
+                ->orWhereHas('naturalInfo.tercero', function ($tercero) use ($term) {
+                    $tercero->where('cedula', 'LIKE', "%{$term}%");
+                });
+            });
+        }
+
+        // Filtra por productor
         if ($this->productor) {
-            $ordenes = OrdenCompra::where(function($query) {
-                $query->whereHas('presupuesto', function ($presupuesto) {
+            $query->where(function ($q) {
+                $q->whereHas('presupuesto', function ($presupuesto) {
                     $presupuesto->where('productor', $this->productor);
                 })
                 ->orWhereHas('naturalInfo', function ($natural) {
                     $natural->where('productor_id', $this->productor);
                 });
-            })->where($filtros)->whereNull('archivo_comprobante_pago')->orderBy('created_at', $this->fecha)->paginate(15);
+            });
         }
 
-        // Retorna la vista con las órdenes filtradas y paginadas
+        // Ejecuta la consulta acumulada con ordenamiento y paginación
+        $ordenes = $query->with('presupuesto')
+            ->orderBy('created_at', $this->fecha)
+            ->paginate(15);
+
         return view('livewire.teso.produccion.anticipos', ['ordenes' => $ordenes]);
     }
 

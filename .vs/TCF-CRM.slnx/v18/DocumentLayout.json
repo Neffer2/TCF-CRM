@@ -1,0 +1,104 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Models\\HistorialItemPresupuesto.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Models\\HistorialItemPresupuesto.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\PresupuestosSheetsExports.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Exports\\PresupuestosSheetsExports.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\HistorialSheetsExports.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Exports\\HistorialSheetsExports.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php||{3D2461EC-8045-4AA9-ABFB-812292AE795D}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HistorialItemPresupuesto.php",
+              "DocumentMoniker": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Models\\HistorialItemPresupuesto.php",
+              "RelativeDocumentMoniker": "app\\Models\\HistorialItemPresupuesto.php",
+              "ToolTip": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Models\\HistorialItemPresupuesto.php",
+              "RelativeToolTip": "app\\Models\\HistorialItemPresupuesto.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "Icon": "89320d42-7831-4f47-839a-c227d3a60919.000001|",
+              "WhenOpened": "2026-07-02T17:23:11.855Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PresupuestosSheetsExports.php",
+              "DocumentMoniker": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\PresupuestosSheetsExports.php",
+              "RelativeDocumentMoniker": "app\\Exports\\PresupuestosSheetsExports.php",
+              "ToolTip": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\PresupuestosSheetsExports.php",
+              "RelativeToolTip": "app\\Exports\\PresupuestosSheetsExports.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "89320d42-7831-4f47-839a-c227d3a60919.000001|",
+              "WhenOpened": "2026-07-02T17:23:01.739Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HistorialSheetsExports.php",
+              "DocumentMoniker": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\HistorialSheetsExports.php",
+              "RelativeDocumentMoniker": "app\\Exports\\HistorialSheetsExports.php",
+              "ToolTip": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\app\\Exports\\HistorialSheetsExports.php",
+              "RelativeToolTip": "app\\Exports\\HistorialSheetsExports.php",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "89320d42-7831-4f47-839a-c227d3a60919.000001|",
+              "WhenOpened": "2026-07-02T17:22:57.667Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ordenes-compra.blade.php",
+              "DocumentMoniker": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php",
+              "ToolTip": "C:\\Users\\brandon.vega\\OneDrive - IgluMarkewtingDigital\\Escritorio\\Proyectos\\CRM\\TCF-CRM\\resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php",
+              "RelativeToolTip": "resources\\views\\livewire\\admin\\produccion\\ordenes-compra.blade.php",
+              "ViewState": "AgIAAAkDAAAAAAAAAAAAABADAAAgAAAAAAAAAA==",
+              "Icon": "89320d42-7831-4f47-839a-c227d3a60919.000001|",
+              "WhenOpened": "2026-06-24T21:17:27.829Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

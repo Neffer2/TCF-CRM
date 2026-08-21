@@ -1,3 +1,7 @@
+@php
+    $idsEspeciales = [9, 17, 38, 192];
+@endphp
+@if(Auth::user()->rol == 1 && in_array(Auth::user()->id, $idsEspeciales))
 <div class="card">
     <div class="card-header p-0 px-2 mt-3">
         <div class="row">
@@ -115,4 +119,4 @@
         </div>
     </div>
 </div>
- 
+@endif
