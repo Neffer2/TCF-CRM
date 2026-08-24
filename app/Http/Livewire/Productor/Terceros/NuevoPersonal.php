@@ -197,7 +197,7 @@ class NuevoPersonal extends Component
 
         // Artículo 383
         if(!$tercero->art383 && !Auth::check()){
-            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->art383 = $this->art383->store('public/cert_bancarias');
         }
 
@@ -273,7 +273,7 @@ class NuevoPersonal extends Component
 
         // Validaciones de archivos requeridos
         if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
-            $this->validate(['art383' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
         if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
