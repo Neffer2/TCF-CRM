@@ -68,11 +68,16 @@ class GestionPresupuestos extends Component
             $comercialesIds = $user->comercialesAsignados()->pluck('users.id')->toArray();
 
             $query->whereHas('gestion', function ($q) use ($comercialesIds) {
-                $q->whereIn('id_user', $comercialesIds); // <-- corregido
+                $q->whereIn('id_user', $comercialesIds);
             });
         }
 
-        $presupuestos = $query->orderBy('id', $this->fecha)->paginate(10);
+        // Sanitiza $this->fecha antes de usarlo en orderBy, sin importar su origen
+        $direction = in_array(strtolower($this->fecha), ['asc', 'desc'])
+            ? strtolower($this->fecha)
+            : 'asc';
+
+        $presupuestos = $query->orderBy('id', $direction)->paginate(10);
 
         return view('livewire.admin.gestion-comercial.gestion-presupuestos', [
             'presupuestos' => $presupuestos
@@ -137,5 +142,12 @@ class GestionPresupuestos extends Component
         }
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
+    }
+
+    public function updatedFecha($value)
+    {
+        if (!in_array(strtolower($value), ['asc', 'desc'])) {
+            $this->fecha = 'asc';
+        }
     }
 }

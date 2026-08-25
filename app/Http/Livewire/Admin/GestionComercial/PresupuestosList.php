@@ -23,7 +23,7 @@ class PresupuestosList extends Component
     public $cod_cc;        // Código de centro de costos para filtrar
     public $año;           // ID del año seleccionado
     public $yearInfo;      // Objeto completo del año con sus meses
-    public $orderBy;  // Orden de los resultados (DESC por defecto)
+    public $orderBy = 'DESC';  // Orden de los resultados (DESC por defecto)
     public $nom_proyecto;  // Nombre del proyecto para filtrar
     public $comercial;     // ID del comercial/usuario para filtrar
 

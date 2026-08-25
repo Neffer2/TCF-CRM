@@ -29,7 +29,6 @@
             <div class="form-group col-md-2 mb-0">
                 <label for="comercial">Fecha:</label>
                 <select id="comercial" class="form-control" wire:model="fecha">
-                    <option value="asc">Seleccionar</option>
                     <option value="asc">M&aacute;s reciente</option>
                     <option value="desc">M&aacute;s antiguos</option>
                 </select>
