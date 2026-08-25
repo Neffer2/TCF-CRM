@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Productor\Terceros;
 
+use App\Models\Evidencia;
 use Livewire\Component;
 use App\Models\Tercero;
 use App\Models\EstadoTercero;
@@ -27,7 +28,9 @@ class NuevoPersonal extends Component
 
     // Modelos y campos del formulario
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
-    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx, $copia_cedula, $num_rut, $servicio, $art383, $check_art383;
+    $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx,
+    $copia_cedula, $num_rut, $servicio, $art383, $check_art383,
+    $planilla_aportes, $tipo_cuenta, $num_cuenta;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -45,6 +48,9 @@ class NuevoPersonal extends Component
     // Colección de evidencias
     public $evidencias = [];
 
+    // Listener para ejecutar el método store cuando se emite 'evidencia-signal'
+    protected $listeners = ['evidencia-signal' => 'saveEvidencia'];
+
     // Renderiza la vista principal del componente
     public function render()
     {
@@ -60,7 +66,17 @@ class NuevoPersonal extends Component
 
         $this->estados = EstadoTercero::all();
 
-        if ($this->tercero){$this->fillForm();}
+        if ($this->tercero) {
+            $this->fillForm();
+        }
+
+        // Si el estado_id es 7 (Evidencias), obtenemos las evidencias guardadas
+        if ($this->orden && $this->orden->estado_id == 7) {
+            $this->evidencias = Evidencia::where([
+                ['oc_id', $this->orden->id],
+                ['tercero_id', $this->tercero->id],
+            ])->get();
+        }
     }
 
     // Importa terceros desde archivo Excel
@@ -148,13 +164,15 @@ class NuevoPersonal extends Component
             'telefono' => 'required|numeric',
             'ciudad' => 'required|string',
             'servicio' => 'required|string',
-            'estado' => 'required|numeric|max:1',
+            'estado' => 'required|numeric|max:1'
         ]);
 
         // Si no está autenticado, exige más campos
         if (!Auth::check()){
             $this->validate([
                 'banco' => 'required|string|max:255',
+                'tipo_cuenta' => 'required|string|max:255',
+                'num_cuenta' => 'required|string|max:255',
                 'contrato' => 'required|string',
                 'terminos' => 'required|accepted'
             ]);
@@ -170,6 +188,8 @@ class NuevoPersonal extends Component
         $tercero->ciudad = $this->ciudad;
         $tercero->servicio = $this->servicio;
         $tercero->estado = trim($this->estado);
+        $tercero->tipo_cuenta = $this->tipo_cuenta;
+        $tercero->num_cuenta = $this->num_cuenta;
 
         // Banco
         if($this->banco){
@@ -195,10 +215,10 @@ class NuevoPersonal extends Component
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
 
-        // Artículo 383
-        if(!$tercero->art383 && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-            $tercero->art383 = $this->art383->store('public/cert_bancarias');
+        // Planilla de aportes
+        if (!$tercero->planilla_aportes && !Auth::check()){
+            $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            if ($this->planilla_aportes){$tercero->planilla_aportes = $this->planilla_aportes->store('public/planillas_aportes');}
         }
 
         // RUT si aplica
@@ -222,7 +242,7 @@ class NuevoPersonal extends Component
             $this->orden->estado_id = 3;
             $this->orden->update();
 
-            // Mail notificacion 
+            // Mail notificacion
             $this->ocNaturalFirmada($this->orden);
         }
 
@@ -254,40 +274,46 @@ class NuevoPersonal extends Component
 
     // Genera el contrato en PDF y lo almacena
     public function generarContrato(){
-        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+        try{
+            if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+                $this->validate([
+                    'num_rut' => 'required|numeric'
+                ]);
+            }
+
             $this->validate([
-                'num_rut' => 'required|numeric'
+                'nombre' => 'required|max:255',
+                'apellido' => 'required|max:255',
+                'cedula' => 'required|numeric',
+                'correo' => 'required|email',
+                'telefono' => 'required|numeric',
+                'ciudad' => 'required|string',
+                'estado' => 'required|numeric|max:1',
+                'banco' => 'required|string|max:255',
+                'num_cuenta' => 'nullable|string|max:255',
+                'tipo_cuenta' => 'nullable|string|max:255'
             ]);
+
+            // Validaciones de archivos requeridos
+            if ((!$this->planilla_aportes && !$this->tercero->planilla_aportes) && !Auth::check()){
+                $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            }
+
+            if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
+                $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            }
+
+            if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()){
+                $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            }
+
+            if (((!$this->rut && !$this->tercero->rut) && !Auth::check()) && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+                $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+            }
+        }catch (\Illuminate\Validation\ValidationException $e) {
+            // Esto revelará en pantalla cuáles inputs fallaron exactamente
+            dd('ERRORES DE VALIDACIÓN:', $e->validator->errors()->toArray());
         }
-
-        $this->validate([
-            'nombre' => 'required|max:255',
-            'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric',
-            'correo' => 'required|email',
-            'telefono' => 'required|numeric',
-            'ciudad' => 'required|string',
-            'estado' => 'required|numeric|max:1',
-            'banco' => 'required|string|max:255',
-        ]);
-
-        // Validaciones de archivos requeridos
-        if ((!$this->art383 && !$this->tercero->art383) && !Auth::check()){
-            $this->validate(['art383' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-        }
-
-        if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()){
-            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-        }
-
-        if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()){
-            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-        }
-
-        if (((!$this->rut && !$this->tercero->rut) && !Auth::check()) && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
-            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-        }
-
         // Información para el contrato
         $contratoInfo = [
             'items' => $this->orden->ordenItems,
@@ -313,8 +339,15 @@ class NuevoPersonal extends Component
         $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
         file_put_contents($filePath, $output);
 
-        // Generar una URL pública para el archivo
-        $this->contrato = asset('storage/contratos/' . basename($filePath));
+        // Generar la URL y emitir el evento
+        $urlContrato = asset('storage/contratos/' . basename($filePath));
+        dd([
+            'mensaje' => 'Llegó al final exitosamente',
+            'file_exists' => file_exists($filePath),
+            'filePath' => $filePath,
+            'urlContrato' => $urlContrato,
+        ]);
+        $this->emit('abrirPdf', $urlContrato);
     }
 
     // Convierte un número a texto (para el contrato)
@@ -349,9 +382,11 @@ class NuevoPersonal extends Component
         $this->ciudad = $this->tercero->ciudad;
         $this->estado = $this->tercero->estado;
         $this->banco = $this->tercero->banco;
+        $this->tipo_cuenta = $this->tercero->tipo_cuenta;
+        $this->num_cuenta = $this->tercero->num_cuenta;
         $this->servicio = $this->tercero->servicio;
         $this->num_rut = $this->tercero->num_rut;
-        $this->art383 = $this->tercero->art383;
+        $this->planilla_aportes = $this->tercero->planilla_aportes;
     }
 
     // Alterna la confirmación de eliminación
@@ -371,11 +406,12 @@ class NuevoPersonal extends Component
             'observacionEvidencia' => 'required|string|max:255'
         ]);
 
-        $evidencia = [
-            'fecha' => $this->fechaEvidencia,
-            'foto' => $this->fotoEvidencia->store('public/evidencias'),
-            'observacion' => $this->observacionEvidencia
-        ];
+        $evidencia = $this->orden->evidencias()->create([
+            'fecha_evidencia' => $this->fechaEvidencia,
+            'foto_evidencia' => $this->fotoEvidencia->store('public/evidencias'),
+            'observacion_evidencia' => $this->observacionEvidencia,
+            'tercero_id' => $this->orden->naturalInfo->tercero_id
+        ]);
 
         $this->evidencias->push($evidencia);
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
@@ -383,31 +419,35 @@ class NuevoPersonal extends Component
 
     // Elimina una evidencia de la colección y borra el archivo
     public function deleteEvidencia($itemId){
-        $filePath = $this->evidencias[$itemId]['foto'];
-        Storage::delete($filePath);
-        unset($this->evidencias[$itemId]);
+        $itemEvidencia = Evidencia::find($itemId);
+        Storage::delete($itemEvidencia->foto_evidencia);
+
+        $itemEvidencia->delete();
+        $this->evidencias = $this->evidencias->reject(function ($e) use ($itemId) {
+            return $e->id === $itemId;
+        });
     }
 
     // Guarda todas las evidencias en la base de datos
-    public function saveEvidencia(){
-        foreach($this->evidencias as $evidencia){
-            $this->orden->evidencias()->create([
-                'fecha_evidencia' => $evidencia['fecha'],
-                'foto_evidencia' => $evidencia['foto'],
-                'observacion_evidencia' => $evidencia['observacion'],
-                'tercero_id' => $this->orden->naturalInfo->tercero_id
-            ]);
+    public function saveEvidencia($data){
+        // Si ya existe una firma, se elimina
+        if ($this->tercero->firma) {
+            Storage::delete($this->tercero->firma);
         }
+
+        // Procesa la imagen de la firma recibida en base64
+        $data_uri = $data;
+        $encoded_image = explode(",", $data_uri)[1];
+        $decoded_image = base64_decode($encoded_image);
+
+        // Guarda la firma como archivo PNG en storage
+        file_put_contents("storage/firmas_terceros/".$this->tercero->cedula.".png", $decoded_image);
+        $this->tercero->firma = "public/firmas_terceros/".$this->tercero->cedula.".png";
+        $this->tercero->update();
 
         $this->orden->estado_id = 3;
         $this->orden->update();
 
-        $this->reset_fields([
-            'fechaEvidencia',
-            'fotoEvidencia',
-            'observacionEvidencia'
-        ]);
-    
         // Mail evidencias enviadas
         $this->ocNaturalEvidenciasEnviadas($this->orden);
 

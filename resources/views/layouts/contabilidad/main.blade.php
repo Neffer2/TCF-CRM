@@ -13,7 +13,7 @@
   <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/32c990e263.js" crossorigin="anonymous"></script>
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
@@ -47,6 +47,12 @@
                 <a class="nav-link" href="{{ route('anticipos-contabilidad') }}">
                   <span class="sidenav-mini-icon text-xs"> OC's </span>
                   <span class="sidenav-normal"> Ordenes de compra </span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('lista-anticipos-contabilidad') }}">
+                  <span class="sidenav-mini-icon text-xs"> AN </span>
+                  <span class="sidenav-normal"> Anticipos </span>
                 </a>
               </li>
             </ul>

@@ -43,11 +43,11 @@ class Anticipo extends Component
         ]);  
 
         // Actualiza los datos de la orden
-        $this->orden->cod_causal = $this->causa_cod;
+        $this->orden->cod_causal = $this->causa_cod; 
         $this->orden->observacion_causal = $this->observacion_causacion;
         $this->orden->update();
 
-        $this->ocNaturalRevisionTesoreria($this->orden);
+        $this->ocNaturalRevisionTesoreria($this->orden);   
 
         // Redirige con mensaje de éxito
         return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
@@ -66,7 +66,7 @@ class Anticipo extends Component
         $this->orden->estado_id = 2; // Estado: Revisión
         $this->orden->update();
 
-        $this->ocNaturalContabilidadRechazo($this->orden);
+        // $this->ocNaturalContabilidadRechazo($this->orden);
 
         // Redirige con mensaje de éxito
         return redirect()->route('anticipos-contabilidad')->with('success', 'Orden de compra rechazada exitósamente.');

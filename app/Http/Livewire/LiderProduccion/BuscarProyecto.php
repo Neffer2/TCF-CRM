@@ -63,14 +63,20 @@ class BuscarProyecto extends Component
 
 
         // Consulta principal: obtiene presupuestos con su gestión comercial aplicando todos los filtros
-        $presupuestos = PresupuestoProyecto::with('gestion')
-                        ->whereHas('gestion', function ($gestion) use ($filtrosGestion) {
-                            $gestion->where($filtrosGestion);
-                        })
-                        ->where($filtros)
-                        ->orderBy('created_at', $this->orderBy)
-                        ->paginate(10);
-                        
+        $presupuestos = PresupuestoProyecto::with([
+                                        'gestion.contacto', 
+                                        'gestion.comercial', 
+                                        'productor_info', 
+                                        'estado', 
+                                        'baseComercial.estado_cuenta'
+                                    ])
+                                    ->whereHas('gestion', function ($gestion) use ($filtrosGestion) {
+                                        $gestion->where($filtrosGestion);
+                                    })
+                                    ->where($filtros)
+                                    ->orderBy('created_at', $this->orderBy)
+                                    ->paginate(10);
+
         return view('livewire.lider-produccion.buscar-proyecto', ['presupuestos' => $presupuestos]);
     }
 

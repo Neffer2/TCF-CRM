@@ -844,9 +844,10 @@
                             </div>
                         </div>
                         @guest
-                            {{-- <div class="col-md-12">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
-                                    Confirmar informaci&oacute;n
+                            <div class="col-md-12">
+                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato" wire:loading.attr="disabled">
+                                    <span wire:loading.remove>Confirmar información</span>
+                                    <span wire:loading>Generando PDF...</span>
                                 </button>
                                 @if ($contrato)
                                     <div class="d-flex justify-content-center">
@@ -860,7 +861,6 @@
                                             </a>
                                         </div>
                                     </div>
-
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <div class="form-check">
@@ -877,7 +877,7 @@
                                         </div>
                                     </div>
                                 @endif
-                            </div> --}}
+                            </div>
                         @endguest
                     </div>
                 </div>
@@ -921,5 +921,12 @@
                 @endguest
             </div>
         @endif
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Livewire.on('abrirPdf', function (url) {
+                    window.open(url, '_blank');
+                });
+            });
+        </script>
     </div>
 @endif

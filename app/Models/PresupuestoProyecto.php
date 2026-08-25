@@ -19,7 +19,7 @@ class PresupuestoProyecto extends Model
     } 
 
     public function baseComercial(){ 
-        return $this->hasMany(Base_comercial::class, 'id_gestion', 'id_gestion'); 
+        return $this->hasOne(Base_comercial::class, 'id_gestion', 'id_gestion'); 
     } 
    
     public function estado(){

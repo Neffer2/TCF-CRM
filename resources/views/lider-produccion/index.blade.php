@@ -31,6 +31,9 @@
                 </div>
             </div>
         </div> 
+        <div class="mt-3">
+            @livewire('lider-produccion.buscar-proyecto')
+        </div>
     @endsection 
     @section('scripts')
         <script>

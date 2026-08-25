@@ -10,14 +10,14 @@ use App\Models\Año;
 use App\Models\User;
 use App\Models\TipoOrdenCompra;
 
-class Anticipos extends Component
+class Anticipos extends Component 
 {
     // Variables para filtros y búsqueda
-    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $cedula; 
+    public $cod_cc, $fecha = 'desc', $estado, $año, $tipo, $productor, $documento;
 
     // Listas para selects y filtros
     public $estados = [], $años = [], $tipos = [], $productores = [];
-
+ 
     // Habilita paginación y define el tema de Bootstrap
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
@@ -25,67 +25,60 @@ class Anticipos extends Component
     // Renderiza la vista principal y aplica los filtros de búsqueda
     public function render()
     {
-        $filtros = [];        
-
-        // Filtra por estado
-        if ($this->estado) {
+        $filtros = [];
+        // Filtra por estado si está seleccionado
+        if ($this->estado){
             array_push($filtros, ['estado_id', $this->estado]);
-        } else {
-            array_push($filtros, ['estado_id', 5]);
         }
 
-        // Filtra por año
-        if ($this->año) {
+        // Filtra por año si está seleccionado (rango de fechas del año)
+        if($this->año){
             array_push($filtros, ['created_at', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['created_at', '<=', $this->yearInfo->meses->last()->f_fin]);
         }
 
-        // Filtra por tipo de orden
-        if ($this->tipo) {
+        // Filtra por tipo de orden si está seleccionado
+        if($this->tipo){
             array_push($filtros, ['tipo_oc', $this->tipo]);
         }
 
-        // Construcción dinámica de la consulta
-        $query = OrdenCompra::where($filtros);
+        // Si hay código de centro de costos, filtra por ese código en la relación presupuesto
+        if ($this->cod_cc){
+            $ordenes = OrdenCompra::with('presupuesto')
+                ->whereHas('presupuesto', function ($presto) {
+                    $presto->where('cod_cc', 'LIKE', "%$this->cod_cc%");
+                })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }else {
+            // Si no hay código, filtra solo por los filtros generales
+            $ordenes = OrdenCompra::where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
 
-        // Centro de Costos
-        $query->when($this->cod_cc, function ($q) {
-            $q->with('presupuesto')
-            ->whereHas('presupuesto', function ($presto) {
-                $presto->where('cod_cc', 'LIKE', "%{$this->cod_cc}%")
-                        ->orWhere('id', 'LIKE', "%{$this->id}%");
-            });
-        });
+        // Filtro por documento
+        if ($this->documento) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->WhereHas('naturalInfo', function ($natural) {
+                    $natural->WhereHas('tercero', function ($tercero) {
+                        $tercero->where('cedula', 'LIKE', "%$this->documento%");
+                    });
+                })->orWhereHas('proveedor', function ($proveedor) {
+                    $proveedor->where('documento', 'LIKE', "%$this->documento%");
+                });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
 
-        // Productor
-        $query->when($this->productor, function ($q) {
-            $q->where(function ($sub) {
-                $sub->whereHas('presupuesto', function ($presupuesto) {
+        // Si hay productor seleccionado, filtra por productor en presupuesto o naturalInfo
+        if ($this->productor) {
+            $ordenes = OrdenCompra::where(function($query) {
+                $query->whereHas('presupuesto', function ($presupuesto) {
                     $presupuesto->where('productor', $this->productor);
                 })
                 ->orWhereHas('naturalInfo', function ($natural) {
                     $natural->where('productor_id', $this->productor);
                 });
-            });
-        });
+            })->where($filtros)->orderBy('created_at', $this->fecha)->paginate(15);
+        }
 
-        // Búsqueda por cédula / tercero / documento
-        $query->when($this->cedula, function ($q) {
-            $term = $this->cedula;
-            $q->where(function ($sub) use ($term) {
-                $sub->whereHas('proveedor', function ($prov) use ($term) {
-                    $prov->where('documento', 'LIKE', "%{$term}%")
-                        ->orWhere('tercero', 'LIKE', "%{$term}%");
-                })
-                ->orWhereHas('naturalInfo.tercero', function ($tercero) use ($term) {
-                    $tercero->where('cedula', 'LIKE', "%{$term}%");
-                });
-            });
-        });
-
-        // Ejecuta la consulta combinando todos los filtros aplicados
-        $ordenes = $query->orderBy('created_at', $this->fecha)->paginate(15);
-
+        // Retorna la vista con las órdenes filtradas y paginadas
         return view('livewire.cont.produccion.anticipos', ['ordenes' => $ordenes]);
     }
 

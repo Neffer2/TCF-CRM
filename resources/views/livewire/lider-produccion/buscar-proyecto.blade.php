@@ -14,7 +14,7 @@
                             <option value="{{ $año->id }}">{{ $año->description }}</option>
                         @endforeach
                     </select>
-                </div>   
+                </div>  
                 <div class="form-group col-md-2 mb-0">
                     <label for="comercial">Buscar:</label> 
                     <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
@@ -95,7 +95,7 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado Base Comercial</p> 
                                     @if ($presupuesto->baseComercial)
-                                        <p class="text-xs text-secondary mb-0">{{ $presupuesto->baseComercial->estado_cuenta->description }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $presupuesto->baseComercial->estado_cuenta->description  }}</p>
                                     @else
                                         <p class="text-xs text-secondary mb-0">Sin Base comercial</p>
                                     @endif

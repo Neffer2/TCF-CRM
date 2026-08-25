@@ -20,7 +20,7 @@ class AsignarProyecto extends Component
 
     // Renderiza la vista y actualiza los datos de usuarios y proyectos
     public function render()
-    {
+    { 
         $this->getUsers();
         $this->getProyectos();
         return view('livewire.lider-produccion.asignar-proyecto');
