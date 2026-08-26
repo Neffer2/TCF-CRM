@@ -1,6 +1,7 @@
-
 <?php
 
+use App\Http\Middleware\productor;
+use App\Models\Anticipo;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\AdminController;
@@ -44,12 +45,19 @@ Route::get('/', function () {
     Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');
     Route::get('/ordenes-compra/pdf/{orden}', [AdminController::class, 'ordenCompraPdf'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra.pdf');
     Route::get('/actualizaciones', [AdminController::class, 'actualizaciones'])->middleware(['auth'])->name('actualizaciones');
+    Route::get('/validaciones', [AdminController::class, 'validaciones'])->middleware(['auth'])->name('validaciones');
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');
 
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
     Route::get('/orden-natural/{orden_id?}', function ($orden_id){
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['admin'])->name('orden-natural');
+    Route::get('/orden-nomina/{orden?}', [AdminController::class, 'showOrdenNomina'])->middleware(['auth'])->middleware(['admin'])->name('orden-nomina');
+    Route::get('/orden-compra_anticipó', [AdminController::class, 'showOrdenCompra_Anticipo'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra_anticipate');
+
+    Route::get('/cuenta-cobro/pdf/{orden}', [AdminController::class, 'cuentaCobroPdf'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro.pdf');
+
+    Route::get('/validacionesCliente', [AdminController::class, 'ValidacionesClientes'])->middleware(['auth'])->name('validacionesCliente');
 
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('consumidos');
     Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth'])->name('consumido');
@@ -57,15 +65,8 @@ Route::get('/', function () {
     Route::get('/proveedores', [HomeController::class, 'showProveedores'])->middleware(['auth'])->name('proveedores');
 
     Route::view('/personal', 'productor.terceros.personal')->middleware(['auth'])->middleware(['admin'])->name('personal');
-
-    Route::get('/reporte-consumidos/{mes?}', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->name('reporte-consumidos');
+    Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('reporte-consumidos');
     Route::get('/reporte-plano-helisa/{mes?}', [AdminController::class, 'reportePlanoHelisa'])->middleware(['auth'])->name('reporte-plano-helisa');
-
-    Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth'])->middleware(['admin'])->name('anticipos-admin');
-
-    Route::get('/anticipo-admin/{anticipo_id?}', function ($anticipo_id){
-        return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
-    })->middleware(['auth'])->middleware(['admin'])->name('anticipo-admin');
 /* --- */
 
 /* commercial */
@@ -75,6 +76,9 @@ Route::get('/', function () {
     Route::get('/gestion-comercial', [ComercialController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-comercial');
     Route::get('/gestion-helisa', [ComercialController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-helisa');
     Route::get('/contactos', [ComercialController::class, 'Contactos'])->middleware(['auth'])->middleware(['comercial'])->name('contactos');
+
+    Route::get('/clientes', [ComercialController::class, 'gestionClientes'])->middleware(['auth'])->middleware(['comercial'])->name('clientes');
+
     Route::get('/consumidos-com', [ComercialController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['comercial'])->name('consumidos-com');
     Route::post('/base-upload', [ComercialController::class, 'upload_base'])->middleware(['auth'])->name('base-upload');
     Route::post('/base-export/{id_user?}', [ComercialController::class, 'export_base'])->middleware(['auth'])->name('base-export');
@@ -116,32 +120,19 @@ Route::get('/', function () {
     Route::get('/orden-compra-natural/{orden_id?}', function ($orden_id = null){
         return view('productor.terceros.orden-compra-natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['productor'])->name('orden-natural-prod');
-    Route::view('/anticipo', 'productor.ordenes.anticipo')->middleware(['auth'])->middleware(['productor'])->name('anticipo-prod');
-    Route::view('/lista-anticipos', 'productor.anticipos.index')->middleware(['auth'])->middleware(['productor'])->name('anticipos-prod');
+
 /* --- */
 
 /* Contabilidad */
     Route::get('/dashboard-contabilidad', [ContabilidadController::class, 'index'])->middleware(['auth'])->middleware(['contabilidad'])->name('dashboard-contabilidad');
     Route::get('/anticipos-contabilidad', [ContabilidadController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipos-contabilidad');
     Route::get('/anticipo-contabilidad/{orden?}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
-
-    Route::view('/lista-anticipos-contabilidad', 'contabilidad.anticipos_.index')->middleware(['auth'])->middleware(['contabilidad'])->name('lista-anticipos-contabilidad');
-
-    Route::get('/detalle-anticipo-contabilidad/{anticipo_id?}', function ($anticipo_id){
-        return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
-    })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
 
 /* Tesoreria */
     Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
     Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
-
-    Route::view('/lista-anticipos-tesoreria', 'tesoreria.anticipos_.index')->middleware(['auth'])->middleware(['tesoreria'])->name('lista-anticipos-tesoreria');
-
-    Route::get('/detalle-anticipo-tesoreria/{anticipo_id?}', function ($anticipo_id){
-        return view('tesoreria.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
-    })->middleware(['auth'])->middleware(['tesoreria'])->name('detalle-anticipo-tesoreria');
 /* --- */
 
 /* PÚBLICO */
@@ -152,7 +143,4 @@ Route::get('/', function () {
 // Route::get('trial-mail', function (){
 //     return view('mails.grGenerado');
 // });
-Route::get('trial', function (){
-    return view('exports.orden_compra_pdf');
-});
 require __DIR__.'/auth.php';
