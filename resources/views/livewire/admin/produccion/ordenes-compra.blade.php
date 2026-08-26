@@ -18,17 +18,17 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-1">
+                        <label for="comercial">COD OC:</label>
+                        <input type="text" wire:model="cod_oc" class="form-control" placeholder="Código OC">
+                    </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
                         <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
                     </div>
                     <div class="col-md-2">
                         <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model.live.debounce.300ms="cedula" class="form-control" placeholder="Cédula tercero">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="comercial">Buscar:</label>
-                        <input type="text" wire:model.live.debounce.300ms="ordencompra" class="form-control" placeholder="Orden Compra">
+                        <input type="text" wire:model="documento" class="form-control" placeholder="Documento tercero">
                     </div>
                     <div class="col-md-2">
                         <label for="productor">Productor:</label>
@@ -100,8 +100,8 @@
                                         <textarea disabled rows="1" class="text-xs text-secondary mb-0">{{ $orden->presupuesto->cod_cc }}</textarea>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Comercial</p>
-                                        <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
@@ -112,6 +112,10 @@
                                                 NO ASIGNADO
                                             @endif
                                         </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Comercial</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->presupuesto->gestion->comercial->name }}</p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -146,10 +150,14 @@
                                         <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha Evidencias</p>
                                         @if (!$orden->evidencias->isEmpty()) <p class="text-xs text-secondary mb-0">{{ $orden->evidencias->last()->created_at }}</p> @endif
-                                    </td>
+                                    </td> --}}
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">Fecha env&iacute;o (producci&oacute;n)</p>
+                                            <p class="text-xs text-secondary mb-0">{{ $orden->fecha_envio_produccion }}</p>
+                                        </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
                                         <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
@@ -349,7 +357,7 @@
                                                                     <p class="text-xs text-secondary mb-0">
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
-                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">Art&iacute;culo 383</a><br>
+                                                                        <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">Planilla de Aportes</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
                                                                     </p>
                                                                 </td>
@@ -463,3 +471,4 @@
         </script>
     </div>
 @endif
+

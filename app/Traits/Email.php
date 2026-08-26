@@ -340,16 +340,23 @@ trait Email
     public function ocNaturalRevisionTesoreria($orden){
         $recipients = [];
         $cc = [];
-        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        
+        // Obtener los datos de forma segura
+        $productorNombre = $orden->naturalInfo?->productor?->name ?? 'PRODUCTOR DESCONOCIDO';
+        $terceroNombre = $orden->naturalInfo?->tercero?->nombre ?? '';
+        $terceroApellido = $orden->naturalInfo?->tercero?->apellido ?? '';
+        $terceroCompleto = trim("$terceroNombre $terceroApellido") ?: 'TERCERO DESCONOCIDO';
+
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$productorNombre." POR REVISAR";
         $body =
         "<p>
-            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido causada por contabilidad.<br>
+            La orden de compra del tercero <b>".$terceroCompleto."</b> ha sido causada por contabilidad.<br>
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
         array_push($recipients, ...$this->tesoreria);
 
-        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+        $altBody = "ORDEN DE COMPRA ".$terceroCompleto." POR REVISAR";
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }

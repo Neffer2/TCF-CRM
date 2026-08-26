@@ -127,6 +127,11 @@ Route::get('/', function () {
     Route::get('/dashboard-contabilidad', [ContabilidadController::class, 'index'])->middleware(['auth'])->middleware(['contabilidad'])->name('dashboard-contabilidad');
     Route::get('/anticipos-contabilidad', [ContabilidadController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipos-contabilidad');
     Route::get('/anticipo-contabilidad/{orden?}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
+    Route::view('/lista-anticipos-contabilidad', 'contabilidad.anticipos_.index')->middleware(['auth'])->middleware(['contabilidad'])->name('lista-anticipos-contabilidad');
+
+    Route::get('/detalle-anticipo-contabilidad/{anticipo_id?}', function ($anticipo_id){
+        return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
 
 /* Tesoreria */

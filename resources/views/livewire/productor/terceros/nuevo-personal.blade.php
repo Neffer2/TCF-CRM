@@ -435,22 +435,28 @@
                         @endif
                         @guest
                             <div class="col-md-12 mt-3">
-                                <div wire:loading>
+                                <div wire:loading wire:target="generarContrato">
                                     <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                                        <span class="visually-hidden">Cargando...</span>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-12 mt-3">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
-                                    Confirmar informaci&oacute;n
+                                <button type="button" 
+                                        class="btn bg-gradient-primary" 
+                                        wire:click="generarContrato" 
+                                        wire:loading.attr="disabled">
+                                    <span wire:loading.remove wire:target="generarContrato">Confirmar información</span>
+                                    <span wire:loading wire:target="generarContrato">Generando contrato...</span>
                                 </button>
+
                                 @if ($contrato)
-                                    <div class="d-none d-md-block" style="width:100%;">
+                                    <div class="d-none d-md-block mt-3" style="width:100%;">
                                         <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
                                     </div>
 
-                                    <div class="d-block d-md-none text-center w-100">
+                                    <div class="d-block d-md-none text-center w-100 mt-3">
                                         <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
                                             Ver contrato (abrir PDF)
                                         </a>
@@ -459,12 +465,15 @@
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
+                                                <input class="form-check-input" 
+                                                    type="checkbox" 
+                                                    id="customCheck1" 
+                                                    wire:model.defer="terminos">
                                                 <label class="custom-control-label" for="customCheck1">
-                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
+                                                    Al marcar esta casilla estás aceptando la <a href="#" target="_blank">política de tratamiento de datos</a> y el contrato de prestación de servicios <span class="text-danger">*</span>
                                                 </label>
                                                 @error('terminos')
-                                                    <div id="terminos" class="text-invalid">
+                                                    <div class="text-danger small mt-1">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
