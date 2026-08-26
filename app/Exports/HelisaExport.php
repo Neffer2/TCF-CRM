@@ -12,29 +12,29 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class HelisaExport implements FromView, WithStyles, WithColumnFormatting, WithColumnWidths
-{   
+{
     protected $data = [];
 
     function __construct($data) {
         $this->data = $data;
     }
-     
+
     /**
-    * @return \Illuminate\Support\Collection 
+    * @return \Illuminate\Support\Collection
     */
     public function view(): View
-    {   
-        return view('exports.excel-helisa', [ 
+    {
+        return view('exports.excel-helisa', [
             'registros_helisa' => $this->data['registros_helisa']
         ]);
     }
 
     public function headings(): array
     {
-        
+
     }
 
-    public function columnFormats(): array 
+    public function columnFormats(): array
     {
         return [
             'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,

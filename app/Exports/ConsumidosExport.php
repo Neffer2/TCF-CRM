@@ -14,17 +14,22 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
 {
     protected $ordenes = [];
 
-    function __construct() {
-        $hace24Horas = Carbon::now()->subHours(24)->toDateTimeString(); // 24 hours ago
+    function __construct($mes = null) {
+        ini_set('max_execution_time', 10000); // or this way
 
-        $this->ordenes = OrdenCompra::where([
-            ['estado_id', '!=', '6'],
-            ['estado_id', '!=', '2'],
-            ['estado_id', '!=', '3']
-        ])
-        ->where('created_at', '>=', $hace24Horas)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $año = Carbon::now()->year;
+        if ($mes) {
+            $startDate = Carbon::createFromDate($año, $mes, 1)->startOfMonth()->toDateTimeString();
+            $endDate = Carbon::createFromDate($año, $mes, 1)->endOfMonth()->toDateTimeString();
+        } else {
+            $startDate = Carbon::now()->startOfMonth()->toDateTimeString();
+            $endDate = Carbon::now()->toDateTimeString();
+        }
+
+        $this->ordenes = OrdenCompra::where('cod_causal', NULL)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**

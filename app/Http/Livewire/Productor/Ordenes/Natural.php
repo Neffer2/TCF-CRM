@@ -340,6 +340,7 @@ class Natural extends Component
             // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
             $this->queriedOrden->update([
                 'estado_id' => 2,
+                'fecha_envio_produccion' => now()
             ]);
 
             //Mail notificación controller
@@ -485,9 +486,10 @@ class Natural extends Component
 
             $this->queriedOrden->cod_oc = $this->cod_oc;
             $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
-            $this->ocNaturalRevisionContabilidad($this->queriedOrden); 
+            $this->queriedOrden->fecha_aprobacion = now();
+            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
         } elseif ($estado == 7) {
-            $this->validate([ 
+            $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'
             ]);
 
@@ -588,6 +590,8 @@ class Natural extends Component
 
         $this->getValorTotal();
     }
+
+    
 
     // Cuando se actualizan los días, recalcula el valor total
     public function updatedDias(){
