@@ -275,8 +275,8 @@ class NuevoPersonal extends Component
             'ciudad' => 'required|string',
             'estado' => 'required|numeric|max:1',
             'banco' => 'required|string|max:255',
-            'num_cuenta' => 'nullable|string|max:255',
-            'tipo_cuenta' => 'nullable|string|max:255'
+            'num_cuenta' => 'required|string|max:255',
+            'tipo_cuenta' => 'required|string|max:255'
         ]);
 
         // Validaciones de archivos requeridos
@@ -296,18 +296,6 @@ class NuevoPersonal extends Component
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
-        // --- RESOLUCIÓN Y VALIDACIÓN DE LA FIRMA ---
-        // Ajusta $this->tercero->firma al nombre real del atributo que contiene el nombre del archivo
-        $firmaNombre = $this->tercero->firma ?? $this->firma ?? null;
-        $firmaPath = null;
-
-        if (!empty($firmaNombre)) {
-            $possiblePath = public_path('storage/signs/' . $firmaNombre);
-            if (file_exists($possiblePath)) {
-                $firmaPath = $possiblePath;
-            }
-        }
-
         // Información para el contrato
         $contratoInfo = [
             'items' => $this->orden->ordenItems,
@@ -319,15 +307,8 @@ class NuevoPersonal extends Component
             'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
             'mes' => Carbon::now()->translatedFormat('F'),
             'ano' => Carbon::now()->format('Y'),
-            'num_rut' => $this->num_rut,
-            'firma_path' => $firmaPath // Se envía la ruta absoluta validada o null
+            'num_rut' => $this->num_rut
         ];
-
-        // Asegurarse de que el directorio de salida exista
-        $directory = storage_path('app/public/contratos');
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
 
         // Genera el PDF y lo guarda en storage
         $dompdf = new Dompdf(array('enable_remote' => true));
@@ -337,7 +318,7 @@ class NuevoPersonal extends Component
 
         // Guardar el PDF en el almacenamiento
         $output = $dompdf->output();
-        $filePath = $directory . '/contrato_' . time() . '.pdf';
+        $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
         file_put_contents($filePath, $output);
 
         // Generar una URL pública para el archivo

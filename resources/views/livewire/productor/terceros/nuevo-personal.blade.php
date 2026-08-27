@@ -203,7 +203,6 @@
     <div>
         @if ($orden && $orden->estado_id == 3)
             <div>
-
                 <div class="modal-body pt-1">
                     @auth
                         <div style="position: absolute; right: 1%; top: 0%; cursor: pointer;" data-bs-dismiss="modal">
@@ -351,6 +350,34 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
+                                <label for="tipo_cuenta">Tipo de cuenta: @guest <span class="text-danger">*</span> @endguest</label>
+                                <select id="tipo_cuenta" class="form-control @error('tipo_cuenta') is-invalid @elseif(strlen($tipo_cuenta) > 0) is-valid @enderror"
+                                    wire:model.change="tipo_cuenta">
+                                    <option value="">Seleccionar</option>
+                                    <option value="AHORROS">AHORROS</option>
+                                    <option value="CORRIENTE">CORRIENTE</option>
+                                </select>
+                                @error('tipo_cuenta')
+                                    <div id="tipo_cuenta" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="num_cuenta">N&uacute;mero de cuenta: <span class="text-danger">*</span></label>
+                                <input id="num_cuenta" type="text" class="form-control @error('num_cuenta') is-invalid @elseif(strlen($num_cuenta) > 0) is-valid @enderror"
+                                wire:model.change="num_cuenta" placeholder="N&uacute;mero de cuenta">
+                                @error('num_cuenta')
+                                    <div id="num_cuenta" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
                                 <label for="">Fotocopia c&eacute;dula: @guest <span class="text-danger">*</span>@endguest</label>
                                 <input type="file" class="form-control @error('copia_cedula') is-invalid @elseif(strlen($copia_cedula) > 0) is-valid @enderror"
                                 wire:model.change="copia_cedula">
@@ -391,21 +418,22 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="art383">
-                                    Adjunte su cuenta de cobro <span class="text-danger">*</span>
+                                <label for="planilla_aportes"> 
+                                    ¿Tus pagos superan el salario m&iacute;nimo?
+                                    Adjunta tu planilla de aportes:
                                 </label>
-                                <input type="file" class="form-control @error('art383') is-invalid @elseif(strlen($art383) > 0) is-valid @enderror"
-                                wire:model="art383">
+                                <input type="file" class="form-control @error('planilla_aportes') is-invalid @elseif(strlen($planilla_aportes) > 0) is-valid @enderror"
+                                wire:model="planilla_aportes">
                                 <label>
-                                    @if ($tercero->art383)
-                                        <a href="{{ asset(str_replace("public", "storage", $tercero->art383)) }}" target="_blank">
+                                    @if ($tercero->planilla_aportes)
+                                        <a href="{{ asset(str_replace("public", "storage", $tercero->planilla_aportes)) }}" target="_blank">
                                             Archivo actual:
                                             <i class="fa-regular fa-eye"></i>
                                         </a>
                                     @endif
                                 </label>
-                                @error('art383')
-                                    <div id="art383" class="text-invalid">
+                                @error('planilla_aportes')
+                                    <div id="planilla_aportes" class="text-invalid">
                                         {{ $message }}
                                     </div>
                                 @enderror
@@ -435,28 +463,22 @@
                         @endif
                         @guest
                             <div class="col-md-12 mt-3">
-                                <div wire:loading wire:target="generarContrato">
+                                <div wire:loading>
                                     <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Cargando...</span>
+                                        <span class="visually-hidden">Loading...</span>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-12 mt-3">
-                                <button type="button" 
-                                        class="btn bg-gradient-primary" 
-                                        wire:click="generarContrato" 
-                                        wire:loading.attr="disabled">
-                                    <span wire:loading.remove wire:target="generarContrato">Confirmar información</span>
-                                    <span wire:loading wire:target="generarContrato">Generando contrato...</span>
+                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
+                                    Confirmar informaci&oacute;n
                                 </button>
-
                                 @if ($contrato)
-                                    <div class="d-none d-md-block mt-3" style="width:100%;">
+                                    <div class="d-none d-md-block" style="width:100%;">
                                         <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
                                     </div>
 
-                                    <div class="d-block d-md-none text-center w-100 mt-3">
+                                    <div class="d-block d-md-none text-center w-100">
                                         <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
                                             Ver contrato (abrir PDF)
                                         </a>
@@ -465,15 +487,12 @@
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <div class="form-check">
-                                                <input class="form-check-input" 
-                                                    type="checkbox" 
-                                                    id="customCheck1" 
-                                                    wire:model.defer="terminos">
+                                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
                                                 <label class="custom-control-label" for="customCheck1">
-                                                    Al marcar esta casilla estás aceptando la <a href="#" target="_blank">política de tratamiento de datos</a> y el contrato de prestación de servicios <span class="text-danger">*</span>
+                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
                                                 </label>
                                                 @error('terminos')
-                                                    <div class="text-danger small mt-1">
+                                                    <div id="terminos" class="text-invalid">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -853,10 +872,9 @@
                             </div>
                         </div>
                         @guest
-                            <div class="col-md-12">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato" wire:loading.attr="disabled">
-                                    <span wire:loading.remove>Confirmar información</span>
-                                    <span wire:loading>Generando PDF...</span>
+                            {{-- <div class="col-md-12">
+                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
+                                    Confirmar informaci&oacute;n
                                 </button>
                                 @if ($contrato)
                                     <div class="d-flex justify-content-center">
@@ -870,6 +888,7 @@
                                             </a>
                                         </div>
                                     </div>
+
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <div class="form-check">
@@ -886,7 +905,7 @@
                                         </div>
                                     </div>
                                 @endif
-                            </div>
+                            </div> --}}
                         @endguest
                     </div>
                 </div>
@@ -930,12 +949,5 @@
                 @endguest
             </div>
         @endif
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                Livewire.on('abrirPdf', function (url) {
-                    window.open(url, '_blank');
-                });
-            });
-        </script>
     </div>
 @endif
