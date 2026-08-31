@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class Natural extends Component
 {
@@ -667,9 +667,6 @@ class Natural extends Component
 
         $path = $this->archivo_cuenta_cobro;
 
-        // Si el registro fue guardado con el bug antiguo (store('public/cuentas_cobro') sin disco),
-        // la ruta viene con el prefijo "public/" incluido. Lo quitamos para que quede
-        // relativa al disco 'public' (storage/app/public/...).
         if (str_starts_with($path, 'public/')) {
             $path = substr($path, strlen('public/'));
         }

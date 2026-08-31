@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class OrdenCompra extends Model 
 {
@@ -43,6 +44,21 @@ class OrdenCompra extends Model
 
     public function evidencias(){
         return $this->hasMany(Evidencia::class, 'oc_id', 'id');
+    }
+
+    public function getCuentaCobroUrlAttribute(): ?string
+    {
+        if (empty($this->archivo_cuenta_cobro)) {
+            return null;
+        }
+
+        $path = $this->archivo_cuenta_cobro;
+
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, strlen('public/'));
+        }
+
+        return Storage::disk('public')->url($path);
     }
 }   
  
