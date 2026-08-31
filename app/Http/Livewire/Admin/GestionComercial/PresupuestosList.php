@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Admin\GestionComercial;
 use Livewire\Component;
 use App\Models\PresupuestoProyecto;
 use App\Models\Año;
+use App\Models\EstadosPresupuesto;
 use App\Models\User;
 use Livewire\WithPagination;
 use Auth;
@@ -28,7 +29,7 @@ class PresupuestosList extends Component
     public $comercial;     // ID del comercial/usuario para filtrar
 
     // Arrays para almacenar las opciones de los filtros
-    public $estados = [];     // Estados de los presupuestos (no utilizado actualmente)
+    public $estado_id = [];     // Estados de los presupuestos (no utilizado actualmente)
     public $años = [];        // Lista de años disponibles
     public $comerciales = []; // Lista de comerciales/usuarios
     public $notificacion = '';
@@ -53,6 +54,11 @@ class PresupuestosList extends Component
                 $this->yearInfo->meses->first()->f_inicio,
                 $this->yearInfo->meses->last()->f_fin
             ]);
+        }
+
+        // Filtar por estados de proyecto
+        if ($this->estado_id) {
+            $query->where('estado_id', $this->estado_id);
         }
 
         // NUEVO: Filtro por notificaciones
@@ -93,7 +99,10 @@ class PresupuestosList extends Component
 
         $presupuestos = $query->orderBy('created_at', $this->orderBy)->paginate(15);
 
-        return view('livewire.admin.gestion-comercial.presupuestos-list', ['presupuestos' => $presupuestos]);
+        return view('livewire.admin.gestion-comercial.presupuestos-list', [
+            'presupuestos' => $presupuestos,
+            'estados'      => EstadosPresupuesto::all()
+            ]);
     }
 
     /**

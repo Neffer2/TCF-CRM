@@ -1,56 +1,78 @@
 <div>
     <div class="card">
-        <div class="card-header p-0 px-3 mt-3">
-            <div class="row gy-1">            
-                <div class="col-md-12">
-                    <h3 class="mb-0">Presupuestos</h3>
-                    <p class="text-sm mb-0">Lista completa de presupuestos.</p>
-                </div> 
-                <div class="col-md-1 form-group mb-0">
-                    <label for="comercial">Año:</label>
-                    <select wire:model="año" class="form-control">
-                        <option value="">Seleccionar</option>
-                        @foreach ($años as $año)
-                            <option value="{{ $año->id }}">{{ $año->description }}</option>
-                        @endforeach
-                    </select>
-                </div>   
-                <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Buscar:</label> 
-                    <input type="text" wire:model="cod_cc" class="form-control" placeholder="Centro de costos">
-                </div> 
-                <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Buscar:</label> 
-                    <input type="text" wire:model="nom_proyecto" class="form-control" placeholder="Nombre proyecto">
+        <div class="card">
+            <div class="card-header p-3">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    
+                    <!-- Título del panel -->
+                    <div class="me-3">
+                        <h3 class="h5 mb-0 fw-bold">Presupuestos</h3>
+                        <small class="text-muted">Lista completa de presupuestos</small>
+                    </div>
+
+                    <!-- Barra de Filtros en una sola línea -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 flex-grow-1 justify-content-end">
+                        
+                        <!-- Año -->
+                        <div style="min-width: 110px;">
+                            <select wire:model.live="año" class="form-select form-select-sm" title="Año">
+                                <option value="">Año: Todos</option>
+                                @foreach ($años as $año)
+                                    <option value="{{ $año->id }}">{{ $año->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Centro de Costos -->
+                        <div style="min-width: 140px;">
+                            <input type="text" wire:model.live.debounce.300ms="cod_cc" class="form-control form-control-sm" placeholder="Buscar C. Costos...">
+                        </div>
+
+                        <!-- Nombre Proyecto -->
+                        <div style="min-width: 150px;">
+                            <input type="text" wire:model.live.debounce.300ms="nom_proyecto" class="form-control form-control-sm" placeholder="Buscar Proyecto...">
+                        </div>
+
+                        <!-- Estados -->
+                        <div style="min-width: 130px;">
+                            <select wire:model.live="estado_id" id="estado_id" class="form-select form-select-sm">
+                                <option value="">Estado: Todos</option>
+                                @foreach ($estados as $estado)
+                                    <option value="{{ $estado->id }}">{{ $estado->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Notificaciones -->
+                        <div style="min-width: 130px;">
+                            <select wire:model.live="notificacion" id="notificacion" class="form-select form-select-sm">
+                                <option value="">Notif: Todas</option>
+                                <option value="1">Con notificación</option>
+                                <option value="0">Sin notificación</option>
+                            </select>
+                        </div>
+
+                        <!-- Comercial -->
+                        <div style="min-width: 130px;">
+                            <select wire:model.live="comercial" class="form-select form-select-sm">
+                                <option value="">Comercial: Todos</option>
+                                @foreach ($comerciales as $comercial)
+                                    <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Orden -->
+                        <div style="min-width: 130px;">
+                            <select wire:model.live="orderBy" class="form-select form-select-sm">
+                                <option value="DESC">Más recientes</option>
+                                <option value="ASC">Más antiguos</option>
+                            </select>
+                        </div>
+
+                    </div>
                 </div>
-                
-                <div class="col-md-3">
-                    <label for="notificacion">Notificaciones:</label>
-                    <select wire:model="notificacion" id="notificacion" class="form-control">
-                        <option value="">-- Todos --</option>
-                        <option value="1">Con notificación</option>
-                        <option value="0">Sin notificación</option>
-                    </select>
-                </div>
-                
-                <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Comercial:</label> 
-                    <select wire:model="comercial" class="form-control">
-                        <option value="">Seleccionar</option>
-                        @foreach ($comerciales as $comercial)
-                            <option value="{{ $comercial->id }}">{{ $comercial->name }}</option>                            
-                        @endforeach
-                    </select>
-                </div> 
-                <div class="form-group col-md-2 mb-0">
-                    <label for="comercial">Fecha:</label> 
-                    <select wire:model="orderBy" class="form-control">
-                        <option value="DESC">Seleccionar</option>
-                        <option value="ASC">Mas antiguos</option>
-                        <option value="DESC">Mas recientes</option>
-                    </select>
-                </div> 
-            </div>  
+            </div>
         </div>
         <div class="card-body p-0 pt-1">
             <div class="table-responsive"> 
