@@ -632,9 +632,13 @@
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificación Bancaria</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Artículo 383</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Copia c&eacute;dula</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cuenta de cobro</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                        @php
+                                            $ordenCompra = $queriedOrden?->ordenesCompra
+                                        @endphp
                                             <tr>
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
@@ -694,6 +698,15 @@
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
                                                         <a href="{{ asset(str_replace("public", "storage", $queriedOrden->naturalInfo->tercero->copia_cedula)) }}" target="_blank">Ver</a>
+                                                    </p>
+                                                </td>
+                                                <td>
+                                                    <p class="text-xs text-secondary mb-0">
+                                                    @if($ordenCompra?->archivo_cuenta_cobro)
+                                                        <a href="{{ asset(str_replace('public', 'storage', $ordenCompra->archivo_cuenta_cobro)) }}" target="_blank">Ver Cuenta</a>
+                                                    @else
+                                                        Sin archivo
+                                                    @endif
                                                     </p>
                                                 </td>
                                             </tr>
@@ -960,7 +973,8 @@
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->tercero->art383)) }}" target="_blank">Art&iacute;culo 383</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
-                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a><br>
+                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_cuenta_cobro)) }}" target="_blank">Cuenta de cobro</a><br>
                                 </p>
                             </td>
                         </tr>

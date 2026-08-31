@@ -657,4 +657,16 @@ class Natural extends Component
     {
         $this->toggleRechazo = !$this->toggleRechazo;
     }
+
+    public function getCuentaCobroUrlAttribute(): ?string
+    {
+        if (empty($this->archivo_cuenta_cobro)) {
+            return null;
+        }
+
+        // Si la ruta contiene "public/", la limpia y genera la URL del disco público
+        $relativePath = str_replace('public/', '', $this->archivo_cuenta_cobro);
+
+        return Storage::disk('public')->url($relativePath);
+    }
 }
