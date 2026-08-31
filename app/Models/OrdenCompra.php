@@ -46,19 +46,19 @@ class OrdenCompra extends Model
         return $this->hasMany(Evidencia::class, 'oc_id', 'id');
     }
 
-    public function getCuentaCobroUrlAttribute(): ?string
-    {
-        if (empty($this->archivo_cuenta_cobro)) {
-            return null;
-        }
+    // public function getCuentaCobroUrlAttribute(): ?string
+    // {
+    //     if (empty($this->archivo_cuenta_cobro)) {
+    //         return null;
+    //     }
 
-        $path = $this->archivo_cuenta_cobro;
+    //     $path = $this->archivo_cuenta_cobro;
 
-        if (str_starts_with($path, 'public/')) {
-            $path = substr($path, strlen('public/'));
-        }
+    //     if (str_starts_with($path, 'public/')) {
+    //         $path = substr($path, strlen('public/'));
+    //     }
 
-        return Storage::disk('public')->url($path);
-    }
+    //     return Storage::disk('public')->url($path);
+    // }
 }   
  

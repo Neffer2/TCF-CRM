@@ -15,7 +15,6 @@ use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class Natural extends Component
 {
@@ -657,20 +656,5 @@ class Natural extends Component
     public function toggleRechazo()
     {
         $this->toggleRechazo = !$this->toggleRechazo;
-    }
-
-    public function getCuentaCobroUrlAttribute(): ?string
-    {
-        if (empty($this->archivo_cuenta_cobro)) {
-            return null;
-        }
-
-        $path = $this->archivo_cuenta_cobro;
-
-        if (str_starts_with($path, 'public/')) {
-            $path = substr($path, strlen('public/'));
-        }
-
-        return Storage::disk('public')->url($path);
     }
 }
