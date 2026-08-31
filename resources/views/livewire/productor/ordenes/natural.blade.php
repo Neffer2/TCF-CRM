@@ -974,7 +974,7 @@
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a><br>
-                                    <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_cuenta_cobro)) }}" target="_blank">Cuenta de cobro</a><br>
+                                    <a href="{{ $orden->cuenta_cobro_url }}" target="_blank">Ver cuenta de cobro</a>
                                 </p>
                             </td>
                         </tr>

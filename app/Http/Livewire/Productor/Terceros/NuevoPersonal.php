@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\SMS;
 use App\Traits\Email;
+use Illuminate\Support\Facades\DB;
 
 class NuevoPersonal extends Component
 {
@@ -29,7 +30,9 @@ class NuevoPersonal extends Component
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
     $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx,
     $copia_cedula, $num_rut, $servicio, $art383, $check_art383,
-    $planilla_aportes, $tipo_cuenta, $num_cuenta, $cuentaCobro;
+    $planilla_aportes, $tipo_cuenta, $num_cuenta, $archivo_cuenta_cobro, $queriedOrden;
+
+    public $cuentaCobro;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -71,43 +74,42 @@ class NuevoPersonal extends Component
     }
 
     // Registra un nuevo personal
-    public function nuevoPersonal(){
+    public function nuevoPersonal()
+    {
         $this->validate([
-            'nombre' => 'required|max:255',
+            'nombre'   => 'required|max:255',
             'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric|unique:terceros',
-            'correo' => 'required|email|unique:terceros',
+            'cedula'   => 'required|numeric|unique:terceros',
+            'correo'   => 'required|email|unique:terceros',
             'telefono' => 'required|numeric|unique:terceros',
-            'ciudad' => 'required|string',
+            'ciudad'   => 'required|string',
             'servicio' => 'required|string',
-            // 'estado' => 'required|numeric|max:1',
         ]);
 
         $tercero = new Tercero();
-        $tercero->nombre = $this->nombre;
+        $tercero->nombre   = $this->nombre;
         $tercero->apellido = $this->apellido;
-        $tercero->cedula = trim($this->cedula);
-        $tercero->correo = trim($this->correo);
+        $tercero->cedula   = trim($this->cedula);
+        $tercero->correo   = trim($this->correo);
         $tercero->telefono = trim($this->telefono);
-        $tercero->ciudad = $this->ciudad;
+        $tercero->ciudad   = $this->ciudad;
         $tercero->servicio = $this->servicio;
-        $tercero->estado = 1;
+        $tercero->estado   = 1;
 
         // Si se diligenció banco
-        if($this->banco){
+        if ($this->banco) {
             $this->validate(['banco' => 'string|max:255']);
             $tercero->banco = $this->banco;
         }
 
-        // Si se adjuntó RUT
-        if($this->rut){
+        // Si se adjuntó RUT (se corrigió la duplicidad)
+        if ($this->rut) {
             $this->validate(['rut' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-            $tercero->rut = $this->rut->store('public/ruts');
             $tercero->rut = $this->rut->store('public/ruts');
         }
 
         // Si se adjuntó certificación bancaria
-        if($this->cert_bancaria){
+        if ($this->cert_bancaria) {
             $this->validate(['cert_bancaria' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->cert_bancaria = $this->cert_bancaria->store('public/cert_bancarias');
         }
@@ -128,6 +130,7 @@ class NuevoPersonal extends Component
             'servicio',
             'rut',
             'cert_bancaria',
+            'archivo_cuenta_cobro', // Limpiar la variable Livewire
         ]);
 
         return redirect()->back();
@@ -374,20 +377,27 @@ class NuevoPersonal extends Component
     */
 
     // Agrega una nueva evidencia a la colección
-    public function newEvidencia(){
+    public function newEvidencia()
+    {
         $this->validate([
-            'fechaEvidencia' => 'required|date',
-            'fotoEvidencia' => 'required|file|mimes:jpg,jpeg,png|max:10000',
+            'fechaEvidencia'       => 'required|date',
+            'fotoEvidencia'        => 'required|file|mimes:jpg,jpeg,png,pdf|max:10000',
             'observacionEvidencia' => 'required|string|max:255'
         ]);
 
+        // Guarda el archivo subido en storage/app/public/evidencias
+        $path = $this->fotoEvidencia->store('public/evidencias');
+
+        // Añade el registro a la colección temporal
         $evidencia = [
-            'fecha' => $this->fechaEvidencia,
-            'foto' => $this->fotoEvidencia->store('public/evidencias'),
+            'fecha'       => $this->fechaEvidencia,
+            'foto'        => $path,
             'observacion' => $this->observacionEvidencia
         ];
 
         $this->evidencias->push($evidencia);
+
+        // Limpia las variables del formulario
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
     }
 
@@ -397,12 +407,10 @@ class NuevoPersonal extends Component
             'cuentaCobro' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10000',
         ]);
 
-        // Guardar el archivo en la misma carpeta public/evidencias o una dedicada
-        $path = $this->cuentaCobro->store('public/cuentas_cobro');
+        $path = $this->cuentaCobro->store('cuentas_cobro', 'public');
 
-        // Actualizar directamente la orden
         $this->orden->update([
-            'cuenta_cobro' => $path
+            'archivo_cuenta_cobro' => $path // nombre real de la columna en BD
         ]);
 
         session()->flash('message', 'Cuenta de cobro subida correctamente.');
@@ -416,26 +424,37 @@ class NuevoPersonal extends Component
     }
 
     // Guarda todas las evidencias en la base de datos
-    public function saveEvidencia(){
-        foreach($this->evidencias as $evidencia){
-            $this->orden->evidencias()->create([
-                'fecha_evidencia' => $evidencia['fecha'],
-                'foto_evidencia' => $evidencia['foto'],
-                'observacion_evidencia' => $evidencia['observacion'],
-                'tercero_id' => $this->orden->naturalInfo->tercero_id
-            ]);
-        }
+    public function saveEvidencia()
+    {
+        DB::transaction(function () {
+            foreach ($this->evidencias as $evidencia) {
+                $this->orden->evidencias()->create([
+                    'fecha_evidencia'       => $evidencia['fecha'],
+                    'foto_evidencia'        => $evidencia['foto'],
+                    'observacion_evidencia' => $evidencia['observacion'],
+                    'tercero_id'            => $this->orden->naturalInfo->tercero_id
+                ]);
+            }
 
-        $this->orden->estado_id = 3;
-        $this->orden->update();
+            if ($this->cuentaCobro) {
+                $this->validate([
+                    'cuentaCobro' => 'file|mimes:pdf,jpg,jpeg,png|max:10000'
+                ]);
+
+                $this->orden->archivo_cuenta_cobro = $this->cuentaCobro->store('cuentas_cobro', 'public');
+            }
+
+            $this->orden->estado_id = 3;
+            $this->orden->save();
+        });
 
         $this->reset_fields([
             'fechaEvidencia',
             'fotoEvidencia',
-            'observacionEvidencia'
+            'observacionEvidencia',
+            'archivo_cuenta_cobro'
         ]);
 
-        // Mail evidencias enviadas
         $this->ocNaturalEvidenciasEnviadas($this->orden);
 
         return redirect()->route('consulta-terceros');

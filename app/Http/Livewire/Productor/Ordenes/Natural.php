@@ -15,6 +15,7 @@ use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
+use Storage;
 
 class Natural extends Component
 {
@@ -664,9 +665,15 @@ class Natural extends Component
             return null;
         }
 
-        // Si la ruta contiene "public/", la limpia y genera la URL del disco público
-        $relativePath = str_replace('public/', '', $this->archivo_cuenta_cobro);
+        $path = $this->archivo_cuenta_cobro;
 
-        return Storage::disk('public')->url($relativePath);
+        // Si el registro fue guardado con el bug antiguo (store('public/cuentas_cobro') sin disco),
+        // la ruta viene con el prefijo "public/" incluido. Lo quitamos para que quede
+        // relativa al disco 'public' (storage/app/public/...).
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, strlen('public/'));
+        }
+
+        return Storage::disk('public')->url($path);
     }
 }
