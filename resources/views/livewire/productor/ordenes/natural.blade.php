@@ -636,9 +636,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        @php
-                                            $ordenCompra = $queriedOrden?->ordenesCompra
-                                        @endphp
                                             <tr>
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
@@ -702,8 +699,8 @@
                                                 </td>
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
-                                                    @if($ordenCompra?->archivo_cuenta_cobro)
-                                                        <a href="{{ asset(str_replace('public', 'storage', $ordenCompra->archivo_cuenta_cobro)) }}" target="_blank">Ver Cuenta</a>
+                                                    @if($queriedOrden?->archivo_cuenta_cobro)
+                                                        <a href="{{ $queriedOrden->cuenta_cobro_url }}" target="_blank">Ver cuenta de cobro</a>
                                                     @else
                                                         Sin archivo
                                                     @endif
