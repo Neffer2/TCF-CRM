@@ -707,12 +707,53 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Archivo / Foto</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
                                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha subida</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {{-- 1. Fila de la Cuenta de Cobro / Contrato (si existe) --}}
+                                            @if ($queriedOrden->cuenta_cobro)
+                                                <tr class="bg-light">
+                                                    <td>
+                                                        <p class="text-xs font-weight-bold mb-0 text-primary">
+                                                            N/A
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            @php
+                                                                $extension = pathinfo($queriedOrden->cuenta_cobro, PATHINFO_EXTENSION);
+                                                                $urlCuenta = asset(str_replace('public', 'storage', $queriedOrden->cuenta_cobro));
+                                                            @endphp
+
+                                                            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp']))
+                                                                <a href="{{ $urlCuenta }}" target="_blank">
+                                                                    <img src="{{ $urlCuenta }}" height="40" class="rounded border">
+                                                                </a>
+                                                            @else
+                                                                <a href="{{ $urlCuenta }}" target="_blank" class="btn btn-xs btn-outline-primary mb-0">
+                                                                    <i class="fas me-1"></i> Ver Cuenta de Cobro (PDF)
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-gradient-info text-xxs">Cuenta de Cobro</span>
+                                                        <p class="text-xs text-secondary mb-0 mt-1">
+                                                            Documento adjunto de soporte de cobro/contrato.
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs text-secondary mb-0">
+                                                            {{ $queriedOrden->updated_at ? $queriedOrden->updated_at->format('Y-m-d H:i:s') : '-' }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @endif
+
+                                            {{-- 2. Filas de Evidencias --}}
                                             @foreach ($queriedOrden->evidencias as $key => $evidencia)
                                                 @if ($key < $queriedOrden->ordenItems->sum('cant_oc'))
                                                     <tr>
@@ -723,8 +764,8 @@
                                                         </td>
                                                         <td>
                                                             <p class="text-xs text-secondary mb-0">
-                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
-                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                <a href="{{ asset(str_replace('public', 'storage', $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                    <img src="{{ asset(str_replace('public', 'storage', $evidencia->foto_evidencia)) }}" height="40">
                                                                 </a>
                                                             </p>
                                                         </td>
@@ -751,8 +792,8 @@
                                                         </td>
                                                         <td>
                                                             <p class="text-xs text-secondary mb-0">
-                                                                <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
-                                                                    <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
+                                                                <a href="{{ asset(str_replace('public', 'storage', $evidencia->foto_evidencia)) }}" target="_blank">
+                                                                    <img src="{{ asset(str_replace('public', 'storage', $evidencia->foto_evidencia)) }}" height="40">
                                                                 </a>
                                                             </p>
                                                         </td>

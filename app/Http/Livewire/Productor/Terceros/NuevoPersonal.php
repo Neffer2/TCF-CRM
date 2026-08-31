@@ -29,7 +29,7 @@ class NuevoPersonal extends Component
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
     $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx,
     $copia_cedula, $num_rut, $servicio, $art383, $check_art383,
-    $planilla_aportes, $tipo_cuenta, $num_cuenta;
+    $planilla_aportes, $tipo_cuenta, $num_cuenta, $cuentaCobro;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -389,6 +389,23 @@ class NuevoPersonal extends Component
 
         $this->evidencias->push($evidencia);
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
+    }
+
+    public function updatedCuentaCobro()
+    {
+        $this->validate([
+            'cuentaCobro' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10000',
+        ]);
+
+        // Guardar el archivo en la misma carpeta public/evidencias o una dedicada
+        $path = $this->cuentaCobro->store('public/cuentas_cobro');
+
+        // Actualizar directamente la orden
+        $this->orden->update([
+            'cuenta_cobro' => $path
+        ]);
+
+        session()->flash('message', 'Cuenta de cobro subida correctamente.');
     }
 
     // Elimina una evidencia de la colección y borra el archivo

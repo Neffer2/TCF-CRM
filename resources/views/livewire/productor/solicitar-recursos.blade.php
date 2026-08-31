@@ -15,52 +15,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
-                        <div>
-                            @if($presupuestoItem->evento)
-                                <tr>
-                                    <td colspan="8" class="font-weight-bold font-table text-center bg-gradient-info text-white">
-                                        {{ $presupuestoItem->descripcion }}
-                                    </td>
-                                </tr>
-                            @else
-                                {{-- if ($proveedores_item = @unserialize($presupuestoItem->proveedor)) --}}
-                                {{-- @php $validator_cuenta_cobro = false; /* Valida que el item sea jurídico */ @endphp --}}
-                                {{-- @foreach ($proveedores_item as $proveedor) --}}
-                                    {{-- 3 = cuenta de cobro --}}
-
-                                    {{-- @if($proveedor == 3) @php $validator_cuenta_cobro = true; @endphp @endif --}}
-                                {{-- @endforeach --}}
-
-                                {{-- Solo muestra items jurídicos --}}
-                                {{-- @if (!$validator_cuenta_cobro) @endif --}}
-                                <tr @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif>
-                                    <td class="font-weight-bold font-table">{{ $key+1 }}</td>
-                                    <td class="font-weight-bold font-table">
-                                        <textarea @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif
-                                            cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
-                                    </td>
-                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
-                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
-                                    <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
-                                    <td class="font-weight-bold font-table">
-                                        @if ($proveedores_item = @unserialize($presupuestoItem->proveedor))
+                    @php $consecutivo = 1; @endphp
+                    @foreach ($presupuesto->presupuestoItems as $presupuestoItem)
+                        @if($presupuestoItem->evento)
+                            <tr>
+                                <td colspan="8" class="font-weight-bold font-table text-center bg-gradient-info text-white">
+                                    {{ $presupuestoItem->descripcion }}
+                                </td>
+                            </tr>
+                        @else
+                            <tr @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif>
+                                {{-- Mostramos el contador y solo lo incrementamos cuando es un ítem normal --}}
+                                <td class="font-weight-bold font-table">{{ $consecutivo++ }}</td>
+                                <td class="font-weight-bold font-table">
+                                    <textarea @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif
+                                        cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>
+                                </td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->cantidad }}</td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
+                                <td class="font-weight-bold font-table">
+                                    @if ($proveedores_item = @unserialize($presupuestoItem->proveedor))
                                         @foreach ($proveedores_item as $proveedor)
                                             {{ @$proveedores->find($proveedor)->tercero }} <br>
                                         @endforeach
+                                    @else
+                                        @if ($proveedores->find($presupuestoItem->proveedor))
+                                            {{ $proveedores->find($presupuestoItem->proveedor)->tercero }}
                                         @else
-                                            @if ($proveedores->find($presupuestoItem->proveedor))
-                                                {{ $proveedores->find($presupuestoItem->proveedor)->tercero }}
-                                            @else
-                                                {{ $presupuestoItem->proveedor }}
-                                            @endif
+                                            {{ $presupuestoItem->proveedor }}
                                         @endif
-                                    </td>
-                                    <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
-                                    <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
-                                </tr>
-                            @endif
-                        </div>
+                                    @endif
+                                </td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
                 <tfoot class="border-0">

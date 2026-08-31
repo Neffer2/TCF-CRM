@@ -40,7 +40,8 @@
                                 @foreach ($orden->ordenItems as $key => $item)                
                                     <tr> 
                                         <td class="font-weight-bold font-table">
-                                            {{ $item->display_item }}
+                                            {{-- Muestra el consecutivo real del ítem sin contar eventos --}}
+                                            {{ $item->itemPresupuesto->num_item }}
                                         </td> 
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->cantidad }}
@@ -76,7 +77,7 @@
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->margen_utilidad }}
                                         </td>
-            
+
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->mesDescription->description }} 
                                         </td>

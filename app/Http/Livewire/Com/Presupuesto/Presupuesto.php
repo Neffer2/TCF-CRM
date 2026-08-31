@@ -180,7 +180,9 @@ class Presupuesto extends Component
 
         DB::transaction(function () use ($presto){
 
+            // SOLUCIÓN: Excluimos los eventos del cálculo del consecutivo
             $maxNumItem = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->where('evento', 0) // O ->whereNull('evento') si usas NULL en la BD
                 ->lockForUpdate()
                 ->max('num_item') ?? 0;
 
@@ -203,17 +205,15 @@ class Presupuesto extends Component
             $item->dias = !empty($this->dias) ? (int)$this->dias : 0;
             $item->ciudad = !empty($this->ciudad) ? $this->ciudad : null;
             $item->v_total_cliente = $this->valor_total_cliente;
+            $item->evento = 0; // Aseguramos que sea ítem normal
 
-            $nuevoNumItem = $maxNumItem + 1;
-            $nuevoOrden = $maxOrden + 1;
+            $item->num_item = $maxNumItem + 1;
+            $item->orden = $maxOrden + 1;
 
             if ($this->presupuesto->cod_cc){
                 $item->actualizado = 3;
                 $this->setEnEdicion($presto);
             }
-
-            $item->num_item = $nuevoNumItem;
-            $item->orden = $nuevoOrden;
 
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
             $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
@@ -223,41 +223,46 @@ class Presupuesto extends Component
         });
 
         $this->marcarConCambiosPendientes();
-        
-        // Invocación explícita para recalcular y actualizar las métricas en la base de datos
         $this->getMetricas();
-
         $this->limpiar();
     }
+
     // Agrega un nuevo evento al presupuesto (ítem especial)
     public function new_event(){
         $this->validate([
             'descripcion' => ['required']
         ]);
 
-        $item = new ItemPresupuesto;
-        $item->cod = 0;
-        $item->presupuesto_id = $this->presupuesto_id;
-        $item->evento = 1;
-        $item->cantidad = 0;
-        $item->dia = 0;
-        $item->otros = 0;
-        $item->descripcion = $this->descripcion;
-        $item->v_unitario = 0;
-        $item->v_total = 0;
-        $item->proveedor = 0;
-        $item->margen_utilidad = 0;
-        $item->mes = 0;
-        $item->dias = 0;
-        $item->ciudad = 0;
-        $item->v_unitario_cot = 0;
-        $item->v_total_cot = 0;
-        $item->rentabilidad = 0;
-        $item->save();
+        DB::transaction(function () {
+            // Obtenemos el último orden para que el evento quede bien posicionado en la lista
+            $maxOrden = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                ->lockForUpdate()
+                ->max('orden') ?? 0;
 
-        // Invocación explícita
+            $item = new ItemPresupuesto;
+            $item->cod = 0;
+            $item->presupuesto_id = $this->presupuesto_id;
+            $item->evento = 1;
+            $item->num_item = null; // SOLUCIÓN: Sin número consecutivo
+            $item->orden = $maxOrden + 1; // Asignamos orden consecutivo
+            $item->cantidad = 0;
+            $item->dia = 0;
+            $item->otros = 0;
+            $item->descripcion = $this->descripcion;
+            $item->v_unitario = 0;
+            $item->v_total = 0;
+            $item->proveedor = 0;
+            $item->margen_utilidad = 0;
+            $item->mes = 0;
+            $item->dias = 0;
+            $item->ciudad = 0;
+            $item->v_unitario_cot = 0;
+            $item->v_total_cot = 0;
+            $item->rentabilidad = 0;
+            $item->save();
+        });
+
         $this->getMetricas();
-
         $this->limpiar();
     }
 
@@ -759,7 +764,6 @@ class Presupuesto extends Component
 
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 4;
-//        $presto->estado_id = 2;
         $presto->justificacion = $this->justificacion;
         $presto->update();
         $this->estadoValidator = $presto->estado_id;
@@ -781,11 +785,15 @@ class Presupuesto extends Component
         }
         else {
             $presto->estado_id = 1;
-            // Envía notificación de revisión
-            // $this->presupuestoAprobacion($presto, Auth::user());
         }
 
         $presto->justificacion_lider = null;
+
+        ItemPresupuesto::where('presupuesto_id', $presto->id)->get()->map(function ($item){
+            $item->actualizado = false;
+            $item->update();
+        });
+
         $presto->update();
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }
@@ -800,6 +808,12 @@ class Presupuesto extends Component
         $gestion->id_estado = 4;
 
         $gestion->update();
+
+        ItemPresupuesto::where('presupuesto_id', $presto->id)->get()->map(function ($item){
+            $item->actualizado = false;
+            $item->update();
+        });
+
         $presto->update();
 
         // Envía notificación de revisión

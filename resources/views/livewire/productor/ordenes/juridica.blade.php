@@ -439,7 +439,7 @@
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
-                                        @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
+                                            @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
                                             <option value="{{ $presupuestoItem->id }}"
                                                 @if (is_array($itemProveedor))
                                                     @php
@@ -453,7 +453,8 @@
                                                     disabled
                                                     style="background-color: #e9ecef !important;"
                                                 @endif>
-                                                {{ $key+1 }}
+                                                {{-- Muestra directamente el numero consecutivo real de la BD en lugar de $key+1 --}}
+                                                {{ $presupuestoItem->num_item }}
                                             </option>
                                         @endif
                                     @endforeach

@@ -560,7 +560,7 @@
                             <h6 class="m-0">Observaciones de rechazo:</h6>
                             <p class="text-sm m-0">
                                 <b>
-                                    {{  $orden->justificacion_rechazo }}
+                                    {{ $orden->justificacion_rechazo }}
                                 </b>
                             </p>
                         </div>
@@ -582,7 +582,7 @@
                                     @foreach ($evidencias as $key => $evidencia)
                                         <tr>
                                             <td>
-                                                {{ $key+=1 }}
+                                                {{ $key + 1 }}
                                             </td>
                                             <td>
                                                 {{ $evidencia['fecha'] }}
@@ -596,7 +596,7 @@
                                                 {{ $evidencia['observacion'] }}
                                             </td>
                                             <td>
-                                                <Button class="btn btn-danger" wire:click="deleteEvidencia({{ $key-=1 }})">Eliminar</Button>
+                                                <button class="btn btn-danger" wire:click="deleteEvidencia({{ $key }})">Eliminar</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -605,14 +605,32 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row mt-5">
+                    <!-- Campo: Cuenta de Cobro -->
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <label for="cuentaCobro">Cuenta de cobro: <span class="text-danger">*</span></label>
+                            <input type="file" id="cuentaCobro" 
+                                accept=".pdf,image/*"
+                                class="form-control @error('cuentaCobro') is-invalid @elseif($cuentaCobro) is-valid @enderror"
+                                wire:model.change="cuentaCobro">
+                            @error('cuentaCobro')
+                                <div class="text-invalid text-danger text-xs mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Campos existentes -->
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="fechaEvidencia">Fecha evidencia: <span class="text-danger">*</span></label>
-                            <input id="fechaEvidencia" type="date" class="form-control form-control @error('fechaEvidencia') is-invalid @elseif(strlen($fechaEvidencia) > 0) is-valid @enderror"
+                            <input id="fechaEvidencia" type="date" class="form-control @error('fechaEvidencia') is-invalid @elseif(strlen($fechaEvidencia) > 0) is-valid @enderror"
                             wire:model.lazy="fechaEvidencia" placeholder="Fecha evidencia">
                             @error('fechaEvidencia')
-                                <div id="fechaEvidencia" class="text-invalid">
+                                <div id="fechaEvidencia" class="text-invalid text-danger text-xs mt-1">
                                     {{ $message }}
                                 </div>
                             @enderror
@@ -624,7 +642,7 @@
                             <input type="file" class="form-control @error('fotoEvidencia') is-invalid @elseif(strlen($fotoEvidencia) > 0) is-valid @enderror"
                             wire:model.change="fotoEvidencia">
                             @error('fotoEvidencia')
-                                <div id="fotoEvidencia" class="text-invalid">
+                                <div id="fotoEvidencia" class="text-invalid text-danger text-xs mt-1">
                                     {{ $message }}
                                 </div>
                             @enderror
@@ -633,15 +651,16 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="observacionEvidencia">Observaciones: </label>
-                            <textarea id="observacionEvidencia" type="text" class="form-control form-control @error('observacionEvidencia') is-invalid @elseif(strlen($observacionEvidencia) > 0) is-valid @enderror"
+                            <textarea id="observacionEvidencia" type="text" class="form-control @error('observacionEvidencia') is-invalid @elseif(strlen($observacionEvidencia) > 0) is-valid @enderror"
                             wire:model.lazy="observacionEvidencia" placeholder="Indica el proyecto y el servicio que prestaste."></textarea>
                             @error('observacionEvidencia')
-                                <div id="observacionEvidencia" class="text-invalid">
+                                <div id="observacionEvidencia" class="text-invalid text-danger text-xs mt-1">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
                     </div>
+
                     @if ($evidencias->count() == $orden->ordenItems->sum('cant_oc'))
                         <div class="col-md-2">
                             <button type="button" class="btn bg-gradient-success" wire:click="saveEvidencia" wire:loading.attr="disabled">
