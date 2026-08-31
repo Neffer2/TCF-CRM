@@ -700,7 +700,7 @@
                                                 <td>
                                                     <p class="text-xs text-secondary mb-0">
                                                     @if($queriedOrden?->archivo_cuenta_cobro)
-                                                        <a href="{{ asset(str_replace("public", "storage", $queriedOrden->archivo_cuenta_cobro)) }}" target="_blank">Veeeer cuenta de cobro</a>
+                                                        <a href="{{ asset("storage/".($queriedOrden->archivo_cuenta_cobro)) }}" target="_blank">Ver cuenta de cobro</a>
                                                     @else
                                                         Sin archivo
                                                     @endif
