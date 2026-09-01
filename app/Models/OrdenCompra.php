@@ -1,28 +1,28 @@
-<?php 
+<?php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
-class OrdenCompra extends Model 
+class OrdenCompra extends Model
 {
     use HasFactory;
     protected $table = "ordenes_compra";
     protected $fillable = [
         'tipo_oc',
         'estado_id',
-        'presupuesto_id', 
+        'presupuesto_id',
         'proveedor_id',
-        'archivo_cuenta_cobro',
+        'fecha_aprobacion',
+        'fecha_envio_produccion'
     ];
 
     public function ordenItems(){
-        return $this->hasMany(OcItem::class, 'oc_id', 'id'); 
-    } 
- 
-    public function estado_oc(){ 
+        return $this->hasMany(OcItem::class, 'oc_id', 'id');
+    }
+
+    public function estado_oc(){
         return $this->hasOne(EstadoOrdenesCompra::class, 'id', 'estado_id');
     }
 
@@ -30,7 +30,7 @@ class OrdenCompra extends Model
         return $this->hasOne(TipoOrdenCompra::class, 'id', 'tipo_oc');
     }
 
-    public function presupuesto(){ 
+    public function presupuesto(){
         return $this->hasOne(PresupuestoProyecto::class, 'id', 'presupuesto_id');
     }
 
@@ -46,19 +46,7 @@ class OrdenCompra extends Model
         return $this->hasMany(Evidencia::class, 'oc_id', 'id');
     }
 
-    // public function getCuentaCobroUrlAttribute(): ?string
-    // {
-    //     if (empty($this->archivo_cuenta_cobro)) {
-    //         return null;
-    //     }
-
-    //     $path = $this->archivo_cuenta_cobro;
-
-    //     if (str_starts_with($path, 'public/')) {
-    //         $path = substr($path, strlen('public/'));
-    //     }
-
-    //     return Storage::disk('public')->url($path);
-    // }
-}   
- 
+    public function anticipos(){
+        return $this->hasMany(Anticipo::class, 'oc_id', 'id');
+    }
+}
