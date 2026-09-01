@@ -337,6 +337,23 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
+    public function ocNaturalRevisionContabilidad($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE ".$orden->naturalInfo->productor->name." POR REVISAR";
+        $body =
+        "<p>
+            La orden de compra del tercero <b>".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido."</b> ha sido validada por el equipo Controller.<br>
+            Revisa y confirma que la información esté correctamente diligenciada.
+        </p>";
+
+        array_push($recipients, ...$this->contabilidad);
+
+        $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
     public function ocNaturalRevisionTesoreria($orden){
         $recipients = [];
         $cc = [];
