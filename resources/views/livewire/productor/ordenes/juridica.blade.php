@@ -124,6 +124,11 @@
                         </div>
                     </div>
                     <div class="row px-4">
+                        <div class="col-md-12">
+                            <div class="d-none d-md-block" style="width:100%;">
+                                <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
@@ -146,7 +151,21 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
+                                <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
+                                @error('observaciones_negociacion')
+                                    <div id="observaciones_negociacion" class="text-invalid">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                                Aprobar
+                            </button>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="justificacion_rechazo">Justificaci&oacute;n de rechazo:</label>
                                 <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" cols="100" rows="2"></textarea>
@@ -156,13 +175,10 @@
                                     </div>
                                 @enderror
                             </div>
+                            <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
-                            Aprobar
-                        </button>
-                        <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>
@@ -243,14 +259,12 @@
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
                 {{-- GOOD RECEIVE --}}
                 <div class="row px-4">
-                    @if ($orden_compra->observacion_remision)
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="">Observaciones: </label>
-                                <textarea wire:model="observaciones_remision" class="form-control"></textarea>
-                            </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="">Observaciones: </label>
+                            <textarea disabled class="form-control">{{ $orden_compra->observacion_remision }}</textarea>
                         </div>
-                    @endif
+                    </div>
                     <div class="row mb-3" x-data="{ accion: true }" x-cloak>
                         <div class="col-md-2">
                             <div class="form-group">
@@ -362,7 +376,7 @@
                 </div>
             @elseif(($orden_compra && (($orden_compra->estado_id == 5) || ($orden_compra->estado_id == 4) || ($orden_compra->estado_id == 6))))
                 <div class="row px-4">
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group">
                             @php
                                 $archivo_cot = str_replace('public/', '', $orden_compra->archivo_cot);
@@ -372,8 +386,6 @@
                                 <span class="btn-inner--text">Cotizaci&oacute;n.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             @php
                                 $archivo_orden_helisa = str_replace('public/', '', $orden_compra->archivo_orden_helisa);
@@ -383,8 +395,6 @@
                                 <span class="btn-inner--text">Orden de compra.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             @php
                                 $archivo_remision = str_replace('public/', '', $orden_compra->archivo_remision);
@@ -394,8 +404,6 @@
                                 <span class="btn-inner--text">Remisi&oacute;n.</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
@@ -403,15 +411,19 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <a href="#">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                 <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
                             </a>
                         </div>
-                    </div>
-                    <div class="col-md-2">
+                        <div class="form-group">
+                            <a href="#">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">N&uacute;m Causaci&oacute;n: @if ($orden_compra->cod_causal) {{ $orden_compra->cod_causal }}. @endif</span>
+                            </a>
+                        </div>
                         <div class="form-group">
                             @php
                                 $archivo_comprobante_pago = str_replace('public/', '', $orden_compra->archivo_comprobante_pago);
@@ -439,7 +451,7 @@
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
-                                            @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
+                                        @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
                                             <option value="{{ $presupuestoItem->id }}"
                                                 @if (is_array($itemProveedor))
                                                     @php
@@ -453,8 +465,7 @@
                                                     disabled
                                                     style="background-color: #e9ecef !important;"
                                                 @endif>
-                                                {{-- Muestra directamente el numero consecutivo real de la BD en lugar de $key+1 --}}
-                                                {{ $presupuestoItem->num_item }}
+                                                {{ $key+1 }}
                                             </option>
                                         @endif
                                     @endforeach

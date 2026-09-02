@@ -144,8 +144,9 @@ Route::get('/', function () {
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
 /* --- */
 
-
-// Route::get('trial-mail', function (){
-//     return view('mails.grGenerado');
-// });
+/*
+Route::get('trial-mail', function (){
+    return view('mails.grGenerado');
+});
 require __DIR__.'/auth.php';
+*/

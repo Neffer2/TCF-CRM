@@ -9,12 +9,42 @@ trait Email
 {
     public $controller = [
         [
-            'name'=> 'Sebastian Beltran',
-            'email'=> 'sebastian.beltran@bullmarketing.com.co'
+            'name'=> 'Lider Controller',
+            'email'=> 'Lider.Controller@bullmarketing.com.co'
         ],
         [
             'name'=> 'Equipo Controller',
             'email'=> 'controller@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Susana Bautista',
+            'email'=> 'Susana.Bautista@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Auxiliar Comercial',
+            'email'=> 'Auxiliar.Comercial@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Maria Guerrero',
+            'email'=> 'Maria.Guerrero@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Coordinador Proyectos',
+            'email'=> 'Coordinador.Proyectos@bullmarketing.com.co'
+        ],
+        [
+            
+            'name'=> 'Katherine Galvis',
+            'email'=> 'Katherine.Galvis@bullmarketing.com.co'
+        ],
+        [
+            
+            'name'=> 'Carlos Gómez',
+            'email'=> 'Carlos.Gomez@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Brandon Vega',
+            'email'=> 'Brandon.Vega@bullmarketing.com.co'
         ]
     ];
 
@@ -297,6 +327,25 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
+    public function actualizacionControllerPresupuesto($presupuesto)
+    {
+        $recipients = $this->controller; // Lista de contactos definida en tu Trait
+        $cc = [];
+
+        $subject = "NOTIFICACIÓN BULLCRM - PRESUPUESTO PROYECTO #" . $presupuesto->cod_cc . " ACTUALIZADO / MODIFICADO";
+
+        $body = "
+        <p>
+            El presupuesto del proyecto <b>#" . $presupuesto->cod_cc . "</b> (ID Gestión: <b>" . ($presupuesto->id_gestion ?? 'N/A') . "</b>) ha sido <b>MODIFICADO / ACTUALIZADO</b>. <br>
+            Modificado por: <b>" . (auth()->user()->name ?? 'Usuario del Sistema') . "</b>.<br><br>
+            Por favor ingresa a la plataforma para revisar el detalle de las modificaciones.
+        </p>";
+
+        $altBody = "PRESUPUESTO #" . $presupuesto->cod_cc . " ACTUALIZADO / MODIFICADO.";
+
+        $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
+    }
+
     public function ocNaturalEvidenciasRechazadas($orden){
         $recipients = [];
         $cc = [];
@@ -383,19 +432,31 @@ trait Email
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
     {
         require base_path("vendor/autoload.php");
-        $mail = new PHPMailer(true); // Activa las excepciones
+        $mail = new PHPMailer(true);
 
         try {
-            // Configuración del servidor SMTP
             $mail->isSMTP();
             $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = env('MAIL_PORT', 587);
+            $mail->SMTPAuth   = filter_var(env('MAIL_SMTP_AUTH', true), FILTER_VALIDATE_BOOLEAN);
 
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            if ($mail->SMTPAuth) {
+                $mail->Username = env('MAIL_USERNAME');
+                $mail->Password = env('MAIL_PASSWORD');
+            }
+
+            $encryption = env('MAIL_ENCRYPTION'); // 'tls', 'ssl', o null
+            if ($encryption === 'tls') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($encryption === 'ssl') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = false;
+                $mail->SMTPAutoTLS = false;
+            }
+
+            $from = env('MAIL_FROM_ADDRESS');
+            $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
 
             /* Destinatarios principales */
             if (is_iterable($recipients)) {
@@ -421,15 +482,16 @@ trait Email
                 $mail->addAttachment("storage/{$archivo_pago}");
             }
 
-            // Contenido del mensaje
             $mail->isHTML(true);
-            $mail->Subject = utf8_decode($subject);
-            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients]);
-            $mail->AltBody = utf8_decode($altBody);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = $subject;
+            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients])->render();
+            $mail->AltBody = $altBody;
 
             $mail->send();
+            return true;
         } catch (Exception $e) {
-            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
+            return false;
         }
     }
     /* *** */

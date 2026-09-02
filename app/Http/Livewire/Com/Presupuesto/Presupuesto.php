@@ -1275,8 +1275,20 @@ class Presupuesto extends Component
 
     private function marcarConCambiosPendientes()
     {
-        PresupuestoProyecto::where('id', $this->presupuesto_id)
-            ->update(['notificacion_actualizacion' => true]);
+        $presupuesto = PresupuestoProyecto::find($this->presupuesto_id);
+
+        if ($presupuesto) {
+            // Guardamos el estado anterior antes de actualizar
+            $estabaNotificado = (bool) $presupuesto->notificacion_actualizacion;
+
+            // Actualizamos en BD
+            $presupuesto->update(['notificacion_actualizacion' => true]);
+
+            // Si estaba en false (no notificado), enviamos el correo a través del Trait
+            if (!$estabaNotificado) {
+                $this->actualizacionControllerPresupuesto($presupuesto);
+            }
+        }
     }
     
     public function marcarComoVisto($id_gestion = null)
