@@ -8,6 +8,7 @@ use App\models\User;
 trait Email
 {
     public $controller = [
+        /*
         [
             'name'=> 'Lider Controller',
             'email'=> 'Lider.Controller@bullmarketing.com.co'
@@ -42,9 +43,14 @@ trait Email
             'name'=> 'Carlos Gómez',
             'email'=> 'Carlos.Gomez@bullmarketing.com.co'
         ],
+        */
         [
             'name'=> 'Brandon Vega',
             'email'=> 'Brandon.Vega@bullmarketing.com.co'
+        ],
+        [
+            'name'=> 'Neffer',
+            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]
     ];
 
