@@ -491,6 +491,7 @@ trait Email
             $mail->send();
             return true;
         } catch (Exception $e) {
+            \Log::error("Error al enviar correo: {$mail->ErrorInfo}");
             return false;
         }
     }

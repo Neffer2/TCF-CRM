@@ -130,7 +130,6 @@
                                 @if (Auth::user()->rol == 1 && in_array(Auth::user()->id, $idsEspeciales))
                                     {{-- Botón grande con notificación para los IDs específicos --}}
                                     <a href="{{ route('presupuesto', $presupuesto->id_gestion) }}"
-                                        wire:click="marcarComoVisto({{ $presupuesto->id }})"
                                         class="btn btn-primary position-relative">
                                         <i class="fas fa-eye"></i> Ver
                                         @if(optional($presupuesto)->notificacion_actualizacion)
