@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Productor;
 
+use App\Models\ItemPresupuesto;
 use Livewire\Component;
 use App\Models\PresupuestoProyecto;
 use App\Models\Proveedor;
@@ -9,7 +10,7 @@ use App\Models\Proveedor;
 class SolicitarRecursos extends Component
 {
     // Variables útiles para el formulario y lógica
-    public $presupuesto, $proveedores = [], $verifyPresupuesto = false, $id_presupuesto;
+    public $presupuesto, $proveedores = [], $verifyPresupuesto = false, $id_presupuesto, $num_item;
 
     // Escucha el evento 'ordenCreada' y ejecuta el método mount cuando ocurre
     protected $listeners = ['ordenCreada' => 'mount'];
@@ -22,8 +23,13 @@ class SolicitarRecursos extends Component
     }
 
     // Se ejecuta al montar el componente, carga el presupuesto y los proveedores
-    public function mount(){
-        $this->presupuesto = PresupuestoProyecto::find($this->id_presupuesto);
+    public function mount()
+    {
+        // Cargamos el presupuesto ordenando la relación presupuestoItems por num_item
+        $this->presupuesto = PresupuestoProyecto::with(['presupuestoItems' => function ($query) {
+            $query->orderBy('num_item', 'asc');
+        }])->find($this->id_presupuesto);
+
         $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 

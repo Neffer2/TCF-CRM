@@ -15,7 +15,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $consecutivo = 1; @endphp
                     @foreach ($presupuesto->presupuestoItems as $presupuestoItem)
                         @if($presupuestoItem->evento)
                             <tr>
@@ -25,8 +24,9 @@
                             </tr>
                         @else
                             <tr @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif>
-                                {{-- Mostramos el contador y solo lo incrementamos cuando es un ítem normal --}}
-                                <td class="font-weight-bold font-table">{{ $consecutivo++ }}</td>
+                                {{-- Muestra el num_item que le pertenece a ESTE ítem --}}
+                                <td class="font-weight-bold font-table">{{ $presupuestoItem->num_item }}</td>
+                                
                                 <td class="font-weight-bold font-table">
                                     <textarea @if (!($presupuestoItem->disponible)) style="text-decoration: line-through;" @endif
                                         cols="70" rows="1" disabled>{{ $presupuestoItem->descripcion }}</textarea>

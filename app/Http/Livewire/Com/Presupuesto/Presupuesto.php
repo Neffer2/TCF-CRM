@@ -222,7 +222,6 @@ class Presupuesto extends Component
             $item->save();
         });
 
-        $this->marcarConCambiosPendientes();
         $this->getMetricas();
         $this->limpiar();
     }
@@ -446,7 +445,6 @@ class Presupuesto extends Component
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
         ItemPresupuesto::destroy($id);
-        $this->marcarConCambiosPendientes();
         $this->refresh();
     }
 
@@ -615,7 +613,6 @@ class Presupuesto extends Component
             $itemOriginal->update();
         }
 
-        $this->marcarConCambiosPendientes();
         $this->refresh();
         $this->limpiar();
     }
@@ -778,46 +775,51 @@ class Presupuesto extends Component
     public function validacionLiderComercial() {
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-        // Si el margen del proyecto es menor al 30%, se envia a validación de gerencia (estado_id = 5),
-        // de lo contrario se aprueba el proyecto directamente (estado_id = 1)
+        if (!$presto) {
+            return redirect()->back()->with('error', 'Presupuesto no encontrado.');
+        }
+
+        // Si el margen es menor al 30%, va a validación de gerencia (estado_id = 5)
+        // De lo contrario se aprueba directamente (estado_id = 1)
         if ($presto->margen_proy < 30.00) {
             $presto->estado_id = 5;
-        }
-        else {
+        } else {
             $presto->estado_id = 1;
         }
 
         $presto->justificacion_lider = null;
 
-        ItemPresupuesto::where('presupuesto_id', $presto->id)->get()->map(function ($item){
-            $item->actualizado = false;
-            $item->update();
-        });
+        ItemPresupuesto::where('presupuesto_id', $presto->id)->update(['actualizado' => false]);
 
         $presto->update();
+
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }
 
     // Guarda la gestión de validación de Gerencia
     public function validacionGerencia() {
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
-        $presto->estado_id = 1;
+
+        if (!$presto) {
+            return redirect()->back()->with('error', 'Presupuesto no encontrado.');
+        }
+
+        $presto->estado_id = 1; // Se aprueba directamente
         $presto->justificacion_lider = null;
 
         $gestion = GestionComercial::find($this->id_gestion);
-        $gestion->id_estado = 4;
+        if ($gestion) {
+            $gestion->id_estado = 4;
+            $gestion->update();
+        }
 
-        $gestion->update();
-
-        ItemPresupuesto::where('presupuesto_id', $presto->id)->get()->map(function ($item){
-            $item->actualizado = false;
-            $item->update();
-        });
+        ItemPresupuesto::where('presupuesto_id', $presto->id)->update(['actualizado' => false]);
 
         $presto->update();
 
         // Envía notificación de revisión
         $this->presupuestoAprobacion($presto, Auth::user());
+
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }
 
@@ -900,6 +902,8 @@ class Presupuesto extends Component
 
         // Envía email de aprobación
         $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
+
+        $this->marcarConCambiosPendientes();
 
         return redirect()->route('presupuesto-proyecto')->with('success', 'Presupuesto aprobado y Centro de costos asignado');
     }

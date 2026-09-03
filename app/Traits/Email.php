@@ -8,7 +8,6 @@ use App\models\User;
 trait Email
 {
     public $controller = [
-        /*
         [
             'name'=> 'Lider Controller',
             'email'=> 'Lider.Controller@bullmarketing.com.co'
@@ -43,14 +42,9 @@ trait Email
             'name'=> 'Carlos Gómez',
             'email'=> 'Carlos.Gomez@bullmarketing.com.co'
         ],
-        */
         [
             'name'=> 'Brandon Vega',
             'email'=> 'Brandon.Vega@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Neffer',
-            'email'=> 'Neffer.Barragan@bullmarketing.com.co'
         ]
     ];
 
@@ -110,7 +104,7 @@ trait Email
         if ($presto->cod_cc) {
             $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
         } else {
-            $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
+            $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobación.";
         }
 
         if ($presto->justificacion) {
@@ -168,7 +162,7 @@ trait Email
         if ($presto->cod_cc){
             $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
         }else {
-            $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobaci&oacute;n.";
+            $body = "<b>{$user->name}</b> ha generado el presupuesto para el proyecto: <b>{$presto->gestion->nom_proyecto_cot}</b> y solicita aprobación.";
         }
 
         if ($presto->justificacion){
@@ -342,8 +336,8 @@ trait Email
 
         $body = "
         <p>
-            El presupuesto del proyecto <b>#" . $presupuesto->cod_cc . "</b> (ID Gestión: <b>" . ($presupuesto->id_gestion ?? 'N/A') . "</b>) ha sido <b>MODIFICADO / ACTUALIZADO</b>. <br>
-            Modificado por: <b>" . (auth()->user()->name ?? 'Usuario del Sistema') . "</b>.<br><br>
+            El presupuesto del proyecto <b>#" . $presupuesto->cod_cc . "</b> ha sido <b>MODIFICADO / ACTUALIZADO</b>. <br>
+            Fue aprobado por: <b>" . (auth()->user()->name ?? 'Usuario del Sistema') . "</b>.<br><br>
             Por favor ingresa a la plataforma para revisar el detalle de las modificaciones.
         </p>";
 
@@ -443,25 +437,12 @@ trait Email
         try {
             $mail->isSMTP();
             $mail->Host       = env('MAIL_HOST');
-            $mail->Port       = env('MAIL_PORT', 587);
-            $mail->SMTPAuth   = filter_var(env('MAIL_SMTP_AUTH', true), FILTER_VALIDATE_BOOLEAN);
+            $mail->Port       = env('MAIL_PORT', 1025);
+            $mail->SMTPAuth   = false;          // Mailpit no requiere auth
+            $mail->SMTPSecure = false;          // sin TLS/SSL en local
+            $mail->SMTPAutoTLS = false;
 
-            if ($mail->SMTPAuth) {
-                $mail->Username = env('MAIL_USERNAME');
-                $mail->Password = env('MAIL_PASSWORD');
-            }
-
-            $encryption = env('MAIL_ENCRYPTION'); // 'tls', 'ssl', o null
-            if ($encryption === 'tls') {
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            } elseif ($encryption === 'ssl') {
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            } else {
-                $mail->SMTPSecure = false;
-                $mail->SMTPAutoTLS = false;
-            }
-
-            $from = env('MAIL_FROM_ADDRESS');
+            $from = env('MAIL_FROM_ADDRESS', 'no-reply@bullmarketing.local');
             $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
 
             /* Destinatarios principales */
@@ -483,6 +464,73 @@ trait Email
             }
 
             /* Archivos adjuntos */
+            if ($attachment) {
+                $archivo_pago = str_replace('public/', '', $attachment);
+                $mail->addAttachment("storage/{$archivo_pago}");
+            }
+
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = $subject;
+            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients])->render();
+            $mail->AltBody = $altBody;
+
+            $mail->send();
+        } catch (Exception $e) {
+            \Log::error('Error enviando mail: ' . $e->getMessage());
+            // Ver nota abajo sobre este return
+        }
+    }
+
+    /*
+    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
+    {
+        require base_path("vendor/autoload.php");
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host       = env('MAIL_HOST');
+            $mail->Port       = env('MAIL_PORT', 587);
+            $mail->SMTPAuth   = filter_var(env('MAIL_SMTP_AUTH', true), FILTER_VALIDATE_BOOLEAN);
+
+            if ($mail->SMTPAuth) {
+                $mail->Username = env('MAIL_USERNAME');
+                $mail->Password = env('MAIL_PASSWORD');
+            }
+
+            $encryption = env('MAIL_ENCRYPTION'); // 'tls', 'ssl', o null
+            if ($encryption === 'tls') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($encryption === 'ssl') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = false;
+                $mail->SMTPAutoTLS = false;
+            }
+
+            $from = env('MAIL_FROM_ADDRESS');
+            $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
+
+            /* Destinatarios principales *//*
+            if (is_iterable($recipients)) {
+                foreach ($recipients as $recipient) {
+                    if (is_array($recipient) && isset($recipient['email'])) {
+                        $mail->addAddress($recipient['email'], $recipient['name'] ?? '');
+                    }
+                }
+            }
+
+            /* Copias (CC) *//*
+            if (is_iterable($cc)) {
+                foreach ($cc as $copiados) {
+                    if (is_array($copiados) && isset($copiados['email'])) {
+                        $mail->addCC($copiados['email'], $copiados['name'] ?? '');
+                    }
+                }
+            }
+
+            /* Archivos adjuntos *//*
             if ($attachment) {
                 $archivo_pago = str_replace('public/', '', $attachment);
                 $mail->addAttachment("storage/{$archivo_pago}");
