@@ -191,6 +191,9 @@ class AppServiceProvider extends ServiceProvider
                 'PROMOTORIA',
                 'COMPRA',
                 'ALQUILER',
+                'MODELO',
+                'CHEF',
+                'SERVICIO DE CATERING',
             ],
 
             'bancos' =>
