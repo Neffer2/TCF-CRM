@@ -58,6 +58,14 @@ class Juridica extends Component
 
         $this->getVTotal();
 
+        // Buscamos directamente el modelo ItemPresupuesto en la BD / Presupuesto
+        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
+
+        if (!$dbItemPresto) {
+            $this->addError('customError', 'El ítem seleccionado no es válido.');
+            return;
+        }
+
         if (is_null($this->selectedItem)){
             // Valida que el item no esté repetido
             if (!$this->validateItems($this->item)){
@@ -66,11 +74,11 @@ class Juridica extends Component
                 return redirect()->back();
             }
 
-            // Agrega el nuevo item al arreglo de items de la OC
+            // Agrega el nuevo item al arreglo usando directamente los datos del modelo
             array_push($this->ocItems, [
                 'id' => count($this->ocItems),
-                'item' => $this->item, // id del item en DB
-                'displayItem' => $this->getDisplayItem($this->item),
+                'item' => $dbItemPresto->id,               // ID del item en DB
+                'num_item' => $dbItemPresto->num_item,     // Número de ítem real de la BD
                 'desc' => $this->desc,
                 'cant' => $this->cant,
                 'dias' => $this->dias,
@@ -78,9 +86,10 @@ class Juridica extends Component
                 'vUnit' => $this->vUnit,
                 'vTotal' => $this->vTotal
             ]);
-        }else {
-            // Edita el item seleccionado
-            $this->ocItems[$this->selectedItem]['displayItem'] = $this->getDisplayItem($this->item);
+        } else {
+            // Edita el item seleccionado en el array usando los datos de BD
+            $this->ocItems[$this->selectedItem]['item'] = $dbItemPresto->id;
+            $this->ocItems[$this->selectedItem]['num_item'] = $dbItemPresto->num_item;
             $this->ocItems[$this->selectedItem]['desc'] = $this->desc;
             $this->ocItems[$this->selectedItem]['cant'] = $this->cant;
             $this->ocItems[$this->selectedItem]['dias'] = $this->dias;
@@ -88,6 +97,7 @@ class Juridica extends Component
             $this->ocItems[$this->selectedItem]['vUnit'] = $this->vUnit;
             $this->ocItems[$this->selectedItem]['vTotal'] = $this->vTotal;
         }
+        
         $this->resetFields();
     }
 
@@ -165,10 +175,13 @@ class Juridica extends Component
 
         // Carga los items de la OC
         foreach ($this->orden_compra->ordenItems as $item){
+            // Opcional: si prefieres buscarlo directo del presupuesto relacionado en vez del guardado:
+            // $dbItemPresto = $this->presupuesto->presupuestoItems->find($item->item_id);
+
             array_push($this->ocItems, [
                 'id' => count($this->ocItems),
                 'item' => $item->item_id,
-                'displayItem' => $this->getDisplayItem($item->item_id),
+                'num_item' => $item->num_item, // Extraído de la BD de la orden/ítem
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
@@ -176,15 +189,6 @@ class Juridica extends Component
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $item->vtotal_oc
             ]);
-        }
-    }
-
-    // Obtiene el número de item para mostrar al usuario
-    public function getDisplayItem($id){
-        foreach ($this->presupuesto->presupuestoItems as $key => $item) {
-            if ($id == $item->id){
-                return $key+1;
-            }
         }
     }
 
@@ -252,7 +256,7 @@ class Juridica extends Component
             $itemsOrden = new OcItem;
             $itemsOrden->oc_id = $orden_id;
             $itemsOrden->item_id = $item['item'];
-            $itemsOrden->display_item = $item['displayItem'];
+            $itemsOrden->num_item = $item['num_item']; // <--- Guardamos el num_item real de BD
             $itemsOrden->desc_oc = $item['desc'];
             $itemsOrden->cant_oc = $item['cant'];
             $itemsOrden->dias_oc = $item['dias'];
@@ -281,7 +285,7 @@ class Juridica extends Component
             $this->validate([
                 'oc_helisa' => 'required|file|mimes:pdf|max:10000',
                 'cod_oc' => 'required|max:200',
-                'observaciones_negociacion' => 'required|string|max:1000'
+                'observaciones_negociacion' => 'nullable|string|max:1000'
             ]);
 
             $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;

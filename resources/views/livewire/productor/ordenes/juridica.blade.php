@@ -84,7 +84,7 @@
                             <tbody>
                                 @foreach ($ocItems as $item)
                                     <tr>
-                                        <td class="text-center">{{ $item['displayItem'] }}</td>
+                                        <td class="text-center">{{ $item['num_item'] }}</td> <!-- Muestra el número real mapeado de la BD -->
                                         <td class="text-center">{{ $item['cant'] }}</td>
                                         <td class="text-center">{{ $item['dias'] }}</td>
                                         <td class="text-center">{{ $item['otros'] }}</td>
@@ -95,12 +95,8 @@
                                         <td class="text-center">{{ number_format($item['vTotal']) }}</td>
                                         @if (Auth::user()->rol != 1)
                                             <td class="d-flex justify-content-center" style="padding: 11px;">
-                                                <button class="me-2" wire:click="delete({{ $item['id'] }})">
-                                                    ✖️
-                                                </button>
-                                                <button class="" wire:click="getSelectedItem({{ $item['id'] }})">
-                                                    📝
-                                                </button>
+                                                <button class="me-2" wire:click="delete({{ $loop->index }})">✖️</button>
+                                                <button class="" wire:click="getSelectedItem({{ $loop->index }})">📝</button>
                                             </td>
                                         @endif
                                     </tr>
@@ -112,77 +108,79 @@
             </div>
             @if (Auth::user()->rol == 1 && $orden_compra->estado_id == 2)
                 <div class="row px-4">
-                    <div class="col-md-12">
+
+                    {{-- Enlace a la Cotización --}}
+                    <div class="col-md-12 mb-3">
+                        @php
+                            $aux = str_replace('public/', '', $orden_compra->archivo_cot);
+                        @endphp
+                        <a href="{{ asset("storage/$aux") }}" target="_blank" class="btn-link">
+                            <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                            <span class="btn-inner--text">Cotización - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                        </a>
+                    </div>
+
+                    {{-- Vista previa PDF --}}
+                    <div class="col-md-12 mb-4">
+                        <div class="d-none d-md-block w-100">
+                            <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                        </div>
+                    </div>
+
+                    {{-- Campo: Adjuntar Orden de Compra --}}
+                    <div class="col-md-6">
                         <div class="form-group">
-                            @php
-                                $aux = str_replace('public/', '', $orden_compra->archivo_cot);
-                            @endphp
-                            <a href="{{ asset("storage/$aux") }}" target="_blank" class="">
-                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Cotizaci&oacute;n - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
-                            </a>
+                            <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
+                            <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
+                            @error('oc_helisa')
+                                <div class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
-                    <div class="row px-4">
-                        <div class="col-md-12">
-                            <div class="d-none d-md-block" style="width:100%;">
-                                <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
-                                <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
-                                @error('oc_helisa')
-                                    <div id="oc_helisa" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="cod_oc">C&oacute;digo de orden de compra:</label>
-                                <input name="cod_oc" id="cod_oc" class="form-control" wire:model="cod_oc">
-                                @error('cod_oc')
-                                    <div id="cod_oc" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="observaciones_negociacion">Observaciones de negociaci&oacute;n:</label>
-                                <textarea name="observaciones_negociacion" id="observaciones_negociacion" class="form-control" wire:model="observaciones_negociacion" cols="100" rows="2"></textarea>
-                                @error('observaciones_negociacion')
-                                    <div id="observaciones_negociacion" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
-                                Aprobar
-                            </button>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="justificacion_rechazo">Justificaci&oacute;n de rechazo:</label>
-                                <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" cols="100" rows="2"></textarea>
-                                @error('justificacion_rechazo')
-                                    <div id="justificacion_rechazo" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
+
+                    {{-- Campo: Código de Orden de Compra --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cod_oc">Código de orden de compra:</label>
+                            <input name="cod_oc" id="cod_oc" class="form-control" wire:model="cod_oc">
+                            @error('cod_oc')
+                                <div class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
-                    <div class="col-md-12">
+
+                    {{-- Sección: Aprobar --}}
+                    <div class="col-md-6 d-flex align-items-center mb-3">
+                        <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
+                            Aprobar
+                        </button>
+                    </div>
+
+                    {{-- Sección: Rechazar y Justificación --}}
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label for="justificacion_rechazo">Justificación de rechazo:</label>
+                            <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" rows="2"></textarea>
+                            @error('justificacion_rechazo')
+                                <div class="text-invalid">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
+                    </div>
+
+                    {{-- Spinner de carga --}}
+                    <div class="col-md-12 mt-2">
                         <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
+
                 </div>
             @elseif(Auth::user()->rol == 1 && $orden_compra->estado_id == 1)
                 <div class="row px-4">
@@ -451,7 +449,9 @@
                                     <option value="">Seleccionar</option>
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
-                                        @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
+                                            @php 
+                                                $itemProveedor = @unserialize($presupuestoItem->proveedor) ? unserialize($presupuestoItem->proveedor) : $presupuestoItem->proveedor; 
+                                            @endphp
                                             <option value="{{ $presupuestoItem->id }}"
                                                 @if (is_array($itemProveedor))
                                                     @php
@@ -465,7 +465,7 @@
                                                     disabled
                                                     style="background-color: #e9ecef !important;"
                                                 @endif>
-                                                {{ $key+1 }}
+                                                {{ $presupuestoItem->num_item }} <!-- <--- AQUÍ ESTÁ EL CAMBIO CLAVE -->
                                             </option>
                                         @endif
                                     @endforeach

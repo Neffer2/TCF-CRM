@@ -180,9 +180,9 @@ class Presupuesto extends Component
 
         DB::transaction(function () use ($presto){
 
-            // SOLUCIÓN: Excluimos los eventos del cálculo del consecutivo
+            // Excluimos los eventos del cálculo del consecutivo
             $maxNumItem = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                ->where('evento', 0) // O ->whereNull('evento') si usas NULL en la BD
+                ->where('evento', 0)
                 ->lockForUpdate()
                 ->max('num_item') ?? 0;
 
@@ -581,12 +581,16 @@ class Presupuesto extends Component
                 'user_id'             => auth()->id(),
             ]);
 
-            if($itemOriginal->actualizado == 0)
+            if($presto->cod_cc)
             {
-                $itemOriginal->actualizado = 1;
-            } elseif($itemOriginal->actualizado == 2)
-            {
-                $itemOriginal->actualizado = 3;
+                if($itemOriginal->actualizado == 0)
+                {
+                    $itemOriginal->actualizado = 1;
+                }
+                elseif($itemOriginal->actualizado == 2)
+                {
+                    $itemOriginal->actualizado = 3;
+                }
             }
 
             $this->setEnEdicion($presto);

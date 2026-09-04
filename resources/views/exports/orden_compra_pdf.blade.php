@@ -90,7 +90,7 @@
             <td style="text-align: right; vertical-align: top">
                 <p style="font-weight: bold;">
                     ORDEN DE COMPRA <br>
-                    NRO {{ $cod_oc }}
+                    NRO {{ $orden->cod_oc }}
                 </p>
                 <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
             </td>
@@ -131,7 +131,7 @@
                 <table class="totals-table">
                     <tr>
                         <td style="font-weight: bold;; font-size: 12px">SUBTOTAL:</td>
-                        <td style="text-align: right; font-size: 10px">{{ number_format($subtotal) }}</td>
+                        <td style="text-align: right; font-size: 10px">{{ number_format($orden->subtotal) }}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: bold;; font-size: 12px">IVA:</td>
@@ -139,7 +139,7 @@
                     </tr>
                     <tr>
                         <td style="font-weight: bold; background-color: lightgray; font-size: 12px">TOTALES:</td>
-                        <td style="text-align: right; font-size: 10px">{{ number_format($subtotal) }}</td>
+                        <td style="text-align: right; font-size: 10px">{{ number_format($orden->subtotal) }}</td>
                     </tr>
                 </table>
             </td>

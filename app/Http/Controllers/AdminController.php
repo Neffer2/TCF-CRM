@@ -9,10 +9,12 @@ use App\Models\Proveedor;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\HelisaExport;
-use App\Exports\PlanoExport;
 use App\Http\Livewire\Com\Presupuesto\Presupuesto;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ConsumidosExport;
+use App\Exports\PlanoExport;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class AdminController extends Controller
 {
@@ -221,5 +223,34 @@ class AdminController extends Controller
         }else {
             return redirect()->route('dashboard');
         }
+    }
+
+    /**
+     * Genera el PDF de una orden de compra para visualizar/embeder
+     *
+     * @param \App\Models\OrdenCompra $orden
+     * @return \Illuminate\Http\Response
+     */
+    public function ordenCompraPdf(OrdenCompra $orden)
+    {
+        $orden->load([
+            'proveedor',
+            'presupuesto.gestion.contacto',
+            'presupuesto.presupuestoItems',
+            'ordenItems',
+        ]);
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $html = View::make('exports.orden_compra_pdf', [
+            'orden' => $orden,
+        ])->render();
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="orden_compra_'.$orden->id.'.pdf"');
     }
 }
