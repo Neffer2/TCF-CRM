@@ -428,7 +428,7 @@ trait Email
     }
 
     /* **** */
-
+    /*
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
     {
         require base_path("vendor/autoload.php");
@@ -445,7 +445,7 @@ trait Email
             $from = env('MAIL_FROM_ADDRESS', 'no-reply@bullmarketing.local');
             $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
 
-            /* Destinatarios principales */
+            /* Destinatarios principales *//*
             if (is_iterable($recipients)) {
                 foreach ($recipients as $recipient) {
                     if (is_array($recipient) && isset($recipient['email'])) {
@@ -454,7 +454,7 @@ trait Email
                 }
             }
 
-            /* Copias (CC) */
+            /* Copias (CC) *//*
             if (is_iterable($cc)) {
                 foreach ($cc as $copiados) {
                     if (is_array($copiados) && isset($copiados['email'])) {
@@ -463,7 +463,7 @@ trait Email
                 }
             }
 
-            /* Archivos adjuntos */
+            /* Archivos adjuntos *//*
             if ($attachment) {
                 $archivo_pago = str_replace('public/', '', $attachment);
                 $mail->addAttachment("storage/{$archivo_pago}");
@@ -481,8 +481,9 @@ trait Email
             // Ver nota abajo sobre este return
         }
     }
+    */
 
-    /*
+
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
     {
         require base_path("vendor/autoload.php");
@@ -512,7 +513,7 @@ trait Email
             $from = env('MAIL_FROM_ADDRESS');
             $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
 
-            /* Destinatarios principales *//*
+            /* Destinatarios principales */
             if (is_iterable($recipients)) {
                 foreach ($recipients as $recipient) {
                     if (is_array($recipient) && isset($recipient['email'])) {
@@ -521,7 +522,7 @@ trait Email
                 }
             }
 
-            /* Copias (CC) *//*
+            /* Copias (CC) */
             if (is_iterable($cc)) {
                 foreach ($cc as $copiados) {
                     if (is_array($copiados) && isset($copiados['email'])) {
@@ -530,7 +531,7 @@ trait Email
                 }
             }
 
-            /* Archivos adjuntos *//*
+            /* Archivos adjuntos */
             if ($attachment) {
                 $archivo_pago = str_replace('public/', '', $attachment);
                 $mail->addAttachment("storage/{$archivo_pago}");

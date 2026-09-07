@@ -159,7 +159,12 @@
                                             <p class="text-xs text-secondary mb-0">
                                                 <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">Certificaci&oacute;n Bancaria</a><br>
                                                 <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
-                                                <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a>
+                                                <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
+                                                @if($orden?->archivo_cuenta_cobro)
+                                                    <a href="{{ asset("storage/".($orden->archivo_cuenta_cobro)) }}" target="_blank">Ver cuenta de cobro</a>
+                                                @else
+                                                    Sin archivo
+                                                @endif
                                             </p>
                                         </td>
                                     </tr>

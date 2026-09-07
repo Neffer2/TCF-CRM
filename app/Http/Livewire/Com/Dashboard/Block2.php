@@ -23,6 +23,7 @@ class Block2 extends Component
     public $venta_facturada = 0;
     public $ventatotal = 0;
     public $presto_mensual = 0;
+    public $cerrado = 0;
 
     //Filtros
     public $año;
@@ -210,40 +211,30 @@ class Block2 extends Component
 
     /* Obtiene y filtra las ventas facturadas, para calcular la venta total real de HELISA*/
     public function getVentaTotal($comercial_id, $mes, $año, $cuenta) {
-        /* Creo 2 arreglos que contendrán los filtros necesarios para la consulta */
-        $filters_array = [];
         $date_filters_array = [];
 
-        if ($año){
-            array_push($filters_array, ['año', $año->description]);
-        }
-
         if ($mes){
-            array_push($date_filters_array, [$mes->f_inicio, $mes->f_fin]);
-        }else {
+            $date_filters_array[] = [$mes->f_inicio, $mes->f_fin];
+        } else {
             $primer_mes = Mes::select('f_inicio')->where('ano_id', $año->id)->where('identifier', 1)->first();
             $ultimo_mes = Mes::select('f_fin')->where('ano_id', $año->id)->where('identifier', 12)->first();
-
-            array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
+            $date_filters_array[] = [$primer_mes->f_inicio, $ultimo_mes->f_fin];
         }
+
+        $query = Base_comercial::whereBetween('fecha', $date_filters_array);
 
         if ($comercial_id){
-            array_push($filters_array, ['comercial', $comercial_id]);
+            $query->where('id_user', $comercial_id);
         }
-
         if ($cuenta){
-            array_push($filters_array, ['id_cuenta', $cuenta]);
+            $query->where('id_cuenta', $cuenta);
         }
 
-        $this->venta_facturada = 0;
-        $helisa_results = Helisa::select('base_factura')
-                    ->where($filters_array)
-                    ->whereBetween('fecha', $date_filters_array)
-                    ->sum('base_factura');
+        // Facturado (9) + Facturación parcial (10) — ya no depende de Helisa
+        $this->venta_facturada = (clone $query)->whereIn('id_estado', [9, 10])->sum('valor_proyecto');
 
-        $this->venta_facturada = $helisa_results;
-
-        return ($this->venta_facturada + $this->xfacturar +$this->ventaejecucion);
+        // Total real de venta: Cerrado + EjecuciónXFacturar + Venta + VentaEjecución + Facturado + FacturaciónParcial
+        return (clone $query)->whereIn('id_estado', [1, 3, 6, 7, 9, 10])->sum('valor_proyecto');
     }
 
     public function getSumVentas($comercial_id, $mes, $año) {
