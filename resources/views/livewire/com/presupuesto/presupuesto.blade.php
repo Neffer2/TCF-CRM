@@ -372,96 +372,132 @@
                 <tbody id="sortable-body">
                 @foreach ($items as $key => $item)
                     @if ($item->evento)
+                        {{-- ================= CASO 0: EVENTOS ================= --}}
                         <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}" class="font-weight-bold font-table bg-gradient-info text-white">
                             <td class="text-center">⚬</td>
                             <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
                                 {{ $item->descripcion }}
                             </td>
                             @if (Auth::user()->rol != 1)
-                                <td>
-                                    <button wire:click="deleteItem({{ $item->id }})">✖️</button>
-                                </td>
-                            @endif
-                            @if (Auth::user()->rol != 1)
-                                <td>
-                                    <button wire:click="getDataEdit({{ $item->id }})">📝</button>
-                                </td>
+                                <td><button wire:click="deleteItem({{ $item->id }})">✖️</button></td>
+                                <td><button wire:click="getDataEdit({{ $item->id }})">📝</button></td>
                             @endif
                         </tr>
                     @else
-                        <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
-                            class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
-                            style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
-                            @if(Auth::user()->rol == 2)
-                            <td class="text-center cursor-move drag-handle">☰</td>
-                            @endif
-                            <td class="font-weight-bold font-table">
-                                {{ $item->cod }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->num_item }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->cantidad }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->dia }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->otros }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                <textarea name="" id="" cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                $ {{ number_format($item->v_unitario) }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                $ {{ number_format($item->v_total) }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                $ {{ number_format($item->v_unitario_cot) }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                $ {{ number_format($item->v_total_cliente) }}
-                            </td>        
-                            <td class="font-weight-bold font-table">
-                                @if ($proveedores_item = @unserialize($item->proveedor))
-                                    @foreach ($proveedores_item as $proveedor)
-                                        {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                    @endforeach
-                                @else
-                                    @if ($proveedores->find($item->proveedor))
-                                        {{ $proveedores->find($item->proveedor)->tercero }}
-                                    @else
-                                        {{ $item->proveedor }}
-                                    @endif
-                                @endif
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                @if ($item->mesDescription)
-                                    {{ $item->mesDescription->description }}
-                                @endif
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->dias }}
-                            </td>
-                            <td class="font-weight-bold font-table">
-                                {{ $item->ciudad }}
-                            </td>
-                            @if ($rentabilidadView)
+                        @php
+                            $idsEspeciales = [2, 208, 197, 214, 145, 181, 210, 206];
+                            $userRol = Auth::user()->rol;
+                        @endphp
+                        {{-- ================= CONDICIÓN 1: ROL 1 CON ITEM ESPECIAL (Evalúa 'actualizado_con') ================= --}}
+                        @if (Auth::user()->rol == 1 && in_array(Auth::user()->id, $idsEspeciales))
+                            <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
+                                class="{{ $item->actualizado_con > 0 ? 'text-white' : '' }}"
+                                style="background-color: {{ $item->actualizado_con == 2 ? '#6f42c1' : ($item->actualizado_con == 1 ? '#ffbb17' : ($item->actualizado_con == 3 ? '#e65c00' : 'transparent')) }};">
+
+                                <td class="font-weight-bold font-table">{{ $item->cod }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->num_item }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->cantidad }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dia }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->otros }}</td>
                                 <td class="font-weight-bold font-table">
-                                    $ {{ number_format($item->rentabilidad) }}
+                                    <textarea cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
                                 </td>
-                            @endif
-                            @if (Auth::user()->rol == 2)
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
+                                <td class="font-weight-bold font-table">
+                                    @if ($proveedores_item = @unserialize($item->proveedor))
+                                        @foreach ($proveedores_item as $proveedor)
+                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
+                                        @endforeach
+                                    @else
+                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
+                                    @endif
+                                </td>
+                                <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
+                                <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dias }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->ciudad }}</td>
+                                @if ($rentabilidadView)
+                                    <td class="font-weight-bold font-table">$ {{ number_format($item->rentabilidad) }}</td>
+                                @endif
+                            </tr>
+
+                        {{-- ================= CONDICIÓN 2: ROL 1 ESTÁNDAR (Evalúa 'actualizado') ================= --}}
+                        @elseif (Auth::user()->rol == 1)
+                            <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
+                                class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
+                                style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
+
+                                <td class="font-weight-bold font-table">{{ $item->cod }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->num_item }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->cantidad }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dia }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->otros }}</td>
+                                <td class="font-weight-bold font-table">
+                                    <textarea cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
+                                </td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
+                                <td class="font-weight-bold font-table">
+                                    @if ($proveedores_item = @unserialize($item->proveedor))
+                                        @foreach ($proveedores_item as $proveedor)
+                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
+                                        @endforeach
+                                    @else
+                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
+                                    @endif
+                                </td>
+                                <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
+                                <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dias }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->ciudad }}</td>
+                                @if ($rentabilidadView)
+                                    <td class="font-weight-bold font-table">$ {{ number_format($item->rentabilidad) }}</td>
+                                @endif
+                            </tr>
+
+                        {{-- ================= CONDICIÓN 3: ROL 2 / COMERCIAL (Evalúa 'actualizado' + Acciones adicionales) ================= --}}
+                        @elseif ($userRol == 2)
+                            <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
+                                class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
+                                style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
+
+                                <td class="text-center cursor-move drag-handle">☰</td>
+                                <td class="font-weight-bold font-table">{{ $item->cod }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->num_item }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->cantidad }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dia }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->otros }}</td>
+                                <td class="font-weight-bold font-table">
+                                    <textarea cols="30" rows="1" readonly>{{ $item->descripcion }}</textarea>
+                                </td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
+                                <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
+                                <td class="font-weight-bold font-table">
+                                    @if ($proveedores_item = @unserialize($item->proveedor))
+                                        @foreach ($proveedores_item as $proveedor)
+                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
+                                        @endforeach
+                                    @else
+                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
+                                    @endif
+                                </td>
+                                <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
+                                <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->dias }}</td>
+                                <td class="font-weight-bold font-table">{{ $item->ciudad }}</td>
+                                @if ($rentabilidadView)
+                                    <td class="font-weight-bold font-table">$ {{ number_format($item->rentabilidad) }}</td>
+                                @endif
                                 <td class="font-weight-bold">
                                     <div class="form-check">
-                                        <input wire:change="changeDisponibilidad({{ $item->id }})"
-                                               class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
+                                        <input wire:change="changeDisponibilidad({{ $item->id }})" class="form-check-input" type="checkbox" @if ($item->disponible) checked @endif>
                                     </div>
                                 </td>
                                 <td class="font-weight-bold font-table">
@@ -469,19 +505,16 @@
                                         <button wire:click="deleteItem({{ $item->id }})">✖️</button>
                                     @endif
                                 </td>
-                            @endif
-                            @if (Auth::user()->rol == 2)
                                 <td class="font-weight-bold font-table">
                                     <button wire:click="getDataEdit({{ $item->id }})">📝</button>
                                 </td>
-                            @endif
-                        </tr>
+                            </tr>
+                        @endif
                     @endif
                 @endforeach
                 </tbody>
             </table>
         </div>
-
         <div class="card card-frame p-3">
             <div class="row mt-2">
                 @if (Auth::user()->rol == 2 || Auth::user()->rol == 5)

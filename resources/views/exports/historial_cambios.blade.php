@@ -102,10 +102,10 @@
                         $base = data_get($registro, 'valores_anteriores', $registro);
                         
                         // 1. Extraemos la propiedad 'actualizado' (sea de $registro o $base)
-                        $actualizado = data_get($base, 'actualizado', 0);
+                        $actualizado_con = data_get($base, 'actualizado_con', 0);
 
                         // 2. Evaluamos el color HEX exacto según el estado
-                        $bgColor = match ((int)$actualizado) {
+                        $bgColor = match ((int)$actualizado_con) {
                             2 => '#6f42c1', // Morado
                             1 => '#ffbb17', // Amarillo
                             3 => '#e65c00', // Naranja

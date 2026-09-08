@@ -212,6 +212,7 @@ class Presupuesto extends Component
 
             if ($this->presupuesto->cod_cc){
                 $item->actualizado = 3;
+                $item->actualizado_con = 3;
                 $this->setEnEdicion($presto);
             }
 
@@ -590,6 +591,14 @@ class Presupuesto extends Component
                 elseif($itemOriginal->actualizado == 2)
                 {
                     $itemOriginal->actualizado = 3;
+                }
+            }
+
+            if($presto->cod_cc){
+                if($itemOriginal->actualizado_con == 0){
+                    $itemOriginal->actualizado_con = 1;
+                } elseif($itemOriginal->actualizado_con == 2){
+                    $itemOriginal->actualizado_con = 3;
                 }
             }
 
@@ -1301,7 +1310,6 @@ class Presupuesto extends Component
     
     public function marcarComoVisto($id_gestion = null)
     {
-        // Si no se envía ID por el evento, toma el $this->id_gestion cargado en el componente
         $id = $id_gestion ?? $this->id_gestion;
 
         if ($id) {
@@ -1310,8 +1318,17 @@ class Presupuesto extends Component
             if ($presto) {
                 $presto->update(['notificacion_actualizacion' => false]);
                 
-                // Si la propiedad $this->presupuesto existe en este componente, la actualizamos
+                // Reiniciamos ambos campos para limpiar estados en ambos roles/sub-roles
+                ItemPresupuesto::where('presupuesto_id', $presto->id)->update([
+                    'actualizado_con' => false,
+                    'actualizado' => false
+                ]);
+                
                 $this->presupuesto = $presto;
+                
+                // Forzar actualización en el componente
+                $this->refresh();
+                //$this->getItems();
             }
         }
     }
