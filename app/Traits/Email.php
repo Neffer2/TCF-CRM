@@ -127,7 +127,7 @@ trait Email
             $admin_id = 30;
         }elseif ($presto->margen_proy > 35 && $presto->gestion->claro){
             $admin_id = 36;
-        }elseif ($presto->margen_proy < 35 && (!$presto->gestion->claro)){
+        }elseif ($presto->margen_proy <= 35 && (!$presto->gestion->claro)){
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -139,7 +139,7 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($presto->margen_proy < 35 && $presto->gestion->claro){
+        }elseif ($presto->margen_proy <= 35 && $presto->gestion->claro){
             $admin_id = 10;
 
             array_push($recipients, [
@@ -186,7 +186,7 @@ trait Email
         $recipients = [];
         $cc = $user->asistente;
 
-        if ($gestion->presupuesto->margen_proy < 35 && (!$gestion->claro)){
+        if ($gestion->presupuesto->margen_proy <= 35 && (!$gestion->claro)){
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -198,7 +198,7 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+        }elseif ($gestion->presupuesto->margen_proy <= 35 && $gestion->claro){
             $admin_id = 10;
 
             array_push($recipients, [
@@ -207,7 +207,7 @@ trait Email
             ]);
         }
 
-        if ($gestion->presupuesto->margen_proy < 35){
+        if ($gestion->presupuesto->margen_proy <= 35){
             $recipient = User::select('name', 'email')->find($admin_id);
             array_push($recipients, [
                 'name'=> $recipient->name,
@@ -238,7 +238,7 @@ trait Email
             $admin_id = 30;
         }elseif ($gestion->presupuesto->margen_proy > 35 && $gestion->claro){
             $admin_id = 36;
-        }elseif ($gestion->presupuesto->margen_proy < 35 && !($gestion->claro)){
+        }elseif ($gestion->presupuesto->margen_proy <= 35 && !($gestion->claro)){
             $admin_id = 8;
 
             // array_push($recipients, [
@@ -250,7 +250,7 @@ trait Email
             //     'name'=> 'Cristian Rodriguez',
             //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
             // ]);
-        }elseif ($gestion->presupuesto->margen_proy < 35 && $gestion->claro){
+        }elseif ($gestion->presupuesto->margen_proy <= 35 && $gestion->claro){
             $admin_id = 10;
 
             array_push($recipients, [

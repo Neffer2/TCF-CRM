@@ -28,7 +28,7 @@ class Anticipo extends Component
     // Guarda el comprobante de pago del anticipo
     public function store(){
         // Si ya existe un comprobante, muestra error y no permite continuar
-        if ($this->anticipo->archivo_comprobante_pago){
+        if ($this->anticipo->comprobante_pago){
             $this->addError('error', 'Este anticipo ya fué pagado');
             return redirect()->back();
         }

@@ -160,7 +160,7 @@
             ]) id="acciones" style="">
             <ul class="nav ms-4">
               <li @class(['active' => request()->is('presupuesto'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuesto') }}">
+                <a @class(['active' => request()->is('presupuesto'), 'nav-link' => true]) href="{{ route('presupuestos-admin') }}">
                   <span class="sidenav-mini-icon"> P </span>
                   <span class="sidenav-normal"> Presupuesto </span>
                 </a>

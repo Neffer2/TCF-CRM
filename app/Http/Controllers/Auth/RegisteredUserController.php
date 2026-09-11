@@ -44,7 +44,10 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'telefono' => $request->telefono,
-            'password' => Hash::make($request->password), 
+            'password' => Hash::make($request->password),
+            // Las cuentas nuevas quedan suspendidas hasta que un administrador
+            // les asigne un rol; sin esto, cualquier visitante entraba como Comercial.
+            'rol' => 4,
         ]);
 
         event(new Registered($user));

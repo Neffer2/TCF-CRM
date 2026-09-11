@@ -21,7 +21,7 @@ class HomeController extends Controller
         }elseif (Auth::user()->rol == 2){
             return redirect()->route('dashboard-com');
         }elseif (Auth::user()->rol == 3){
-            return redirect()->route('dashboard-con');
+            return redirect()->route('dashboard-contabilidad');
         }elseif (Auth::user()->rol == 5){
             return redirect()->route('dashboard-asis');
         }elseif (Auth::user()->rol == 6){
@@ -33,6 +33,10 @@ class HomeController extends Controller
         }elseif (Auth::user()->rol == 9){
             return redirect()->route('dashboard-contabilidad');
         }
+
+        // Roles sin dashboard (suspendidos o pendientes de activación)
+        Auth::logout();
+        return redirect()->route('login')->withErrors(['email' => 'Tu cuenta está pendiente de activación. Contacta al administrador.']);
     }
 
     public function showProveedores (){

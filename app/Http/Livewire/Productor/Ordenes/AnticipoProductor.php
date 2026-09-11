@@ -141,7 +141,7 @@ class AnticipoProductor extends Component
             'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
             'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
             'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
-            'valor_unitario' => 'required|min: 1numeric|max:'.$this->limiteValorUnitario,
+            'valor_unitario' => 'required|numeric|min:1|max:'.$this->limiteValorUnitario,
             'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal,
             'valor_anticipo' => 'required|numeric|min: 1'
         ]);

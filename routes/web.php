@@ -40,7 +40,7 @@ Route::get('/', function () {
     Route::get('/base-comercial-general/{filtro?}', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth'])->middleware(['admin'])->name('base-comercial-general');
     Route::get('/helisa-general', [AdminController::class, 'showHelisaGeneral'])->middleware(['auth'])->middleware(['admin'])->name('helisa-general');
     Route::get('/export-helisa/{comercial?}/{centro?}', [AdminController::class, 'exportHelisa'])->middleware(['auth'])->middleware(['admin'])->name('export-helisa');
-    Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto');
+    Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuestos-admin');
     Route::get('/presupuesto-proyecto', [AdminController::class, 'showPresupuestosProyecto'])->middleware(['auth'])->middleware(['admin'])->name('presupuesto-proyecto');
     Route::get('/ordenes-compra', [AdminController::class, 'showOrdenesCompra'])->middleware(['auth'])->middleware(['admin'])->name('ordenes-compra');
     Route::get('/ordenes-compra/pdf/{orden}', [AdminController::class, 'ordenCompraPdf'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra.pdf');
@@ -148,7 +148,6 @@ Route::get('/', function () {
 Route::get('trial-mail', function (){
     return view('mails.grGenerado');
 });
-require __DIR__.'/auth.php';
 
 Route::get('trial', function (){
     return view('exports.orden_compra_pdf');

@@ -15,7 +15,7 @@
             <li>OC: {{ $cod_oc }}</li>
             <li>GR: {{ $gr }}</li>
         </ul>
-        Por favor radicar en Facturacion.proveedores@bullmarketing.com.co con copia a compras@bullmarketing.com. <br><br>
+        Por favor radicar en Facturacion.proveedores@bullmarketing.com.co con copia a compras@bullmarketing.com.co. <br><br>
         
         Cordialmente,<br>
         Saludos.
