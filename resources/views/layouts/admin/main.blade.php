@@ -97,7 +97,7 @@
                   <span class="sidenav-normal"> Actualizaciones </span>
                 </a>
               </li>
-              @if(Auth::user()->id == 8 || Auth::user()->id == 10)
+              @if(Auth::user()->can('ver-menu-admin-avanzado'))
                   <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
                       <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
                           <span class="sidenav-mini-icon text-xs"> C </span>
@@ -232,6 +232,7 @@
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            @include('components.selector-rol')
             <li class="nav-item d-flex align-items-center">
               @auth
                 <form action="{{ route('logout') }}" method="POST">

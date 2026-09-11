@@ -26,8 +26,8 @@ class ValidacionesPresto extends Component
     public $años; // Lista de años disponibles (Collection)
     public $yearInfo; // Información detallada del año seleccionado
 
-    // Variables que contienen los ids de los Lideres Comerciales y de los Gerentes
-    public $gerentes = [8, 10];
+    // Lideres comerciales (la condición de gerente ahora es el permiso
+    // 'gerente-comercial', administrable en BD)
     public $lideres_comerciales = [];
 
     public function render()
@@ -62,7 +62,7 @@ class ValidacionesPresto extends Component
                 ->paginate(15);
         }
         // Validamos si el usuario es Gerente
-        elseif (in_array(Auth::user()->id, $this->gerentes)) {
+        elseif (Auth::user()->can('gerente-comercial')) {
             array_push($filtros, ['estado_id', 5]);
 
             // Obtenemos el listado de presupuestos

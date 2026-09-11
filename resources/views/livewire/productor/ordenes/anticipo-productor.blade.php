@@ -571,7 +571,7 @@
                     @endif
 
                 {{-- Gerencia --}}
-                @elseif (Auth::user()->rol == 1 && ( Auth::user()->id == 8 || Auth::user()->id == 10 ))
+                @elseif (Auth::user()->can('revisar-anticipos-gerencia'))
                     {{-- Validación inicial --}}
                     @if ($queriedAnticipo->estado_id == 9)
                         <div class="row m-0">

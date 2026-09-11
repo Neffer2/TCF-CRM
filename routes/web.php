@@ -175,6 +175,18 @@ Route::get('/', function () {
     })->middleware(['auth', 'tesoreria'])->name('detalle-anticipo-tesoreria');
 /* --- */
 
+/* Cambio de rol activo (multi-rol por cuenta única) */
+    Route::post('/cambiar-rol/{rol}', function ($rol) {
+        if (!auth()->user()->puedeUsarRol($rol)) {
+            return redirect()->route('dashboard')->withErrors(['rol' => 'No tienes asignado ese rol.']);
+        }
+        $user = auth()->user();
+        $user->rol = $rol;
+        $user->save();
+        return redirect()->route('dashboard')->with('success', 'Cambiaste de rol correctamente.');
+    })->middleware(['auth'])->name('cambiar-rol');
+/* --- */
+
 /* PÚBLICO */
     // El enlace del tercero viaja FIRMADO (URL::signedRoute desde el SMS):
     // el id de orden era secuencial y cualquiera podia iterar ?orden=1,2,3...

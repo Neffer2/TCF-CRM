@@ -206,7 +206,7 @@
                             </div>
                         </div>
                     </div>
-                    @if(Auth::user()->id == 208 || Auth::user()->id == 197 || Auth::user()->id == 214 || Auth::user()->id == 145 || Auth::user()->id == 181 || Auth::user()->id == 210 || Auth::user()->id == 206 || Auth::user()->id == 171 || Auth::user()->id == 2)
+                    @if(Auth::user()->can('gestionar-presupuestos-especiales'))
                     <div class="col-md-3">
                         <div class="card">
                             <div class="card-header p-0 mt-3 col-md-12">
@@ -1039,7 +1039,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($estadoValidator == 5 && (Auth::user()->id == 8 || Auth::user()->id == 10 || Auth::user()->id == 192))
+                    @elseif ($estadoValidator == 5 && Auth::user()->can('aprobar-presupuestos'))
                         {{-- GERENCIA --}}
                         <div class="col-md-12 p-2">
                             <div class="row gy-0">

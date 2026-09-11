@@ -48,6 +48,17 @@ class User extends Authenticatable
         return $this->hasOne(Rol::class, 'id', 'rol');
     }
 
+    // Roles que esta cuenta PUEDE usar (users.rol es el rol ACTIVO).
+    // Permite que una persona tenga varios roles sin cuentas duplicadas.
+    public function roles(){
+        return $this->belongsToMany(Rol::class, 'role_user', 'user_id', 'rol_id')->withTimestamps();
+    }
+
+    public function puedeUsarRol($rolId): bool
+    {
+        return $this->roles()->where('roles_user.id', $rolId)->exists();
+    }
+
     public function asistente(){
         return $this->hasMany(Asistente::class, 'comercial_id', 'id');
     }

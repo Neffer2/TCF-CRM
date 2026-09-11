@@ -177,7 +177,7 @@
                             </div>
                         </div>
                     </div>
-                @elseif((Auth::user()->id == 8 || Auth::user()->id == 10) && $orden_nomina->estado_id == 9)
+                @elseif(Auth::user()->can('validar-nomina') && $orden_nomina->estado_id == 9)
                     {{-- REVISIÓN GERENCIA --}}
                     <div class="row px-4">
                         <div class="col-md-12">
@@ -544,7 +544,7 @@
                             </div>
                         </div>
                     </div>
-                @elseif(($orden_nomina && ($orden_nomina->estado_id == 14) && (Auth::user()->rol == 1 && Auth::user()->id == 181)))
+                @elseif(($orden_nomina && ($orden_nomina->estado_id == 14) && Auth::user()->can('validar-nomina')))
                     {{-- GOOD RECEIVE - LIDER CONTROLLER --}}
                     <div class="row px-4">
                         <div class="row mb-3" x-data="{ accion: true }" x-cloak>

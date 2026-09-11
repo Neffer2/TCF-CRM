@@ -60,7 +60,7 @@ class ActualizacionesPresto extends Component
         }
 
         // Admin Gerencia
-        $admin = in_array(Auth::id(), [10, 8, 26, 71, 198]);
+        $admin = Auth::user()->can('gerente-comercial');
         
         // Para rol 1: ajustar según si es gerencia o revisión líder
         if ($this->rol == 1 && !$admin){

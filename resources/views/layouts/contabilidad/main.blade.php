@@ -113,6 +113,7 @@
             </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
+            @include('components.selector-rol')
             <li class="nav-item d-flex align-items-center">
               @auth
                 <form action="{{ route('logout') }}" method="POST">

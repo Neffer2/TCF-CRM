@@ -7,92 +7,8 @@ use App\Models\User;
 
 trait Email
 {
-    public $controller = [
-        [
-            'name'=> 'Lider Controller',
-            'email'=> 'Lider.Controller@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Equipo Controller',
-            'email'=> 'controller@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Susana Bautista',
-            'email'=> 'Susana.Bautista@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Auxiliar Comercial',
-            'email'=> 'Auxiliar.Comercial@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Maria Guerrero',
-            'email'=> 'Maria.Guerrero@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Coordinador Proyectos',
-            'email'=> 'Coordinador.Proyectos@bullmarketing.com.co'
-        ],
-        [
-            
-            'name'=> 'Katherine Galvis',
-            'email'=> 'Katherine.Galvis@bullmarketing.com.co'
-        ],
-        [
-            
-            'name'=> 'Carlos Gómez',
-            'email'=> 'Carlos.Gomez@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Brandon Vega',
-            'email'=> 'Brandon.Vega@bullmarketing.com.co'
-        ]
-    ];
-
-    public $produccion = [
-        [
-            'name'=> 'Fernando Paez',
-            'email'=> 'fernando.paez@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Geraldin Parada',
-            'email'=> 'geraldin.parada@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Jesica Ramirez',
-            'email'=> 'jesica.ramirez@bullmarketing.com.co'
-        ]
-    ];
-
-    public $contabilidad = [
-        [
-            'name'=> 'Diana Bohorquez',
-            'email'=> 'diana.bohorquez@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Facturación Proveedores',
-            'email'=> 'facturacion.proveedores@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Auxiliar Contable',
-            'email'=> 'auxiliar.contable@bullmarketing.com.co'
-        ]
-    ];
-    public $lider_comercial = [
-        [
-            'name' => 'Nefer Barragan',
-            'email' => 'Neffer.Barragan@bullmarketing.com.co'
-        ],
-    ];
-    public $tesoreria = [
-        [
-            'name'=> 'Tesorería',
-            'email'=> 'tesoreria@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Tesorería',
-            'email'=> 'Ligia.Torres@bullmarketing.com.co'
-        ]
-    ];
+    // El directorio de destinatarios por área vive ahora en la tabla
+    // notificacion_destinatarios (App\Models\NotificacionDestinatario::area()).
 
     /* PRESUPEUSTOS */
     public function presupuestoValidacionLiderComercial($presto, $user)
@@ -111,7 +27,7 @@ trait Email
             $body .= "<br><b>{$user->name}</b> ha realizado las siguientes observaciones: {$presto->justificacion}.";
         }
 
-        array_push($recipients, ...$this->lider_comercial);
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('lider_comercial'));
 
         $altBody = "NOTIFICACIÓN CRM";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
@@ -122,42 +38,13 @@ trait Email
         $recipients = [];
         $cc = [];
 
-        // COMPRAS - Alejo / CLARO JHONY
-        if ($presto->margen_proy > 35 && (!$presto->gestion->claro)){
-            $admin_id = 30;
-        }elseif ($presto->margen_proy > 35 && $presto->gestion->claro){
-            $admin_id = 36;
-        }elseif ($presto->margen_proy <= 35 && (!$presto->gestion->claro)){
-            $admin_id = 8;
-
-            // array_push($recipients, [
-            //     'name'=> 'Adriana Trujillo',
-            //     'email'=> 'adriana.trujillo@bullmarketing.com.co',
-            // ]);
-
-            // array_push($recipients, [
-            //     'name'=> 'Cristian Rodriguez',
-            //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-            // ]);
-        }elseif ($presto->margen_proy <= 35 && $presto->gestion->claro){
-            $admin_id = 10;
-
-            array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
-            ]);
+        // Decisión de negocio (11-sep-2026): TODA aprobación de margen es
+        // exclusiva del rol Gerencia. Los aprobadores salen del permiso
+        // 'aprobador-margen' (BD), no de IDs quemados por margen/cliente.
+        $recipients = \App\Models\Permiso::usuariosCon('aprobador-margen');
+        if (empty($recipients)) {
+            \Log::error('presupuestoAprobacion: no hay usuarios con el permiso aprobador-margen; el correo de aprobación no tiene destinatarios.');
         }
-
-        $recipient = User::select('name', 'email')->find($admin_id);
-        array_push($recipients, [
-            'name'=> $recipient->name,
-            'email'=> $recipient->email
-        ]);
-
-        // array_push($recipients, [
-        //     'name'=> 'Nefer Barragan',
-        //     'email'=> 'Neffer.Barragan@bullmarketing.com.co'
-        // ]);
 
         if ($presto->cod_cc){
             $body = "El presupuesto <b>{$presto->gestion->nom_proyecto_cot}</b> con centro de costos: <b>{$presto->cod_cc}</b> de <b>{$user->name}</b> fué actualizado.";
@@ -195,33 +82,10 @@ trait Email
             }
         }
 
-        if ($gestion->presupuesto->margen_proy <= 35 && (!$gestion->claro)){
-            $admin_id = 8;
-
-            // array_push($recipients, [
-            //     'name'=> 'Adriana Trujillo',
-            //     'email'=> 'adriana.trujillo@bullmarketing.com.co',
-            // ]);
-
-            // array_push($recipients, [
-            //     'name'=> 'Cristian Rodriguez',
-            //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-            // ]);
-        }elseif ($gestion->presupuesto->margen_proy <= 35 && $gestion->claro){
-            $admin_id = 10;
-
-            array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
-            ]);
-        }
-
+        // Los aprobadores de margen (Gerencia) reciben copia del resultado
+        // cuando el margen estuvo en la frontera de aprobación (<= 35%).
         if ($gestion->presupuesto->margen_proy <= 35){
-            $recipient = User::select('name', 'email')->find($admin_id);
-            array_push($recipients, [
-                'name'=> $recipient->name,
-                'email'=> $recipient->email
-            ]);
+            array_push($recipients, ...\App\Models\Permiso::usuariosCon('aprobador-margen'));
         }
 
         array_push($recipients, [
@@ -242,37 +106,9 @@ trait Email
         $subject = "PRESUPUESTO ".$gestion->nom_proyecto_cot." RECHAZADO";
         $body = "El presupuesto del proyecto: <b>".$gestion->nom_proyecto_cot."</b> ha sido <b>RECHAZADO.</b>";
 
-        // COMPRAS - Alejo / CLARO JHONY
-        if ($gestion->presupuesto->margen_proy > 35 && (!$gestion->claro)){
-            $admin_id = 30;
-        }elseif ($gestion->presupuesto->margen_proy > 35 && $gestion->claro){
-            $admin_id = 36;
-        }elseif ($gestion->presupuesto->margen_proy <= 35 && !($gestion->claro)){
-            $admin_id = 8;
-
-            // array_push($recipients, [
-            //     'name'=> 'Adriana Trujillo',
-            //     'email'=> 'adriana.trujillo@bullmarketing.com.co'
-            // ]);
-
-            // array_push($recipients, [
-            //     'name'=> 'Cristian Rodriguez',
-            //     'email'=> 'cristhian.rodriguez@bullmarketing.com.co'
-            // ]);
-        }elseif ($gestion->presupuesto->margen_proy <= 35 && $gestion->claro){
-            $admin_id = 10;
-
-            array_push($recipients, [
-                'name'=> 'Sebastian Beltran',
-                'email'=> 'sebastian.beltran@bullmarketing.com.co'
-            ]);
-        }
-
-        $recipient = User::select('name', 'email')->find($admin_id);
-        array_push($recipients, [
-            'name'=> $recipient->name,
-            'email'=> $recipient->email
-        ]);
+        // Decisión de negocio (11-sep-2026): las aprobaciones/rechazos de
+        // margen son exclusivos de Gerencia (permiso 'aprobador-margen').
+        $recipients = \App\Models\Permiso::usuariosCon('aprobador-margen');
 
         array_push($recipients, [
             'name'=> $user->name,
@@ -316,7 +152,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, ...$this->produccion);
+        array_push($cc, ...\App\Models\NotificacionDestinatario::area('produccion'));
 
         $altBody = "ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." FIRMADA.";
 
@@ -338,7 +174,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, ...$this->produccion);
+        array_push($cc, ...\App\Models\NotificacionDestinatario::area('produccion'));
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." ENVIADAS";
 
@@ -347,7 +183,7 @@ trait Email
 
     public function actualizacionControllerPresupuesto($presupuesto)
     {
-        $recipients = $this->controller; // Lista de contactos definida en tu Trait
+        $recipients = \App\Models\NotificacionDestinatario::area('controller');
         $cc = [];
 
         $subject = "NOTIFICACIÓN BULLCRM - PRESUPUESTO PROYECTO #" . $presupuesto->cod_cc . " ACTUALIZADO / MODIFICADO";
@@ -379,7 +215,7 @@ trait Email
             'email'=> $orden->naturalInfo->productor->email
         ]);
 
-        array_push($cc, ...$this->produccion);
+        array_push($cc, ...\App\Models\NotificacionDestinatario::area('produccion'));
 
         $altBody = "EVIDENCIAS ORDEN DE TRABAJO ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." RECHAZADAS";
 
@@ -397,7 +233,7 @@ trait Email
         </p>";
 
 
-        array_push($recipients, ...$this->controller);
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('controller'));
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
@@ -414,7 +250,7 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        array_push($recipients, ...$this->contabilidad);
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('contabilidad'));
 
         $altBody = "ORDEN DE COMPRA ".$orden->naturalInfo->tercero->nombre." ".$orden->naturalInfo->tercero->apellido." POR REVISAR";
 
@@ -438,7 +274,7 @@ trait Email
             Revisa y confirma que la información esté correctamente diligenciada.
         </p>";
 
-        array_push($recipients, ...$this->tesoreria);
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('tesoreria'));
 
         $altBody = "ORDEN DE COMPRA ".$terceroCompleto." POR REVISAR";
 
@@ -589,7 +425,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                foreach (\App\Models\NotificacionDestinatario::area('compras') as $d) { $mail->addAddress($d['email'], $d['name']); }
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
@@ -597,18 +433,15 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+                foreach (\App\Models\NotificacionDestinatario::area('compras_cc') as $d) { $mail->addCC($d['email'], $d['name']); }
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
             /* CONTABILIDAD */
                 if ($orden->proveedor->anticipo > 0){
-                    $mail->addCC('contadores@bullmarketing.com.co');
-                    $mail->addCC('tesoreria@bullmarketing.com.co');
+                    foreach (\App\Models\NotificacionDestinatario::area('contabilidad_pagos') as $d) { $mail->addCC($d['email'], $d['name']); }
                     // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                    $mail->addCC('nicol.riano@bullmarketing.com.co');
-                    $mail->addCC('katherine.galvis@bullmarketing.com.co');
+                    foreach (\App\Models\NotificacionDestinatario::area('compras_cc') as $d) { $mail->addCC($d['email'], $d['name']); }
                 }
             /* *** */
 
@@ -649,7 +482,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                foreach (\App\Models\NotificacionDestinatario::area('compras') as $d) { $mail->addAddress($d['email'], $d['name']); }
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
@@ -657,8 +490,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+                foreach (\App\Models\NotificacionDestinatario::area('compras_cc') as $d) { $mail->addCC($d['email'], $d['name']); }
 
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
@@ -702,7 +534,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
+                foreach (\App\Models\NotificacionDestinatario::area('compras') as $d) { $mail->addAddress($d['email'], $d['name']); }
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
@@ -710,8 +542,7 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+                foreach (\App\Models\NotificacionDestinatario::area('compras_cc') as $d) { $mail->addCC($d['email'], $d['name']); }
             /* *** */
 
             $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
@@ -753,7 +584,7 @@ trait Email
             //Recipients
             $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
             /* COMPRAS */
-                $mail->addAddress('Compras@bullmarketing.com.co', 'Compras');
+                foreach (\App\Models\NotificacionDestinatario::area('compras') as $d) { $mail->addAddress($d['email'], $d['name']); }
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
@@ -761,14 +592,12 @@ trait Email
                 $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
-                $mail->addCC('nicol.riano@bullmarketing.com.co');
-                $mail->addCC('katherine.galvis@bullmarketing.com.co');
+                foreach (\App\Models\NotificacionDestinatario::area('compras_cc') as $d) { $mail->addCC($d['email'], $d['name']); }
                 $mail->addCC($orden->proveedor->correo, $orden->proveedor->contacto);
             /* *** */
 
             /* CONTABILIDAD */
-                $mail->addCC('contadores@bullmarketing.com.co');
-                $mail->addCC('tesoreria@bullmarketing.com.co');
+                foreach (\App\Models\NotificacionDestinatario::area('contabilidad_pagos') as $d) { $mail->addCC($d['email'], $d['name']); }
             /* *** */
 
             $archivo_pago = str_replace('public/', '', $orden->archivo_comprobante_pago);
