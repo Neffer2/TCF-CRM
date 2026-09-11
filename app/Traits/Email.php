@@ -3,7 +3,7 @@
 namespace App\Traits;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use App\models\User;
+use App\Models\User;
 
 trait Email
 {
@@ -184,7 +184,16 @@ trait Email
 
         $altBody = "Se ha Aprobado el presupuesto: ".$gestion->nom_proyecto_cot;
         $recipients = [];
-        $cc = $user->asistente;
+        // Copia a los ejecutivos/asistentes del comercial. La relación
+        // devuelve modelos Eloquent (y el email vive en el usuario ejecutivo),
+        // por eso se transforma al formato de arrays que espera sendMail:
+        // antes se pasaban los modelos y el CC se descartaba en silencio.
+        $cc = [];
+        foreach ($user->asistente as $asistenteRel) {
+            if ($asistenteRel->ejecutivo) {
+                $cc[] = ['name' => $asistenteRel->ejecutivo->name, 'email' => $asistenteRel->ejecutivo->email];
+            }
+        }
 
         if ($gestion->presupuesto->margen_proy <= 35 && (!$gestion->claro)){
             $admin_id = 8;
@@ -275,7 +284,16 @@ trait Email
         }
 
         $altBody = "Se ha rechazado el presupuesto: ".$gestion->nom_proyecto_cot;
-        $cc = $user->asistente;
+        // Copia a los ejecutivos/asistentes del comercial. La relación
+        // devuelve modelos Eloquent (y el email vive en el usuario ejecutivo),
+        // por eso se transforma al formato de arrays que espera sendMail:
+        // antes se pasaban los modelos y el CC se descartaba en silencio.
+        $cc = [];
+        foreach ($user->asistente as $asistenteRel) {
+            if ($asistenteRel->ejecutivo) {
+                $cc[] = ['name' => $asistenteRel->ejecutivo->name, 'email' => $asistenteRel->ejecutivo->email];
+            }
+        }
 
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
@@ -606,7 +624,10 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
+            // El valor de retorno de estos metodos no lo usa ningun caller:
+            // el redirect se descartaba y el fallo quedaba invisible.
+            \Log::error("Fallo el envio de correo ({$mail->Subject}): {$mail->ErrorInfo}");
+            return false;
         }
     }
 
@@ -656,7 +677,10 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
+            // El valor de retorno de estos metodos no lo usa ningun caller:
+            // el redirect se descartaba y el fallo quedaba invisible.
+            \Log::error("Fallo el envio de correo ({$mail->Subject}): {$mail->ErrorInfo}");
+            return false;
         }
     }
 
@@ -704,7 +728,10 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
+            // El valor de retorno de estos metodos no lo usa ningun caller:
+            // el redirect se descartaba y el fallo quedaba invisible.
+            \Log::error("Fallo el envio de correo ({$mail->Subject}): {$mail->ErrorInfo}");
+            return false;
         }
     }
 
@@ -756,7 +783,10 @@ trait Email
 
             $mail->send();
         } catch (Exception $e) {
-            return redirect()->back()->withErrors("Error: {$mail->ErrorInfo}")->withInput();
+            // El valor de retorno de estos metodos no lo usa ningun caller:
+            // el redirect se descartaba y el fallo quedaba invisible.
+            \Log::error("Fallo el envio de correo ({$mail->Subject}): {$mail->ErrorInfo}");
+            return false;
         }
     }
 }

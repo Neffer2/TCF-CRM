@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Traits;
-use App\models\User;
+use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 trait SMS
 {
@@ -46,7 +47,7 @@ trait SMS
 
     public function oc_natura_creada($tercero, $orden_id){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre ¡Bienvenido a Bull Marketing! \nCon este enlace: \n\n".
-        route('consulta-terceros')."?orden=".$orden_id
+        URL::signedRoute('consulta-terceros', ['orden' => $orden_id])
 
         ."\n \nPuedes completar tu información y aceptar los términos de tu contratación. \n \nBull Marketing la agencia del ¡Siempre se puede!";
 
@@ -55,7 +56,7 @@ trait SMS
 
     public function oc_evidencias($tercero, $orden_id){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre. \nUtiliza este enlace: \n\n".
-        route('consulta-terceros')."?orden=".$orden_id
+        URL::signedRoute('consulta-terceros', ['orden' => $orden_id])
 
         ."\n \nPara adjuntar las evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
 
@@ -64,7 +65,7 @@ trait SMS
 
     public function oc_evidencias_rechazadas($orden){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola ".$orden->naturalInfo->tercero->nombre.". \nTus evidencias fueron rechazadas. Utiliza este enlace: \n\n".
-        route('consulta-terceros')."?orden=".$orden->id
+        URL::signedRoute('consulta-terceros', ['orden' => $orden->id])
 
         ."\n \nPara revisar los comentarios de tus evidencias anteriores y adjuntar las nuevas evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
 

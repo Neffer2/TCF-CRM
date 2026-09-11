@@ -17,10 +17,12 @@ class ConsultaTerceros extends Component
         $filtro = []; // Filtros para la consulta
         $orden = null; // Variable para almacenar la orden encontrada
 
-        // Si se ingresó un número de orden
-        if ($this->numOrden) {
+        // La orden autorizada viene de la sesión (fijada en mount con el
+        // enlace firmado), nunca del valor sincronizado por el navegador.
+        $ordenAutorizada = session('portal_terceros_orden');
+        if ($ordenAutorizada) {
             // Agrega filtros por id de la orden y tipo de orden (2 = natural)
-            array_push($filtro, ['id', $this->numOrden]);
+            array_push($filtro, ['id', $ordenAutorizada]);
             array_push($filtro, ['tipo_oc', 2]);
 
             // Busca la orden con estado Editable (3) o Evidencias (7)
@@ -44,7 +46,14 @@ class ConsultaTerceros extends Component
     // Método que se ejecuta al montar el componente
     public function mount()
     {
-        // Si existe el parámetro GET 'orden', lo asigna a la variable numOrden
-        (isset($_GET['orden'])) ? $this->numOrden = $_GET['orden'] : $this->numOrden = null;
+        // La firma del enlace ya fue validada por el middleware 'signed'.
+        // La orden autorizada se fija en sesión: numOrden es una propiedad
+        // pública de Livewire (modificable desde el navegador aunque el
+        // input esté disabled) y no puede ser la fuente de autorización.
+        $ordenFirmada = request()->route('orden') ?? request()->query('orden');
+        if ($ordenFirmada) {
+            session(['portal_terceros_orden' => $ordenFirmada]);
+        }
+        $this->numOrden = session('portal_terceros_orden');
     }
 }

@@ -221,7 +221,9 @@ class AdminController extends Controller
     }
 
     public function reportePlanoHelisa($mes = null){
-        if (Auth::user()->rol == 1 || Auth::user()->rol == 10){
+        // Roles alineados con el middleware de la ruta (rol:1,9,10):
+        // admin, contabilidad y el rol 10 (existente solo en producción).
+        if (in_array(Auth::user()->rol, [1, 9, 10])){
             return Excel::download(new PlanoExport($mes), "reporte_plano_helisa-{$mes}.xlsx");
         }else {
             return redirect()->route('dashboard');
