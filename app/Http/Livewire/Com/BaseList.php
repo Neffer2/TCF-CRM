@@ -28,7 +28,9 @@ class BaseList extends Component
     // Renderiza la vista principal y aplica los filtros de búsqueda
     public function render()
     {
-        $filtros = [['id_user', $this->user_id]];
+        // El filtro de comercial REEMPLAZA al usuario base (antes quedaban
+        // dos condiciones id_user en AND y el filtro devolvía 0 resultados).
+        $filtros = [['id_user', $this->comercial ?: $this->user_id]];
 
         // Filtra por centro de costos si está seleccionado
         if($this->centro){
@@ -49,11 +51,6 @@ class BaseList extends Component
         // Filtra por estado si está seleccionado
         if ($this->estado){
             array_push($filtros, ['id_estado', $this->estado]);
-        }
-
-        // Filtra por comercial si está seleccionado
-        if($this->comercial){
-            array_push($filtros, ['id_user', $this->comercial]);
         }
 
         // Consulta los proyectos con los filtros aplicados y los pagina
@@ -98,11 +95,19 @@ class BaseList extends Component
 
     // Exporta los proyectos filtrados a un archivo Excel
     public function exportar(){
-        $filtros = [['id_user', $this->user_id]];
+        // El export aplica EXACTAMENTE los mismos filtros que la vista
+        // (antes ignoraba centro y nombre de proyecto: se exportaba algo
+        // distinto de lo que el usuario veía en pantalla).
+        $filtros = [['id_user', $this->comercial ?: $this->user_id]];
 
-        // Filtra por comercial si está seleccionado
-        if($this->comercial){
-            array_push($filtros, ['id_user', $this->comercial]);
+        // Filtra por centro de costos si está seleccionado
+        if($this->centro){
+            array_push($filtros, ['cod_cc', 'LIKE', "%$this->centro%"]);
+        }
+
+        // Filtra por nombre de proyecto si está seleccionado
+        if ($this->nomProyecto){
+            array_push($filtros, ['nom_proyecto', 'LIKE', "%$this->nomProyecto%"]);
         }
 
         // Filtra por año (rango de fechas del año)

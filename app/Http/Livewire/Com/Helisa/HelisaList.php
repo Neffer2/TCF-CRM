@@ -35,7 +35,7 @@ class HelisaList extends Component
 
         // Filtro por mes si se selecciona
         if ($this->mes){
-            array_push($filtros, ['mes', 'LIKE', "%$this->mes%"]);
+            array_push($filtros, ['mes', $this->mes]); // igualdad exacta: LIKE sobre ids mezclaba Ene(1) con Oct/Nov/Dic(10-12)
         }
 
         // Filtro por año: filtra por rango de fechas del año seleccionado
@@ -64,7 +64,7 @@ class HelisaList extends Component
 
     // Obtiene la lista de meses del año seleccionado
     public function getMeses(){
-        $this->meses = Mes::select('id','description')->where('ano_id', '<', $this->yearInfo->id)->get();
+        $this->meses = Mes::select('id','description')->where('ano_id', $this->yearInfo->id)->get();
     }
 
     // Obtiene la lista de cuentas contables

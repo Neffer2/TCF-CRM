@@ -18,9 +18,8 @@ class OrdenesTesoreria implements FromView
 
     function __construct($yearInfo = null) {
         ini_set('max_execution_time', 10000);
-        $this->ordenes = $ordenes = OrdenCompra::where([
+        $this->ordenes = $ordenes = OrdenCompra::whereNotNull('cod_causal')->where([
             ['estado_id', '5'],
-            ['cod_causal', '<>', 'NULL'],
             ['created_at', '>=', $yearInfo->meses->first()->f_inicio],
             ['created_at', '<=', $yearInfo->meses->last()->f_fin]
         ])

@@ -18,6 +18,12 @@ class ConsumidosExport implements FromView, WithColumnFormatting, WithColumnWidt
         ini_set('max_execution_time', 10000); // or this way
 
         $año = Carbon::now()->year;
+        // Si piden un mes futuro respecto al mes actual, se asume el año
+        // anterior (pedir "diciembre" en enero = diciembre pasado, no el
+        // diciembre vacio del año nuevo).
+        if ($mes && (int)$mes > (int)Carbon::now()->month) {
+            $año--;
+        }
         if ($mes) {
             $startDate = Carbon::createFromDate($año, $mes, 1)->startOfMonth()->toDateTimeString();
             $endDate = Carbon::createFromDate($año, $mes, 1)->endOfMonth()->toDateTimeString();

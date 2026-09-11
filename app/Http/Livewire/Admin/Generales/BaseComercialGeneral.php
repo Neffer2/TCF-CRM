@@ -167,10 +167,22 @@ class BaseComercialGeneral extends Component
             array_push($filtros, ['id_user', $this->comercial]);
         }
 
+        // Aplica filtro por centro de costos (igual que la vista: el export
+        // debe reflejar exactamente lo que el usuario está viendo)
+        if($this->centro){
+            array_push($filtros, ['cod_cc', 'LIKE', "%$this->centro%"]);
+        }
+
         // Aplica filtro por año si está seleccionado
         if($this->año){
             array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->first()->f_inicio]);
             array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->last()->f_fin]);
+        }
+
+        // Aplica filtro por mes específico (igual que la vista)
+        if ($this->mes){
+            array_push($filtros, ['fecha', '>=', $this->yearInfo->meses->find($this->mes)->f_inicio]);
+            array_push($filtros, ['fecha', '<=', $this->yearInfo->meses->find($this->mes)->f_fin]);
         }
 
         // Aplica filtro por estado si está seleccionado

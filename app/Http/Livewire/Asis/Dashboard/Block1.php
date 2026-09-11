@@ -235,12 +235,9 @@ class Block1 extends Component
     public function updatePresto_x_cumplir (){
         $this->presto_x_cumplir = 0;
         if ($this->presto_acumulado){
-            if (($this->cumpli_acum_venta_men - 100) > 100){
-                $this->presto_x_cumplir = 100;
-            }
-            else {
-                $this->presto_x_cumplir = ($this->cumpli_acum_venta_men - 100);
-            }
+            // Lo que FALTA por cumplir: 100 - cumplimiento, acotado a [0, 100].
+            // (La resta invertida producia porcentajes negativos.)
+            $this->presto_x_cumplir = max(0, min(100, 100 - $this->cumpli_acum_venta_men));
         }
     }
 }

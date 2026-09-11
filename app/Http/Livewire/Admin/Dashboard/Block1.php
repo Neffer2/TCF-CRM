@@ -264,9 +264,13 @@ class Block1 extends Component
             array_push($filters_array, ['mes_id', $mes->id]);
         }
 
-        // Si el mes es nulo pero hay comercial, muestra presupuesto acumulado hasta la fecha
-        if (is_null($mes) && $comercial != ""){
-            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
+        // Sin mes seleccionado, el presupuesto se acumula de enero al mes
+        // actual, CON o SIN comercial: antes la vista por defecto (sin
+        // comercial) comparaba venta de enero-a-hoy contra el presupuesto de
+        // los 12 meses y subestimaba el cumplimiento sistematicamente.
+        if (is_null($mes)){
+            $sqlComercial = ($comercial != "") ? " AND presupuestos.id_user = ".((int) $comercial) : "";
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año".$sqlComercial." AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
         }else {
             // Para casos normales, usa el query builder de Eloquent
             $presupuestos = Presupuesto::select('id', 'valor')
@@ -352,14 +356,9 @@ class Block1 extends Component
     public function updatePresto_x_cumplir (){
         $this->presto_x_cumplir = 0;
         if ($this->presto_acumulado){
-            // Si el cumplimiento excede el 200%, se limita al 100%
-            if (($this->cumpli_acum_venta_men - 100) > 100){
-                $this->presto_x_cumplir = 100;
-            }
-            else {
-                // Calcula cuánto falta para cumplir el 100% (puede ser negativo si ya se cumplió)
-                $this->presto_x_cumplir = ($this->cumpli_acum_venta_men - 100);
-            }
+            // Lo que FALTA por cumplir: 100 - cumplimiento, acotado a [0, 100].
+            // (La resta invertida producia porcentajes negativos.)
+            $this->presto_x_cumplir = max(0, min(100, 100 - $this->cumpli_acum_venta_men));
         }
     }
 }

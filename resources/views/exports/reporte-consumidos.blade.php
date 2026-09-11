@@ -18,8 +18,8 @@
             <td style="text-align: center; font-weight: bold;">TIPO</td>
             <td style="text-align: center; font-weight: bold;">NUM ITEM</td>
             <td style="text-align: center; font-weight: bold;">CANT</td>
-            <td style="text-align: center; font-weight: bold;">HORAS</td>
             <td style="text-align: center; font-weight: bold;">DIAS</td>
+            <td style="text-align: center; font-weight: bold;">OTROS</td>
             <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (OC)</td>
             <td style="text-align: center; font-weight: bold;">VALOR TOTAL (OC)</td>
             <td style="text-align: center; font-weight: bold;">VALOR UNITARIO (ITEM)</td>
@@ -61,7 +61,7 @@
                     <td>{{ $ocItem->vtotal_oc }}</td>
                     <td>{{ $ocItem->itemPresupuesto->v_unitario }}</td>
                     <td>{{ $ocItem->itemPresupuesto->v_total }}</td>
-                    <td>{{ ($ocItem->itemPresupuesto->v_total - $ocItem->vtotal_oc) }}</td>
+                    <td>{{ $ocItem->itemPresupuesto->v_total - $ocItem->itemPresupuesto->consumidos->filter(function ($c) { return $c->OrdenCompra && $c->OrdenCompra->estado_id != 6; })->sum('vtotal_oc') }}</td>
                     <td>{{ $ocItem->created_at }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_envio_produccion }}</td>
                     <td>{{ $ocItem->OrdenCompra->fecha_aprobacion }}</td>
