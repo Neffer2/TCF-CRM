@@ -140,6 +140,41 @@ Route::get('/', function () {
     Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
 /* --- */
 
+/* Anticipos (flujo nuevo): rutas que el código invocaba pero nunca fueron definidas */
+    // Productor
+    Route::view('/lista-anticipos-prod', 'productor.anticipos.index')->middleware(['auth', 'productor'])->name('lista-anticipos-prod');
+    Route::get('/anticipo-prod/{anticipo_id}', function ($anticipo_id){
+        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        return view('productor.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
+    })->middleware(['auth', 'productor'])->name('anticipo-prod');
+    Route::view('/solicitud-anticipo-prod', 'productor.ordenes.anticipo')->middleware(['auth', 'productor'])->name('solicitd-anticipo-prod');
+    Route::get('/ordenes-nomina-prod/{orden_id?}', function ($orden_id = null){
+        return view('productor.ordenes.nomina', ['orden_id' => $orden_id]);
+    })->middleware(['auth', 'productor'])->name('ordenes-nomina-prod');
+
+    // Líder de producción
+    Route::view('/lista-anticipos-lid', 'lider-produccion.anticipos.index')->middleware(['auth', 'lproduccion'])->name('lista-anticipos-lid');
+    Route::get('/anticipo-lid/{anticipo_id}', function ($anticipo_id){
+        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        return view('lider-produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
+    })->middleware(['auth', 'lproduccion'])->name('anticipo-lid');
+    Route::view('/ordenes-compra-lid', 'lider-produccion.ordenes.index')->middleware(['auth', 'lproduccion'])->name('ordenes-compra-lid');
+
+    // Admin
+    Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth', 'admin'])->name('lista-anticipos-admin');
+    Route::view('/anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth', 'admin'])->name('anticipos-admin');
+    Route::get('/anticipo-admin/{anticipo_id}', function ($anticipo_id){
+        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
+    })->middleware(['auth', 'admin'])->name('anticipo-admin');
+
+    // Tesorería (con esto la cola de pago del flujo nuevo por fin es alcanzable)
+    Route::view('/lista-anticipos-tesoreria', 'tesoreria.anticipos_.index')->middleware(['auth', 'tesoreria'])->name('lista-anticipos-tesoreria');
+    Route::get('/detalle-anticipo-tesoreria/{anticipo_id}', function ($anticipo_id){
+        return view('tesoreria.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth', 'tesoreria'])->name('detalle-anticipo-tesoreria');
+/* --- */
+
 /* PÚBLICO */
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
 /* --- */
