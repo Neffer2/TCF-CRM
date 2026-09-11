@@ -24,6 +24,11 @@ class Anticipo extends Component
 
     // Guarda la causación del anticipo
     public function store(){ 
+        // Solo se causa un anticipo aprobado (estado 1)
+        if ($this->anticipo->estado_id != 1){
+            $this->addError('error', 'El anticipo no está en un estado válido para causarse.');
+            return redirect()->back();
+        }
         // Si ya existe un comprobante de pago, muestra error y redirige
         if ($this->anticipo->comprobante_pago){
             $this->addError('error', 'Este anticipo ya fué pagado');
@@ -51,6 +56,11 @@ class Anticipo extends Component
 
     // Rechaza la causación del anticipo y actualiza el estado
     public function rechazar(){
+        // Solo se rechaza un anticipo aprobado pendiente de causar (estado 1)
+        if ($this->anticipo->estado_id != 1){
+            $this->addError('error', 'El anticipo no está en un estado válido para rechazarse.');
+            return redirect()->back();
+        }
         // Valida que la observación sea obligatoria
         $this->validate([
             'observacion_causacion' => 'required|string'

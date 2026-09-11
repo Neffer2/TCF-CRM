@@ -96,6 +96,10 @@ class Natural extends Component
     **/
     // Agrega un nuevo item a la orden de compra
     public function newItem(){
+        // El valor total se deriva en servidor (cantidad x valor unitario),
+        // nunca del valor sincronizado desde el navegador.
+        $this->getValorTotal();
+
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
@@ -168,14 +172,19 @@ class Natural extends Component
 
     // Edita un item existente en la orden de compra
     public function actionEdit(){
+        // Recalcula límites y valor total en servidor: la edición debe
+        // respetar los mismos topes de presupuesto que la creación.
+        $this->getItemLimite();
+        $this->getValorTotal();
+
         $this->validate([
             'presupuesto' => 'required',
             'item_presupuesto' => 'required',
-            'cantidad' => 'required',
-            'dias' => 'required',
-            'otros' => 'required',
-            'valor_unitario' => 'required',
-            'valor_total' => 'required',
+            'cantidad' => 'required|numeric|min:1|max:'.$this->limiteCantidad,
+            'dias' => 'required|numeric|min:1|max:'.$this->limiteDias,
+            'otros' => 'required|numeric|min:1|max:'.$this->limiteOtros,
+            'valor_unitario' => 'required|numeric|min:1|max:'.$this->limiteValorUnitario,
+            'valor_total' => 'required|numeric|min:1|max:'.$this->limiteValorTotal,
             'tipo_servicio' => 'required|string',
             'tipo_contrato' => 'required|string',
         ]);
@@ -318,6 +327,14 @@ class Natural extends Component
     **/
     // Actualiza una orden de compra existente con los nuevos items y estado
     public function updateOC(){
+        // Solo un admin o el productor dueño de la orden pueden actualizarla.
+        $esDueño = $this->queriedOrden->naturalInfo
+            && $this->queriedOrden->naturalInfo->productor_id == Auth::user()->id;
+        if (!(Auth::user()->rol == 1 || (Auth::user()->rol == 7 && $esDueño))) {
+            $this->addError('items-error', 'No tienes permisos para actualizar esta orden.');
+            return back();
+        }
+
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
             return back();
@@ -444,6 +461,20 @@ class Natural extends Component
 
     // Elimina una orden de compra y sus relaciones
     public function deleteOrden(){
+        // Solo el productor dueño o un admin, y solo en estado editable (3)
+        // o pendiente de contrato/evidencias (7): borrar una orden aprobada
+        // o comprobada "liberaba" presupuesto ya ejecutado sin dejar rastro.
+        $esDueño = $this->queriedOrden->naturalInfo
+            && $this->queriedOrden->naturalInfo->productor_id == Auth::user()->id;
+        if (!(Auth::user()->rol == 1 || (Auth::user()->rol == 7 && $esDueño))) {
+            $this->addError('items-error', 'No tienes permisos para eliminar esta orden.');
+            return back();
+        }
+        if (!in_array($this->queriedOrden->estado_id, [3, 7])) {
+            $this->addError('items-error', 'Una orden aprobada o en revisión no se puede eliminar; usa la anulación.');
+            return back();
+        }
+
         $this->queriedOrden->ordenItems()->delete();
         $this->queriedOrden->naturalInfo()->delete();
         $this->queriedOrden->evidencias()->delete();
@@ -478,6 +509,24 @@ class Natural extends Component
     */
     // Valida y sube el archivo de evidencia para la orden de compra
     public function validateEvidencia($estado){
+        // GUARDIA: solo aprobar (5) o rechazar (7) evidencias, solo por un
+        // admin o por el productor dueño de la orden, y solo cuando la orden
+        // está en revisión (2). Cualquier otro valor de $estado se rechaza.
+        if (!in_array($estado, [5, 7])) {
+            $this->addError('items-error', 'Transición de estado no permitida.');
+            return back();
+        }
+        $esDueño = $this->queriedOrden->naturalInfo
+            && $this->queriedOrden->naturalInfo->productor_id == Auth::user()->id;
+        if (!(Auth::user()->rol == 1 || (Auth::user()->rol == 7 && $esDueño))) {
+            $this->addError('items-error', 'No tienes permisos para realizar esta acción.');
+            return back();
+        }
+        if ($this->queriedOrden->estado_id != 2) {
+            $this->addError('items-error', 'La orden no está en un estado válido para esta acción.');
+            return back();
+        }
+
         if ($estado == 5) {
             $this->validate([
                 'cod_oc' => 'required|string',

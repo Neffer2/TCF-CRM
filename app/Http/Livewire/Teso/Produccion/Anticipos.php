@@ -31,11 +31,15 @@ class Anticipos extends Component
             $query->where('estado_id', $this->estado);
         }
 
-        // Filtra por año (rango de fechas del año)
-        if ($this->año && $this->yearInfo) {
+        // Filtra por año (rango de fechas del año). La información del año se
+        // resuelve aquí en cada request: $yearInfo no era una propiedad
+        // persistida por Livewire y el filtro se perdía en silencio al
+        // paginar o filtrar.
+        $yearInfo = $this->año ? Año::find($this->año) : null;
+        if ($yearInfo && $yearInfo->meses->isNotEmpty()) {
             $query->whereBetween('created_at', [
-                $this->yearInfo->meses->first()->f_inicio,
-                $this->yearInfo->meses->last()->f_fin
+                $yearInfo->meses->first()->f_inicio,
+                $yearInfo->meses->last()->f_fin
             ]);
         }
 
@@ -45,8 +49,8 @@ class Anticipos extends Component
         }
 
         // Filtro obligatorio: Solo órdenes con causal (anticipo) y sin comprobante de pago
+        // (la comparación con el texto literal 'NULL' era un accidente; whereNotNull basta)
         $query->whereNotNull('cod_causal')
-            ->where('cod_causal', '<>', 'NULL')
             ->whereNull('archivo_comprobante_pago');
 
         // Filtra por código de centro de costos
@@ -121,15 +125,13 @@ class Anticipos extends Component
         $this->años = Año::all();
         /* CURRENT YEAR */
         $this->año = $this->años->sortByDesc('description')->first()->id;
-        $this->updatedAño();
     }
 
-    // Cuando se actualiza el año, valida y carga la información del año seleccionado
+    // Cuando se actualiza el año, solo valida: la información del año se
+    // resuelve en render() a partir de $this->año en cada request.
     public function updatedAño(){
         $this->validate([
             'año' => 'required'
         ]);
-
-        $this->yearInfo = Año::find($this->año);
     }
 }

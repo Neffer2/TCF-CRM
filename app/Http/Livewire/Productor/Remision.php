@@ -45,6 +45,25 @@ class Remision extends Component
 
         // Busca la orden de compra
         $orden = OrdenCompra::find($this->orden);
+
+        // GUARDIAS: la orden debe existir, pertenecer al productor
+        // autenticado y estar Aprobada (1). Antes cualquier productor podía
+        // marcar "Recibido" cualquier orden por URL, o re-firmar una recibida.
+        if (!$orden) {
+            $this->addError('remision', 'La orden indicada no existe.');
+            return redirect()->back();
+        }
+        $esDueño = ($orden->presupuesto && $orden->presupuesto->productor == auth()->user()->id)
+            || ($orden->naturalInfo && $orden->naturalInfo->productor_id == auth()->user()->id);
+        if (!$esDueño) {
+            $this->addError('remision', 'Esta orden no pertenece a tu producción.');
+            return redirect()->back();
+        }
+        if ($orden->estado_id != 1) {
+            $this->addError('remision', 'Solo una orden Aprobada puede recibirse; esta orden no está en ese estado.');
+            return redirect()->back();
+        }
+
         // Guarda el archivo PDF de la remisión
         $orden->archivo_remision = $this->remision->store('public/remisiones');
         // Define la ruta donde se guardará la firma
@@ -58,8 +77,8 @@ class Remision extends Component
         $data_uri = $data;
         $encoded_image = explode(",", $data_uri)[1];
         $decoded_image = base64_decode($encoded_image);
-        // Guarda la firma como archivo PNG en storage
-        file_put_contents("storage/firmas_produccion/$this->orden.png", $decoded_image);
+        // Guarda la firma vía Storage (la ruta relativa al CWD fallaba con artisan serve)
+        Storage::put("public/firmas_produccion/{$this->orden}.png", $decoded_image);
 
         // Actualiza la orden en la base de datos
         $orden->update();

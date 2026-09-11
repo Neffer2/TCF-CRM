@@ -65,13 +65,34 @@ class AnticipoJuridico extends Component
         }
     }
 
+    // El total SIEMPRE se deriva en servidor de la orden y el porcentaje:
+    // nunca del valor sincronizado desde el navegador.
+    private function calcularTotalAnticipo() {
+        $ordenDb = OrdenCompra::find($this->orden_compra);
+        if (!$ordenDb || !$this->porcentaje_anticipo) {
+            return null;
+        }
+        return ($ordenDb->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
+    }
+
     public function nuevoAnticipoJuridico() {
+        // Solo un productor solicita anticipos, y solo sobre sus órdenes
+        if (Auth::user()->rol != 7) {
+            $this->addError('orden_compra', 'Solo un productor puede solicitar anticipos.');
+            return back();
+        }
+        if (!$this->ordenes || !$this->ordenes->find($this->orden_compra)) {
+            $this->addError('orden_compra', 'La orden seleccionada no está disponible para anticipos.');
+            return back();
+        }
+
         $this->validate([
             'orden_compra' => 'required|unique:anticipos,oc_id',
             'orden' => 'required',
             'porcentaje_anticipo' => 'required|numeric|min:0|max:100',
-            'total_anticipo' => 'required|numeric|min:0',
         ]);
+
+        $this->total_anticipo = $this->calcularTotalAnticipo();
 
         ModelAnticipo::create([
             'oc_id' => $this->orden_compra,
@@ -87,28 +108,42 @@ class AnticipoJuridico extends Component
     }
 
     public function actualizarAnticipoJuridico() {
+        // Aprobar un anticipo jurídico es acción de gerencia/admin,
+        // y solo desde el estado de revisión (2).
+        if (Auth::user()->rol != 1) {
+            $this->addError('orden_compra', 'No tienes permisos para aprobar anticipos.');
+            return back();
+        }
+        if (!$this->queriedAnticipo || $this->queriedAnticipo->estado_id != 2) {
+            $this->addError('orden_compra', 'El anticipo no está en un estado válido para aprobarse.');
+            return back();
+        }
+
         $this->validate([
             'orden_compra' => 'required|unique:anticipos,oc_id,'.$this->anticipo_id,
             'orden' => 'required',
             'porcentaje_anticipo' => 'required|numeric|min:0|max:100',
-            'total_anticipo' => 'required|numeric|min:0',
         ]);
 
-        if($this->queriedAnticipo){
-            $this->queriedAnticipo->update([
-                'oc_id' => $this->orden_compra,
-                'porcentaje_anticipo' => $this->porcentaje_anticipo,
-                'estado_id' => 1,
-                'fecha_aprobacion' => now(),
-                'total_anticipo' => $this->total_anticipo,
-            ]);
+        $this->total_anticipo = $this->calcularTotalAnticipo();
 
-            return redirect()->route('lista-anticipos-admin')->with('success', 'Anticipo aprobado');
-        }
+        $this->queriedAnticipo->update([
+            'oc_id' => $this->orden_compra,
+            'porcentaje_anticipo' => $this->porcentaje_anticipo,
+            'estado_id' => 1,
+            'fecha_aprobacion' => now(),
+            'total_anticipo' => $this->total_anticipo,
+        ]);
+
+        return redirect()->route('lista-anticipos-admin')->with('success', 'Anticipo aprobado');
     }
 
     public function updatedOrdenCompra(){
-        $this->orden = $this->ordenes->find($this->orden_compra);
+        $this->orden = $this->ordenes ? $this->ordenes->find($this->orden_compra) : OrdenCompra::find($this->orden_compra);
+
+        // Al cambiar de orden, el total debe recalcularse con la orden nueva
+        // (antes conservaba el total de la orden anterior).
+        $this->updatedPorcentajeAnticipo();
     }
 
     public function updatedPorcentajeAnticipo(){

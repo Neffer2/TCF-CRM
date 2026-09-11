@@ -141,15 +141,24 @@ class Nomina extends Component
         $this->vUnit = $this->nominaItems[$id]['vUnit'];
         $this->vTotal = $this->nominaItems[$id]['vTotal'];
 
-        // Establece los máximos permitidos para el item
-        $this->presupuesto->presupuestoItems->map(function ($item){
-            if ($this->item == $item->id){
-                $this->maxCant = $item->cantidad;
-                $this->maxDias = $item->dia;
-                $this->maxOtros = $item->otros;
-                $this->maxValor = $item->v_unitario;
+        // Establece los máximos permitidos para el item: el saldo real
+        // (total - consumido en otras órdenes no anuladas), no los valores brutos.
+        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
+        if ($dbItemPresto) {
+            $contCant = 0;
+            $acumVTotal = 0;
+            foreach ($dbItemPresto->consumidos as $consumido) {
+                $esOtraOrden = !$this->orden_nomina || $consumido->oc_id != $this->orden_nomina->id;
+                if ($esOtraOrden && $consumido->OrdenCompra->estado_id != 6) {
+                    $contCant += $consumido->cant_oc;
+                    $acumVTotal += $consumido->vtotal_oc;
+                }
             }
-        })->first();
+            $this->maxCant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
+            $this->maxDias = $dbItemPresto->dia;
+            $this->maxOtros = $dbItemPresto->otros;
+            $this->maxValor = ($dbItemPresto->v_total - $acumVTotal);
+        }
     }
 
     // Obtiene los proveedores disponibles para el presupuesto
@@ -461,7 +470,7 @@ class Nomina extends Component
                 $estado_id = 2;
 
                 // Se envia notificación a Controller
-                $this->ocJuridicaRevisionController($this->orden_compra);
+                $this->ocJuridicaRevisionController($this->orden_nomina);
             }
             // SI EL ESTADO ES Rechazo revisión lider o Rechazo revisión gerencia, SE ENVIA NUEVAMENTE A REVISIÓN LIDER PRODUCCIÓN
             elseif ($this->orden_nomina->estado_id == 11 || $this->orden_nomina->estado_id == 12) {
@@ -469,6 +478,12 @@ class Nomina extends Component
 
                 // Se envia notificación a Lideres de producción
                 $this->ocJuridicaRevisionLiderProd($this->orden_nomina);
+            }
+            else {
+                // Estado actual sin transición definida: no forzar un estado
+                // inválido (antes quedaba estado_id = 0 y violaba la FK).
+                $this->addError('customError', 'La orden no está en un estado válido para reenviarse a aprobación.');
+                return redirect()->back();
             }
 
             $this->orden_nomina->estado_id = $estado_id;
@@ -534,23 +549,54 @@ class Nomina extends Component
         $messaje = '';
         $redirect_route = 'ordenes-compra';
 
+        // GUARDIA DE TRANSICIONES: cada estado destino define qué roles pueden
+        // solicitarlo y desde qué estado actual es válido. Cualquier valor no
+        // contemplado se rechaza (los métodos públicos de Livewire son
+        // invocables desde el navegador aunque el botón no se muestre).
+        $reglas = [
+            1  => ['roles' => [1],    'desde' => [2]],      // Controller aprueba
+            2  => ['roles' => [1],    'desde' => [9]],      // Gerencia aprueba (pasa a 1 abajo)
+            3  => ['roles' => [1],    'desde' => [2, 9]],   // Rechazo controller/gerencia
+            4  => ['roles' => [1, 6], 'desde' => null],     // Revisión remisión aprobada (líder)
+            5  => ['roles' => [1],    'desde' => [4]],      // GR generado
+            6  => ['roles' => [1],    'desde' => null],     // Anulada
+            9  => ['roles' => [6],    'desde' => [8]],      // Líder aprueba -> gerencia
+            11 => ['roles' => [6],    'desde' => [8]],      // Rechazo líder
+            12 => ['roles' => [1],    'desde' => [9]],      // Rechazo gerencia
+            13 => ['roles' => [1, 6], 'desde' => null],     // Rechazo revisión remisión
+            14 => ['roles' => [1],    'desde' => null],     // Revisión remisión controller
+        ];
+
+        if (!isset($reglas[$estado])) {
+            $this->addError('customError', 'Transición de estado no permitida.');
+            return redirect()->back();
+        }
+        if (!in_array(Auth::user()->rol, $reglas[$estado]['roles'])) {
+            $this->addError('customError', 'No tienes permisos para realizar esta acción.');
+            return redirect()->back();
+        }
+        if ($reglas[$estado]['desde'] && !in_array($this->orden_nomina->estado_id, $reglas[$estado]['desde'])) {
+            $this->addError('customError', 'La orden no está en un estado válido para esta acción.');
+            return redirect()->back();
+        }
+
         if ($estado == 1) {
-            // ORDEN APROBADA
-//            $this->validate([
-//                'observaciones_negociacion' => 'required|string|max:1000'
-//            ]);
-//
-//            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
-//            $this->orden_compra->fecha_aprobacion = now();
-//
-//            // Generar código de OC
-//            $cod_cc = $this->presupuesto->cod_cc;
-//            $this->orden_compra->cod_oc = "OC".$this->orden_compra->id;
-//            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_compra, "public/ordenes_juridicas_helisa");
-//            $this->orden_compra->archivo_orden_helisa = $crear_pdf_oc;
-//
-//            $this->ocJuridicaAprobada($this->orden_compra);
-//            $messaje = 'Orden de compra APROBADA.';
+            // ORDEN APROBADA (revisión de controller)
+            $this->validate([
+                'observaciones_negociacion' => 'required|string|max:1000'
+            ]);
+
+            $this->orden_nomina->observaciones_negociacion = $this->observaciones_negociacion;
+            $this->orden_nomina->fecha_aprobacion = now();
+
+            // Generar código de OC
+            $cod_cc = $this->presupuesto->cod_cc;
+            $this->orden_nomina->cod_oc = "OC".$this->orden_nomina->id;
+            $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_nomina, "public/ordenes_juridicas_helisa");
+            $this->orden_nomina->archivo_orden_helisa = $crear_pdf_oc;
+
+            $this->ocJuridicaAprobada($this->orden_nomina);
+            $messaje = 'Orden de compra APROBADA.';
         }
         elseif ($estado == 2) {
             // REVISIÓN GERENCIA OC APROBADA
@@ -619,40 +665,15 @@ class Nomina extends Component
             $messaje = 'Orden de compra ANULADA.';
         }
         elseif ($estado == 9) {
-            // REVISIÓN LIDER APROBADA
+            // REVISIÓN LIDER APROBADA -> SIEMPRE PASA A REVISIÓN DE GERENCIA.
+            // (Decisión de negocio 11-sep-2026: se elimina el umbral de
+            // auto-aprobación por monto; toda nómina pasa por revisión.)
             $this->validate([
                 'observaciones_revision_lider' => 'required|string|max:1000'
             ]);
 
-            // CALCULAMOS EL VALOR TOTAL DE LA OC
-            $vtotal_oc = 0;
-            foreach ($this->nominaItems as $item) {
-                $vtotal_oc += $item['vTotal'];
-            }
-
-            // SI EL VALOR TOTAL DE LA OC ES MENOR A 5.000.000, SE ENVIA A REVISIÓN DE CONTROLLER (estado_id = 2),
-            // DE LO CONTRARIO, SE ENVIA A REVISIÓN DE GERENCIA (estado_id = 9)
-            if ($vtotal_oc < 1000000) {
-                $estado = 2;
-
-                $this->orden_compra->fecha_aprobacion = now();
-
-                // Generar código de OC
-                $cod_cc = $this->presupuesto->cod_cc;
-                $this->orden_nomina->cod_oc = "OC".$this->orden_nomina->id;
-                $crear_pdf_oc = $pdfService->generarPdfOC($this->orden_nomina, "public/ordenes_juridicas_helisa");
-                $this->orden_nomina->archivo_orden_helisa = $crear_pdf_oc;
-
-                // Se envia notificación de aprobación
-                $this->ocJuridicaAprobada($this->orden_nomina);
-
-                // Cambio de estado a id 1 (Aprobado)
-                $estado = 1;
-            }
-            else {
-                // Se envia notificación a los Gerentes
-                $this->ocJuridicaRevisionGerencia($this->orden_nomina);
-            }
+            // Se envia notificación a los Gerentes
+            $this->ocJuridicaRevisionGerencia($this->orden_nomina);
 
             $this->orden_nomina->observaciones_revision_lider = $this->observaciones_revision_lider;
             $messaje = 'Revisión Orden de compra APROBADA.';

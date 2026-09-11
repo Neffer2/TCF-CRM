@@ -136,6 +136,10 @@ class AnticipoProductor extends Component
 
     // Agrega un nuevo item al anticipo
     public function newItem() {
+        // Límites y derivados se recalculan en servidor.
+        $this->getItemLimite();
+        $this->getValorTotal();
+
         $this->validate([
             'item_presupuesto' => 'required',
             'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
@@ -143,8 +147,12 @@ class AnticipoProductor extends Component
             'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
             'valor_unitario' => 'required|numeric|min:1|max:'.$this->limiteValorUnitario,
             'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal,
-            'valor_anticipo' => 'required|numeric|min: 1'
+            // El anticipo no puede superar el valor total del item
+            'valor_anticipo' => 'required|numeric|min: 1|max:'.$this->valor_total
         ]);
+
+        // El saldo siempre se deriva en servidor
+        $this->saldo = $this->valor_total - $this->valor_anticipo;
 
         $item = $this->centros_costo->find($this->centro_costo)->presupuestoItems->where('id', $this->item_presupuesto)->first();
 
@@ -194,15 +202,23 @@ class AnticipoProductor extends Component
 
     // Edita un item existente en el anticipo
     public function actionEdit() {
+        // La edición respeta los mismos topes que la creación:
+        // límites y derivados recalculados en servidor.
+        $this->getItemLimite();
+        $this->getValorTotal();
+
         $this->validate([
             'item_presupuesto' => 'required',
-            'cantidad' => 'required|numeric|min: 1',
-            'dias' => 'required|numeric|min: 1',
-            'otros' => 'required|numeric|min: 1',
-            'valor_unitario' => 'required|min: 1',
-            'valor_total' => 'required|numeric|min: 1',
-            'valor_anticipo' => 'required|numeric|min: 1'
+            'cantidad' => 'required|numeric|min: 1|max:'.$this->limiteCantidad,
+            'dias' => 'required|numeric|min: 1|max:'.$this->limiteDias,
+            'otros' => 'required|numeric|min: 1|max:'.$this->limiteOtros,
+            'valor_unitario' => 'required|numeric|min:1|max:'.$this->limiteValorUnitario,
+            'valor_total' => 'required|numeric|min: 1|max:'.$this->limiteValorTotal,
+            'valor_anticipo' => 'required|numeric|min: 1|max:'.$this->valor_total
         ]);
+
+        // El saldo siempre se deriva en servidor
+        $this->saldo = $this->valor_total - $this->valor_anticipo;
 
         $item = $this->centros_costo->find($this->centro_costo)->presupuestoItems->where('id', $this->item_presupuesto)->first();
         $this->total_anticipo -= $this->items[$this->selected_item]['valor_anticipo'];
@@ -344,6 +360,12 @@ class AnticipoProductor extends Component
         * GESTIONES
     */
     public function nuevoAnticipoProductor($data = null) {
+        // Solo un productor puede solicitar anticipos
+        if (Auth::user()->rol != 7) {
+            $this->addError('items-error', 'Solo un productor puede solicitar anticipos.');
+            return back();
+        }
+
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items al anticipo.');
             return back();
@@ -414,6 +436,17 @@ class AnticipoProductor extends Component
     }
 
     public function actualizarAnticipoProductor() {
+        // Solo el productor dueño puede actualizar, y solo mientras el
+        // anticipo esté pendiente (8) o rechazado (11, 12).
+        if (!(Auth::user()->rol == 7 && $this->queriedAnticipo->productor_id == Auth::user()->id)) {
+            $this->addError('items-error', 'No tienes permisos para actualizar este anticipo.');
+            return back();
+        }
+        if (!in_array($this->queriedAnticipo->estado_id, [8, 11, 12])) {
+            $this->addError('items-error', 'El anticipo no está en un estado válido para actualizarse.');
+            return back();
+        }
+
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items al anticipo.');
             return back();
@@ -465,6 +498,29 @@ class AnticipoProductor extends Component
 
     public function revisionAnticipoProductor($estado_id) {
         $redirect_route = 'lista-anticipos-lid';
+
+        // GUARDIA DE TRANSICIONES: qué rol puede pedir cada estado y desde
+        // qué estado actual. Todo valor no contemplado se rechaza (antes,
+        // cualquier estado enviado desde el navegador se escribía tal cual).
+        $reglas = [
+            7  => ['roles' => [1], 'desde' => [9]],  // Gerencia aprueba -> evidencias
+            9  => ['roles' => [6], 'desde' => [8]],  // Líder aprueba -> gerencia
+            11 => ['roles' => [6], 'desde' => [8]],  // Rechazo líder
+            12 => ['roles' => [1], 'desde' => [9]],  // Rechazo gerencia
+        ];
+
+        if (!isset($reglas[$estado_id])) {
+            $this->addError('items-error', 'Transición de estado no permitida.');
+            return back();
+        }
+        if (!in_array(Auth::user()->rol, $reglas[$estado_id]['roles'])) {
+            $this->addError('items-error', 'No tienes permisos para realizar esta acción.');
+            return back();
+        }
+        if (!in_array($this->queriedAnticipo->estado_id, $reglas[$estado_id]['desde'])) {
+            $this->addError('items-error', 'El anticipo no está en un estado válido para esta acción.');
+            return back();
+        }
 
         // REVISIÓN GERENCIA APROBADA
         if ($estado_id == 7) {
@@ -538,7 +594,20 @@ class AnticipoProductor extends Component
     /*
         * EVIDENCIAS
     */
+    // Solo el productor dueño gestiona evidencias, y solo en estado 7 (cargue de evidencias)
+    private function puedeGestionarEvidencias() {
+        return $this->queriedAnticipo
+            && Auth::user()->rol == 7
+            && $this->queriedAnticipo->productor_id == Auth::user()->id
+            && $this->queriedAnticipo->estado_id == 7;
+    }
+
     public function newEvidencia() {
+        if (!$this->puedeGestionarEvidencias()) {
+            $this->addError('evidencias-error', 'No tienes permisos para cargar evidencias en este anticipo.');
+            return back();
+        }
+
         $this->validate([
             'item_evidencia' => 'required',
             'fecha_evidencia' => 'required|date',
@@ -560,6 +629,15 @@ class AnticipoProductor extends Component
 
     public function deleteEvidencia($itemId) {
         $item_evidencia_anticipo = EvidenciaAnticipo::find($itemId);
+
+        // Solo evidencias del anticipo propio, y solo en estado de cargue
+        if (!$item_evidencia_anticipo
+            || !$this->puedeGestionarEvidencias()
+            || $item_evidencia_anticipo->anticipo_id != $this->queriedAnticipo->id) {
+            $this->addError('evidencias-error', 'No tienes permisos para eliminar esta evidencia.');
+            return back();
+        }
+
         Storage::delete($item_evidencia_anticipo->foto_evidencia);
 
         $item_evidencia_anticipo->delete();
@@ -569,6 +647,11 @@ class AnticipoProductor extends Component
     }
 
     public function enviarEvidencias() {
+        if (!$this->puedeGestionarEvidencias()) {
+            $this->addError('evidencias-error', 'No tienes permisos para enviar evidencias de este anticipo.');
+            return back();
+        }
+
         if ($this->evidencias->count() < $this->items->count()) {
             $this->addError('evidencias-error', 'No se han cargado evidencias.');
             return back();

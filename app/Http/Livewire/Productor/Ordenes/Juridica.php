@@ -122,15 +122,24 @@ class Juridica extends Component
         $this->vUnit = $this->ocItems[$id]['vUnit'];
         $this->vTotal = $this->ocItems[$id]['vTotal'];
 
-        // Establece los máximos permitidos para el item
-        $this->presupuesto->presupuestoItems->map(function ($item){
-            if ($this->item == $item->id){
-                $this->maxCant = $item->cantidad;
-                $this->maxDias = $item->dia;
-                $this->maxOtros = $item->otros;
-                $this->maxValor = $item->v_unitario;
+        // Establece los máximos permitidos para el item: el saldo real
+        // (total - consumido en otras órdenes no anuladas), no los valores brutos.
+        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
+        if ($dbItemPresto) {
+            $contCant = 0;
+            $acumVTotal = 0;
+            foreach ($dbItemPresto->consumidos as $consumido) {
+                $esOtraOrden = !$this->orden_compra || $consumido->oc_id != $this->orden_compra->id;
+                if ($esOtraOrden && $consumido->OrdenCompra->estado_id != 6) {
+                    $contCant += $consumido->cant_oc;
+                    $acumVTotal += $consumido->vtotal_oc;
+                }
             }
-        })->first();
+            $this->maxCant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
+            $this->maxDias = $dbItemPresto->dia;
+            $this->maxOtros = $dbItemPresto->otros;
+            $this->maxValor = ($dbItemPresto->v_total - $acumVTotal);
+        }
     }
 
     // Obtiene los proveedores disponibles para el presupuesto
@@ -280,6 +289,28 @@ class Juridica extends Component
     public function cambioEstado($estado){
         $messaje = '';
 
+        // GUARDIA DE TRANSICIONES: estados destino permitidos, con rol
+        // requerido y estado actual válido. Todo lo demás se rechaza.
+        $reglas = [
+            1 => ['roles' => [1], 'desde' => [2]],       // Aprobar (controller)
+            3 => ['roles' => [1], 'desde' => [2]],       // Rechazar
+            5 => ['roles' => [1], 'desde' => [4]],       // GR generado
+            6 => ['roles' => [1], 'desde' => null],      // Anular
+        ];
+
+        if (!isset($reglas[$estado])) {
+            $this->addError('customError', 'Transición de estado no permitida.');
+            return redirect()->back();
+        }
+        if (!in_array(auth()->user()->rol, $reglas[$estado]['roles'])) {
+            $this->addError('customError', 'No tienes permisos para realizar esta acción.');
+            return redirect()->back();
+        }
+        if ($reglas[$estado]['desde'] && !in_array($this->orden_compra->estado_id, $reglas[$estado]['desde'])) {
+            $this->addError('customError', 'La orden no está en un estado válido para esta acción.');
+            return redirect()->back();
+        }
+
         if ($estado == 1){
             // ORDEN APROBADA
             $this->validate([
@@ -333,6 +364,20 @@ class Juridica extends Component
 
     // Elimina la orden de compra y sus items
     public function deleteOrden(){
+        // Solo el productor dueño o un admin, y solo mientras la orden esté
+        // en revisión (2) o editable (3): borrar una orden aprobada/recibida
+        // "liberaba" presupuesto ya ejecutado sin dejar rastro.
+        $esDueño = $this->orden_compra->presupuesto
+            && $this->orden_compra->presupuesto->productor == auth()->user()->id;
+        if (!(auth()->user()->rol == 1 || (auth()->user()->rol == 7 && $esDueño))) {
+            $this->addError('customError', 'No tienes permisos para eliminar esta orden.');
+            return redirect()->back();
+        }
+        if (!in_array($this->orden_compra->estado_id, [2, 3])) {
+            $this->addError('customError', 'Una orden aprobada o en ejecución no se puede eliminar; usa la anulación.');
+            return redirect()->back();
+        }
+
         $this->orden_compra->ordenItems->map(function ($item){
             $item->delete();
         });

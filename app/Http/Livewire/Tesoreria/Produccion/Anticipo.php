@@ -27,6 +27,11 @@ class Anticipo extends Component
 
     // Guarda el comprobante de pago del anticipo
     public function store(){
+        // Solo se paga un anticipo causado por contabilidad (estado 5)
+        if ($this->anticipo->estado_id != 5){
+            $this->addError('error', 'El anticipo no está causado; no se puede registrar el pago.');
+            return redirect()->back();
+        }
         // Si ya existe un comprobante, muestra error y no permite continuar
         if ($this->anticipo->comprobante_pago){
             $this->addError('error', 'Este anticipo ya fué pagado');
