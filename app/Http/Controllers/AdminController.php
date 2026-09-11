@@ -197,16 +197,19 @@ class AdminController extends Controller
         // Inicializar array de filtros como variable local
         $filtros = [];
 
-        // Si se especifica un comercial, agregar al filtro y personalizar el título
-        if ($comercial != 'none'){
-            $title = "Reporte Helisa - ".User::find($comercial)->name.".xlsx";
+        // Si se especifica un comercial, agregar al filtro y personalizar el título.
+        // Con $comercial null o inexistente se exporta sin filtro (antes,
+        // User::find(null)->name crasheaba el reporte general).
+        $user = ($comercial && $comercial != 'none') ? User::find($comercial) : null;
+        if ($user){
+            $title = "Reporte Helisa - ".$user->name.".xlsx";
             array_push($filtros, ['comercial', $comercial]);
         }else {
             $title = "Reporte Helisa.xlsx";
         }
 
         // Si se especifica un centro, agregar al filtro usando LIKE para búsqueda parcial
-        if($centro != 'none'){
+        if($centro && $centro != 'none'){
             array_push($filtros, ['centro', 'LIKE', "%{$centro}%"]);
         }
 

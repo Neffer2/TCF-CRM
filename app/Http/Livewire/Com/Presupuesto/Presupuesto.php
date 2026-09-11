@@ -645,12 +645,17 @@ class Presupuesto extends Component
         $ventaProyecto = $itemsActuales->sum('v_total_cliente');
         $margenBruto = $ventaProyecto - $costosProyecto;
         $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
-        $margenItems = ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+        // Protegido contra división por cero (presupuestos con utilidad 0
+        // o solo eventos tienen v_total_cot en 0), igual que getMetricas().
+        $sumTotalCot = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+                    ->where('evento', 0)
+                    ->sum('v_total_cot');
+        $margenItems = $sumTotalCot > 0
+            ? ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
                     ->where('evento', 0)
                     ->where('margen_utilidad', '>', 0)
-                    ->sum('v_total') ) / ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                    ->where('evento', 0)
-                    ->sum('v_total_cot') );
+                    ->sum('v_total') ) / $sumTotalCot
+            : 0;
 
         // NOTA: Ajustamos las llaves para que coincidan EXACTAMENTE con tu 'PresupuestosSheetsExports'
         $payloadActual = [
@@ -945,11 +950,18 @@ class Presupuesto extends Component
             $i++;
         }
 
-        // Actualiza los valores en la base comercial
-        foreach ($presupuesto->gestion->baseComercial as $key => $base){
-            if ($base->id_user == $prestosCom[$key]['comercial_id']){
+        // Actualiza los valores en la base comercial emparejando por id_user.
+        // El emparejamiento por posición del arreglo fallaba en silencio si el
+        // orden de las filas no coincidía (el valor aprobado nunca llegaba al
+        // dashboard) y crasheaba con más de 4 filas de base.
+        $prestosPorComercial = collect($prestosCom)
+            ->filter(function ($p) { return !empty($p['comercial_id']); })
+            ->keyBy('comercial_id');
+
+        foreach ($presupuesto->gestion->baseComercial as $base){
+            if ($prestosPorComercial->has($base->id_user)){
                 $base->valor_original = $presupuesto->venta_proy;
-                $base->valor_proyecto = $prestosCom[$key]['presupuesto'];
+                $base->valor_proyecto = $prestosPorComercial[$base->id_user]['presupuesto'];
                 $base->update();
             }
         }

@@ -295,6 +295,14 @@ class CotizacionForm extends Component
 
         // Busca el registro de gestión comercial (lead) y actualiza los campos
         $lead = GestionComercial::where('id', $this->lead_id)->first();
+        // Limpia los cupos por encima del número de participaciones elegido:
+        // al reducir participantes, los valores viejos quedaban grabados y el
+        // comercial retirado seguía figurando (y sumando) en el proyecto.
+        for ($p = $this->participaciones; $p < 4; $p++){
+            $this->{'comercial'.$p} = null;
+            $this->{'porcentaje'.$p} = null;
+        }
+
         $lead->presto_cot = $this->presupuesto;
         $lead->participaciones = $this->participaciones;
         $lead->comercial_2 = $this->comercial1;

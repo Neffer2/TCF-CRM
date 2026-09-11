@@ -194,11 +194,18 @@ class ActualizacionesPresto extends Component
             $i++;
         }
 
-        // Actualiza los valores en la base comercial
-        foreach ($presupuesto->gestion->baseComercial as $key => $base){
-            if ($base->id_user == $prestosCom[$key]['comercial_id']){
+        // Actualiza los valores en la base comercial emparejando por id_user.
+        // El emparejamiento por posición del arreglo fallaba en silencio si el
+        // orden de las filas no coincidía (el valor aprobado nunca llegaba al
+        // dashboard) y crasheaba con más de 4 filas de base.
+        $prestosPorComercial = collect($prestosCom)
+            ->filter(function ($p) { return !empty($p['comercial_id']); })
+            ->keyBy('comercial_id');
+
+        foreach ($presupuesto->gestion->baseComercial as $base){
+            if ($prestosPorComercial->has($base->id_user)){
                 $base->valor_original = $presupuesto->venta_proy;
-                $base->valor_proyecto = $prestosCom[$key]['presupuesto'];
+                $base->valor_proyecto = $prestosPorComercial[$base->id_user]['presupuesto'];
                 $base->update();
             }
         }

@@ -354,10 +354,25 @@ class Edit extends Component
             'valor3' => 'nullable|numeric',
         ]);
 
+        // PRE-VALIDACIÓN: todos los comerciales elegidos deben tener fila en
+        // la base de esta gestión ANTES de escribir la primera (evita el
+        // crash con actualización parcial cuando se cambiaba un comercial
+        // del select por uno sin registro).
+        $proyectosBase = [];
+        for ($j = 0; $j < $this->participaciones; $j++){
+            $proyectosBase[$j] = Base_comercial::where('id_gestion', $this->id_gestion)
+                ->where('id_user', $this->{'comercial'.$j})
+                ->first();
+            if (!$proyectosBase[$j]){
+                $this->addError('comercial'.$j, 'El comercial seleccionado no tiene registro en la base de esta gestión; no se guardó ningún cambio.');
+                return back();
+            }
+        }
+
         // Actualiza cada participante del proyecto
         $i  = 0;
         while($i < $this->participaciones){
-            $proyecto = Base_comercial::where('id_gestion', $this->id_gestion)->where('id_user', $this->{'comercial'.$i})->first();
+            $proyecto = $proyectosBase[$i];
 
             if ($this->nom_cliente){
                 $proyecto->nom_cliente = $this->nom_cliente;

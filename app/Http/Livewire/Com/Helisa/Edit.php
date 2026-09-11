@@ -76,8 +76,14 @@ class Edit extends Component
 
         // Obtiene los datos principales del registro
         $stored = Helisa::select('fecha', 'tipo_doc', 'num_doc', 'identidad', 'nom_tercero', 'centro', 'nom_centro_costo', 'debito', 'credito', 'id_cuenta', 'mes', 'año', 'participacion')->where('id', $id_helisa)->first();
-        // Obtiene los registros de comerciales asociados al centro de costos
-        $Registros_helisa = Helisa::select('comercial', 'porcentaje', 'comision')->where('centro', $stored->centro)->get();
+        // Obtiene los registros de comerciales asociados a ESTE documento.
+        // La identidad de un asiento Helisa es centro + num_doc: filtrar solo
+        // por centro cargaba (y luego guardaba) los porcentajes/comisiones de
+        // otras facturas del mismo centro de costos.
+        $Registros_helisa = Helisa::select('comercial', 'porcentaje', 'comision')
+            ->where('centro', $stored->centro)
+            ->where('num_doc', $stored->num_doc)
+            ->get();
 
         // Asigna los datos principales al formulario
         $this->fecha = $stored->fecha;
@@ -425,10 +431,25 @@ class Edit extends Component
             'base_factura3' => 'nullable|numeric',
         ]);
 
+        // PRE-VALIDACIÓN: todos los comerciales elegidos deben tener fila en
+        // este documento ANTES de escribir el primero (evita actualizaciones
+        // parciales que dejaban unos participantes actualizados y otros no).
+        $registros = [];
+        for ($j = 0; $j < $this->participaciones; $j++){
+            $registros[$j] = Helisa::where('centro', $this->centro)
+                ->where('num_doc', $this->num_doc)
+                ->where('comercial', $this->{'comercial'.$j})
+                ->first();
+            if (!$registros[$j]){
+                $this->addError('comercial'.$j, 'El comercial seleccionado no tiene registro en este documento; no se guardó ningún cambio.');
+                return back();
+            }
+        }
+
         // Actualiza cada registro Helisa según el número de participaciones
         $i  = 0;
         while($i < $this->participaciones){
-            $Registro_helisa = Helisa::where('centro', $this->centro)->where('num_doc', $this->num_doc)->where('comercial', $this->{'comercial'.$i})->first();
+            $Registro_helisa = $registros[$i];
 
             if ($this->fecha){
                 $Registro_helisa->fecha = $this->fecha;

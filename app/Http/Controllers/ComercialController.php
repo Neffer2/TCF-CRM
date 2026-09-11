@@ -204,7 +204,7 @@ class ComercialController extends Controller
         $presto = PresupuestoProyecto::where('id_gestion', $prespuesto)->first();
 
         if (!$presto) {
-            return session()->flash('error', 'El presupuesto no existe.');
+            return redirect()->back()->with('error', 'El presupuesto no existe.');
         }
 
         $allItems = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
@@ -219,8 +219,13 @@ class ComercialController extends Controller
         // Margen del Proyecto en Porcentaje
         $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
 
-        // Margen Items (Suma o promedio ponderado de la utilidad, ajusta según tu lógica)
-        $margenItems = $allItems->avg('margen_utilidad') ?? 0;
+        // Margen Items con la MISMA fórmula que usa la pantalla (getMetricas):
+        // sum(v_total con margen>0) / sum(v_total_cot). El promedio simple
+        // (avg) producía un margen distinto en el Excel que en la aplicación.
+        $sumTotalCot = $allItems->where('evento', 0)->sum('v_total_cot');
+        $margenItems = $sumTotalCot > 0
+            ? $allItems->where('evento', 0)->where('margen_utilidad', '>', 0)->sum('v_total') / $sumTotalCot
+            : 0;
 
         $itemIds = $allItems->pluck('id');
 
@@ -369,9 +374,8 @@ class ComercialController extends Controller
         $contacto->cargo = $request->cargo_edit;
         $contacto->celular = $request->celular_edit;
         $contacto->correo = $request->correo_edit;
-        // Nota: Hay un intercambio en la asignación de pbx y web
-        $contacto->web = $request->pbx_edit;    // Debería ser web_edit
-        $contacto->pbx = $request->web_edit;    // Debería ser pbx_edit
+        $contacto->web = $request->web_edit;
+        $contacto->pbx = $request->pbx_edit;
         $contacto->direccion = $request->direccion_edit;
         $contacto->update();
 

@@ -281,6 +281,15 @@ class CotizacionForm extends Component
         }
   
         $lead = GestionComercial::where('id', $this->lead_id)->first();
+
+        // Limpia los cupos por encima del número de participaciones elegido:
+        // al reducir participantes, los valores viejos quedaban grabados y el
+        // comercial retirado seguía figurando (y sumando) en el proyecto.
+        for ($p = $this->participaciones; $p < 4; $p++){
+            $this->{'comercial'.$p} = null;
+            $this->{'porcentaje'.$p} = null;
+        }
+
         $lead->presto_cot = $this->presupuesto;
  
         $lead->participaciones = $this->participaciones;
@@ -297,6 +306,7 @@ class CotizacionForm extends Component
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;
         $lead->cotizacion_file = null;
+        $lead->propuesta_url = $this->cotizacionUrl;
         // $lead->id_estado = 4; 
         if ($this->claro){
             $lead->claro = $this->claro;
