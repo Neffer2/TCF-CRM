@@ -15,7 +15,9 @@ class CheckRol
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check() || !in_array((string) Auth::user()->rol, $roles, true)) {
+        // Gerencia (20) accede a todo lo que puede Admin (1)
+        $rolEfectivo = Auth::check() && Auth::user()->rol == 20 ? '1' : (string) optional(Auth::user())->rol;
+        if (!Auth::check() || !in_array($rolEfectivo, $roles, true)) {
             return redirect()->route('dashboard');
         }
 

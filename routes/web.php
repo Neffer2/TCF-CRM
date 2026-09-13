@@ -177,7 +177,9 @@ Route::get('/', function () {
 
 /* Cambio de rol activo (multi-rol por cuenta única) */
     Route::post('/cambiar-rol/{rol}', function ($rol) {
-        if (!auth()->user()->puedeUsarRol($rol)) {
+        // El rol 20 (Gerencia) otorga permisos pero no tiene dashboard propio:
+        // nunca puede quedar como rol activo.
+        if ($rol == 20 || !auth()->user()->puedeUsarRol($rol)) {
             return redirect()->route('dashboard')->withErrors(['rol' => 'No tienes asignado ese rol.']);
         }
         $user = auth()->user();

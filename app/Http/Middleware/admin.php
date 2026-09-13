@@ -17,8 +17,9 @@ class admin
      */
     public function handle(Request $request, Closure $next)
     {   
-        if (Auth::user()->rol == 1) {
-            return $next($request);  
+        // Gerencia (20) trabaja en el espacio de Admin
+        if (in_array(Auth::user()->rol, [1, 20])) {
+            return $next($request);
         }
         return redirect()->route('dashboard');  
     }  

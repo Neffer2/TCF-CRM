@@ -16,7 +16,7 @@ class HomeController extends Controller
     */
 
     public function dashboard (){
-        if (Auth::user()->rol == 1) {
+        if (Auth::user()->rol == 1 || Auth::user()->rol == 20) {
             return redirect()->route('dashboard-admin');
         }elseif (Auth::user()->rol == 2){
             return redirect()->route('dashboard-com');
