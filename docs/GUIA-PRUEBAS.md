@@ -55,19 +55,30 @@ MAIL_MAILER=log     # ¡importante! así ningún correo real sale de tu máquina
 
 > ⚠ Verifica dos veces que `DB_HOST` apunta a tu máquina. Si apunta a producción, DETENTE.
 
-Importa (el `sed` elimina los DEFINER del hosting, que no existen localmente):
+Importa. El `sed` limpia dos cosas que MySQL local rechaza: los `DEFINER` del hosting y el `sql_mode` `NO_AUTO_CREATE_USER` de MariaDB (sin esto la importación se corta a mitad con "Variable 'sql_mode' can't be set"):
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS tfc_crm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-sed -E 's/DEFINER=`[^`]+`@`[^`]+`//g' db-snapshots/tfc_crm_YYYY-MM-DD.sql | mysql -u root -p tfc_crm
+sed -E 's/DEFINER=`[^`]+`@`[^`]+`//g; s/NO_AUTO_CREATE_USER,?//g' db-snapshots/tfc_crm_YYYY-MM-DD.sql | mysql -u root -p tfc_crm
 ```
 
 ## A5. Migraciones y usuarios de prueba
 
+**Paso previo obligatorio.** En producción hay 3 migraciones cuyo esquema ya fue aplicado a mano pero nunca quedaron registradas en la tabla `migrations`; si corres `migrate` directo, fallan con "Duplicate column" y abortan todo. Regístralas primero:
+
+```bash
+mysql -u root -p tfc_crm -e "INSERT INTO migrations (migration, batch) SELECT m, (SELECT MAX(batch)+1 FROM migrations) FROM (SELECT '2026_02_25_150215_add_column_justificacion_lider_to_presupuesto_proyecto_table' m UNION SELECT '2026_04_10_095206_create_lider_comercial_user_table' UNION SELECT '2026_05_07_180055_add_column_num_item_and_orden_to_items_presupuesto_table') x WHERE m NOT IN (SELECT migration FROM migrations);"
+```
+
+Ahora sí:
+
 ```bash
 php artisan migrate
+php artisan migrate:status | grep "| No"     # no debe mostrar nada
 php artisan db:seed --class=UsuariosPruebaSeeder
 ```
+
+`migrate` aplica, además de las nuevas de la reestructuración, **6 migraciones del flujo de anticipos que en producción nunca se corrieron** (la tabla `anticipos` real tiene la estructura vieja) y crea los **estados 8–14** del catálogo que ese flujo necesita. Es normal ver ~10 migraciones aplicándose.
 
 El seeder **solo corre en entorno local** y crea estos usuarios (contraseña de todos: **`Prueba123*`**):
 

@@ -34,6 +34,12 @@ class HomeController extends Controller
             return redirect()->route('dashboard-contabilidad');
         }
 
+        // Rol 10 "Centinela": cuenta sin dashboard propio cuyo único acceso
+        // es el plano contable Helisa (ver middleware rol:1,9,10 en la ruta).
+        if (Auth::user()->rol == 10) {
+            return redirect()->route('reporte-plano-helisa');
+        }
+
         // Roles sin dashboard (suspendidos o pendientes de activación)
         Auth::logout();
         return redirect()->route('login')->withErrors(['email' => 'Tu cuenta está pendiente de activación. Contacta al administrador.']);
