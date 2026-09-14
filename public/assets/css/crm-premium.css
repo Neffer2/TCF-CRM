@@ -348,13 +348,17 @@ body { -webkit-font-smoothing: antialiased; }
 }
 .crm-hero--photo::after { mix-blend-mode: soft-light; }
 @keyframes crm-hero-pan { from { background-position: 55% 38%; } to { background-position: 48% 44%; } }
-.crm-page-card { position: relative; overflow: hidden; }
+/* La tarjeta NO recorta (overflow visible) para que el desplegable de comercial
+   pueda salir por debajo; el brillo se recorta a sí mismo con clip-path y se
+   mueve con background-position. z-index alto para que la lista tape las KPI. */
+.crm-page-card { position: relative; z-index: 20; overflow: visible; }
 .crm-page-card::after {
-  content: ""; position: absolute; top: -40%; right: -10%; width: 40%; height: 180%; pointer-events: none;
-  background: linear-gradient(100deg, transparent 30%, rgba(239, 95, 23, .06) 50%, transparent 70%);
-  transform: translateX(-160%) skewX(-16deg); animation: crm-sheen 9s cubic-bezier(.4, 0, .2, 1) 1.2s infinite;
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg, transparent 40%, rgba(239, 95, 23, .07) 50%, transparent 60%) no-repeat;
+  background-size: 300% 100%; background-position: 200% 0;
+  animation: crm-sheen 9s cubic-bezier(.4, 0, .2, 1) 1.2s infinite;
 }
-@keyframes crm-sheen { 0% { transform: translateX(-160%) skewX(-16deg); } 35%, 100% { transform: translateX(260%) skewX(-16deg); } }
+@keyframes crm-sheen { 0% { background-position: 200% 0; } 35%, 100% { background-position: -100% 0; } }
 
 .crm-col-derecha { display: flex; flex-direction: column; gap: 16px; }
 .crm-col-derecha .crm-panel { margin: 0; }
@@ -407,9 +411,14 @@ body { -webkit-font-smoothing: antialiased; }
 .crm-combo:focus-within .crm-combo__caret { transform: translateY(-30%) rotate(-135deg); }
 .crm-combo { min-width: 260px; }
 
-/* Gráfica a todo el ancho */
-.crm-chart { margin-top: 0; }
-.crm-chart__canvas, .crm-chart__canvas canvas { height: 320px !important; }
+/* Dos columnas parejas: la última tarjeta de cada una estira hasta el fondo.
+   Izquierda: KPIs + gráfica (más angosta). Derecha: estado + ranking. */
+.crm-col-izquierda { display: flex; flex-direction: column; gap: 16px; }
+.crm-col-izquierda .crm-chart { margin-top: 0; flex: 1 1 auto; display: flex; flex-direction: column; min-height: 380px; }
+.crm-col-izquierda .crm-chart__canvas { flex: 1 1 auto; height: auto; min-height: 240px; }
+.crm-col-izquierda .crm-chart__canvas canvas { position: absolute; inset: 0; height: 100% !important; }
+.crm-col-derecha .crm-ranking { flex: 1 1 auto; }
+.crm-col-derecha .crm-ranking .card-body { justify-content: flex-start; }
 
 /* Conmutador del ranking */
 .crm-seg { display: inline-flex; gap: 4px; padding: 4px; margin-top: 12px; border-radius: 999px; background: var(--crm-paper); border: 1px solid var(--crm-line); }

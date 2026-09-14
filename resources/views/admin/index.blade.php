@@ -16,14 +16,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-xl-7">
+        {{-- Izquierda: indicadores + tendencia mensual. Derecha: estado de facturación + ranking.
+             Ambas columnas son flex para que la última tarjeta estire y no quede hueco. --}}
+        <div class="col-12 col-xl-7 crm-col-izquierda">
             @livewire('admin.dashboard.block1')
+            @livewire('admin.dashboard.tendencia')
         </div>
         <div class="col-12 col-xl-5 mt-4 mt-xl-0 crm-col-derecha">
             @livewire('admin.dashboard.block2')
             @livewire('admin.dashboard.ranking')
-        </div>
-        <div class="col-12 mt-4">
-            @livewire('admin.dashboard.tendencia')
         </div>
     @endsection
