@@ -240,6 +240,29 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
+    /* ÓRDENES DE NÓMINA: las llamaba Nomina::enviarAprobacion pero no existían (error fatal al reenviar una nómina) */
+    public function ocJuridicaRevisionController($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN CRM";
+        $cc_ = optional(optional($orden->presupuesto)->gestion)->nom_proyecto_cot ?: 'sin nombre';
+        $productor = optional(optional($orden->presupuesto)->productor_info)->name ?: 'el productor';
+        $body = "La orden de nómina <b>#{$orden->id}</b> del proyecto <b>{$cc_}</b> (centro de costos <b>".(optional($orden->presupuesto)->cod_cc ?: '—')."</b>) de <b>{$productor}</b> está lista para revisión de Controller.";
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('controller'));
+        $this->sendMail($subject, $body, $subject, null, $recipients, $cc);
+    }
+
+    public function ocJuridicaRevisionLiderProd($orden){
+        $recipients = [];
+        $cc = [];
+        $subject = "NOTIFICACIÓN CRM";
+        $cc_ = optional(optional($orden->presupuesto)->gestion)->nom_proyecto_cot ?: 'sin nombre';
+        $productor = optional(optional($orden->presupuesto)->productor_info)->name ?: 'el productor';
+        $body = "La orden de nómina <b>#{$orden->id}</b> del proyecto <b>{$cc_}</b> de <b>{$productor}</b> fue corregida y vuelve a revisión del líder de producción.";
+        array_push($recipients, ...\App\Models\NotificacionDestinatario::area('produccion'));
+        $this->sendMail($subject, $body, $subject, null, $recipients, $cc);
+    }
+
     public function ocNaturalRevisionContabilidad($orden){
         $recipients = [];
         $cc = [];
