@@ -435,13 +435,14 @@
                 </div>
             @else
                 <div class="row px-4">
-                    <div class="col-md-1 d-flex justify-content-center align-items-center">
-                        <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                        class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                            @if (is_null($selectedItem)) <i class="fas fa-plus text-white" aria-hidden="true"></i> @else <i class="fa-solid fa-pen-to-square"></i> @endif
-                        </button>
-                    </div>
-                    <div class="col-md-11 row">
+                    <div class="col-md-2 d-flex justify-content-center align-items-center">
+    @if (is_null($selectedItem))
+        <button type="button" wire:click="newItem" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion mb-0"><span class="crm-plus" aria-hidden="true"></span> Agregar ítem</button>
+    @else
+        <button type="button" wire:click="newItem" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion mb-0"><span class="crm-pen" aria-hidden="true"></span> Guardar cambios</button>
+    @endif
+</div>
+<div class="col-md-10 row">
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="">ITEM</label>

@@ -11,7 +11,7 @@
   if (!reduce) document.documentElement.classList.add('crm-js');
   var easeOut = function (t) { return 1 - Math.pow(1 - t, 4); };
   var fmt = function (n, decimals) {
-    return Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    return Number(n).toLocaleString('de-DE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   };
 
   // Último valor mostrado por clave: al cambiar filtros la cifra cuenta desde

@@ -300,7 +300,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <div class="form-group">
                     <label for="tipo_servicio">Tipo de servicio</label>
                     <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
@@ -340,15 +340,9 @@
             <div class="col-lg-2">
                 <div class="form-group">
                     @if (is_null($selected_item))
-                        <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                        class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                            <i class="fas fa-plus text-white"></i>
-                        </button>
+                        <button type="button" wire:click="newItem" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-plus" aria-hidden="true"></span> Agregar ítem</button>
                     @else
-                        <button wire:click="actionEdit" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                        class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
+                        <button type="button" wire:click="actionEdit" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-pen" aria-hidden="true"></span> Guardar cambios</button>
                     @endif
                 </div>
             </div>
@@ -456,7 +450,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-1">
+                <div class="col-lg-2">
                     <div class="form-group">
                         <label for="tipo_servicio">Tipo de servicio</label>
                         <select id="tipo_servicio" class="form-control" wire:model.change="tipo_servicio">
@@ -496,15 +490,9 @@
                 <div class="col-lg-2">
                     <div class="form-group">
                         @if (is_null($selected_item))
-                            <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                            class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                                <i class="fas fa-plus text-white"></i>
-                            </button>
+                            <button type="button" wire:click="newItem" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-plus" aria-hidden="true"></span> Agregar ítem</button>
                         @else
-                            <button wire:click="actionEdit" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                            class="btn avatar border-1 rounded-circle bg-gradient-primary" style="box-shadow: none;" >
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
+                            <button type="button" wire:click="actionEdit" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-pen" aria-hidden="true"></span> Guardar cambios</button>
                         @endif
                     </div>
                 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\PanelFinanciero;
 
 class ContabilidadController extends Controller
 {
@@ -14,8 +15,8 @@ class ContabilidadController extends Controller
     | Functions wich start with "show" and index, are for show views, the others functions are for actions.
     */
 
-    public function index(){ 
-        return view('contabilidad.index');
+    public function index(){
+        return view('contabilidad.index', PanelFinanciero::contabilidad());
     }
 
     public function showAnticipos(){

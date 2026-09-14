@@ -390,17 +390,6 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                                class="btn avatar border-1 rounded-circle bg-gradient-success" style="box-shadow: none;" >
-                                            <i class="fas fa-plus text-white"></i>
-                                        </button>
-
-                                        <button x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                                class="btn avatar border-1 rounded-circle bg-gradient-warning" style="box-shadow: none;" >
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col-md-12">
                                         <button class="btn bg-gradient-info" wire:click="nuevoAnticipo">Crear Anticipo</button>
                                     </div>
                                 </div>

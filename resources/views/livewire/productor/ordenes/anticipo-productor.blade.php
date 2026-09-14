@@ -109,13 +109,9 @@
                                     @if (Auth()->user()->rol == 7 && ( (!$queriedAnticipo) || ( $queriedAnticipo->estado_id == 11 || $queriedAnticipo->estado_id == 12 ) ))
                                         <td class="d-flex justify-content-center" style="padding: 0.2rem;">
                                             <button class="btn avatar border-1 rounded-circle bg-gradient-danger me-2 mb-0" style="width: 25px; height: 25px; font-size: 0.5rem; padding: 0.5rem"
-                                                wire:click="deleteItem({{ $key-=1 }})" title="Eliminar item">
-                                                <i class="fas fa-xmark text-white"></i>
-                                            </button>
+                                                wire:click="deleteItem({{ $key-=1 }})" title="Eliminar item"><span aria-hidden="true">×</span></button>
                                             <button class="btn avatar border-1 rounded-circle bg-gradient-warning mb-0" style="width: 25px; height: 25px; font-size: 0.5rem; padding: 0.5rem"
-                                                wire:click="getItem({{ $key }})" title="Editar item">
-                                                <i class="fa-solid fa-pen-to-square text-white"></i>
-                                            </button>
+                                                wire:click="getItem({{ $key }})" title="Editar item"><span aria-hidden="true">✎</span></button>
                                         </td>
                                     @endif
                                 </tr>
@@ -272,15 +268,9 @@
                         <div class="row">
                             <div class="col-md-12 border-bottom" style="border-color: #f3f3f3">
                                 @if (is_null($selected_item))
-                                    <button wire:click="newItem" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                            class="btn avatar border-1 rounded-circle bg-gradient-success" style="box-shadow: none;">
-                                        <i class="fas fa-plus text-white"></i>
-                                    </button>
+                                    <button type="button" wire:click="newItem" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-plus" aria-hidden="true"></span> Agregar ítem</button>
                                 @else
-                                    <button wire:click="actionEdit" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                            class="btn avatar border-1 rounded-circle bg-gradient-warning" style="box-shadow: none;">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    <button type="button" wire:click="actionEdit" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-pen" aria-hidden="true"></span> Guardar cambios</button>
                                 @endif
 
                                 @error('items-error')
@@ -392,10 +382,7 @@
                                                     </td>
                                                     <td class="text-center">{{ $evidencia->observacion_evidencia }}</td>
                                                     <td class="text-center">
-                                                        <button wire:click="deleteEvidencia({{ $evidencia->id }})" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                                                class="btn avatar border-1 rounded-circle bg-gradient-danger mb-0" title="Eliminar evidencia" style="width: 30px; height: 30px; font-size: 0.6rem; padding: 0.6rem">
-                                                            <i class="fas fa-trash-alt text-white"></i>
-                                                        </button>
+                                                        <button type="button" wire:click="deleteEvidencia({{ $evidencia->id }})" wire:loading.attr="disabled" class="btn btn-sm bg-gradient-danger crm-btn-accion mb-0" title="Eliminar evidencia"><span aria-hidden="true">×</span> Eliminar</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -462,10 +449,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-1 d-flex align-items-center">
-                                            <button wire:click="newEvidencia" x-on:mouseover="event.target.style.transform = 'rotate(360deg)'" x-on:mouseleave="event.target.style.transform = 'rotate(0deg)'"
-                                                    class="btn avatar border-1 rounded-circle bg-gradient-success mb-0" style="box-shadow: none;">
-                                                <i class="fas fa-plus text-white"></i>
-                                            </button>
+                                            <button type="button" wire:click="newEvidencia" wire:loading.attr="disabled" class="btn bg-gradient-primary crm-btn-accion"><span class="crm-plus" aria-hidden="true"></span> Agregar evidencia</button>
                                         </div>
                                     </div>
                                 </div>

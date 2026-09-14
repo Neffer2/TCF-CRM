@@ -38,7 +38,7 @@
             <b>Nuevo prospecto</b>
           </h5>
         </div>
-        <script src="https://kit.fontawesome.com/15bc5276a1.js" crossorigin="anonymous"></script>
+  <link href="{{ asset('assets/fontawesome/css/all.min.css') }}" rel="stylesheet" />
         <div class="collapse" id="collapseExample">
           <div class="card card-body mb-3">
             @livewire('com.gestion-comercial.nuevo-prospecto')       

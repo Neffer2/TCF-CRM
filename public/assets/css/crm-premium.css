@@ -1024,3 +1024,32 @@ body.crm-modal-open { overflow: hidden; }
 
 /* Páginas cortas: el contenido ocupa al menos la altura de la cabecera para que el pie no quede sobre la foto */
 .main-content > .container-fluid.py-4 { min-height: 340px; }
+
+/* Botones de acción con signo dibujado en CSS (no dependen de FontAwesome) */
+.crm-btn-accion { display: inline-flex !important; align-items: center; gap: 8px; }
+.crm-plus, .crm-pen { position: relative; width: 16px; height: 16px; border-radius: 999px; background: rgba(255, 255, 255, .22); flex: 0 0 16px; }
+.crm-plus::before, .crm-plus::after { content: ""; position: absolute; left: 50%; top: 50%; background: #fff; transform: translate(-50%, -50%); border-radius: 2px; }
+.crm-plus::before { width: 8px; height: 2px; } .crm-plus::after { width: 2px; height: 8px; }
+.crm-pen::before { content: "✎"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; color: #fff; }
+.main-content .btn.avatar.rounded-circle { font-size: 13px; font-weight: 800; line-height: 1; padding: 0; display: inline-grid; place-items: center; }
+
+/* ---- Panel financiero (inicio de Tesorería y Contabilidad) ---- */
+.crm-fin .crm-page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.crm-fin__acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+.crm-fin__meses { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; height: 170px; }
+.crm-fin__mes { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+.crm-fin__mes-n { font-size: 12px; font-weight: 700; color: #2B2523; font-variant-numeric: tabular-nums; }
+.crm-fin__mes-barra { width: 100%; max-width: 34px; flex: 1 1 auto; display: flex; align-items: flex-end; background: #F0EBE5; border-radius: 10px; overflow: hidden; }
+.crm-fin__mes-barra > span { display: block; width: 100%; min-height: 4px; border-radius: 10px; background: linear-gradient(180deg, #FF8A3D, #EF5F17); transform-origin: bottom; animation: crm-fin-sube .9s cubic-bezier(.16, 1, .3, 1) both; }
+.crm-fin__mes:nth-child(2) > .crm-fin__mes-barra > span { animation-delay: .06s } .crm-fin__mes:nth-child(3) > .crm-fin__mes-barra > span { animation-delay: .12s }
+.crm-fin__mes:nth-child(4) > .crm-fin__mes-barra > span { animation-delay: .18s } .crm-fin__mes:nth-child(5) > .crm-fin__mes-barra > span { animation-delay: .24s }
+.crm-fin__mes:nth-child(6) > .crm-fin__mes-barra > span { animation-delay: .3s; background: linear-gradient(180deg, #3E3532, #1E1917); }
+@keyframes crm-fin-sube { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.crm-fin__mes-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #8A7F79; font-weight: 600; }
+.crm-fin__ant { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid #F0EBE5; color: inherit; text-decoration: none; transition: transform .35s cubic-bezier(.16, 1, .3, 1); }
+.crm-fin__ant:first-child { border-top: 0; }
+.crm-fin__ant:hover { transform: translateX(4px); color: inherit; }
+.crm-fin__ant b { display: block; font-size: 13px; color: #2B2523; }
+.crm-fin__ant span { display: block; font-size: 12px; color: #8A7F79; }
+.crm-fin__ant strong { font-size: 13px; color: #EF5F17; white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 991px) { .crm-fin .crm-kpis--mini { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

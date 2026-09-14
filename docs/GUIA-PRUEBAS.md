@@ -295,6 +295,10 @@ Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío q
 | 8g.8 | Pronóstico | Dashboard de gerencia → gráfica | Línea punteada "Pronóstico" desde el último mes cerrado hasta diciembre y tarjeta "Pronóstico de cierre" con % vs presupuesto y vs año anterior; el "?" explica el cálculo |
 | 8g.9 | Presupuesto compacto | Abre un presupuesto | Cifras en una barra con "?" que explica cada fórmula con los números reales; parámetros en una línea; títulos de la tabla legibles (blanco sobre carbón/verde) |
 | 8g.10 | Perfil visible | Cualquier rol | Tarjeta con foto grande, nombre y cargo en la barra lateral; Gerencia dice "Gerencia" |
+| 8g.11 | Iconos | Cualquier rol: breadcrumb (casita), botón ☰, corazón del pie de página, menú de Tesorería | Se ven los iconos (Font Awesome ahora es local en `public/assets/fontawesome`; el kit de fontawesome.com devolvía 403 y por eso salían círculos naranjas vacíos) |
+| 8g.12 | Botones de ítems | `prueba.productor` → Orden natural / nómina / jurídica; `prueba.ejecutivo` → nuevo proyecto / Helisa | Los botones dicen "Agregar ítem" / "Guardar cambios" / "Nuevo" con el signo dibujado; ya no hay círculos naranjas sin icono |
+| 8g.13 | Inicio de Tesorería | `prueba.tesoreria` → Inicio | Saludo, 4 tarjetas (órdenes por pagar del año y total histórico, valor, pagadas este mes, anticipos por pagar), tabla de las 8 órdenes más recientes con botón "Pagar", barras de 6 meses y anticipos de producción; el menú tiene "Ordenes de compra" y "Anticipos" |
+| 8g.14 | Inicio de Contabilidad | `prueba.contabilidad` → Inicio | Igual que 8g.13 pero con "por causar" / "causadas" y botón "Causar"; las barras muestran las órdenes causadas por mes (las órdenes viejas no tienen fecha de causal: se usa su última actualización) |
 
 ## B9. Regresión general (nada se rompió)
 
