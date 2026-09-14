@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=6" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=10" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -217,9 +217,9 @@
               </a>
             </li>
             <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Inicio</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">@yield('titulo', 'Dashboard')</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0 text-white">Dashboard</h6>
+          <h6 class="font-weight-bolder mb-0 text-white">@yield('titulo', 'Dashboard')</h6>
         </nav>
         <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
           <a href="javascript:;" class="nav-link p-0">
@@ -324,7 +324,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
-  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=2"></script>
+  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=3"></script>
   @livewireScripts
 </body>
 </html>

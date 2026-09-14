@@ -205,6 +205,19 @@ Los líderes comerciales salen de la tabla `lider_comercial_user` (líder → co
 | 8b.4 | Ranking por líder | Ranking → **Por líder** | 3 filas (Leonardo, Lady, Paula) con venta y meta de todo su equipo y % de cumplimiento; el líder filtrado aparece resaltado |
 | 8b.5 | Sin líder | Líder comercial: **Todos los equipos** | Vuelven los totales generales y el buscador lista a todos los comerciales |
 
+## B8c. Base comercial general (listado rediseñado)
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8c.1 | Carga por defecto | `prueba.gerencia` → Inicio → **Base comercial general** | Año = el más reciente, "Todo el año"; resumen (valor, registros, clientes, comerciales) y fichas de estado con conteos; tabla ordenada por fecha descendente |
+| 8c.2 | Ficha de estado | Pulsa la ficha **Facturado** | Solo filas "Facturado", el select Estado cambia a Facturado, el KPI pasa a "Valor del estado"; pulsarla otra vez quita el filtro |
+| 8c.3 | Orden por columna | Pulsa **Valor** en la cabecera | Mayor valor primero y flecha ↓; segundo clic invierte el orden |
+| 8c.4 | Búsqueda de texto | Escribe `pepsico` en Buscar | Filtra por centro de costos, cliente o proyecto; las fichas y el resumen se recalculan; una búsqueda sin resultados muestra "Sin resultados" con enlace para limpiar |
+| 8c.5 | Comercial | Escribe `ale` en Comercial y elige uno | Lista filtrada mientras escribes; al elegir, solo sus registros |
+| 8c.6 | Desde el dashboard | Dashboard → Estado de facturación → clic en "Ejecución por facturar" | Abre esta pantalla con año, mes, comercial y estado ya aplicados (el año llega como "2026" y se reconoce igual) |
+| 8c.7 | Exportar | Con cualquier filtro → **Exportar Excel** | Descarga `Reporte Base Comercial.xlsx` con exactamente las filas filtradas |
+| 8c.8 | Paginación | Cambia "por página" a 50 y ve a la página 2 | El contador "Mostrando X–Y de Z" y las filas coinciden |
+
 ## B9. Regresión general (nada se rompió)
 
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.

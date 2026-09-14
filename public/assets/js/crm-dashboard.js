@@ -7,6 +7,8 @@
    ========================================================================== */
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Señal para el CSS: solo con esta clase se parte del estado oculto (entrada animada)
+  if (!reduce) document.documentElement.classList.add('crm-js');
   var easeOut = function (t) { return 1 - Math.pow(1 - t, 4); };
   var fmt = function (n, decimals) {
     return Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
