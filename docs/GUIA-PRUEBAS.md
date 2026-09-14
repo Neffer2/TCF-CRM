@@ -234,6 +234,19 @@ Controller (rol 11) y Líder comercial (rol 12) dejan de ser cuentas Admin. En e
 | 8d.8 | Validación de líder | Líder → Validaciones → un presupuesto en estado 4 de su equipo → Validar / Rechazar | Funciona igual que antes para un admin líder; `/actualizaciones` y `/consumidos` le redirigen |
 | 8d.9 | Admin sigue igual | Entra como `prueba.admin` | Menú completo, dashboard con filtro de líder seleccionable, validaciones y actualizaciones accesibles |
 
+## B8e. Piel visual global y Helisa general
+
+Todas las pantallas del espacio administrativo y comercial comparten ahora la misma capa visual (cabecera con foto de marca, tipografía Manrope, botones y tablas en la paleta Bull, entrada animada de tarjetas y filas). Helisa general fue rediseñada como Base comercial general.
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8e.1 | Coherencia | Como admin recorre Presupuestos, Actualizaciones, Órdenes de compra, Consumidos, Proveedores, Personal, Anticipos, Mi equipo | Todas con la foto de marca arriba, título de sección en la miga de pan, botones naranja Bull (ninguno azul/morado de Argon), tablas con cabecera limpia y filas que aparecen escalonadas |
+| 8e.2 | Helisa general | Inicio → Helisa general | Resumen (base facturada, movimientos, terceros, comisión), fichas por tipo de documento (FEVT, NC…), tabla ordenable; las notas crédito se ven en rojo con base negativa |
+| 8e.3 | Export coherente | Filtra 2026 + un mes + un tipo → Exportar Excel | El Excel trae solo esos movimientos (antes ignoraba año y mes) |
+| 8e.4 | Búsqueda | Escribe un tercero (p. ej. `SPB`) en Buscar | Filtra por centro, nombre del centro, tercero, concepto o n.º de documento |
+| 8e.5 | Líder en Helisa | Como `prueba.lidercom` → Helisa general | Solo movimientos y comerciales de su equipo |
+| 8e.6 | Formularios | Abre un presupuesto y una orden de compra | Campos con borde suave y foco naranja; nada ilegible ni superpuesto |
+
 ## B9. Regresión general (nada se rompió)
 
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.

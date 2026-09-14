@@ -59,10 +59,18 @@
   }
 
   function entrada() {
-    document.querySelectorAll('.crm-kpi, .crm-chart, .crm-panel').forEach(function (el) {
+    // Tarjetas del dashboard + cualquier tarjeta de contenido de las demás pantallas
+    var tarjetas = document.querySelectorAll('.crm-kpi, .crm-chart, .crm-panel, .main-content .card');
+    var orden = 0;
+    tarjetas.forEach(function (el) {
+      if (!el.style.getPropertyValue('--i') && !el.closest('.card:not(.crm-kpi) .card')) el.style.setProperty('--i', orden++);
       el.classList.remove('is-in');
       void el.offsetWidth; // reinicia la animación
       el.classList.add('is-in');
+    });
+    // Filas de las tablas de Argon: numeradas para la entrada escalonada (máx. 40 filas animadas)
+    document.querySelectorAll('.main-content .table:not(.crm-table) tbody').forEach(function (tb) {
+      Array.prototype.forEach.call(tb.rows, function (tr, i) { tr.style.setProperty('--i', Math.min(i, 40)); });
     });
   }
 

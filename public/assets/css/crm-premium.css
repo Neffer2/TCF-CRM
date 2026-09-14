@@ -595,3 +595,152 @@ a.crm-kpi:hover .crm-kpi__label { color: var(--crm-accent-deep); }
 }
 .crm-perfil__avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .crm-perfil__avatar b { position: relative; }
+
+/* ==========================================================================
+   PIEL GLOBAL: coherencia visual en TODAS las pantallas del espacio admin y
+   comercial (Gerencia, Admin, Controller, Líder comercial, Comercial…).
+   Reinterpreta los componentes de Argon que ya usan las vistas con la
+   paleta Bull, sin tocar su HTML ni la lógica de Livewire.
+   ========================================================================== */
+
+/* --- Paleta Argon -> Bull: todo lo "primary/warning" pasa a naranja Bull --- */
+.bg-gradient-primary, .bg-gradient-warning, .btn.bg-gradient-primary, .btn.bg-gradient-warning, .btn-primary, .btn-warning,
+.badge.bg-gradient-primary, .badge.bg-gradient-warning, .bg-primary, .bg-warning {
+  background: linear-gradient(135deg, #FF6900 0%, #EF5F17 100%) !important; color: #fff !important;
+}
+.bg-gradient-info, .btn.bg-gradient-info, .badge.bg-gradient-info, .bg-info { background: linear-gradient(135deg, #CE8D00 0%, #B8830A 100%) !important; color: #fff !important; }
+.bg-gradient-success, .btn.bg-gradient-success, .badge.bg-gradient-success { background: linear-gradient(135deg, #2AA26B 0%, #1E8A5A 100%) !important; color: #fff !important; }
+.bg-gradient-danger, .btn.bg-gradient-danger, .badge.bg-gradient-danger { background: linear-gradient(135deg, #D9573F 0%, #C4452E 100%) !important; color: #fff !important; }
+.bg-gradient-dark, .btn.bg-gradient-dark { background: linear-gradient(135deg, #3A322C 0%, #1E1915 100%) !important; color: #fff !important; }
+.bg-gradient-secondary, .btn.bg-gradient-secondary { background: linear-gradient(135deg, #8C8178 0%, #6A6159 100%) !important; color: #fff !important; }
+.text-primary, a.text-primary, .text-warning { color: var(--crm-accent-deep) !important; }
+.text-gradient.text-primary, .text-gradient.text-warning { background-image: linear-gradient(120deg, #FF6900, #C94A0E) !important; -webkit-background-clip: text; background-clip: text; color: transparent !important; }
+.bg-rentabilidad { background: linear-gradient(135deg, #3A322C, #1E1915) !important; }
+.border-primary { border-color: var(--crm-accent) !important; }
+.form-check-input:checked, .form-switch .form-check-input:checked { background-color: var(--crm-accent) !important; border-color: var(--crm-accent) !important; }
+.progress-bar { background: linear-gradient(90deg, #FF6900, #EF5F17) !important; }
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link { background: var(--crm-accent-soft) !important; color: var(--crm-accent-deep) !important; box-shadow: none !important; }
+
+/* --- Botones: píldoras con física --- */
+.main-content .btn {
+  border-radius: 999px; font-weight: 700; letter-spacing: .01em; text-transform: none; font-size: 13px;
+  padding: .55rem 1.1rem; box-shadow: none; border: 0;
+  transition: transform .35s cubic-bezier(.16, 1, .3, 1), box-shadow .35s ease, filter .2s ease, background .2s ease;
+}
+.main-content .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px -12px rgba(30, 25, 21, .45); filter: saturate(1.06); }
+.main-content .btn:active { transform: scale(.98); }
+.main-content .btn:disabled, .main-content .btn.disabled { opacity: .55; transform: none; box-shadow: none; cursor: not-allowed; }
+.main-content .btn.bg-gradient-primary:hover, .main-content .btn.bg-gradient-warning:hover, .main-content .btn-primary:hover { box-shadow: 0 14px 26px -12px rgba(239, 95, 23, .8); }
+.main-content .btn-outline-primary, .main-content .btn-outline-warning { border: 1px solid var(--crm-accent) !important; color: var(--crm-accent-deep) !important; background: var(--crm-card) !important; }
+.main-content .btn-outline-primary:hover, .main-content .btn-outline-warning:hover { background: var(--crm-accent-soft) !important; }
+.main-content .btn-icon { display: inline-flex; align-items: center; gap: 6px; }
+.main-content .btn-sm { padding: .4rem .85rem; font-size: 12px; }
+
+/* --- Formularios --- */
+.main-content .form-control, .main-content .form-select, .main-content textarea.form-control, .main-content select.form-control {
+  border: 1px solid var(--crm-line); border-radius: var(--crm-radius-sm); font-weight: 600; color: var(--crm-ink);
+  background-color: var(--crm-card); font-size: 13.5px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.main-content .form-control:not(textarea):not([size]) { min-height: 42px; }
+.main-content .form-control:hover, .main-content .form-select:hover { border-color: #D9CFC5; }
+.main-content .form-control:focus, .main-content .form-select:focus { border-color: var(--crm-accent); box-shadow: 0 0 0 3px rgba(239, 95, 23, .18); }
+.main-content .form-control:disabled, .main-content .form-control[readonly] { background: var(--crm-paper); color: var(--crm-ink-2); }
+.main-content .form-control.is-valid { border-color: var(--crm-ok); background-image: none; }
+.main-content .form-control.is-invalid { border-color: var(--crm-bad); background-image: none; }
+.main-content label, .main-content .form-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--crm-ink-3);
+}
+.main-content .input-group-text { border-radius: var(--crm-radius-sm); border-color: var(--crm-line); background: var(--crm-paper); }
+
+/* --- Tarjetas y cabeceras de tarjeta --- */
+.main-content .card-frame, .main-content .card.card-frame { border: 1px solid var(--crm-line); }
+.main-content .card-header h3, .main-content .card-header h5, .main-content .card-header h6.mb-0 {
+  font-weight: 800; letter-spacing: -.01em; color: var(--crm-ink);
+}
+.main-content .card-header h3 { font-size: 20px; }
+.main-content .card-header h3 + p.text-sm, .main-content .card-header p.text-sm { color: var(--crm-ink-2); font-weight: 500; }
+.main-content .card-header h3::before {
+  content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 10px; vertical-align: 2px;
+  background: linear-gradient(135deg, #FF6900, #EF5F17); box-shadow: 0 4px 10px -4px rgba(239, 95, 23, .9);
+}
+.main-content .card .card-header.pb-0 + .card-body, .main-content .card-body { color: var(--crm-ink); }
+.main-content .alert { border-radius: var(--crm-radius-sm); border: 0; font-weight: 600; }
+.main-content .alert.alert-warning { background: var(--crm-warn) !important; }
+.main-content .alert.alert-success { background: var(--crm-ok) !important; }
+.main-content .alert.alert-danger { background: var(--crm-bad) !important; }
+.main-content .alert.alert-info { background: linear-gradient(135deg, #FF6900, #EF5F17) !important; }
+
+/* --- Tablas de Argon --- */
+.main-content .table { font-variant-numeric: tabular-nums; }
+.main-content .table thead th, .main-content .table > :not(caption) > * > th {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--crm-ink-3) !important;
+  border-bottom: 1px solid var(--crm-line); background: transparent; padding: 12px 10px; opacity: 1 !important;
+}
+.main-content .table thead.bg-gradient-warning th, .main-content .table thead.bg-gradient-primary th,
+.main-content .table thead[class*="bg-gradient"] th, .main-content .table tfoot[class*="bg-gradient"] th { color: #fff !important; }
+.main-content .table thead[class*="bg-gradient"] { border-radius: 12px; overflow: hidden; }
+.main-content .table thead[class*="bg-gradient"] th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.main-content .table thead[class*="bg-gradient"] th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.main-content .table tfoot[class*="bg-gradient"] th:first-child { border-radius: 12px 0 0 12px; }
+.main-content .table tfoot[class*="bg-gradient"] th:last-child { border-radius: 0 12px 12px 0; }
+.main-content .table tbody td, .main-content .table > :not(caption) > * > td {
+  border-bottom: 1px solid var(--crm-line); padding: 11px 10px; vertical-align: middle; font-size: 13px; color: var(--crm-ink);
+}
+.main-content .table tbody tr { transition: background .25s ease; }
+.main-content .table tbody tr:hover td { background: rgba(239, 95, 23, .04); }
+.main-content .table-striped > tbody > tr:nth-of-type(odd) > * { background: rgba(246, 243, 239, .6); --bs-table-accent-bg: transparent; }
+.main-content .table .text-xs, .main-content .table .text-xxs { font-size: 12.5px !important; }
+.main-content .table .text-secondary { color: var(--crm-ink-2) !important; }
+.main-content .table .font-weight-bold, .main-content .table .font-weight-bolder { color: var(--crm-ink); }
+.main-content .table .avatar { border-radius: 10px; }
+.main-content .table tbody tr td > .btn { margin-bottom: 0 !important; }
+
+/* --- Badges y chips --- */
+.main-content .badge { border-radius: 999px; font-weight: 700; letter-spacing: .04em; padding: .4em .8em; font-size: 11px; text-transform: none; }
+.main-content .badge.badge-sm { font-size: 10.5px; }
+
+/* --- Paginación (global, no solo la del listado nuevo) --- */
+.main-content .pagination { gap: 4px; }
+.main-content .page-item .page-link {
+  border: 1px solid var(--crm-line); border-radius: 10px !important; margin: 0; min-width: 34px; height: 34px; padding: 0 9px;
+  display: inline-flex; align-items: center; justify-content: center; color: var(--crm-ink-2); background: var(--crm-card);
+  font: 700 12.5px "Manrope", system-ui, sans-serif; box-shadow: none;
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), background .2s ease, color .2s ease, border-color .2s ease;
+}
+.main-content .page-item .page-link:hover { color: var(--crm-accent-deep); border-color: var(--crm-accent); transform: translateY(-1px); }
+.main-content .page-item.active .page-link { background: var(--crm-accent) !important; border-color: var(--crm-accent); color: #fff; box-shadow: 0 8px 18px -10px var(--crm-accent); }
+.main-content .page-item.disabled .page-link { opacity: .45; }
+
+/* --- Modales, dropdowns, tooltips --- */
+.modal-content { border-radius: var(--crm-radius); border: 1px solid var(--crm-line); box-shadow: var(--crm-shadow); font-family: var(--crm-font); }
+.modal-header { border-bottom: 1px solid var(--crm-line); }
+.modal-title { font-weight: 800; letter-spacing: -.01em; }
+.dropdown-menu { border-radius: 14px; border: 1px solid var(--crm-line); box-shadow: var(--crm-shadow); font-family: var(--crm-font); }
+.dropdown-item { border-radius: 8px; font-weight: 600; }
+.dropdown-item:hover { background: var(--crm-accent-soft); color: var(--crm-accent-deep); }
+
+/* --- Navbar superior --- */
+.navbar-main .breadcrumb-item.active { font-weight: 700; }
+.navbar-main h6 { font-weight: 800; letter-spacing: -.01em; font-size: 15px; }
+
+/* --- Entrada animada de TODAS las tarjetas de contenido (no solo las del dashboard) --- */
+html.crm-js .main-content .card:not(.crm-kpi):not(.crm-panel):not(.crm-chart) { opacity: 0; transform: translateY(12px); }
+html.crm-js .main-content .card.is-in:not(.crm-kpi):not(.crm-panel):not(.crm-chart) {
+  animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(var(--i, 0) * 60ms);
+}
+/* Filas de las tablas de Argon: aparecen escalonadas (crm-dashboard.js numera --i) */
+html.crm-js .main-content .table:not(.crm-table) tbody tr { opacity: 0; transform: translateX(-6px); }
+html.crm-js .main-content .is-in .table:not(.crm-table) tbody tr {
+  animation: crm-row .5s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.15s + var(--i, 0) * 35ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.crm-js .main-content .card, html.crm-js .main-content .table tbody tr { opacity: 1; transform: none; animation: none; }
+}
+
+/* Concepto en el estado de facturación del comercial (sin enlace) */
+.crm-concepto { display: inline-flex; align-items: center; gap: 6px; }
+/* Helisa: número de documento y código de centro dentro de la celda */
+.crm-doc { color: var(--crm-ink-3); font-weight: 700; font-size: 11.5px; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.crm-cc { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; color: var(--crm-ink); margin-right: 4px; }
+.crm-table--data td.is-valor.is-neg { color: var(--crm-bad); }

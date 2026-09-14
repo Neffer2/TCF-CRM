@@ -21,11 +21,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=11" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=12" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
 </head>
+@php
+  // Título de la sección por nombre de ruta (las vistas pueden sobrescribirlo con @section('titulo'))
+  $crmTitulos = [
+    'dashboard-admin' => 'Dashboard', 'dashboard-controller' => 'Dashboard Controller', 'dashboard-lider-comercial' => 'Dashboard del equipo',
+    'base-comercial-general' => 'Base comercial general', 'helisa-general' => 'Helisa general', 'estado-facturacion' => 'Estado de facturación', 'estados' => 'Estado de facturación',
+    'presupuesto-proyecto' => 'Presupuestos', 'presupuestos-admin' => 'Presupuesto', 'presupuesto' => 'Presupuesto', 'presupuestos' => 'Presupuestos',
+    'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
+    'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
+    'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 'actualizar-perfil-adm' => 'Actualizar perfil',
+    'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
+    'consumidos-com' => 'Consumidos', 'actualizar-perfil-com' => 'Actualizar perfil', 'update-gestion-comercial' => 'Gestión comercial',
+  ];
+  $crmTitulo = $crmTitulos[optional(request()->route())->getName()] ?? 'Inicio';
+@endphp
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
   @yield('hero-style')
   <!-- Barra lateral -->
@@ -224,9 +239,9 @@
               </a>
             </li>
             <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Inicio</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">@yield('titulo', 'Dashboard')</li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">@yield('titulo', $crmTitulo)</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0 text-white">@yield('titulo', 'Dashboard')</h6>
+          <h6 class="font-weight-bolder mb-0 text-white">@yield('titulo', $crmTitulo)</h6>
         </nav>
         <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
           <a href="javascript:;" class="nav-link p-0">
@@ -331,7 +346,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
-  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=3"></script>
+  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=4"></script>
   @livewireScripts
 </body>
 </html>
