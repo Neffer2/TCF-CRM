@@ -173,3 +173,19 @@
     });
   });
 })();
+
+/* crm-info-unico: solo una ayuda "?" abierta a la vez; se cierra al hacer clic afuera o con Escape */
+(function () {
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (!(d instanceof HTMLElement) || !d.matches('details.crm-info') || !d.open) return;
+    document.querySelectorAll('details.crm-info[open]').forEach(function (o) { if (o !== d) o.open = false; });
+  }, true);
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('details.crm-info')) return;
+    document.querySelectorAll('details.crm-info[open]').forEach(function (o) { o.open = false; });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('details.crm-info[open]').forEach(function (o) { o.open = false; });
+  });
+})();

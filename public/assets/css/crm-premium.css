@@ -1053,3 +1053,17 @@ body.crm-modal-open { overflow: hidden; }
 .crm-fin__ant span { display: block; font-size: 12px; color: #8A7F79; }
 .crm-fin__ant strong { font-size: 13px; color: #EF5F17; white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (max-width: 991px) { .crm-fin .crm-kpis--mini { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---- Presupuesto: ayudas "?" en las filas de cifras (vista clásica) ---- */
+.crm-presupuesto .card .table-responsive { overflow: visible; }
+.crm-presupuesto .card { overflow: visible; }
+.crm-info--fila { position: relative; display: inline-block; vertical-align: middle; margin-left: 6px; top: auto; right: auto; }
+.crm-info--fila > summary { width: 18px; height: 18px; font-size: 11px; }
+.crm-info--fila .crm-info__pop { left: -6px; right: auto; top: calc(100% + 8px); z-index: 1060; }
+.crm-info--fila.crm-info--der .crm-info__pop { left: auto; right: 0; }
+.crm-presupuesto .card:has(.crm-info[open]) { z-index: 1050; }
+.crm-presupuesto .row:has(.crm-info[open]) { position: relative; z-index: 1050; }
+.crm-presupuesto td.font-table { white-space: nowrap; }
+.crm-presupuesto textarea { width: 100%; }
+.crm-presupuesto:has(.crm-info[open]) { position: relative; z-index: 1050; overflow: visible; }
+.crm-info__pop { white-space: normal; text-align: left; font-weight: 400; }

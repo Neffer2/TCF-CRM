@@ -1,6 +1,44 @@
 # Guía de pruebas — TCF-CRM (rama `correcciones`)
 **Para:** desarrollador/tester que valida la reestructuración antes del paso a producción.
 **Rama a probar:** `correcciones` · **NUNCA toques la rama `main`** (subir a main despliega a producción automáticamente).
+**Versión de esta guía:** 14 de septiembre de 2026 (commit más reciente de `correcciones`).
+
+---
+
+# PARTE 0 — Qué cambió (resumen para ubicarse)
+
+Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11-sep-2026. Si algo de esta lista no se comporta como se describe, es un hallazgo.
+
+**Seguridad y estabilidad**
+- Registro público, "olvidé mi clave" y verificación de correo **eliminados**: las cuentas las crea un admin y las claves las cambia un desarrollador. Páginas 404/403/500 propias con la marca.
+- Rutas de borrado y de otros roles protegidas por middleware (`admin`, `rol:1,11,12`, productor, tesorería, contabilidad…). Gerencia (rol 20) no es conmutable y se trata como Admin.
+- 12 rutas de anticipos que el código invocaba sin existir, ahora definidas; rutas muertas (métodos inexistentes) retiradas. Barrido de 62 rutas × 10 roles sin ningún error 500.
+- Portal público de terceros solo con enlace firmado (403 sin firma).
+
+**Roles y cuentas**
+- Una sola cuenta puede tener varios roles (`role_user`) y cambiar entre ellos con el selector de la barra superior.
+- Roles nuevos y propios: **Controller (11)** y **Líder comercial (12)**, cada uno con su dashboard y su menú; Gerencia = Jony Ariza y Alejandro Rodríguez.
+- **Mi perfil** para todos los roles (foto grande, cargo, datos, roles, equipo). "Ajustes" eliminado.
+
+**Comercial y presupuestos**
+- Dashboard de gerencia v3: seis indicadores, gráfica mensual con **pronóstico de cierre**, ranking de comerciales y de líderes, filtros por líder y por comercial, panel a pantalla completa por estado de venta (líder → comercial → proyecto).
+- Base comercial general y Helisa general rediseñadas (resumen, fichas por estado, orden por columna, búsqueda, export = lo filtrado).
+- Presupuesto: **misma pantalla de siempre** (cuatro tarjetas: cifras, datos del proyecto, recargos y notas) más un botón "?" al lado de cada cifra que explica la fórmula con los números reales; cabeceras de la tabla legibles.
+- Corregidos: edición de contacto que cruzaba PBX/Web, Helisa que editaba el documento equivocado, participaciones que no se limpiaban, % por cumplir negativo, margen 35 exacto que daba 500, exports que no respetaban filtros.
+
+**Producción, pagos y notificaciones**
+- Motor de transiciones de anticipos y órdenes con topes de dinero validados en servidor; candado anti doble pago; estado **Pagado (14)** para anticipos; tipo de orden **Nómina (3)**.
+- 13 correos que el código llamaba y no existían, creados. Todo correo/SMS pasa por `Notificador`: queda registrado en **Acciones → Notificaciones** con reintentos, y si falla se alerta a desarrollo (`CRM_ALERTA_*`).
+- **Registro de actividad** (`/actividad`): sesiones, páginas, acciones con datos y cambios de registros (antes/después).
+- Inicio de **Tesorería** y **Contabilidad** (antes en blanco): órdenes por pagar/causar, valor, procesadas por mes, anticipos pendientes, accesos directos.
+- Font Awesome ahora es local (el kit externo devolvía 403 y por eso salían círculos naranjas vacíos); botones de ítems con texto.
+
+**Base de datos**
+- Fase 6 de reestructuración: normalización, llaves e integridad, esquema documentado (`docs/`), migraciones nuevas (`roles_controller_lider_comercial`, `notificaciones_log_y_estado_pagado`, `tipo_orden_nomina`, `actividad_log`, `documentar_esquema`).
+- `tfc_crm.sql` (raíz del repo) es un dump **ya migrado y con los usuarios de prueba**: basta importarlo (ver A3).
+
+**Visual**
+- Login rediseñado con foto de marca; capa visual Bull coherente y animada en todos los roles (tipografía Manrope, naranja solo en acentos, cabecera con velo carbón). Favicon original intacto.
 
 ---
 
@@ -30,17 +68,11 @@ npm install
 npm run production
 ```
 
-## A3. Extraer la base de datos de PRODUCCIÓN (solo lectura)
+## A3. Base de datos: importar el dump del repositorio
 
-> Esto solo **lee** producción; nunca escribas nada allá.
+El archivo **`tfc_crm.sql`** (raíz del repo, ~43 MB, generado el 14-sep-2026) es una copia de la base de pruebas ya lista: datos reales de producción + **todas las migraciones aplicadas** + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada.
 
-1. Entra al panel de **Hostinger** → **Bases de datos** → busca la base **`u630167073_CRM`** → clic en **Entrar a phpMyAdmin**.
-2. En phpMyAdmin, selecciona la base en el panel izquierdo.
-3. Pestaña **Exportar** → método **Rápido** → formato **SQL** → botón **Exportar**.
-4. Guarda el archivo como `tfc_crm_YYYY-MM-DD.sql` (con la fecha del día).
-5. Cópialo a la carpeta `db-snapshots/` dentro del proyecto (créala si no existe). **Ese archivo NUNCA se sube a git.**
-
-## A4. Importar el dump a tu MySQL local
+> Producción (`u630167073_CRM` en Hostinger) es **solo lectura y no se toca**. Si algún día necesitas datos más frescos, expórtala desde phpMyAdmin (Exportar → Rápido → SQL) a `db-snapshots/` (carpeta ignorada por git) y sigue el mismo procedimiento; en ese caso sí tendrás que correr `php artisan migrate` después.
 
 Configura primero el `.env` con tu MySQL local:
 
@@ -51,36 +83,32 @@ DB_DATABASE=tfc_crm
 DB_USERNAME=root
 DB_PASSWORD=tu_clave_local
 MAIL_MAILER=log     # ¡importante! así ningún correo real sale de tu máquina
+SMS_MODO=log        # ídem para los SMS
+QUEUE_CONNECTION=sync
 ```
 
 > ⚠ Verifica dos veces que `DB_HOST` apunta a tu máquina. Si apunta a producción, DETENTE.
 
-Importa. El `sed` limpia dos cosas que MySQL local rechaza: los `DEFINER` del hosting y el `sql_mode` `NO_AUTO_CREATE_USER` de MariaDB (sin esto la importación se corta a mitad con "Variable 'sql_mode' can't be set"):
+Importa (el dump ya viene sin `DEFINER` ni líneas de GTID, así que entra limpio en MySQL 8/9 y MariaDB):
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS tfc_crm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-sed -E 's/DEFINER=`[^`]+`@`[^`]+`//g; s/NO_AUTO_CREATE_USER,?//g' db-snapshots/tfc_crm_YYYY-MM-DD.sql | mysql -u root -p tfc_crm
 ```
-
-## A5. Migraciones y usuarios de prueba
-
-**Paso previo obligatorio.** En producción hay 3 migraciones cuyo esquema ya fue aplicado a mano pero nunca quedaron registradas en la tabla `migrations`; si corres `migrate` directo, fallan con "Duplicate column" y abortan todo. Regístralas primero:
 
 ```bash
-mysql -u root -p tfc_crm -e "INSERT INTO migrations (migration, batch) SELECT m, (SELECT MAX(batch)+1 FROM migrations) FROM (SELECT '2026_02_25_150215_add_column_justificacion_lider_to_presupuesto_proyecto_table' m UNION SELECT '2026_04_10_095206_create_lider_comercial_user_table' UNION SELECT '2026_05_07_180055_add_column_num_item_and_orden_to_items_presupuesto_table') x WHERE m NOT IN (SELECT migration FROM migrations);"
+mysql -u root -p tfc_crm < tfc_crm.sql
 ```
 
-Ahora sí:
+Debe terminar sin errores. Comprueba: `SELECT COUNT(*) FROM users;` → **215** usuarios; `SELECT COUNT(*) FROM migrations;` → **53**.
+
+## A4. Verificar migraciones y usuarios de prueba
 
 ```bash
-php artisan migrate
-php artisan migrate:status | grep "| No"     # no debe mostrar nada
-php artisan db:seed --class=UsuariosPruebaSeeder
+php artisan migrate:status | grep "| No"     # no debe mostrar nada: todo está aplicado
+php artisan db:seed --class=UsuariosPruebaSeeder   # opcional: reescribe las claves de prueba si alguien las cambió
 ```
 
-`migrate` aplica, además de las nuevas de la reestructuración, **6 migraciones del flujo de anticipos que en producción nunca se corrieron** (la tabla `anticipos` real tiene la estructura vieja) y crea los **estados 8–14** del catálogo que ese flujo necesita. Es normal ver ~10 migraciones aplicándose.
-
-El seeder **solo corre en entorno local** y crea estos usuarios (contraseña de todos: **`Prueba123*`**):
+El seeder **solo corre en entorno local**. Los usuarios de prueba ya vienen en el dump (contraseña de todos: **`Prueba123*`**):
 
 | Correo | Rol | Para probar |
 |---|---|---|
@@ -90,13 +118,13 @@ El seeder **solo corre en entorno local** y crea estos usuarios (contraseña de 
 | prueba.ejecutivo@local.test | Ejecutivo de cuenta | módulo asistente |
 | prueba.lider@local.test | Líder producción | validación de anticipos e OC |
 | prueba.productor@local.test | Productor | órdenes, anticipos, remisiones (ya tiene 3 centros de costo asignados) |
-| prueba.tesoreria@local.test | Tesorería | pago de anticipos |
-| prueba.contabilidad@local.test | Contabilidad | causación |
+| prueba.tesoreria@local.test | Tesorería | pago de anticipos, inicio de tesorería |
+| prueba.contabilidad@local.test | Contabilidad | causación, inicio de contabilidad |
 | prueba.multirol@local.test | Productor + Comercial | el selector de cambio de rol |
 | prueba.controller@local.test | **Controller** | dashboard de revisión, presupuestos, actualizaciones, consumidos, reportes |
 | prueba.lidercom@local.test | **Líder comercial** | dashboard de su equipo (prueba.comercial, Alexandra Niño, Juan Camilo Rodríguez), validaciones |
 
-Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales**, el seeder también deja con la clave `Prueba123*` a un usuario real de cada rol (solo en la base local; sus correos y datos no cambian):
+Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales**, estas cuentas reales también tienen la clave `Prueba123*` (solo en la base local; sus correos y datos no cambian):
 
 | Correo real | Rol | Por qué este |
 |---|---|---|
@@ -112,7 +140,13 @@ Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. 
 | tesoreria@bullmarketing.com.co | Tesorería | |
 | contadores@bullmarketing.com.co | Contabilidad | |
 
+**Multicuenta:** `prueba.multirol` entra como Productor y con el selector de la barra superior pasa a Comercial sin cerrar sesión. Las cuentas reales de Controller y Líder comercial conservan Admin como rol secundario en ese mismo selector.
+
 Todos los roles tienen **Mi perfil** (nombre en la barra superior): foto, cargo, datos, roles, permisos y equipo, solo lectura. La sección "Ajustes / Actualizar perfil" se eliminó: los datos y las claves los cambia un desarrollador.
+
+## A5. Correos, SMS y alertas en local
+
+Con `MAIL_MAILER=log` y `SMS_MODO=log` nada sale de tu máquina: cada envío queda como "Enviado" en **Acciones → Notificaciones** (admin) y en `storage/logs/laravel.log` como "[correo simulado]" / "[sms simulado]". Las variables `CRM_ALERTA_CORREOS` / `CRM_ALERTA_TELEFONOS` (a quién avisar cuando un envío falla) y `CRM_ANTICIPO_UMBRAL_GERENCIA` están documentadas en `.env.example`.
 
 ## A6. Arrancar
 
@@ -256,15 +290,19 @@ Controller (rol 11) y Líder comercial (rol 12) dejan de ser cuentas Admin. En e
 | 8d.8 | Validación de líder | Líder → Validaciones → un presupuesto en estado 4 de su equipo → Validar / Rechazar | Funciona igual que antes para un admin líder; `/actualizaciones` y `/consumidos` le redirigen |
 | 8d.9 | Admin sigue igual | Entra como `prueba.admin` | Menú completo, dashboard con filtro de líder seleccionable, validaciones y actualizaciones accesibles |
 
-## B8f. Presupuesto (detalle) con fórmulas explicadas
+## B8f. Presupuesto (detalle): pantalla clásica con ayudas "?"
+
+La pantalla del presupuesto se mantiene **igual a la que la gente ya conoce** (cuatro tarjetas arriba: cifras, datos del proyecto, recargos y notas; tabla de ítems; formulario abajo). Lo nuevo es discreto: un botón "?" al frente de cada cifra que explica cómo se calcula con los números reales del presupuesto.
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 8f.1 | Cabecera | Como `crm.Alejandra.Ortiz@…` (o admin) abre un presupuesto (p. ej. `/presupuesto/8542`) | Título = nombre del proyecto; cliente, contacto, ciudad y comercial debajo; chip con el estado y otro con/sin centro de costos |
-| 8f.2 | Indicadores | Mira los 5 indicadores | Venta del proyecto, costos, margen bruto, margen del proyecto (verde ≥ 35 %, ámbar 30–35 %, rojo < 30 % con aviso de gerencia) y margen de los ítems, cada uno con su explicación |
-| 8f.3 | Fórmulas | Panel "¿Cómo se calcula cada cifra?" | Seis pasos con los números reales del presupuesto; cambiar imprevistos/administración/fee como comercial recalcula venta y márgenes y los importes "= $" de cada parámetro |
-| 8f.4 | Tabla de ítems | Pasa el ratón por las cabeceras | Tooltips que explican cada columna (costo, precio, utilidad como factor, rentabilidad); las filas se ven y se pueden editar como antes |
-| 8f.5 | Nada perdido | Compara con la versión anterior | Siguen la justificación, validaciones de líder/gerencia, acciones de admin, exportar historial y cotizaciones PDF/Excel |
+| 8f.1 | Nada cambió de sitio | Como `crm.Alejandra.Ortiz@…` abre un presupuesto (p. ej. `/presupuesto/8573`) | Arriba: MARGEN ITEMS, VENTA PROYECTO, COSTOS DEL PROYECTO, MARGEN DEL PROYECTO, MARGEN BRUTO (PESOS) · CONTACTO, CLIENTE, PROYECTO, CENTRO DE COSTOS, CIUDAD · IMPREVISTOS, ADMINISTRACIÓN, FEE AGENCIA, TIEMPO · NOTAS. Mismo orden y mismos nombres de siempre |
+| 8f.2 | Ayuda de una cifra | Pulsa el "?" de MARGEN DEL PROYECTO | Se abre un recuadro oscuro **por encima de todo** (nunca detrás de la tabla) con la explicación, la fórmula con los valores reales y el resultado; solo puede haber un recuadro abierto a la vez |
+| 8f.3 | Cerrar la ayuda | Pulsa fuera del recuadro, o Esc, o de nuevo el "?" | Se cierra |
+| 8f.4 | Recargos | Pulsa el "?" al lado de IMPREVISTOS | Explica imprevistos, administración, fee y tiempo, y cuánto suman hoy en pesos |
+| 8f.5 | Recalcular | Como comercial cambia imprevistos a 5 y sal del campo | Venta del proyecto, márgenes y los números dentro de los "?" se recalculan |
+| 8f.6 | Tabla de ítems | Pasa el ratón por las cabeceras | Cabeceras legibles (texto blanco sobre carbón/verde) con tooltip que explica cada columna; filas visibles y editables como antes |
+| 8f.7 | Nada perdido | Compara con la versión anterior | Siguen la justificación, validaciones de líder/gerencia, acciones de admin, exportar historial y cotizaciones PDF/Excel |
 
 ## B8e. Piel visual global y Helisa general
 
@@ -293,7 +331,7 @@ Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío q
 | 8g.6 | Portal del contratista | Abre el enlace firmado de una orden natural (botón "Copiar enlace" en Órdenes de compra) | Arriba se ve "Estado de tu orden" con los pasos cumplidos y el estado del pago |
 | 8g.7 | Registro de actividad | Admin → Acciones → Registro de actividad | Sesiones, páginas, acciones (con "Datos": método y campos enviados) y cambios de datos (campo, antes, después); filtros por usuario, tipo, fechas y texto |
 | 8g.8 | Pronóstico | Dashboard de gerencia → gráfica | Línea punteada "Pronóstico" desde el último mes cerrado hasta diciembre y tarjeta "Pronóstico de cierre" con % vs presupuesto y vs año anterior; el "?" explica el cálculo |
-| 8g.9 | Presupuesto compacto | Abre un presupuesto | Cifras en una barra con "?" que explica cada fórmula con los números reales; parámetros en una línea; títulos de la tabla legibles (blanco sobre carbón/verde) |
+| 8g.9 | Presupuesto | Abre un presupuesto | Ver B8f: pantalla clásica con "?" al frente de cada cifra |
 | 8g.10 | Perfil visible | Cualquier rol | Tarjeta con foto grande, nombre y cargo en la barra lateral; Gerencia dice "Gerencia" |
 | 8g.11 | Iconos | Cualquier rol: breadcrumb (casita), botón ☰, corazón del pie de página, menú de Tesorería | Se ven los iconos (Font Awesome ahora es local en `public/assets/fontawesome`; el kit de fontawesome.com devolvía 403 y por eso salían círculos naranjas vacíos) |
 | 8g.12 | Botones de ítems | `prueba.productor` → Orden natural / nómina / jurídica; `prueba.ejecutivo` → nuevo proyecto / Helisa | Los botones dicen "Agregar ítem" / "Guardar cambios" / "Nuevo" con el signo dibujado; ya no hay círculos naranjas sin icono |
@@ -318,14 +356,14 @@ Para cada ❌, reporta en un documento/issue:
 
 **Notas finales:**
 - Los correos NO salen de tu máquina (`MAIL_MAILER=log`): el "envío" se verifica en `storage/logs/laravel.log`.
-- Los SMS no salen (no hay `SMS_TOKEN` en tu `.env`).
-- Si dañas los datos de prueba, reimporta el dump (paso A4) y vuelve a correr A5.
+- Los SMS no salen (`SMS_MODO=log`).
+- Si dañas los datos de prueba, reimporta `tfc_crm.sql` (paso A3) y listo.
 
 ---
 
 # PARTE D — Estructura de la base de datos (reestructuración de sep-2026)
 
-La rama `correcciones` trae 5 migraciones que normalizan el esquema. Se aplican solas con `php artisan migrate` (paso A5) y **solo en tu base local**.
+La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `tfc_crm.sql` ya vienen aplicadas (paso A3); si importas un dump fresco de producción se aplican con `php artisan migrate`, **solo en tu base local**.
 
 | Antes | Ahora |
 |---|---|
