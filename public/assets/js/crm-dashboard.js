@@ -69,8 +69,13 @@
       el.classList.add('is-in');
     });
     // Filas de las tablas de Argon: numeradas para la entrada escalonada (máx. 40 filas animadas)
-    document.querySelectorAll('.main-content .table:not(.crm-table) tbody').forEach(function (tb) {
-      Array.prototype.forEach.call(tb.rows, function (tr, i) { tr.style.setProperty('--i', Math.min(i, 40)); });
+    document.querySelectorAll('.main-content .table:not(.crm-table)').forEach(function (t) {
+      Array.prototype.forEach.call(t.tBodies, function (tb) {
+        Array.prototype.forEach.call(tb.rows, function (tr, i) { tr.style.setProperty('--i', Math.min(i, 40)); });
+      });
+      t.classList.remove('is-in');
+      void t.offsetWidth;
+      t.classList.add('is-in');
     });
   }
 

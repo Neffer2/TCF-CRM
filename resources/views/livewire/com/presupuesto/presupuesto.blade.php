@@ -1,126 +1,200 @@
 <div x-data="">
     @if (( $estadoValidator != 2 && $estadoValidator != 4) || Auth::user()->espacioAdmin())
-        <div class="card card-frame p-3">
-            <div class="row justify-content-md-center mb-3">
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <tr>
-                                    <td class="font-weight-bold font-table">MARGEN ITEMS</td>
-                                    <td class="font-table">{{ number_format(100-($margenItems * 100), 2) }} %</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">VENTA PROYECTO</td>
-                                    <td class="font-table">{{ number_format($ventaProyecto) }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">COSTOS DEL PROYECTO</td>
-                                    <td class="font-table">{{ number_format($costosProyecto) }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">MARGEN DEL PROYECTO</td>
-                                    <td class="font-table">{{ number_format($margenProyecto, 2) }} %</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">MARGEN BRUTO (PESOS)</td>
-                                    <td class="font-table">{{ number_format($margenBruto) }}</td>
-                                </tr>
-                            </table>
+        <div class="crm-presupuesto">
+        @php
+            // ---- Cifras del presupuesto (mismas fórmulas de getMetricas), preparadas para explicarlas ----
+            $recargos   = (float) $imprevistos + (float) $administracion + (float) $fee;         // % que se suman sobre la venta base
+            $ventaBase  = $recargos > -100 ? $ventaProyecto / (1 + $recargos / 100) : 0;         // Σ V. total cliente de los ítems
+            $vImprev    = $ventaBase * ((float) $imprevistos / 100);
+            $vAdmin     = $ventaBase * ((float) $administracion / 100);
+            $vFee       = $ventaBase * ((float) $fee / 100);
+            $margenItemsPct = 100 - ($margenItems * 100);
+            $pesos = function ($v) { return '$'.number_format((float) $v, 0, '.', ','); };
+            $pct   = function ($v, $d = 1) { return number_format((float) $v, $d, '.', ',').' %'; };
+            // Semáforo del margen del proyecto: < 30 % necesita gerencia; 30–35 % en el límite; ≥ 35 % sano
+            if ($margenProyecto >= 35)      { $tonoMargen = 'tone-ok';   $lecturaMargen = 'Margen sano'; }
+            elseif ($margenProyecto >= 30)  { $tonoMargen = 'tone-warn'; $lecturaMargen = 'En el límite (≥ 30 % no pasa por gerencia)'; }
+            else                            { $tonoMargen = 'tone-bad';  $lecturaMargen = 'Por debajo del 30 %: requiere validación de gerencia'; }
+            $estadoNombre = optional($presupuesto->estado)->description ?: 'Sin estado';
+            $tonoEstado = ['Aprobado' => 'tone-ok', 'Revision' => 'tone-warn', 'Editable' => 'tone-muted'][$estadoNombre] ?? 'tone-neutral';
+            $gestionP = $presupuesto->gestion; $contactoP = optional($gestionP)->contacto;
+            $soloLectura = Auth::user()->espacioAdmin();
+        @endphp
+
+        {{-- ================= CABECERA DEL PRESUPUESTO ================= --}}
+        <div class="card mb-4 crm-page-card crm-presupuesto__head">
+            <div class="crm-page-head">
+                <div class="crm-page-head__title">
+                    <span class="crm-eyebrow">Presupuesto {{ $presupuesto->cod_cot ? '· cotización '.$presupuesto->cod_cot : '' }}{{ $presupuesto->cod_cc ? ' · centro de costos '.$presupuesto->cod_cc : '' }}</span>
+                    <h1>{{ optional($gestionP)->nom_proyecto_cot ?: 'Proyecto sin nombre' }}</h1>
+                    <p>
+                        <b>{{ optional($contactoP)->empresa ?: 'Cliente sin registrar' }}</b>
+                        @if (optional($contactoP)->nombre) · contacto {{ $contactoP->nombre }} @endif
+                        @if (optional($contactoP)->ciudad) · {{ $contactoP->ciudad }} @endif
+                        @if (optional($gestionP)->comercial) · comercial {{ $gestionP->comercial->name }} @endif
+                    </p>
+                </div>
+                <div class="crm-presupuesto__estado">
+                    <span class="crm-chip {{ $tonoEstado }}">{{ $estadoNombre }}</span>
+                    @if ($presupuesto->cod_cc)
+                        <span class="crm-chip tone-neutral">Con centro de costos</span>
+                    @else
+                        <span class="crm-chip tone-muted">Sin centro de costos</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- ================= INDICADORES ================= --}}
+        <div class="crm-kpis crm-kpis--mini crm-kpis--cinco mb-4">
+            <div class="card crm-kpi crm-kpi--mini tone-neutral" style="--i:0">
+                <div class="crm-kpi__head"><div>
+                    <p class="crm-kpi__label">Venta del proyecto</p>
+                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($ventaProyecto) }}" data-key="pp_venta">{{ number_format($ventaProyecto, 0, '.', ',') }}</span></p>
+                    <p class="crm-kpi__note">Lo que se cobra al cliente: precios de los ítems más recargos ({{ $pct($recargos, 1) }}).</p>
+                </div></div>
+                <span class="crm-kpi__icon"><i class="ni ni-money-coins" aria-hidden="true"></i></span>
+            </div>
+            <div class="card crm-kpi crm-kpi--mini tone-muted" style="--i:1">
+                <div class="crm-kpi__head"><div>
+                    <p class="crm-kpi__label">Costos del proyecto</p>
+                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($costosProyecto) }}" data-key="pp_costos">{{ number_format($costosProyecto, 0, '.', ',') }}</span></p>
+                    <p class="crm-kpi__note">Lo que le cuesta a Bull: suma de los valores totales internos.</p>
+                </div></div>
+                <span class="crm-kpi__icon"><i class="ni ni-cart" aria-hidden="true"></i></span>
+            </div>
+            <div class="card crm-kpi crm-kpi--mini {{ $tonoMargen }}" style="--i:2">
+                <div class="crm-kpi__head"><div>
+                    <p class="crm-kpi__label">Margen bruto</p>
+                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($margenBruto) }}" data-key="pp_bruto">{{ number_format($margenBruto, 0, '.', ',') }}</span></p>
+                    <p class="crm-kpi__note">Venta menos costos: la ganancia en pesos.</p>
+                </div></div>
+                <span class="crm-kpi__icon"><i class="ni ni-diamond" aria-hidden="true"></i></span>
+            </div>
+            <div class="card crm-kpi crm-kpi--mini {{ $tonoMargen }}" style="--i:3">
+                <div class="crm-kpi__head"><div>
+                    <p class="crm-kpi__label">Margen del proyecto</p>
+                    <p class="crm-kpi__value"><span data-count="{{ sprintf('%.1f', $margenProyecto) }}" data-decimals="1" data-key="pp_margen">{{ sprintf('%.1f', $margenProyecto) }}</span><small> %</small></p>
+                    <div class="crm-bar"><span data-width="{{ max(0, min(100, $margenProyecto)) }}"></span></div>
+                    <p class="crm-kpi__note">{{ $lecturaMargen }}.</p>
+                </div></div>
+                <span class="crm-kpi__icon"><i class="ni ni-chart-pie-35" aria-hidden="true"></i></span>
+            </div>
+            <div class="card crm-kpi crm-kpi--mini tone-neutral" style="--i:4">
+                <div class="crm-kpi__head"><div>
+                    <p class="crm-kpi__label">Margen de los ítems</p>
+                    <p class="crm-kpi__value"><span data-count="{{ sprintf('%.1f', $margenItemsPct) }}" data-decimals="1" data-key="pp_items">{{ sprintf('%.1f', $margenItemsPct) }}</span><small> %</small></p>
+                    <p class="crm-kpi__note">Margen promedio de los ítems, antes de recargos.</p>
+                </div></div>
+                <span class="crm-kpi__icon"><i class="ni ni-bullet-list-67" aria-hidden="true"></i></span>
+            </div>
+        </div>
+
+        <div class="row mb-4 crm-presupuesto__fila">
+            {{-- ================= PARÁMETROS DEL PRESUPUESTO ================= --}}
+            <div class="col-12 col-xl-5">
+                <div class="card crm-panel h-100" style="--i:1">
+                    <div class="card-header">
+                        <div class="crm-panel__head">
+                            <div>
+                                <p class="crm-kpi__label">Recargos y condiciones</p>
+                                <h2>Parámetros del presupuesto</h2>
+                            </div>
+                            <span class="crm-kpi__icon"><i class="ni ni-settings-gear-65" aria-hidden="true"></i></span>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <tr>
-                                    <td class="font-weight-bold font-table">CONTACTO</td>
-                                    <td class="font-table">
-                                        {{$presupuesto->gestion->contacto->nombre}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">CLIENTE</td>
-                                    <td class="font-table">
-                                        {{$presupuesto->gestion->contacto->empresa}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">PROYECTO</td>
-                                    <td class="font-table">
-                                        {{$presupuesto->gestion->nom_proyecto_cot}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">CENTRO DE COSTOS</td>
-                                    <td class="font-table">
-                                        @if ($presupuesto->cod_cc)
-                                            {{ $presupuesto->cod_cc }}
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">CIUDAD</td>
-                                    <td class="font-table">
-                                        {{$presupuesto->gestion->contacto->ciudad}}
-                                    </td>
-                                </tr>
-                            </table>
+                    <div class="card-body">
+                        <p class="crm-presupuesto__ayuda">Los tres porcentajes se suman <b>sobre la venta base</b> (la suma de los precios al cliente de los ítems) y aumentan la venta del proyecto. {{ $soloLectura ? 'Solo el comercial puede modificarlos.' : 'Escribe el porcentaje sin el símbolo %.' }}</p>
+                        <div class="crm-parametros">
+                            <label class="crm-parametro">
+                                <span class="crm-parametro__nombre">Imprevistos</span>
+                                <span class="crm-parametro__desc">Colchón para costos no previstos.</span>
+                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="imprevistos" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('imprevistos') is-invalid @enderror"><em>%</em></span>
+                                <span class="crm-parametro__valor">= {{ $pesos($vImprev) }}</span>
+                            </label>
+                            <label class="crm-parametro">
+                                <span class="crm-parametro__nombre">Administración</span>
+                                <span class="crm-parametro__desc">Gastos administrativos del proyecto.</span>
+                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="administracion" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('administracion') is-invalid @enderror"><em>%</em></span>
+                                <span class="crm-parametro__valor">= {{ $pesos($vAdmin) }}</span>
+                            </label>
+                            <label class="crm-parametro">
+                                <span class="crm-parametro__nombre">Fee de agencia</span>
+                                <span class="crm-parametro__desc">Honorarios de Bull por la gestión.</span>
+                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="fee" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('fee') is-invalid @enderror"><em>%</em></span>
+                                <span class="crm-parametro__valor">= {{ $pesos($vFee) }}</span>
+                            </label>
+                            <label class="crm-parametro">
+                                <span class="crm-parametro__nombre">Tiempo de facturación</span>
+                                <span class="crm-parametro__desc">Plazo pactado con el cliente (días).</span>
+                                <span class="crm-parametro__campo"><input type="text" inputmode="numeric" wire:model.lazy="tiempoFactura" placeholder="30" @if ($soloLectura) disabled @endif class="form-control @error('tiempoFactura') is-invalid @enderror"><em>días</em></span>
+                                <span class="crm-parametro__valor"></span>
+                            </label>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <tr>
-                                    <td class="font-weight-bold font-table">IMPREVISTOS</td>
-                                    <td class="font-table">
-                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
-                                        class="@error('imprevistos') invalid-input @enderror">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">ADMINISTRACI&Oacute;N</td>
-                                    <td class="font-table">
-                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
-                                        class="@error('administracion') invalid-input @enderror">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">FEE AGENCIA</td>
-                                    <td class="font-table">
-                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
-                                        class="@error('fee') invalid-input @enderror">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-weight-bold font-table">TIEMPO</td>
-                                    <td class="font-table">
-                                        <input type="text" wire:model.lazy="tiempoFactura" placeholder="" @if (Auth::user()->espacioAdmin()) disabled @endif
-                                        class="@error('tiempoFactura') invalid-input @enderror">
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <tr>
-                                    <td class="font-weight-bold font-table">NOTAS</td>
-                                    <td class="font-table">
-                                        <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->espacioAdmin()) disabled @endif></textarea>
-                                    </td>
-                                </tr>
-                            </table>
+                        <div class="crm-parametro crm-parametro--notas">
+                            <span class="crm-parametro__nombre">Notas</span>
+                            <span class="crm-parametro__desc">Condiciones o aclaraciones que van en la cotización.</span>
+                            <textarea wire:model.lazy="notas" rows="4" class="form-control" placeholder="Sin notas" @if ($soloLectura) disabled @endif></textarea>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {{-- ================= CÓMO SE CALCULA ================= --}}
+            <div class="col-12 col-xl-7 mt-4 mt-xl-0">
+                <div class="card crm-panel h-100" style="--i:2">
+                    <div class="card-header">
+                        <div class="crm-panel__head">
+                            <div>
+                                <p class="crm-kpi__label">Con los números de este presupuesto</p>
+                                <h2>¿Cómo se calcula cada cifra?</h2>
+                            </div>
+                            <span class="crm-kpi__icon"><i class="ni ni-ruler-pencil" aria-hidden="true"></i></span>
+                        </div>
+                    </div>
+                    <div class="card-body crm-formulas">
+                        <div class="crm-formula" style="--i:0">
+                            <h3>1. Venta base</h3>
+                            <p>Suma del <b>valor total cliente</b> de todos los ítems (sin contar eventos).</p>
+                            <div class="crm-formula__calc"><span>Σ V. total cliente</span><b>= {{ $pesos($ventaBase) }}</b></div>
+                        </div>
+                        <div class="crm-formula" style="--i:1">
+                            <h3>2. Venta del proyecto</h3>
+                            <p>A la venta base se le suman los tres recargos, cada uno calculado sobre la venta base.</p>
+                            <div class="crm-formula__calc">
+                                <span>{{ $pesos($ventaBase) }} + imprevistos {{ $pct($imprevistos) }} ({{ $pesos($vImprev) }}) + administración {{ $pct($administracion) }} ({{ $pesos($vAdmin) }}) + fee {{ $pct($fee) }} ({{ $pesos($vFee) }})</span>
+                                <b>= {{ $pesos($ventaProyecto) }}</b>
+                            </div>
+                        </div>
+                        <div class="crm-formula" style="--i:2">
+                            <h3>3. Costos del proyecto</h3>
+                            <p>Suma del <b>valor total interno</b> de todos los ítems: lo que Bull paga a proveedores, personal y demás.</p>
+                            <div class="crm-formula__calc"><span>Σ V. total interno</span><b>= {{ $pesos($costosProyecto) }}</b></div>
+                        </div>
+                        <div class="crm-formula" style="--i:3">
+                            <h3>4. Margen bruto y margen del proyecto</h3>
+                            <p>El margen bruto es la ganancia en pesos; el margen del proyecto la expresa como porcentaje de la venta. <b>Si queda por debajo del 30 %, el presupuesto pasa a validación de gerencia.</b></p>
+                            <div class="crm-formula__calc"><span>{{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}</span><b>= {{ $pesos($margenBruto) }}</b></div>
+                            <div class="crm-formula__calc"><span>{{ $pesos($margenBruto) }} ÷ {{ $pesos($ventaProyecto) }} × 100</span><b>= {{ $pct($margenProyecto) }}</b></div>
+                        </div>
+                        <div class="crm-formula" style="--i:4">
+                            <h3>5. Margen de los ítems</h3>
+                            <p>Cuánto margen tienen en promedio los ítems, sin los recargos: 100 % menos la proporción de costo sobre venta (solo ítems con utilidad definida).</p>
+                            <div class="crm-formula__calc"><span>100 − (Σ costo interno ÷ Σ venta cliente × 100) = 100 − {{ $pct($margenItems * 100) }}</span><b>= {{ $pct($margenItemsPct) }}</b></div>
+                        </div>
+                        <div class="crm-formula" style="--i:5">
+                            <h3>6. En cada ítem de la tabla</h3>
+                            <ul class="crm-formula__lista">
+                                <li><b>V. total interno</b> = cantidad × días × V. unitario interno (más "otros"). Es el costo.</li>
+                                <li><b>Utilidad</b>: al crear el ítem se escribe como factor costo ÷ precio (0,65 quiere decir que el costo es el 65 % del precio). En la tabla se muestra ya convertido en margen: 100 − (costo ÷ precio × 100); con 0,65 se ve 35 %.</li>
+                                <li><b>V. unitario cliente</b> = V. unitario interno ÷ utilidad. <b>V. total cliente</b> = cantidad × días × V. unitario cliente. Es el precio.</li>
+                                <li><b>Rentabilidad</b> = V. total cliente − V. total interno: la ganancia del ítem en pesos.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
             {{-- Actualizacion --}}
             @if (Auth::user()->espacioAdmin())
@@ -339,29 +413,29 @@
                     @if(Auth::user()->rol == 2)
                     <th class="font-weight-bold font-table bg-gradient-info text-white"></th>
                     @endif
-                    <th class="font-weight-bold font-table bg-gradient-info text-white" >COD</th>
+                    <th class="font-weight-bold font-table bg-gradient-info text-white"  title="Código del tarifario">COD</th>
 
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">ITEM</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">CANTIDAD</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DIA</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">OTROS</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCION</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. UNITARIO INTERNO</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL INTERNO</th>
-                    <th class="font-weight-bold font-table bg-rentabilidad text-white">V. UNITARIO CLIENTE</th>
-                    <th class="font-weight-bold font-table bg-rentabilidad text-white">V. TOTAL CLIENTE</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Nombre del ítem">ÍTEM</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Unidades o personas">CANTIDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Días de servicio; multiplica la cantidad">DÍA</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Otros costos que se suman al total interno">OTROS</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white">DESCRIPCIÓN</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Costo unitario para Bull">V. UNITARIO INTERNO (costo)</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Costo total = cantidad × días × V. unitario interno (+ otros)">V. TOTAL INTERNO (costo)</th>
+                    <th class="font-weight-bold font-table bg-rentabilidad text-white" title="Precio unitario = V. unitario interno ÷ utilidad">V. UNITARIO CLIENTE (precio)</th>
+                    <th class="font-weight-bold font-table bg-rentabilidad text-white" title="Precio total = cantidad × días × V. unitario cliente">V. TOTAL CLIENTE (precio)</th>
                     @if ($presupuesto->gestion->claro)
                         <th class="font-weight-bold font-table bg-gradient-warning text-white">V. TOTAL CLIENTE</th>
                     @endif
                     <th class="font-weight-bold font-table bg-gradient-warning text-white">PROVEEDOR</th>
-                    <th class="font-weight-bold font-table bg-gradient-warning text-white">UTILIDAD</th>
+                    <th class="font-weight-bold font-table bg-gradient-warning text-white" title="Margen del ítem en %: 100 − (costo ÷ precio × 100)">UTILIDAD (margen %)</th>
 
                     <th class="font-weight-bold font-table bg-gradient-success text-white">MES</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">DIAS</th>
                     <th class="font-weight-bold font-table bg-gradient-success text-white">CIUDAD</th>
                     
                     @if ($rentabilidadView)
-                        <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
+                        <th class="font-weight-bold font-table bg-rentabilidad text-white" title="V. total cliente − V. total interno">RENTABILIDAD ($)</th>
                     @endif
 
                     @if (!Auth::user()->espacioAdmin())
@@ -516,7 +590,7 @@
                         <div class="row gy-0 mb-3" style="gap: 5px 0">
                             <div class="col-md-2">
                                 <div class="form-group mb-0">
-                                    <label for="cod">COD</label>
+                                    <label for="cod" title="Código del tarifario">COD</label>
                                     <select type="number" class="form-control @error('cod') is-invalid @elseif(strlen($cod) > 0) is-valid @enderror"
                                             placeholder="Cod" required wire:model.lazy="cod">
                                         <option value="">Seleccionar</option>
@@ -534,7 +608,7 @@
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
-                                    <label for="cantidad">CANTIDAD</label>
+                                    <label for="cantidad" title="Unidades o personas">CANTIDAD</label>
                                     <input type="number" class="form-control @error('cantidad') is-invalid @elseif(strlen($cantidad) > 0) is-valid @enderror"
                                            placeholder="Cantidad" required wire:model.lazy="cantidad">
                                     @error('cantidad')
@@ -607,7 +681,7 @@
 
                             <div class="col-md-1">
                                 <div class="form-group mb-0">
-                                    <label for="valor_unitario_cliente">V. UNITARIO CLIENTE</label>
+                                    <label for="valor_unitario_cliente" title="Precio unitario = V. unitario interno ÷ utilidad">V. UNITARIO CLIENTE (precio)</label>
                                     <input id="valor_unitario_cliente" type="text" class="form-control @error('valor_unitario_cliente') is-invalid @elseif(strlen($valor_unitario_cliente) > 0) is-valid @enderror"
                                            placeholder="Valor unitario cliente" required wire:model.lazy="valor_unitario_cliente" x-mask:dynamic="$money($input)">
                                     @error('valor_unitario_cliente')

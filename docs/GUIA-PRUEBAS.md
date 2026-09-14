@@ -254,6 +254,16 @@ Controller (rol 11) y Líder comercial (rol 12) dejan de ser cuentas Admin. En e
 | 8d.8 | Validación de líder | Líder → Validaciones → un presupuesto en estado 4 de su equipo → Validar / Rechazar | Funciona igual que antes para un admin líder; `/actualizaciones` y `/consumidos` le redirigen |
 | 8d.9 | Admin sigue igual | Entra como `prueba.admin` | Menú completo, dashboard con filtro de líder seleccionable, validaciones y actualizaciones accesibles |
 
+## B8f. Presupuesto (detalle) con fórmulas explicadas
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8f.1 | Cabecera | Como `crm.Alejandra.Ortiz@…` (o admin) abre un presupuesto (p. ej. `/presupuesto/8542`) | Título = nombre del proyecto; cliente, contacto, ciudad y comercial debajo; chip con el estado y otro con/sin centro de costos |
+| 8f.2 | Indicadores | Mira los 5 indicadores | Venta del proyecto, costos, margen bruto, margen del proyecto (verde ≥ 35 %, ámbar 30–35 %, rojo < 30 % con aviso de gerencia) y margen de los ítems, cada uno con su explicación |
+| 8f.3 | Fórmulas | Panel "¿Cómo se calcula cada cifra?" | Seis pasos con los números reales del presupuesto; cambiar imprevistos/administración/fee como comercial recalcula venta y márgenes y los importes "= $" de cada parámetro |
+| 8f.4 | Tabla de ítems | Pasa el ratón por las cabeceras | Tooltips que explican cada columna (costo, precio, utilidad como factor, rentabilidad); las filas se ven y se pueden editar como antes |
+| 8f.5 | Nada perdido | Compara con la versión anterior | Siguen la justificación, validaciones de líder/gerencia, acciones de admin, exportar historial y cotizaciones PDF/Excel |
+
 ## B8e. Piel visual global y Helisa general
 
 Todas las pantallas del espacio administrativo y comercial comparten ahora la misma capa visual (cabecera con foto de marca, tipografía Manrope, botones y tablas en la paleta Bull, entrada animada de tarjetas y filas). Helisa general fue rediseñada como Base comercial general.

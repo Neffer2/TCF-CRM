@@ -21,6 +21,10 @@
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet"/>
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet"/>
+    <!-- Capa visual BULLCRM (la misma de todo el CRM) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{{ asset('assets/css/crm-premium.css') }}?v=15" rel="stylesheet" />
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
     <style>
@@ -63,9 +67,9 @@
         <div class="container-fluid py-1">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 ps-2 me-sm-6 me-5">
-                    <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="javascript:;">Inicio</a>
+                    <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="{{ route('dashboard') }}">Inicio</a>
                     </li>
-                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">Base comercial</li>
+                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">Presupuesto</li>
                 </ol>
                 <h6 class="text-white font-weight-bolder ms-2">Comercial</h6>
             </nav>
@@ -324,6 +328,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=5"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 @livewireScripts
