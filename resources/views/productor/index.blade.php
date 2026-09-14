@@ -7,8 +7,15 @@
         <div x-data="proyectos">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="mb-4">Proyectos</h3>
-                    <div class="row">
+                    <h3 class="mb-1">Proyectos</h3>
+                    <p class="text-sm mb-4">Centros de costos asignados a ti. Elige uno de la lista para ver su presupuesto y pedir recursos.</p>
+                    @if ($proyectos->isEmpty())
+                        <div class="crm-empty" style="padding: 40px 20px">
+                            <strong>Aún no tienes centros de costos asignados.</strong>
+                            <span>El líder de producción te asigna los proyectos desde "Asignar proyectos"; cuando lo haga aparecerán aquí.</span>
+                        </div>
+                    @endif
+                    <div class="row" @if ($proyectos->isEmpty()) hidden @endif>
                         <div class="col-md-2 mb-3">
                             <div class="row">
                                 <div class="col-md-12">

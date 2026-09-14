@@ -18,10 +18,31 @@
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  <!-- Capa visual BULLCRM (tipografía + tema), la misma de todo el CRM -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=22" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
+@php
+  // Título de la sección por nombre de ruta (las vistas pueden sobrescribirlo con @section('titulo'))
+  $crmTitulos = [
+    'dashboard-productor' => 'Dashboard', 'ordenes-prod' => 'Órdenes de compra', 'orden-natural-prod' => 'Orden natural', 'ordenes-nomina-prod' => 'Orden de nómina',
+    'consumidos-prod' => 'Consumidos', 'firmar-remision' => 'Firmar remisión', 'lista-anticipos-prod' => 'Anticipos', 'anticipo-prod' => 'Anticipo',
+    'solicitd-anticipo-prod' => 'Solicitar anticipo', 'proveedores' => 'Proveedores', 'personal' => 'Personal', 'consumido' => 'Consumido',
+    'dashboard-tesoreria' => 'Dashboard', 'anticipos' => 'Anticipos', 'anticipo' => 'Anticipo', 'lista-anticipos-tesoreria' => 'Anticipos', 'detalle-anticipo-tesoreria' => 'Anticipo',
+    'dashboard-contabilidad' => 'Dashboard', 'anticipos-contabilidad' => 'Anticipos', 'anticipo-contabilidad' => 'Anticipo', 'lista-anticipos-contabilidad' => 'Anticipos', 'detalle-anticipo-contabilidad' => 'Anticipo',
+    'dashboard-lider-produccion' => 'Dashboard', 'lista-anticipos-lid' => 'Anticipos', 'anticipo-lid' => 'Anticipo', 'ordenes-compra-lid' => 'Órdenes de compra',
+    'dashboard-asis' => 'Dashboard', 'asis-dashboard-base' => 'Base comercial', 'asis-gestion-helisa' => 'Helisa', 'asis-gestion-comercial' => 'Prospectos', 'asis-contactos' => 'Contactos',
+    'presupuesto' => 'Presupuesto', 'presupuestos' => 'Presupuestos', 'mi-perfil' => 'Mi perfil',
+  ];
+  $crmTitulo = $crmTitulos[optional(request()->route())->getName()] ?? 'Inicio';
+@endphp
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
+  {{-- Cabecera de marca (la misma en todo el CRM) --}}
+  <div class="position-absolute w-100 min-height-300 top-0 crm-hero crm-hero--photo" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}')"></div>
     <div class="position-absolute w-100 min-height-300 top-0 crm-hero crm-hero--photo" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}')"></div>
     <!-- Barra lateral -->
     <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
@@ -114,7 +135,7 @@
         <div class="container-fluid py-1">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 ps-2 me-sm-4 me-5">
-              <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="javascript:;">Inicio</a></li>
+              <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="{{ route('dashboard') }}">Inicio</a></li>
               <li class="breadcrumb-item text-sm text-white active" aria-current="page">Base comercial</li>
             </ol>
             <h6 class="text-white font-weight-bolder ms-2">Comercial</h6>
@@ -334,6 +355,7 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=7"></script>
     @livewireScripts
   </body>
 </html>

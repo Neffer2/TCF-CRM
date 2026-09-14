@@ -1021,3 +1021,6 @@ body.crm-modal-open { overflow: hidden; }
 .crm-cierre__datos small { display: block; font-size: 11.5px; color: var(--crm-ink-2); }
 .crm-info--inline { top: 12px; right: 12px; }
 @media (max-width: 640px) { .crm-cierre { grid-template-columns: 1fr; } }
+
+/* Páginas cortas: el contenido ocupa al menos la altura de la cabecera para que el pie no quede sobre la foto */
+.main-content > .container-fluid.py-4 { min-height: 340px; }
