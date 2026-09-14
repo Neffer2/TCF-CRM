@@ -1,940 +1,124 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
-  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0B0908">
+  <link rel="icon" href="{{ asset('assets/img/favicon.png') }}" />
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
-  <title>
-    Inicio
-  </title>
-  <!--     Fonts and icons     -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-  <!-- Nucleo Icons -->
-  <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-  <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-  <!-- CSS Files -->
-  <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  <title>BULLCRM · @yield('auth-title')</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="{{ asset('assets/css/crm-auth.css') }}?v=1" rel="stylesheet" />
   @livewireStyles
 </head>
+<body class="bl-auth">
 
-<body class="">
-  <div class="container position-sticky z-index-sticky top-0">
-    <div class="row">
-      <div class="col-12">
-        <!-- Navbar -->
-        {{-- <nav class="navbar navbar-expand-lg blur border-radius-lg top-0 z-index-3 shadow position-absolute my-3 py-2 start-0 end-0 mx-4">
-          <div class="container-fluid ps-2 pe-0">
-            <a class="navbar-brand font-weight-bolder ms-lg-0 ms-3 " href="../../../pages/dashboards/default.html">
-              Argon Dashboard 2 PRO
-            </a>
-            <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon mt-2">
-                <span class="navbar-toggler-bar bar1"></span>
-                <span class="navbar-toggler-bar bar2"></span>
-                <span class="navbar-toggler-bar bar3"></span>
-              </span>
-            </button>
-            <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navigation">
-              <ul class="navbar-nav navbar-nav-hover mx-auto">
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a role="button" class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center " id="dropdownMenuPages" data-bs-toggle="dropdown" aria-expanded="false">
-                    Pages
-                    <img src=" ../../../assets/img/down-arrow-dark.svg  " alt="down-arrow" class="arrow ms-1 d-lg-block d-none">
-                    <img src="../../../assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-1 d-lg-none d-block">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-animation dropdown-xl p-3 border-radius-xl mt-0 mt-lg-3 shadow-none" aria-labelledby="dropdownMenuPages">
-                    <div class="row d-none d-lg-block">
-                      <div class="col-12 px-4 py-2">
-                        <div class="row">
-                          <div class="col-4 position-relative">
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                              <i class="ni ni-spaceship me-3 text-primary"></i>
-                              Dashboards
-                            </div>
-                            <a href="../../../pages/dashboards/landing.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Landing</span>
-                            </a>
-                            <a href="../../../pages/dashboards/default.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Default</span>
-                            </a>
-                            <a href="../../../pages/dashboards/automotive.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Automotive</span>
-                            </a>
-                            <a href="../../../pages/dashboards/smart-home.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Smart Home</span>
-                            </a>
-                            <a href="../../../pages/dashboards/virtual-reality.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Virtual Reality</span>
-                            </a>
-                            <a href="../../../pages/dashboards/crm.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">CRM</span>
-                            </a>
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                              <i class="ni ni-circle-08 me-3 text-primary"></i>
-                              Users
-                            </div>
-                            <a href="../../../pages/pages/users/reports.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Reports</span>
-                            </a>
-                            <a href="../../../pages/pages/users/new-user.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">New User</span>
-                            </a>
-                            <hr class="vertical dark">
-                          </div>
-                          <div class="col-4 position-relative">
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                              <i class="ni ni-badge me-3 text-primary"></i>
-                              Profile
-                            </div>
-                            <a href="../../../pages/pages/profile/overview.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Overview</span>
-                            </a>
-                            <a href="../../../pages/pages/profile/teams.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Teams</span>
-                            </a>
-                            <a href="../../../pages/pages/profile/projects.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Projects</span>
-                            </a>
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                              <i class="ni ni-app me-3 text-primary"></i>
-                              Projects
-                            </div>
-                            <a href="../../../pages/pages/projects/general.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">General</span>
-                            </a>
-                            <a href="../../../pages/pages/projects/timeline.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Timeline</span>
-                            </a>
-                            <a href="../../../pages/pages/projects/new-project.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">New Project</span>
-                            </a>
-                            <hr class="vertical dark">
-                          </div>
-                          <div class="col-4">
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                              <i class="ni ni-single-02 me-3 text-primary"></i>
-                              Account
-                            </div>
-                            <a href="../../../pages/pages/account/settings.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Settings</span>
-                            </a>
-                            <a href="../../../pages/pages/account/billing.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Billing</span>
-                            </a>
-                            <a href="../../../pages/pages/account/invoice.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Invoice</span>
-                            </a>
-                            <a href="../../../pages/pages/account/security.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Security</span>
-                            </a>
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                              <i class="ni ni-folder-17 me-3 text-primary"></i>
-                              Extra
-                            </div>
-                            <a href="../../../pages/pages/pricing-page.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Pricing Page</span>
-                            </a>
-                            <a href="../../../pages/pages/rtl-page.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">RTL Page</span>
-                            </a>
-                            <a href="../../../pages/pages/widgets.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Widgets</span>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- responsive -->
-                    <div class="d-lg-none">
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                        <i class="ni ni-spaceship me-3 text-primary"></i>
-                        Dashboards
-                      </div>
-                      <a href="../../../pages/dashboards/landing.html" class="dropdown-item border-radius-md ms-3">
-                        Landing
-                      </a>
-                      <a href="../../../pages/dashboards/default.html" class="dropdown-item border-radius-md ms-3">
-                        Default
-                      </a>
-                      <a href="../../../pages/dashboards/automotive.html" class="dropdown-item border-radius-md ms-3">
-                        Automotive
-                      </a>
-                      <a href="../../../pages/dashboards/smart-home.html" class="dropdown-item border-radius-md ms-3">
-                        Smart Home
-                      </a>
-                      <a href="../../../pages/dashboards/virtual-reality.html" class="dropdown-item border-radius-md ms-3">
-                        Virtual Reality
-                      </a>
-                      <a href="../../../pages/dashboards/crm.html" class="dropdown-item border-radius-md ms-3">
-                        CRM
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                        <i class="ni ni-circle-08 me-3 text-primary"></i>
-                        Users
-                      </div>
-                      <a href="../../../pages/pages/users/reports.html" class="dropdown-item border-radius-md ms-3">
-                        Reports
-                      </a>
-                      <a href="../../../pages/pages/users/new-user.html" class="dropdown-item border-radius-md ms-3">
-                        New user
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                        <i class="ni ni-badge me-3 text-primary"></i>
-                        Profile
-                      </div>
-                      <a href="../../../pages/pages/profile/overview.html" class="dropdown-item border-radius-md ms-3">
-                        Overview
-                      </a>
-                      <a href="../../../pages/pages/profile/teams.html" class="dropdown-item border-radius-md ms-3">
-                        Teams
-                      </a>
-                      <a href="../../../pages/pages/profile/projects.html" class="dropdown-item border-radius-md ms-3">
-                        Projects
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                        <i class="ni ni-app me-3 text-primary"></i>
-                        Projects
-                      </div>
-                      <a href="../../../pages/pages/projects/general.html" class="dropdown-item border-radius-md ms-3">
-                        General
-                      </a>
-                      <a href="../../../pages/pages/projects/timeline.html" class="dropdown-item border-radius-md ms-3">
-                        Timeline
-                      </a>
-                      <a href="../../../pages/pages/projects/new-project.html" class="dropdown-item border-radius-md ms-3">
-                        New Project
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                        <i class="ni ni-single-02 me-3 text-primary"></i>
-                        Account
-                      </div>
-                      <a href="../../../pages/pages/account/settings.html" class="dropdown-item border-radius-md ms-3">
-                        Settings
-                      </a>
-                      <a href="../../../pages/pages/account/billing.html" class="dropdown-item border-radius-md ms-3">
-                        Billing
-                      </a>
-                      <a href="../../../pages/pages/account/invoice.html" class="dropdown-item border-radius-md ms-3">
-                        Invoice
-                      </a>
-                      <a href="../../../pages/pages/account/security.html" class="dropdown-item border-radius-md ms-3">
-                        Security
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                        <i class="ni ni-folder-17 me-3 text-primary"></i>
-                        Extra
-                      </div>
-                      <a href="../../../pages/pages/pricing-page.html" class="dropdown-item border-radius-md ms-3">
-                        Pricing Page
-                      </a>
-                      <a href="../../../pages/pages/rtl-page.html" class="dropdown-item border-radius-md ms-3">
-                        RTL Page
-                      </a>
-                      <a href="../../../pages/pages/widgets.html" class="dropdown-item border-radius-md ms-3">
-                        Widgets
-                      </a>
-                    </div>
-                  </div>
-                </li>
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a role="button" class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center " id="dropdownMenuAccount" data-bs-toggle="dropdown" aria-expanded="false">
-                    Authentication
-                    <img src=" ../../../assets/img/down-arrow-dark.svg " alt="down-arrow" class="arrow ms-1 d-lg-block d-none">
-                    <img src="../../../assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-1 d-lg-none d-block">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-animation dropdown-lg border-radius-xl p-3 mt-0 mt-lg-3 shadow-none" aria-labelledby="dropdownMenuAccount">
-                    <div class="row d-none d-lg-flex">
-                      <div class="col-6">
-                        <div class="py-6 h-100 w-100 d-flex border-radius-lg position-relative dropdown-image" style="background-image:url('https://images.unsplash.com/photo-1635944095210-23114a1fb7c0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1335&q=80')">
-                          <div class="mask bg-gradient-primary border-radius-lg"></div>
-                          <div class="d-flex justify-content-center align-items-center text-center text-white font-weight-bold w-100 z-index-1 flex-column">
-                            <span class="text-lg">Explore our<br>Authentication pages</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-6 ps-0 d-flex justify-content-center flex-column">
-                        <ul class="list-group">
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdownSignIn">
-                              <span>Sign In</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdownSignIn">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signin/basic.html">
-                                <span>Basic</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signin/cover.html">
-                                <span>Cover</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signin/illustration.html">
-                                <span>Illustration</span>
-                              </a>
-                            </div>
-                          </li>
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdownSignUp">
-                              <span>Sign Up</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdownSignUp">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signup/basic.html">
-                                <span>Basic</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signup/cover.html">
-                                <span>Cover</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/signup/illustration.html">
-                                <span>Illustration</span>
-                              </a>
-                            </div>
-                          </li>
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdownPasswordReset">
-                              <span>Reset Password</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdownPasswordReset">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/reset/basic.html">
-                                <span>Basic</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/reset/cover.html">
-                                <span>Cover</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/reset/illustration.html">
-                                <span>Illustration</span>
-                              </a>
-                            </div>
-                          </li>
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdownLock">
-                              <span>Lock</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdownLock">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/lock/basic.html">
-                                <span>Basic</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/lock/cover.html">
-                                <span>Cover</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/lock/illustration.html">
-                                <span>Illustration</span>
-                              </a>
-                            </div>
-                          </li>
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdown2fa">
-                              <span>2-Step Verification</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdown2fa">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/verification/basic.html">
-                                <span>Basic</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/verification/cover.html">
-                                <span>Cover</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/verification/illustration.html">
-                                <span>Illustration</span>
-                              </a>
-                            </div>
-                          </li>
-                          <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                            <a class="dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between mb-1" id="dropdownError">
-                              <span>Error</span>
-                              <img src="../../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow">
-                            </a>
-                            <div class="dropdown-menu mt-0 py-3 px-2" aria-labelledby="dropdownError">
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/error/404.html">
-                                <span>404</span>
-                              </a>
-                              <a class="dropdown-item ps-3 border-radius-md mb-1" href="../../../pages/authentication/error/500.html">
-                                <span>500</span>
-                              </a>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div class="row d-lg-none">
-                      <div class="col-12 d-flex justify-content-center flex-column">
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                          Sign In
-                        </h6>
-                        <a href="../../../pages/authentication/signin/basic.html" class="dropdown-item border-radius-md">
-                          Basic
-                        </a>
-                        <a href="../../../pages/authentication/signin/cover.html" class="dropdown-item border-radius-md">
-                          Cover
-                        </a>
-                        <a href="../../../pages/authentication/signin/illustration.html" class="dropdown-item border-radius-md">
-                          Illustration
-                        </a>
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                          Sign Up
-                        </h6>
-                        <a href="../../../pages/authentication/signup/basic.html" class="dropdown-item border-radius-md">
-                          Basic
-                        </a>
-                        <a href="../../../pages/authentication/signup/cover.html" class="dropdown-item border-radius-md">
-                          Cover
-                        </a>
-                        <a href="../../../pages/authentication/signup/illustration.html" class="dropdown-item border-radius-md">
-                          Illustration
-                        </a>
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                          Reset Password
-                        </h6>
-                        <a href="../../../pages/authentication/reset/basic.html" class="dropdown-item border-radius-md">
-                          Basic
-                        </a>
-                        <a href="../../../pages/authentication/reset/cover.html" class="dropdown-item border-radius-md">
-                          Cover
-                        </a>
-                        <a href="../../../pages/authentication/reset/illustration.html" class="dropdown-item border-radius-md">
-                          Illustation
-                        </a>
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                          Lock
-                        </h6>
-                        <a href="../../../pages/authentication/lock/basic.html" class="dropdown-item border-radius-md">
-                          Basic
-                        </a>
-                        <a href="../../../pages/authentication/lock/cover.html" class="dropdown-item border-radius-md">
-                          Cover
-                        </a>
-                        <a href="../../../pages/authentication/lock/illustration.html" class="dropdown-item border-radius-md">
-                          Illustration
-                        </a>
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                          2-Step Verification
-                        </h6>
-                        <a href="../../../pages/authentication/verification/basic.html" class="dropdown-item border-radius-md">
-                          Basic
-                        </a>
-                        <a href="../../../pages/authentication/verification/cover.html" class="dropdown-item border-radius-md">
-                          Cover
-                        </a>
-                        <a href="../../../pages/authentication/verification/illustration.html" class="dropdown-item border-radius-md">
-                          Illustration
-                        </a>
-                        <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center mt-3 px-0">
-                          Error
-                        </h6>
-                        <a href="../../../pages/authentication/error/404.html" class="dropdown-item border-radius-md">
-                          404
-                        </a>
-                        <a href="../../../pages/authentication/error/500.html" class="dropdown-item border-radius-md">
-                          500
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a role="button" class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center " id="dropdownMenuBlocks" data-bs-toggle="dropdown" aria-expanded="false">
-                    Applications
-                    <img src=" ../../../assets/img/down-arrow-dark.svg " alt="down-arrow" class="arrow ms-1 d-lg-block d-none">
-                    <img src="../../../assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-1 d-lg-none d-block">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-animation dropdown-md dropdown-md-responsive p-3 border-radius-lg mt-0 mt-lg-3 shadow-none" aria-labelledby="dropdownMenuBlocks">
-                    <div class="d-none d-lg-block">
-                      <ul class="list-group">
-                        <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="../../../pages/applications/kanban.html">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-single-copy-04 text-primary"></i>
-                              </div>
-                              <div class="w-100 d-flex align-items-center justify-content-between">
-                                <div>
-                                  <p class="dropdown-header text-dark p-0">Kanban</p>
-                                </div>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="../../../pages/applications/wizard.html">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-laptop text-primary"></i>
-                              </div>
-                              <div class="w-100 d-flex align-items-center justify-content-between">
-                                <div>
-                                  <p class="dropdown-header text-dark p-0">Wizard</p>
-                                </div>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="../../../pages/applications/datatables.html">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-badge text-primary"></i>
-                              </div>
-                              <div class="w-100 d-flex align-items-center justify-content-between">
-                                <div>
-                                  <p class="dropdown-header text-dark p-0">DataTables</p>
-                                </div>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item dropdown dropdown-hover dropdown-subitem list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="../../../pages/applications/calendar.html">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-notification-70 text-primary"></i>
-                              </div>
-                              <div class="w-100 d-flex align-items-center justify-content-between">
-                                <div>
-                                  <p class="dropdown-header text-dark p-0">Calendar</p>
-                                </div>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <!-- responsive -->
-                    <div class="row d-lg-none">
-                      <div class="col-md-12">
-                        <a class="py-2 ps-3 border-radius-md" href="../../../pages/applications/kanban.html">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-single-copy-04 text-primary"></i>
-                            </div>
-                            <div class="w-100 d-flex align-items-center justify-content-between">
-                              <div>
-                                <p class="dropdown-header text-dark p-0">Kanban</p>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="py-2 ps-3 border-radius-md" href="../../../pages/applications/wizard.html">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-laptop text-primary"></i>
-                            </div>
-                            <div class="w-100 d-flex align-items-center justify-content-between">
-                              <div>
-                                <p class="dropdown-header text-dark p-0">Wizard</p>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="py-2 ps-3 border-radius-md" href="../../../pages/applications/datatables.html">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-badge text-primary"></i>
-                            </div>
-                            <div class="w-100 d-flex align-items-center justify-content-between">
-                              <div>
-                                <p class="dropdown-header text-dark p-0">DataTables</p>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="py-2 ps-3 border-radius-md" href="../../../pages/applications/calendar.html">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-notification-70 text-primary"></i>
-                            </div>
-                            <div class="w-100 d-flex align-items-center justify-content-between">
-                              <div>
-                                <p class="dropdown-header text-dark p-0">Calendar</p>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a role="button" class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center " id="dropdownMenuEcommerce" data-bs-toggle="dropdown" aria-expanded="false">
-                    Ecommerce
-                    <img src=" ../../../assets/img/down-arrow-dark.svg  " alt="down-arrow" class="arrow ms-1 d-lg-block d-none">
-                    <img src="../../../assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-1 d-lg-none d-block">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-animation dropdown-lg p-3 border-radius-xl mt-0 mt-lg-3 shadow-none" aria-labelledby="dropdownMenuEcommerce">
-                    <div class="row d-none d-lg-block">
-                      <div class="col-12 px-4 py-2">
-                        <div class="row">
-                          <div class="col-6 position-relative">
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                              <i class="ni ni-cart text-primary me-3"></i>
-                              Orders
-                            </div>
-                            <a href="../../../pages/ecommerce/orders/list.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Order List</span>
-                            </a>
-                            <a href="../../../pages/ecommerce/orders/details.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Order Details</span>
-                            </a>
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                              <i class="ni ni-box-2 text-primary me-3"></i>
-                              General
-                            </div>
-                            <a href="../../../pages/ecommerce/overview.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Overview</span>
-                            </a>
-                            <a href="../../../pages/ecommerce/referral.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Referral</span>
-                            </a>
-                            <hr class="vertical dark">
-                          </div>
-                          <div class="col-6 position-relative">
-                            <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                              <i class="ni ni-planet text-primary me-3"></i>
-                              Products
-                            </div>
-                            <a href="../../../pages/ecommerce/products/new-product.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">New Product</span>
-                            </a>
-                            <a href="../../../pages/ecommerce/products/edit-product.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Edit Product</span>
-                            </a>
-                            <a href="../../../pages/ecommerce/products/product-page.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Product Page</span>
-                            </a>
-                            <a href="../../../pages/ecommerce/products/products-list.html" class="dropdown-item border-radius-md">
-                              <span class="ps-3">Products List</span>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- responsive -->
-                    <div class="d-lg-none">
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0">
-                        <i class="ni ni-cart text-primary me-3"></i>
-                        Orders
-                      </div>
-                      <a href="../../../pages/ecommerce/orders/list.html" class="dropdown-item border-radius-md ms-3">
-                        Order List
-                      </a>
-                      <a href="../../../pages/pages/orders/details.html" class="dropdown-item border-radius-md ms-3">
-                        Order Details
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                        <i class="ni ni-box-2 text-primary me-3"></i>
-                        General
-                      </div>
-                      <a href="../../../pages/ecommerce/overview.html" class="dropdown-item border-radius-md ms-3">
-                        Overview
-                      </a>
-                      <a href="../../../pages/ecommerce/referral.html" class="dropdown-item border-radius-md ms-3">
-                        Referral
-                      </a>
-                      <div class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-0 mt-3">
-                        <i class="ni ni-planet text-primary me-3"></i>
-                        Products
-                      </div>
-                      <a href="../../../pages/ecommerce/products/new-product.html" class="dropdown-item border-radius-md ms-3">
-                        New Product
-                      </a>
-                      <a href="../../../pages/ecommerce/products/edit-product.html" class="dropdown-item border-radius-md ms-3">
-                        Edit Product
-                      </a>
-                      <a href="../../../pages/ecommerce/products/product-page.html" class="dropdown-item border-radius-md ms-3">
-                        Product Page
-                      </a>
-                      <a href="../../../pages/ecommerce/products/products-list.html" class="dropdown-item border-radius-md ms-3">
-                        Products List
-                      </a>
-                    </div>
-                  </div>
-                </li>
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a role="button" class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center " id="dropdownMenuDocs" data-bs-toggle="dropdown" aria-expanded="false">
-                    Docs
-                    <img src=" ../../../assets/img/down-arrow-dark.svg " alt="down-arrow" class="arrow ms-1 d-lg-block d-none">
-                    <img src="../../../assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-1 d-lg-none d-block">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end dropdown-menu-animation dropdown-lg mt-0 mt-lg-3 p-3 border-radius-lg shadow-none" aria-labelledby="dropdownMenuDocs">
-                    <div class="d-none d-lg-block">
-                      <ul class="list-group">
-                        <li class="nav-item list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-planet text-primary"></i>
-                              </div>
-                              <div>
-                                <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Getting Started</h6>
-                                <span class="text-sm">All about overview, quick start, license and contents</span>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/colors/argon-dashboard">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-single-copy-04 text-primary"></i>
-                              </div>
-                              <div>
-                                <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Foundation</h6>
-                                <span class="text-sm">See our colors, icons and typography</span>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/alerts/argon-dashboard">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-app text-primary"></i>
-                              </div>
-                              <div>
-                                <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Components</h6>
-                                <span class="text-sm">Explore our collection of fully designed components</span>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/datepicker/argon-dashboard">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-chart-bar-32 text-primary"></i>
-                              </div>
-                              <div>
-                                <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Plugins</h6>
-                                <span class="text-sm">Check how you can integrate our plugins</span>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                        <li class="nav-item list-group-item border-0 p-0">
-                          <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/utilities/argon-dashboard">
-                            <div class="d-flex">
-                              <div class="icon h-10 me-3 d-flex mt-1">
-                                <i class="ni ni-settings text-primary"></i>
-                              </div>
-                              <div>
-                                <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Utility Classes</h6>
-                                <span class="text-sm">For those who want flexibility, use our utility classes</span>
-                              </div>
-                            </div>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="row d-lg-none">
-                      <div class="col-md-12 g-0">
-                        <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/argon-dashboard">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-planet text-primary"></i>
-                            </div>
-                            <div>
-                              <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Getting Started</h6>
-                              <span class="text-sm">All about overview, quick start, license and contents</span>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/colors/argon-dashboard">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-single-copy-04 text-primary"></i>
-                            </div>
-                            <div>
-                              <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Foundation</h6>
-                              <span class="text-sm">See our colors, icons and typography</span>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/alerts/argon-dashboard">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-app text-primary"></i>
-                            </div>
-                            <div>
-                              <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Components</h6>
-                              <span class="text-sm">Explore our collection of fully designed components</span>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/datepicker/argon-dashboard">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-chart-bar-32 text-primary"></i>
-                            </div>
-                            <div>
-                              <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Plugins</h6>
-                              <span class="text-sm">Check how you can integrate our plugins</span>
-                            </div>
-                          </div>
-                        </a>
-                        <a class="dropdown-item py-2 ps-3 border-radius-md" href="https://www.creative-tim.com/learning-lab/bootstrap/utilities/argon-dashboard">
-                          <div class="d-flex">
-                            <div class="icon h-10 me-3 d-flex mt-1">
-                              <i class="ni ni-settings text-primary"></i>
-                            </div>
-                            <div>
-                              <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center p-0">Utility Classes</h6>
-                              <span class="text-sm">All about overview, quick start, license and contents</span>
-                            </div>
-                          </div>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              <ul class="navbar-nav d-lg-block d-none">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/product/argon-dashboard-pro" class="btn btn-sm  btn-primary  mb-0 me-1" onclick="smoothToPricing('pricing-argon')">Buy Now</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>> --}}
-        <!-- End Navbar -->
-      </div>
-    </div>
+  {{-- Atmósfera --}}
+  <div class="bl-scene" aria-hidden="true">
+    <div class="bl-orb bl-orb--1"></div>
+    <div class="bl-orb bl-orb--2"></div>
+    <div class="bl-orb bl-orb--3"></div>
+    <div class="bl-grid"></div>
+    <div class="bl-vignette"></div>
   </div>
-  <main class="main-content main-content-bg mt-0">
-    <div class="page-header min-vh-100" style="background-image: url('{{ asset('assets/img/hero-1.jpg') }}');">
-      <span class="mask bg-gradient-dark opacity-6"></span>
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-4 col-md-7">
-            <div class="card border-0 mb-0">
-              <div class="card-header bg-transparent">
-                <h5 class="text-dark text-center mt-2 mb-3">
-                  @yield('auth-title')
-                </h5>
-                {{-- <div class="btn-wrapper text-center">
-                  <a href="javascript:;" class="btn btn-neutral btn-icon btn-sm mb-0">
-                    <img class="w-30" src="../../../assets/img/logos/github.svg">
-                    Github
-                  </a>
-                  <a href="javascript:;" class="btn btn-neutral btn-icon btn-sm mb-0">
-                    <img class="w-30" src="../../../assets/img/logos/google.svg">
-                    Google</span>
-                  </a>
-                </div> --}}
+  <div class="bl-grain" aria-hidden="true"></div>
+
+  <div class="bl-shell">
+    <header class="bl-top bl-in bl-d1">
+      <a class="bl-brand" href="{{ url('/') }}" aria-label="Bull Marketing">
+        <img src="{{ asset('assets/img/bull-logo.png') }}" alt="Bull Marketing">
+      </a>
+      <div class="bl-pill"><i></i><span>Sistema comercial y de producción</span></div>
+    </header>
+
+    <main class="bl-main">
+      <section class="bl-hero">
+        <div class="bl-eyebrow bl-in bl-d1">BULLCRM · Bull Marketing</div>
+        <h1 class="bl-h1" aria-label="La agencia del ¡Siempre se puede!">
+          <span class="w"><span style="animation-delay:.10s">La</span></span>
+          <span class="w"><span style="animation-delay:.18s">agencia</span></span>
+          <span class="w"><span style="animation-delay:.26s">del</span></span><br>
+          <span class="w"><span class="accent" style="animation-delay:.38s">¡Siempre</span></span>
+          <span class="w"><span class="accent" style="animation-delay:.48s">se</span></span>
+          <span class="w"><span class="accent" style="animation-delay:.58s">puede!</span></span>
+        </h1>
+        <p class="bl-lede bl-in bl-d3">Ventas, presupuestos, órdenes de compra, anticipos y facturación en un solo lugar. Cada aprobación, con su responsable y su rastro.</p>
+        <div class="bl-signals bl-in bl-d4">
+          <span class="bl-signal"><b>V</b> Gestión comercial</span>
+          <span class="bl-signal"><b>P</b> Producción</span>
+          <span class="bl-signal"><b>C</b> Contabilidad y tesorería</span>
+        </div>
+      </section>
+
+      <div class="bl-card-wrap bl-in bl-d2">
+        <div class="bl-halo" aria-hidden="true"></div>
+        <div class="bl-card-outer" id="blCard">
+          <div class="bl-card">
+            <img class="bl-card__logo" src="{{ asset('assets/img/bull-logo.png') }}" alt="">
+            <h1>@yield('auth-title')</h1>
+            <p class="bl-card__sub">@yield('auth-subtitle', 'Ingresa con tu cuenta de Bull Marketing.')</p>
+
+            @if ($errors->any())
+              <div class="bl-alert" role="alert">
+                @foreach ($errors->all() as $error)
+                  <p>{{ $error }}</p>
+                @endforeach
               </div>
-              <div class="card-body px-lg-5 pt-0">
-                {{-- <div class="text-center text-muted mb-4">
-                  <small>&Oacute; inicia con tus credenciales</small>
-                </div> --}}
-                @yield('form')
-              </div>
-            </div>
+            @endif
+            @if (session('success') || session('status'))
+              <div class="bl-alert bl-alert--ok" role="status"><p>{{ session('success') ?? session('status') }}</p></div>
+            @endif
+
+            @yield('form')
           </div>
         </div>
       </div>
-    </div>
-  </main>
-  <!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
-  <footer class="footer py-5">
-    <div class="container">
-      {{-- <div class="row">
-        <div class="col-lg-8 mb-4 mx-auto text-center">
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Company
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            About Us
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Team
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Products
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Blog
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-5 me-3 mb-sm-0 mb-2">
-            Pricing
-          </a>
-        </div>
-        <div class="col-lg-8 mx-auto text-center mb-4 mt-2">
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
-            <span class="text-lg fab fa-dribbble"></span>
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
-            <span class="text-lg fab fa-twitter"></span>
-          </a>
-          <a href="javascript:;" target="_blank" class="text-secondary me-xl-4 me-4">
-            <span class="text-lg fab fa-instagram"></span>
-          </a>
-        </div>
-      </div> --}}
-      <div class="row">
-        <div class="col-8 mx-auto text-center mt-1">
-          <p class="mb-0 text-secondary">
-            <a href="https://www.bullmarketing.com.co/" target="_blank">BullMarketing</a>
-              Copyright © <script>
-              document.write(new Date().getFullYear())
-            </script> <br> Hecho con ❤ por <a href="https://iglumarketingdigital.com/" target="_blank">Iglú Marketing Digital</a>
-          </p>
-        </div>
-      </div> 
-    </div>
-  </footer>
-  <!--   Core JS Files   -->
-  <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-  <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
-  <!-- Kanban scripts -->
-  <script src="{{ asset('assets/js/plugins/dragula/dragula.min.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/jkanban/jkanban.js') }}"></script>
-  <!-- Sweet Alerts -->
-  <script src="{{ asset('assets/js/plugins/sweetalert.min.js') }}"></script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
+    </main>
 
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-    @if($errors->any())
-      Swal.fire(
-      '!Oppss tenemos un problema',
-      `<ul style="list-style-type: square; text-align: left;">
-            @foreach($errors->all() as $error)
-            <li>{{ $error }} </li>
-            @endforeach
-        </ul>`,
-      'error'
-      );
-    @endif 
-    @if (session('success'))
-    Swal.fire(
-      'Hecho',
-      `{{ session('success') }}`,
-      'success'
-      );
-    @endif 
-  </script>
+    <footer class="bl-foot bl-in bl-d6">
+      <span>© {{ date('Y') }} <b>Bull Marketing S.A.S.</b> · BULLCRM</span>
+      <span>Acceso restringido al equipo. Si no tienes cuenta, pídela al administrador.</span>
+    </footer>
+  </div>
+
   @livewireScripts
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+  <script>
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var fine = window.matchMedia('(pointer: fine)').matches;
+
+      // Inclinación 3D de la tarjeta siguiendo el cursor (solo escritorio, solo transform)
+      var card = document.getElementById('blCard');
+      if (card && fine && !reduce) {
+        var raf = null, rx = 0, ry = 0;
+        function apply () { card.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; raf = null; }
+        window.addEventListener('mousemove', function (e) {
+          var r = card.getBoundingClientRect();
+          var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          var dx = (e.clientX - cx) / Math.max(window.innerWidth, 1), dy = (e.clientY - cy) / Math.max(window.innerHeight, 1);
+          ry = Math.max(-6, Math.min(6, dx * 14)); rx = Math.max(-6, Math.min(6, -dy * 14));
+          if (!raf) raf = requestAnimationFrame(apply);
+        }, { passive: true });
+        window.addEventListener('mouseleave', function () { rx = 0; ry = 0; if (!raf) raf = requestAnimationFrame(apply); });
+      }
+
+      // Mostrar / ocultar contraseña
+      document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var input = document.getElementById(btn.getAttribute('data-toggle-password'));
+          if (!input) return;
+          var show = input.type === 'password';
+          input.type = show ? 'text' : 'password';
+          btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+          btn.querySelector('.eye-on').style.display = show ? 'none' : '';
+          btn.querySelector('.eye-off').style.display = show ? '' : 'none';
+          input.focus();
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
