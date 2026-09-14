@@ -40,7 +40,29 @@ class ConsultaTerceros extends Component
         }
 
         // Retorna la vista con la orden encontrada (o null si no hay coincidencia)
-        return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden]);
+        // Estado de la orden y del pago para mostrárselo al tercero en cualquier estado
+        $seguimiento = null;
+        if ($ordenAutorizada) {
+            $o = OrdenCompra::with(['estado_oc', 'naturalInfo', 'anticipos'])->where('id', $ordenAutorizada)->where('tipo_oc', 2)->first();
+            if ($o) {
+                $pasos = [
+                    ['Datos y contrato', (bool) optional($o->naturalInfo)->terminos],
+                    ['Evidencias enviadas', $o->evidencias()->exists()],
+                    ['Revisión de Bull', in_array($o->estado_id, [2, 1, 5, 4])],
+                    ['Aprobada para pago', in_array($o->estado_id, [1, 5, 4])],
+                ];
+                $anticipo = $o->anticipos->sortByDesc('id')->first();
+                if ($o->estado_id == 6) { $pago = 'La orden fue anulada.'; }
+                elseif ($anticipo && $anticipo->estado_id == 14) { $pago = 'Anticipo pagado el '.optional($anticipo->fecha_comprobante_pago)->format('d/m/Y').'. El saldo se paga con la cuenta de cobro.'; }
+                elseif (in_array($o->estado_id, [5, 4])) { $pago = 'Orden aprobada y en proceso de pago por contabilidad y tesorería.'; }
+                elseif ($o->estado_id == 1) { $pago = 'Orden aprobada. Cuando se reciban tus evidencias y cuenta de cobro pasa a pago.'; }
+                elseif ($o->estado_id == 2) { $pago = 'Tu orden está en revisión por el equipo de Bull.'; }
+                elseif ($o->estado_id == 7) { $pago = 'Falta que adjuntes las evidencias del trabajo y tu cuenta de cobro.'; }
+                else { $pago = 'Completa tus datos y acepta los términos para continuar.'; }
+                $seguimiento = ['estado' => optional($o->estado_oc)->description ?: 'Sin estado', 'pasos' => $pasos, 'pago' => $pago, 'rechazo' => $o->estado_id == 7 ? $o->justificacion_rechazo : null];
+            }
+        }
+        return view('livewire.productor.terceros.consulta-terceros', ['orden' => $orden, 'seguimiento' => $seguimiento]);
     }
 
     // Método que se ejecuta al montar el componente

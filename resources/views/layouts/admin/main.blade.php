@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=17" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=21" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -35,7 +35,7 @@
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
     'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
-    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 'notificaciones' => 'Notificaciones', 'actividad' => 'Registro de actividad', 
     'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
     'consumidos-com' => 'Consumidos', 'update-gestion-comercial' => 'Gestión comercial',
   ];
@@ -52,6 +52,13 @@
       </a>
     </div>
     <hr class="horizontal dark mt-0">
+    {{-- Usuario: foto, nombre y cargo (enlaza a Mi perfil) --}}
+    <a class="crm-user" href="{{ route('mi-perfil') }}" title="Ver mi perfil">
+      <span class="crm-user__foto">@if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="" onerror="this.remove()">@endif<b>{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</b></span>
+      <b class="crm-user__nombre">{{ Auth::user()->name }}</b>
+      <span class="crm-user__cargo">{{ Auth::user()->cargo() }}</span>
+      <span class="crm-user__link">Ver mi perfil →</span>
+    </a>
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       {{-- Menú según el rol activo: Controller y Líder comercial tienen el suyo; Admin/Gerencia el completo --}}
       @if (Auth::user()->esControl())
@@ -191,6 +198,18 @@
                   <span class="sidenav-normal"> Mi equipo </span>
                 </a>
               </li>
+              <li @class(['active' => request()->is('notificaciones'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('notificaciones'), 'nav-link' => true]) href="{{ route('notificaciones') }}">
+                  <span class="sidenav-mini-icon"> N </span>
+                  <span class="sidenav-normal"> Notificaciones </span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('actividad'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('actividad'), 'nav-link' => true]) href="{{ route('actividad') }}">
+                  <span class="sidenav-mini-icon"> R </span>
+                  <span class="sidenav-normal"> Registro de actividad </span>
+                </a>
+              </li>
             </ul>
           </div>
         </li>
@@ -235,8 +254,8 @@
             @include('components.selector-rol')
             <li class="nav-item d-flex align-items-center pe-3">
               <a href="{{ route('mi-perfil') }}" class="nav-link text-white font-weight-bold px-0 crm-nav-perfil" title="Ver mi perfil">
-                <span class="crm-nav-perfil__avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
-                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                <span class="crm-nav-perfil__avatar">@if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="">@endif{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }} <small class="crm-nav-perfil__cargo">· {{ Auth::user()->cargo() }}</small></span>
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
@@ -325,7 +344,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
-  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=6"></script>
+  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=7"></script>
   @livewireScripts
 </body>
 </html>

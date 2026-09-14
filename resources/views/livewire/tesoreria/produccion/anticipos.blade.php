@@ -4,7 +4,11 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="mb-0">Anticipos</h3>
-                    <p class="text-sm mb-0">Lista de anticipos creados.</p>
+                    <p class="text-sm mb-0">{{ $vista === 'pagados' ? 'Anticipos ya pagados (con comprobante).' : 'Anticipos causados por contabilidad, pendientes de pago.' }}</p>
+                    <div class="crm-seg mt-2" role="tablist">
+                        <button type="button" class="crm-seg__btn {{ $vista !== 'pagados' ? 'is-active' : '' }}" wire:click="$set('vista', 'pendientes')" role="tab">Por pagar</button>
+                        <button type="button" class="crm-seg__btn {{ $vista === 'pagados' ? 'is-active' : '' }}" wire:click="$set('vista', 'pagados')" role="tab">Pagados</button>
+                    </div>
                 </div>
                 {{-- <div class="col-md-2">
                     <label for="año">Año:</label>

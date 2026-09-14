@@ -2,18 +2,17 @@
     @if (( $estadoValidator != 2 && $estadoValidator != 4) || Auth::user()->espacioAdmin())
         <div class="crm-presupuesto">
         @php
-            // ---- Cifras del presupuesto (mismas fórmulas de getMetricas), preparadas para explicarlas ----
-            $recargos   = (float) $imprevistos + (float) $administracion + (float) $fee;         // % que se suman sobre la venta base
-            $ventaBase  = $recargos > -100 ? $ventaProyecto / (1 + $recargos / 100) : 0;         // Σ V. total cliente de los ítems
+            // ---- Cifras del presupuesto (mismas fórmulas de getMetricas), listas para consultarse con el botón "?" ----
+            $recargos   = (float) $imprevistos + (float) $administracion + (float) $fee;
+            $ventaBase  = $recargos > -100 ? $ventaProyecto / (1 + $recargos / 100) : 0;
             $vImprev    = $ventaBase * ((float) $imprevistos / 100);
             $vAdmin     = $ventaBase * ((float) $administracion / 100);
             $vFee       = $ventaBase * ((float) $fee / 100);
             $margenItemsPct = 100 - ($margenItems * 100);
             $pesos = function ($v) { return '$'.number_format((float) $v, 0, '.', ','); };
             $pct   = function ($v, $d = 1) { return number_format((float) $v, $d, '.', ',').' %'; };
-            // Semáforo del margen del proyecto: < 30 % necesita gerencia; 30–35 % en el límite; ≥ 35 % sano
-            if ($margenProyecto >= 35)      { $tonoMargen = 'tone-ok';   $lecturaMargen = 'Margen sano'; }
-            elseif ($margenProyecto >= 30)  { $tonoMargen = 'tone-warn'; $lecturaMargen = 'En el límite (≥ 30 % no pasa por gerencia)'; }
+            if ($margenProyecto >= 35)      { $tonoMargen = 'tone-ok';   $lecturaMargen = 'Margen sano (≥ 35 %)'; }
+            elseif ($margenProyecto >= 30)  { $tonoMargen = 'tone-warn'; $lecturaMargen = 'En el límite: con 30 % o más no pasa por gerencia'; }
             else                            { $tonoMargen = 'tone-bad';  $lecturaMargen = 'Por debajo del 30 %: requiere validación de gerencia'; }
             $estadoNombre = optional($presupuesto->estado)->description ?: 'Sin estado';
             $tonoEstado = ['Aprobado' => 'tone-ok', 'Revision' => 'tone-warn', 'Editable' => 'tone-muted'][$estadoNombre] ?? 'tone-neutral';
@@ -21,9 +20,9 @@
             $soloLectura = Auth::user()->espacioAdmin();
         @endphp
 
-        {{-- ================= CABECERA DEL PRESUPUESTO ================= --}}
-        <div class="card mb-4 crm-page-card crm-presupuesto__head">
-            <div class="crm-page-head">
+        {{-- ================= CABECERA ================= --}}
+        <div class="card mb-3 crm-page-card crm-presupuesto__head">
+            <div class="crm-page-head crm-page-head--compacta">
                 <div class="crm-page-head__title">
                     <span class="crm-eyebrow">Presupuesto {{ $presupuesto->cod_cot ? '· cotización '.$presupuesto->cod_cot : '' }}{{ $presupuesto->cod_cc ? ' · centro de costos '.$presupuesto->cod_cc : '' }}</span>
                     <h1>{{ optional($gestionP)->nom_proyecto_cot ?: 'Proyecto sin nombre' }}</h1>
@@ -36,163 +35,67 @@
                 </div>
                 <div class="crm-presupuesto__estado">
                     <span class="crm-chip {{ $tonoEstado }}">{{ $estadoNombre }}</span>
-                    @if ($presupuesto->cod_cc)
-                        <span class="crm-chip tone-neutral">Con centro de costos</span>
-                    @else
-                        <span class="crm-chip tone-muted">Sin centro de costos</span>
-                    @endif
+                    <span class="crm-chip {{ $presupuesto->cod_cc ? 'tone-neutral' : 'tone-muted' }}">{{ $presupuesto->cod_cc ? 'Con centro de costos' : 'Sin centro de costos' }}</span>
                 </div>
             </div>
         </div>
 
-        {{-- ================= INDICADORES ================= --}}
-        <div class="crm-kpis crm-kpis--mini crm-kpis--cinco mb-4">
-            <div class="card crm-kpi crm-kpi--mini tone-neutral" style="--i:0">
-                <div class="crm-kpi__head"><div>
-                    <p class="crm-kpi__label">Venta del proyecto</p>
-                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($ventaProyecto) }}" data-key="pp_venta">{{ number_format($ventaProyecto, 0, '.', ',') }}</span></p>
-                    <p class="crm-kpi__note">Lo que se cobra al cliente: precios de los ítems más recargos ({{ $pct($recargos, 1) }}).</p>
-                </div></div>
-                <span class="crm-kpi__icon"><i class="ni ni-money-coins" aria-hidden="true"></i></span>
-            </div>
-            <div class="card crm-kpi crm-kpi--mini tone-muted" style="--i:1">
-                <div class="crm-kpi__head"><div>
-                    <p class="crm-kpi__label">Costos del proyecto</p>
-                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($costosProyecto) }}" data-key="pp_costos">{{ number_format($costosProyecto, 0, '.', ',') }}</span></p>
-                    <p class="crm-kpi__note">Lo que le cuesta a Bull: suma de los valores totales internos.</p>
-                </div></div>
-                <span class="crm-kpi__icon"><i class="ni ni-cart" aria-hidden="true"></i></span>
-            </div>
-            <div class="card crm-kpi crm-kpi--mini {{ $tonoMargen }}" style="--i:2">
-                <div class="crm-kpi__head"><div>
-                    <p class="crm-kpi__label">Margen bruto</p>
-                    <p class="crm-kpi__value"><small>$</small><span data-count="{{ round($margenBruto) }}" data-key="pp_bruto">{{ number_format($margenBruto, 0, '.', ',') }}</span></p>
-                    <p class="crm-kpi__note">Venta menos costos: la ganancia en pesos.</p>
-                </div></div>
-                <span class="crm-kpi__icon"><i class="ni ni-diamond" aria-hidden="true"></i></span>
-            </div>
-            <div class="card crm-kpi crm-kpi--mini {{ $tonoMargen }}" style="--i:3">
-                <div class="crm-kpi__head"><div>
-                    <p class="crm-kpi__label">Margen del proyecto</p>
-                    <p class="crm-kpi__value"><span data-count="{{ sprintf('%.1f', $margenProyecto) }}" data-decimals="1" data-key="pp_margen">{{ sprintf('%.1f', $margenProyecto) }}</span><small> %</small></p>
-                    <div class="crm-bar"><span data-width="{{ max(0, min(100, $margenProyecto)) }}"></span></div>
-                    <p class="crm-kpi__note">{{ $lecturaMargen }}.</p>
-                </div></div>
-                <span class="crm-kpi__icon"><i class="ni ni-chart-pie-35" aria-hidden="true"></i></span>
-            </div>
-            <div class="card crm-kpi crm-kpi--mini tone-neutral" style="--i:4">
-                <div class="crm-kpi__head"><div>
-                    <p class="crm-kpi__label">Margen de los ítems</p>
-                    <p class="crm-kpi__value"><span data-count="{{ sprintf('%.1f', $margenItemsPct) }}" data-decimals="1" data-key="pp_items">{{ sprintf('%.1f', $margenItemsPct) }}</span><small> %</small></p>
-                    <p class="crm-kpi__note">Margen promedio de los ítems, antes de recargos.</p>
-                </div></div>
-                <span class="crm-kpi__icon"><i class="ni ni-bullet-list-67" aria-hidden="true"></i></span>
-            </div>
-        </div>
-
-        <div class="row mb-4 crm-presupuesto__fila">
-            {{-- ================= PARÁMETROS DEL PRESUPUESTO ================= --}}
-            <div class="col-12 col-xl-5">
-                <div class="card crm-panel h-100" style="--i:1">
-                    <div class="card-header">
-                        <div class="crm-panel__head">
-                            <div>
-                                <p class="crm-kpi__label">Recargos y condiciones</p>
-                                <h2>Parámetros del presupuesto</h2>
-                            </div>
-                            <span class="crm-kpi__icon"><i class="ni ni-settings-gear-65" aria-hidden="true"></i></span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="crm-presupuesto__ayuda">Los tres porcentajes se suman <b>sobre la venta base</b> (la suma de los precios al cliente de los ítems) y aumentan la venta del proyecto. {{ $soloLectura ? 'Solo el comercial puede modificarlos.' : 'Escribe el porcentaje sin el símbolo %.' }}</p>
-                        <div class="crm-parametros">
-                            <label class="crm-parametro">
-                                <span class="crm-parametro__nombre">Imprevistos</span>
-                                <span class="crm-parametro__desc">Colchón para costos no previstos.</span>
-                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="imprevistos" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('imprevistos') is-invalid @enderror"><em>%</em></span>
-                                <span class="crm-parametro__valor">= {{ $pesos($vImprev) }}</span>
-                            </label>
-                            <label class="crm-parametro">
-                                <span class="crm-parametro__nombre">Administración</span>
-                                <span class="crm-parametro__desc">Gastos administrativos del proyecto.</span>
-                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="administracion" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('administracion') is-invalid @enderror"><em>%</em></span>
-                                <span class="crm-parametro__valor">= {{ $pesos($vAdmin) }}</span>
-                            </label>
-                            <label class="crm-parametro">
-                                <span class="crm-parametro__nombre">Fee de agencia</span>
-                                <span class="crm-parametro__desc">Honorarios de Bull por la gestión.</span>
-                                <span class="crm-parametro__campo"><input type="text" inputmode="decimal" wire:model.lazy="fee" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('fee') is-invalid @enderror"><em>%</em></span>
-                                <span class="crm-parametro__valor">= {{ $pesos($vFee) }}</span>
-                            </label>
-                            <label class="crm-parametro">
-                                <span class="crm-parametro__nombre">Tiempo de facturación</span>
-                                <span class="crm-parametro__desc">Plazo pactado con el cliente (días).</span>
-                                <span class="crm-parametro__campo"><input type="text" inputmode="numeric" wire:model.lazy="tiempoFactura" placeholder="30" @if ($soloLectura) disabled @endif class="form-control @error('tiempoFactura') is-invalid @enderror"><em>días</em></span>
-                                <span class="crm-parametro__valor"></span>
-                            </label>
-                        </div>
-                        <div class="crm-parametro crm-parametro--notas">
-                            <span class="crm-parametro__nombre">Notas</span>
-                            <span class="crm-parametro__desc">Condiciones o aclaraciones que van en la cotización.</span>
-                            <textarea wire:model.lazy="notas" rows="4" class="form-control" placeholder="Sin notas" @if ($soloLectura) disabled @endif></textarea>
-                        </div>
-                    </div>
+        {{-- ================= CIFRAS (con "?" para ver cómo se calcula cada una) + PARÁMETROS EN LÍNEA ================= --}}
+        <div class="card mb-4 crm-panel crm-presupuesto__barra" style="--i:1">
+            <div class="crm-cifras">
+                <div class="crm-cifra tone-neutral" style="--i:0">
+                    <span class="crm-cifra__label">Venta del proyecto</span>
+                    <span class="crm-cifra__valor"><small>$</small><span data-count="{{ round($ventaProyecto) }}" data-key="pp_venta">{{ number_format($ventaProyecto, 0, '.', ',') }}</span></span>
+                    <details class="crm-info"><summary aria-label="¿Cómo se calcula la venta del proyecto?">?</summary>
+                        <div class="crm-info__pop"><b>Venta del proyecto</b><p>Venta base (Σ V. total cliente de los ítems) + recargos sobre esa base.</p>
+                            <span>{{ $pesos($ventaBase) }} + imprevistos {{ $pct($imprevistos) }} ({{ $pesos($vImprev) }}) + administración {{ $pct($administracion) }} ({{ $pesos($vAdmin) }}) + fee {{ $pct($fee) }} ({{ $pesos($vFee) }})</span><em>= {{ $pesos($ventaProyecto) }}</em></div>
+                    </details>
+                </div>
+                <div class="crm-cifra tone-muted" style="--i:1">
+                    <span class="crm-cifra__label">Costos</span>
+                    <span class="crm-cifra__valor"><small>$</small><span data-count="{{ round($costosProyecto) }}" data-key="pp_costos">{{ number_format($costosProyecto, 0, '.', ',') }}</span></span>
+                    <details class="crm-info"><summary aria-label="¿Cómo se calculan los costos?">?</summary>
+                        <div class="crm-info__pop"><b>Costos del proyecto</b><p>Suma del V. total interno de todos los ítems: lo que le cuesta a Bull (proveedores, personal, etc.).</p><span>Σ V. total interno</span><em>= {{ $pesos($costosProyecto) }}</em></div>
+                    </details>
+                </div>
+                <div class="crm-cifra {{ $tonoMargen }}" style="--i:2">
+                    <span class="crm-cifra__label">Margen bruto</span>
+                    <span class="crm-cifra__valor"><small>$</small><span data-count="{{ round($margenBruto) }}" data-key="pp_bruto">{{ number_format($margenBruto, 0, '.', ',') }}</span></span>
+                    <details class="crm-info"><summary aria-label="¿Cómo se calcula el margen bruto?">?</summary>
+                        <div class="crm-info__pop"><b>Margen bruto</b><p>La ganancia en pesos: venta del proyecto menos costos.</p><span>{{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}</span><em>= {{ $pesos($margenBruto) }}</em></div>
+                    </details>
+                </div>
+                <div class="crm-cifra {{ $tonoMargen }} crm-cifra--destacada" style="--i:3" title="{{ $lecturaMargen }}">
+                    <span class="crm-cifra__label">Margen del proyecto</span>
+                    <span class="crm-cifra__valor"><span data-count="{{ sprintf('%.1f', $margenProyecto) }}" data-decimals="1" data-key="pp_margen">{{ sprintf('%.1f', $margenProyecto) }}</span><small> %</small></span>
+                    <span class="crm-cifra__nota">{{ $lecturaMargen }}</span>
+                    <details class="crm-info"><summary aria-label="¿Cómo se calcula el margen del proyecto?">?</summary>
+                        <div class="crm-info__pop"><b>Margen del proyecto</b><p>El margen bruto como porcentaje de la venta. Si queda por debajo del 30 %, el presupuesto pasa a validación de gerencia.</p><span>{{ $pesos($margenBruto) }} ÷ {{ $pesos($ventaProyecto) }} × 100</span><em>= {{ $pct($margenProyecto) }}</em></div>
+                    </details>
+                </div>
+                <div class="crm-cifra tone-neutral" style="--i:4">
+                    <span class="crm-cifra__label">Margen de los ítems</span>
+                    <span class="crm-cifra__valor"><span data-count="{{ sprintf('%.1f', $margenItemsPct) }}" data-decimals="1" data-key="pp_items">{{ sprintf('%.1f', $margenItemsPct) }}</span><small> %</small></span>
+                    <details class="crm-info"><summary aria-label="¿Cómo se calcula el margen de los ítems?">?</summary>
+                        <div class="crm-info__pop"><b>Margen de los ítems</b><p>Margen promedio de los ítems antes de recargos: 100 % menos la proporción de costo sobre venta (solo ítems con utilidad definida). En la tabla, la columna Utilidad muestra ese margen por ítem: 100 − (costo ÷ precio × 100).</p><span>100 − (Σ costo interno ÷ Σ venta cliente × 100) = 100 − {{ $pct($margenItems * 100) }}</span><em>= {{ $pct($margenItemsPct) }}</em></div>
+                    </details>
                 </div>
             </div>
 
-            {{-- ================= CÓMO SE CALCULA ================= --}}
-            <div class="col-12 col-xl-7 mt-4 mt-xl-0">
-                <div class="card crm-panel h-100" style="--i:2">
-                    <div class="card-header">
-                        <div class="crm-panel__head">
-                            <div>
-                                <p class="crm-kpi__label">Con los números de este presupuesto</p>
-                                <h2>¿Cómo se calcula cada cifra?</h2>
-                            </div>
-                            <span class="crm-kpi__icon"><i class="ni ni-ruler-pencil" aria-hidden="true"></i></span>
-                        </div>
-                    </div>
-                    <div class="card-body crm-formulas">
-                        <div class="crm-formula" style="--i:0">
-                            <h3>1. Venta base</h3>
-                            <p>Suma del <b>valor total cliente</b> de todos los ítems (sin contar eventos).</p>
-                            <div class="crm-formula__calc"><span>Σ V. total cliente</span><b>= {{ $pesos($ventaBase) }}</b></div>
-                        </div>
-                        <div class="crm-formula" style="--i:1">
-                            <h3>2. Venta del proyecto</h3>
-                            <p>A la venta base se le suman los tres recargos, cada uno calculado sobre la venta base.</p>
-                            <div class="crm-formula__calc">
-                                <span>{{ $pesos($ventaBase) }} + imprevistos {{ $pct($imprevistos) }} ({{ $pesos($vImprev) }}) + administración {{ $pct($administracion) }} ({{ $pesos($vAdmin) }}) + fee {{ $pct($fee) }} ({{ $pesos($vFee) }})</span>
-                                <b>= {{ $pesos($ventaProyecto) }}</b>
-                            </div>
-                        </div>
-                        <div class="crm-formula" style="--i:2">
-                            <h3>3. Costos del proyecto</h3>
-                            <p>Suma del <b>valor total interno</b> de todos los ítems: lo que Bull paga a proveedores, personal y demás.</p>
-                            <div class="crm-formula__calc"><span>Σ V. total interno</span><b>= {{ $pesos($costosProyecto) }}</b></div>
-                        </div>
-                        <div class="crm-formula" style="--i:3">
-                            <h3>4. Margen bruto y margen del proyecto</h3>
-                            <p>El margen bruto es la ganancia en pesos; el margen del proyecto la expresa como porcentaje de la venta. <b>Si queda por debajo del 30 %, el presupuesto pasa a validación de gerencia.</b></p>
-                            <div class="crm-formula__calc"><span>{{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}</span><b>= {{ $pesos($margenBruto) }}</b></div>
-                            <div class="crm-formula__calc"><span>{{ $pesos($margenBruto) }} ÷ {{ $pesos($ventaProyecto) }} × 100</span><b>= {{ $pct($margenProyecto) }}</b></div>
-                        </div>
-                        <div class="crm-formula" style="--i:4">
-                            <h3>5. Margen de los ítems</h3>
-                            <p>Cuánto margen tienen en promedio los ítems, sin los recargos: 100 % menos la proporción de costo sobre venta (solo ítems con utilidad definida).</p>
-                            <div class="crm-formula__calc"><span>100 − (Σ costo interno ÷ Σ venta cliente × 100) = 100 − {{ $pct($margenItems * 100) }}</span><b>= {{ $pct($margenItemsPct) }}</b></div>
-                        </div>
-                        <div class="crm-formula" style="--i:5">
-                            <h3>6. En cada ítem de la tabla</h3>
-                            <ul class="crm-formula__lista">
-                                <li><b>V. total interno</b> = cantidad × días × V. unitario interno (más "otros"). Es el costo.</li>
-                                <li><b>Utilidad</b>: al crear el ítem se escribe como factor costo ÷ precio (0,65 quiere decir que el costo es el 65 % del precio). En la tabla se muestra ya convertido en margen: 100 − (costo ÷ precio × 100); con 0,65 se ve 35 %.</li>
-                                <li><b>V. unitario cliente</b> = V. unitario interno ÷ utilidad. <b>V. total cliente</b> = cantidad × días × V. unitario cliente. Es el precio.</li>
-                                <li><b>Rentabilidad</b> = V. total cliente − V. total interno: la ganancia del ítem en pesos.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <div class="crm-params">
+                <span class="crm-params__titulo">Recargos sobre la venta base
+                    <details class="crm-info"><summary aria-label="¿Qué son los recargos?">?</summary>
+                        <div class="crm-info__pop"><b>Recargos</b><p>Porcentajes que se suman sobre la venta base (Σ precios al cliente) y aumentan la venta del proyecto: imprevistos (colchón para costos no previstos), administración (gastos administrativos) y fee de agencia (honorarios de Bull). El tiempo es el plazo de facturación pactado en días.</p><span>Hoy suman {{ $pct($recargos) }}</span><em>= {{ $pesos($vImprev + $vAdmin + $vFee) }}</em></div>
+                    </details>
+                </span>
+                <label class="crm-param"><span>Imprevistos</span><input type="text" inputmode="decimal" wire:model.lazy="imprevistos" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('imprevistos') is-invalid @enderror"><em>%</em><i>{{ $pesos($vImprev) }}</i></label>
+                <label class="crm-param"><span>Administración</span><input type="text" inputmode="decimal" wire:model.lazy="administracion" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('administracion') is-invalid @enderror"><em>%</em><i>{{ $pesos($vAdmin) }}</i></label>
+                <label class="crm-param"><span>Fee agencia</span><input type="text" inputmode="decimal" wire:model.lazy="fee" placeholder="0" @if ($soloLectura) disabled @endif class="form-control @error('fee') is-invalid @enderror"><em>%</em><i>{{ $pesos($vFee) }}</i></label>
+                <label class="crm-param"><span>Tiempo</span><input type="text" inputmode="numeric" wire:model.lazy="tiempoFactura" placeholder="30" @if ($soloLectura) disabled @endif class="form-control @error('tiempoFactura') is-invalid @enderror"><em>días</em></label>
+                <details class="crm-notas">
+                    <summary>Notas de la cotización {{ trim((string) $notas) !== '' ? '·' : '' }} <b>{{ trim((string) $notas) !== '' ? \Illuminate\Support\Str::limit(trim($notas), 40) : 'sin notas' }}</b></summary>
+                    <textarea wire:model.lazy="notas" rows="3" class="form-control" placeholder="Condiciones o aclaraciones que van en la cotización" @if ($soloLectura) disabled @endif></textarea>
+                </details>
             </div>
         </div>
 

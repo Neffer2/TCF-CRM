@@ -32,6 +32,13 @@
       </a>
     </div>
     <hr class="horizontal dark mt-0">
+    {{-- Usuario: foto, nombre y cargo (enlaza a Mi perfil) --}}
+    <a class="crm-user" href="{{ route('mi-perfil') }}" title="Ver mi perfil">
+      <span class="crm-user__foto">@if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="" onerror="this.remove()">@endif<b>{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</b></span>
+      <b class="crm-user__nombre">{{ Auth::user()->name }}</b>
+      <span class="crm-user__cargo">{{ Auth::user()->cargo() }}</span>
+      <span class="crm-user__link">Ver mi perfil →</span>
+    </a>
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -92,8 +99,8 @@
             @include('components.selector-rol')
             <li class="nav-item d-flex align-items-center pe-3">
               <a href="{{ route('mi-perfil') }}" class="nav-link text-white font-weight-bold px-0 crm-nav-perfil" title="Ver mi perfil">
-                <span class="crm-nav-perfil__avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
-                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                <span class="crm-nav-perfil__avatar">@if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="">@endif{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }} <small class="crm-nav-perfil__cargo">· {{ Auth::user()->cargo() }}</small></span>
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">

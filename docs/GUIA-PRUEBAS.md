@@ -279,6 +279,23 @@ Todas las pantallas del espacio administrativo y comercial comparten ahora la mi
 | 8e.5 | Líder en Helisa | Como `prueba.lidercom` → Helisa general | Solo movimientos y comerciales de su equipo |
 | 8e.6 | Formularios | Abre un presupuesto y una orden de compra | Campos con borde suave y foco naranja; nada ilegible ni superpuesto |
 
+## B8g. Notificaciones, actividad, pagos y nómina
+
+Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío queda en **Acciones → Notificaciones** como "Enviado" y en `storage/logs/laravel.log` como "[correo simulado]" / "[sms simulado]".
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8g.1 | Registro de envíos | Admin → Acciones → Notificaciones | Tarjetas (fallidas / enviadas 24 h, modo correo y SMS), tabla con evento, destinatarios, estado e intentos; "Ver" muestra el cuerpo |
+| 8g.2 | Fallo y alerta | En `.env` pon `MAIL_MAILER=smtp` con un host inexistente, aprueba una OC jurídica | El registro queda "Fallido" con 3 intentos y el error; el dashboard de admin/gerencia muestra el aviso rojo; en el log aparece "Alerta a desarrollo"; "Reintentar" vuelve a intentarlo |
+| 8g.3 | Nómina completa | `prueba.productor` crea una orden de nómina → `prueba.lider` la aprueba (estado 9) → `prueba.gerencia` la valida | Queda **Aprobada** con el PDF de la orden y llegan los correos (producción, gerencia, compras/productor/comercial). Antes no podía ni crearse |
+| 8g.4 | Pago de anticipo | `contadores@…` causa un anticipo → `tesoreria@…` sube el comprobante | Contabilidad genera el correo a tesorería; tesorería lo ve en "Por pagar", tras el comprobante pasa a "Pagados" (estado Pagado) y sale el correo con el comprobante adjunto |
+| 8g.5 | Anticipo de productor | `prueba.productor` crea un anticipo → `prueba.lider` aprueba → (si ≥ $500.000) `prueba.gerencia` aprueba | Cada paso genera su correo (producción, gerencia, productor); el umbral se cambia con `CRM_ANTICIPO_UMBRAL_GERENCIA` |
+| 8g.6 | Portal del contratista | Abre el enlace firmado de una orden natural (botón "Copiar enlace" en Órdenes de compra) | Arriba se ve "Estado de tu orden" con los pasos cumplidos y el estado del pago |
+| 8g.7 | Registro de actividad | Admin → Acciones → Registro de actividad | Sesiones, páginas, acciones (con "Datos": método y campos enviados) y cambios de datos (campo, antes, después); filtros por usuario, tipo, fechas y texto |
+| 8g.8 | Pronóstico | Dashboard de gerencia → gráfica | Línea punteada "Pronóstico" desde el último mes cerrado hasta diciembre y tarjeta "Pronóstico de cierre" con % vs presupuesto y vs año anterior; el "?" explica el cálculo |
+| 8g.9 | Presupuesto compacto | Abre un presupuesto | Cifras en una barra con "?" que explica cada fórmula con los números reales; parámetros en una línea; títulos de la tabla legibles (blanco sobre carbón/verde) |
+| 8g.10 | Perfil visible | Cualquier rol | Tarjeta con foto grande, nombre y cargo en la barra lateral; Gerencia dice "Gerencia" |
+
 ## B9. Regresión general (nada se rompió)
 
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.

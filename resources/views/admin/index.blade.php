@@ -4,6 +4,17 @@
         <div class="position-absolute w-100 min-height-300 top-0 crm-hero crm-hero--photo" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}')"></div>
     @endsection
     @section('content')
+        @php $saludNotif = in_array(Auth::user()->rol, [1, 20]) ? \App\Services\Notificador::salud() : null; @endphp
+        @if ($saludNotif && $saludNotif['fallidas_24h'] > 0)
+            <div class="col-12">
+                <a class="crm-aviso crm-aviso--bad mb-4" href="{{ route('notificaciones') }}">
+                    <span class="crm-aviso__icono"><i class="ni ni-notification-70" aria-hidden="true"></i></span>
+                    <span><b>{{ $saludNotif['fallidas_24h'] }} {{ $saludNotif['fallidas_24h'] == 1 ? 'notificación falló' : 'notificaciones fallaron' }} en las últimas 24 horas.</b>
+                    Última: {{ optional($saludNotif['ultima_fallida'])->canal }} · {{ optional($saludNotif['ultima_fallida'])->evento }} — {{ \Illuminate\Support\Str::limit(optional($saludNotif['ultima_fallida'])->error, 90) }}</span>
+                    <span class="crm-aviso__accion">Ver y reintentar →</span>
+                </a>
+            </div>
+        @endif
         <div class="col-12">
             <div class="card mb-4 crm-page-card">
                 <div class="crm-page-head">

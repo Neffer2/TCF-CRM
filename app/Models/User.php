@@ -98,6 +98,13 @@ class User extends Authenticatable
         }
     }
 
+    /** Cargo visible: Gerencia si tiene ese rol (nunca es el activo), si no el rol activo. */
+    public function cargo(): string
+    {
+        if ($this->puedeUsarRol(self::ROL_GERENCIA)) { return 'Gerencia'; }
+        return optional($this->user_rol)->description ?: 'Usuario';
+    }
+
     /** URL pública del avatar (o null si es el genérico / no existe). */
     public function avatarUrl(): ?string
     {

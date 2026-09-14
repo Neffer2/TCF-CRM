@@ -80,16 +80,16 @@ Volumen: 3.236 comprobadas, 69 en evidencias, 31 editables, 30 en revisión. Des
 | 1 | 8 Revisión líder | Productor (`enviarAprobacion`) | Crea la nómina (proveedor, ítems, cotización) | — |
 | 2 | 9 Revisión gerencia | Líder de producción (`cambioEstado(9)`) | Aprueba | — |
 | 2b | 11 Rechazo líder | Líder | Rechaza; el productor corrige y reenvía (vuelve a 8) | **Correo** a producción (función creada hoy) |
-| 3 | 2 Revisión | Gerencia con `validar-nomina` (`cambioEstado(2)`) | Valida | **Correo** a controller (función creada hoy) |
-| 3b | 12 Rechazo gerencia | Gerencia | Rechaza → productor corrige → 8 | — |
-| 4 | 1 Aprobado | Admin (`cambioEstado(1)`) | Registra `cod_oc` + PDF Helisa | — |
+| 3 | 1 Aprobado | Gerencia con `validar-nomina` (`cambioEstado(2)`) | Al validar, el sistema genera el PDF de la orden y la deja **aprobada** directamente (así está programado: la revisión de Controller ocurre después, sobre la remisión) | **Correo** "nómina aprobada" a compras, productor y comercial con la orden adjunta |
+| 3b | 12 Rechazo gerencia | Gerencia | Rechaza → productor corrige → 8 | **Correo** al productor |
+| 4 | 1 Aprobado | Admin (`cambioEstado(1)`) | Solo si la orden venía de revisión de Controller (estado 2, tras un rechazo y reenvío) | **Correo** "nómina aprobada" |
 | 5 | 4 Recibido | Productor | Firma remisión (o corrige si venía de 13) | — |
 | 6 | 10 Revisión evidencias | Líder | Revisa la remisión: aprueba (4→14 lo hace admin) o rechaza (13) | — |
 | 7 | 14 Remisión aprobada | Admin (`cambioEstado(14)`) | Aprueba la remisión | — |
 | 8 | 5 Comprobado | Controller/Gerencia con `validar-nomina` (`cambioEstado(5)`) | Envía GR | — |
 | — | 6 Anulada | Admin / validador | Anula | — |
 
-Nota: hasta hoy, reenviar una nómina (pasos 2b y 3) daba **error fatal** porque las dos funciones de correo no existían. Ya existen. En el dump no hay órdenes con `tipo_oc` 3, es decir, este flujo aún no se ha usado en producción.
+Nota: este flujo **nunca pudo usarse en producción**: el catálogo `tipo_ordenes_compra` no tenía el tipo 3 "Nómina" (la clave foránea rechazaba toda nómina) y faltaban nueve funciones de correo que el código llamaba (error fatal en cada paso). Ambas cosas están corregidas y el flujo se probó de punta a punta (líder → gerencia → aprobada) con los usuarios de prueba.
 
 ### 4.4 Anticipos
 
@@ -101,15 +101,15 @@ Estados de `estados_anticipo`: 1 Aprobado – pendiente de causar · 2 Revisión
 
 | Paso | Estado | Quién | Qué pasa | Aviso |
 |---|---|---|---|---|
-| 1 | 8 | Productor | Ítems + firma dibujada (se guarda como PNG) | — |
-| 2 | 9 ó 7 | Líder de producción | Aprueba con observaciones; si el total es **< $500.000** salta gerencia y va directo a evidencias (7); si no, a gerencia (9) | — |
-| 2b | 11 | Líder | Rechaza → productor corrige | — |
-| 3 | 7 | Gerencia (`revisar-anticipos-gerencia`) | Aprueba → cargue de evidencias | — (el comentario dice "se envía notificación al productor" pero no hay envío) |
-| 3b | 12 | Gerencia | Rechaza | — |
+| 1 | 8 | Productor | Ítems + firma dibujada (se guarda como PNG) | **Correo** a producción (líderes) |
+| 2 | 9 ó 7 | Líder de producción | Aprueba con observaciones; si el total es menor al umbral (`CRM_ANTICIPO_UMBRAL_GERENCIA`, hoy $500.000) salta gerencia y va directo a evidencias (7); si no, a gerencia (9) | **Correo** a gerencia o al productor |
+| 2b | 11 | Líder | Rechaza → productor corrige | **Correo** al productor |
+| 3 | 7 | Gerencia (`revisar-anticipos-gerencia`) | Aprueba → cargue de evidencias | **Correo** al productor (cc producción) |
+| 3b | 12 | Gerencia | Rechaza | **Correo** al productor |
 | 4 | 10 | Productor (`enviarEvidencias`) | Sube una evidencia por ítem | — |
 | 5 | … | Líder | Revisa evidencias (estado 10) | — |
 
-**Pago** (común a todos los anticipos): **Contabilidad** ve los de estado 1, registra código causal, observación y fecha → 5 (o rechaza → 13 / 2); **Tesorería** ve los de estado 5 y sube el **comprobante de pago** (PDF, ≤10 MB) con fecha. **El estado no cambia después del pago** (sigue en 5) y **no se envía ningún correo**: tanto el aviso a tesorería tras causar como el aviso de "anticipo pagado" están comentados en el código.
+**Pago** (común a todos los anticipos): **Contabilidad** ve los de estado 1, registra código causal, observación y fecha → 5 (**correo** a tesorería, cc contabilidad_pagos y productor) o rechaza → 13 / 2 (**correo** al productor y compras); **Tesorería** ve los de estado 5 en "Por pagar", sube el **comprobante de pago** (PDF, ≤10 MB) y el anticipo pasa a **14 Pagado** (pestaña "Pagados") con **correo** a compras, productor, comercial, proveedor y contabilidad_pagos con el comprobante adjunto.
 
 Volumen: 3 anticipos en total (oct-2025 a jul-2026), 1 comprobante de pago. El flujo existe pero casi no se usa.
 
@@ -171,27 +171,32 @@ Datos: 16.705 evidencias, 2.901 remisiones, 801 certificaciones bancarias, 797 c
 
 El portal `/consulta-terceros/{orden}` exige una firma en la URL (`signed`). Los SMS ya lo generan firmado; los botones de la lista de admin se corrigieron hoy. Un enlace sin firma responde 403.
 
+## 7.4 Registro, reintentos y alertas (nuevo)
+
+Todos los correos y SMS pasan por `App\Services\Notificador`: cada envío queda en la tabla `notificaciones_log` (evento, destinatarios, cuerpo, adjuntos, intentos, error), se reintenta hasta 3 veces con espera creciente y, si falla definitivamente, se avisa a desarrollo por correo (`CRM_ALERTA_CORREOS`) y SMS (`CRM_ALERTA_TELEFONOS`), máximo una alerta por canal cada hora. La pantalla **Acciones → Notificaciones** (Admin/Gerencia) muestra el registro, permite reenviar y el dashboard avisa cuando hay fallos en las últimas 24 h. Con `QUEUE_CONNECTION=database` y un worker, los envíos salen por cola sin frenar al usuario. En local (`MAIL_MAILER=log`, `SMS_MODO=log`) no se envía nada: se registra como enviado y se escribe en el log.
+
+## 7.5 Registro de actividad (nuevo)
+
+La tabla `actividad_log` guarda cada inicio y cierre de sesión (y los intentos fallidos), cada página vista, cada acción de Livewire con el componente, el método y los datos enviados (sin claves), y cada creación, cambio o borrado de órdenes, anticipos, presupuestos, ítems, gestiones, base comercial, usuarios, terceros y proveedores con el valor anterior y el nuevo. Se consulta en **Acciones → Registro de actividad**, con filtros por usuario, tipo, fechas y texto.
+
 ## 8. Hallazgos
 
-**Corregidos hoy (commit en `correcciones`)**
-1. `Nomina::enviarAprobacion` llamaba a dos funciones de correo inexistentes → error fatal al reenviar una nómina. Creadas (`ocJuridicaRevisionController`, `ocJuridicaRevisionLiderProd`).
-2. Botones WhatsApp y "Copiar enlace" del listado de órdenes generaban el enlace del portal sin firma (403 desde la corrección de seguridad). Ahora van firmados.
+**Corregidos (commits en `correcciones`)**
+1. `Nomina::enviarAprobacion` y otros pasos de nómina y anticipos de productor llamaban a **trece funciones de correo inexistentes** → error fatal. Todas existen ahora y se probaron.
+2. El catálogo `tipo_ordenes_compra` no tenía el tipo 3 "Nómina": ninguna nómina podía crearse (clave foránea). Añadido por migración.
+3. Botones WhatsApp y "Copiar enlace" del listado de órdenes generaban el enlace del portal sin firma (403). Ahora van firmados.
+4. Correos de la cadena de pago activados: causación → tesorería (cc contabilidad_pagos y productor), rechazo de contabilidad → productor y compras, anticipo pagado → compras, productor, comercial, proveedor y contabilidad_pagos con el comprobante.
+5. Estado **14 "Pagado"** para anticipos; tesorería tiene pestañas "Por pagar" y "Pagados".
+6. Gerencia y líder avisan al productor al aprobar o rechazar su anticipo; el productor avisa a producción al crearlo.
+7. Umbral de gerencia (`CRM_ANTICIPO_UMBRAL_GERENCIA`) y teléfono de saludo (`SMS_SALUDO_TELEFONO`) en configuración.
+8. Correo y SMS con registro en base de datos, reintentos, alertas a desarrollo, pantalla de notificaciones y opción de cola (sección 7.4).
+9. El portal del contratista muestra el estado de la orden (pasos cumplidos) y del pago, que es lo que promete el mensaje de WhatsApp.
+10. Registro de actividad de toda la plataforma (sección 7.5).
 
-**Pendientes de decisión (no se tocaron)**
-3. Los correos de la cadena de pago están apagados: causación → tesorería y anticipo pagado. Nadie recibe aviso por correo de que un anticipo se causó o se pagó. Activarlos es quitar dos comentarios; requiere confirmar destinatarios.
-4. Tras el pago, el anticipo sigue en "Causado – pendiente de pago" (5): no hay estado "Pagado". Se distingue solo por si tiene comprobante.
-5. Gerencia aprueba un anticipo de productor y el código dice "se envía notificación al productor", pero no envía nada. El productor no se entera de que ya puede legalizar.
-6. Umbral de $500.000 para saltar gerencia en anticipos de productor: quemado en el código (`AnticipoProductor`), pendiente en el plan de acción.
-7. SMS: sin registro de errores ni reintentos; teléfono de saludo quemado; `SMS_TOKEN` debe existir en producción (no está en `.env.example`).
-8. Correo: envío síncrono sin cola; un SMTP caído ralentiza cada aprobación y el aviso se pierde (solo queda en el log). Recomendable pasar a colas (`QUEUE_CONNECTION=database`) y reintentos.
-9. El texto del WhatsApp promete "seguir el estado de tu pago" en el portal, pero el portal no muestra el pago.
-10. El flujo de nómina (tipo 3) no tiene ninguna orden en producción: conviene probarlo completo con `prueba.productor`, `fernando.paez@` (líder) y `j.ariza@` (gerencia) antes de usarlo.
-11. Proveedores: 1.688 registros y **0 activos** según la columna `estado` (o el campo no se usa o todos quedaron inactivos); las OC siguen enlazándolos igual.
+**Pendientes**
+11. Proveedores: la columna `estado` es texto libre (CONFIRMADO / CONFIRMADO - COMUNICADO / NO APLICA); no existe un "activo/inactivo" real.
+12. Producción debe definir `CRM_ALERTA_CORREOS` / `CRM_ALERTA_TELEFONOS` y, si quiere envíos en segundo plano, activar la cola (ver `.env.example`).
 
-## 9. Recomendaciones
+## 9. Recomendaciones (aplicadas)
 
-- Activar los dos correos de pago y añadir el aviso al productor cuando gerencia aprueba su anticipo (tres cambios pequeños).
-- Añadir estado "Pagado" a anticipos (o marcar por comprobante en las listas) y una vista de pagos para compras/controller.
-- Pasar correo y SMS a colas con reintentos y registrar cada envío (tabla `notificaciones_log`: evento, canal, destinatario, resultado), para poder auditar "quién recibió qué".
-- Mostrar en el portal del tercero el estado real de su orden y del pago, que es lo que promete el mensaje.
-- Mover el umbral de $500.000 y el número de saludo a configuración.
+Todas las recomendaciones de la primera versión de este informe están implementadas (ver hallazgos 4–10). Queda como mejora futura una vista de pagos consolidada para compras/controller y depurar el campo `estado` de proveedores.

@@ -24,6 +24,8 @@ class Tendencia extends Component
     public $venta = [];
     public $presupuesto = [];
     public $añoDescripcion = '';
+    public $pronostico = [];   // por mes: null en meses cerrados, valor estimado en el mes en curso y los que faltan
+    public $cierre = null;     // ['total','presupuesto','pct','anterior','variacion','base','mesesReales']
 
     protected $listeners = ['Tendencia' => 'actualizar'];
 
@@ -85,6 +87,81 @@ class Tendencia extends Component
             $this->venta[] = round((float) $venta);
             $this->presupuesto[] = round((float) $presupuesto);
         }
+
+        $this->pronosticar($año, $meses);
+    }
+
+    /**
+     * Pronóstico de cierre del año en curso por estacionalidad: cómo se
+     * repartió la venta mes a mes en los años anteriores (promedio de sus
+     * participaciones) aplicado al ritmo real de este año.
+     *
+     *   cierre = venta real de los meses cerrados ÷ participación histórica de esos meses
+     *   mes futuro = cierre × participación histórica del mes
+     *
+     * Solo aplica al año calendario actual; el mes en curso cuenta como incompleto.
+     */
+    private function pronosticar($año, $meses)
+    {
+        $this->pronostico = array_fill(0, count($this->venta), null);
+        $this->cierre = null;
+        if ((int) $año->description !== (int) now()->year || $meses->count() < 12) { return; }
+
+        $mesActual = (int) now()->month;
+        $ids = $meses->map(function ($m) { return (int) $m->identifier; })->all();
+
+        // Participación histórica por mes (promedio de los años anteriores con datos)
+        $ventaPorAño = function ($a, $conFiltro) {
+            $ms = Mes::where('ano_id', $a->id)->orderByRaw('CAST(identifier AS UNSIGNED)')->get();
+            if ($ms->count() < 12) { return null; }
+            $porMes = [];
+            foreach ($ms as $m) {
+                $porMes[(int) $m->identifier] = (float) Helisa::where('año', $a->description)
+                    ->when($conFiltro && is_array($this->comerciales), function ($q) { $q->whereIn('comercial', $this->comerciales); })
+                    ->whereBetween('fecha', [$m->f_inicio, $m->f_fin])->sum('base_factura');
+            }
+            return array_sum($porMes) > 0 ? $porMes : null;
+        };
+        $anteriores = Año::where('description', '<', $año->description)->orderBy('description', 'desc')->get();
+        $participacion = array_fill(1, 12, 0.0); $base = 0; $ventaAnterior = null;
+        foreach ([true, false] as $conFiltro) {   // primero con el filtro de comerciales; si no hay historia, la global
+            foreach ($anteriores as $a) {
+                $porMes = $ventaPorAño($a, $conFiltro);
+                if (!$porMes) { continue; }
+                $tot = array_sum($porMes);
+                foreach ($porMes as $i => $v) { $participacion[$i] += $v / $tot; }
+                $base++;
+                if ($ventaAnterior === null && $conFiltro && (int) $a->description === (int) $año->description - 1) { $ventaAnterior = $tot; }
+            }
+            if ($base > 0) { break; }
+        }
+        if ($base === 0) { $participacion = array_fill(1, 12, 1 / 12); $base = 0; }
+        else { $suma = array_sum($participacion); foreach ($participacion as $i => $v) { $participacion[$i] = $v / $suma; } }
+
+        // Ritmo real: meses cerrados (antes del mes en curso)
+        $real = 0; $shareReal = 0; $mesesReales = 0; $ultimoCerrado = null;
+        foreach ($ids as $k => $id) {
+            if ($id < $mesActual) { $real += $this->venta[$k]; $shareReal += $participacion[$id]; $mesesReales++; $ultimoCerrado = $k; }
+        }
+        if ($mesesReales === 0 || $shareReal <= 0) { return; }
+
+        $total = $real / $shareReal;
+        foreach ($ids as $k => $id) {
+            if ($id >= $mesActual) { $this->pronostico[$k] = round($total * $participacion[$id]); }
+        }
+        if ($ultimoCerrado !== null) { $this->pronostico[$ultimoCerrado] = $this->venta[$ultimoCerrado]; } // une la línea real con la punteada
+
+        $presupuestoAnual = array_sum($this->presupuesto);
+        $this->cierre = [
+            'total' => round($total),
+            'presupuesto' => round($presupuestoAnual),
+            'pct' => $presupuestoAnual > 0 ? round($total / $presupuestoAnual * 100, 1) : null,
+            'anterior' => $ventaAnterior !== null ? round($ventaAnterior) : null,
+            'variacion' => $ventaAnterior ? round(($total / $ventaAnterior - 1) * 100, 1) : null,
+            'base' => $base,
+            'mesesReales' => $mesesReales,
+            'falta' => round(max(0, $presupuestoAnual - $real)),
+        ];
     }
 
     public function render()

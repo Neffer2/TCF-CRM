@@ -3,6 +3,9 @@
 namespace App\Providers;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use App\Observers\AuditoriaObserver;
+use App\Models\ActividadLog;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +41,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Auditoría: cambios en los registros principales (antes -> después)
+        foreach ([
+            \App\Models\OrdenCompra::class, \App\Models\Anticipo::class, \App\Models\PresupuestoProyecto::class, \App\Models\ItemPresupuesto::class,
+            \App\Models\GestionComercial::class, \App\Models\Base_comercial::class, \App\Models\Presupuesto::class, \App\Models\User::class,
+            \App\Models\Tercero::class, \App\Models\Proveedor::class, \App\Models\NotificacionDestinatario::class, \App\Models\Permiso::class,
+        ] as $modelo) {
+            if (class_exists($modelo)) { $modelo::observe(AuditoriaObserver::class); }
+        }
+        // Auditoría: sesiones
+        Event::listen(\Illuminate\Auth\Events\Login::class, function ($e) { ActividadLog::registrar('sesion', 'login', ['user_id' => $e->user->id, 'usuario' => $e->user->name, 'rol' => $e->user->rol, 'detalle' => ['recordar' => (bool) $e->remember]]); });
+        Event::listen(\Illuminate\Auth\Events\Logout::class, function ($e) { if ($e->user) { ActividadLog::registrar('sesion', 'logout', ['user_id' => $e->user->id, 'usuario' => $e->user->name, 'rol' => $e->user->rol]); } });
+        Event::listen(\Illuminate\Auth\Events\Failed::class, function ($e) { ActividadLog::registrar('sesion', 'login fallido', ['detalle' => ['correo' => $e->credentials['email'] ?? '?']]); });
         Paginator::useBootstrap();
 
         config([

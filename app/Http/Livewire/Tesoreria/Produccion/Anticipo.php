@@ -6,9 +6,11 @@ use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Models\Anticipo as AnticipoModel;
 use Livewire\WithFileUploads;
+use App\Traits\Email;
 
 class Anticipo extends Component
 {
+    use Email;
     use WithFileUploads;
 
     // Modelos para los campos del formulario
@@ -47,9 +49,11 @@ class Anticipo extends Component
         // Guarda el archivo del comprobante y actualiza la orden 
         $this->anticipo->comprobante_pago = $this->comprobante->store('public/anticipos');
         $this->anticipo->fecha_comprobante_pago = now();
+        $this->anticipo->estado_id = 14; // Pagado (antes seguía en "Causado – pendiente de pago")
         $this->anticipo->update();
 
-        // $this->mailAnticipoPagado($this->orden, $this->observacion_anticipo);
+        // Aviso de pago a compras, productor, comercial, proveedor y contabilidad, con el comprobante adjunto
+        $this->anticipoPagado($this->anticipo, $this->observacion_anticipo);
 
         // Redirige con mensaje de éxito
         return redirect()->route('lista-anticipos-tesoreria')->with('success', 'Anticipo marcado como pagado exitósamente.');

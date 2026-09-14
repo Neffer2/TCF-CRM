@@ -171,6 +171,12 @@ Route::get('/', function () {
     })->middleware(['auth', 'tesoreria'])->name('detalle-anticipo-tesoreria');
 /* --- */
 
+/* Registro de actividad (auditoría): páginas, acciones, sesiones y cambios de datos por usuario */
+    Route::view('/actividad', 'admin.actividad.index')->middleware(['auth', 'admin'])->name('actividad');
+
+/* Salud de las notificaciones (correo y SMS): registro, reintentos y alertas a desarrollo */
+    Route::view('/notificaciones', 'admin.notificaciones.index')->middleware(['auth', 'admin'])->name('notificaciones');
+
 /* Mi perfil (solo lectura): foto, cargo y datos de la cuenta, para todos los roles */
     Route::get('/mi-perfil', [PerfilController::class, 'show'])->middleware(['auth'])->name('mi-perfil');
 

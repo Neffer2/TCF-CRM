@@ -86,6 +86,8 @@
     var labels = JSON.parse(canvas.getAttribute('data-labels') || '[]');
     var venta = JSON.parse(canvas.getAttribute('data-venta') || '[]');
     var meta = JSON.parse(canvas.getAttribute('data-presupuesto') || '[]');
+    var pron = JSON.parse(canvas.getAttribute('data-pronostico') || '[]');
+    var hayPron = pron.some(function (v) { return v !== null && v !== undefined; });
     if (chart) { chart.destroy(); chart = null; }
     var ctx = canvas.getContext('2d');
     var grad = ctx.createLinearGradient(0, 0, 0, 260);
@@ -110,6 +112,11 @@
             pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderColor: '#EF5F17', pointBorderWidth: 2
           },
           {
+            type: 'line', label: 'Pronóstico', data: hayPron ? pron : [], order: 0, spanGaps: false,
+            borderColor: '#C94A0E', borderWidth: 2, borderDash: [6, 5], tension: .42, fill: false,
+            pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: '#C94A0E', pointBorderWidth: 2, hidden: !hayPron
+          },
+          {
             type: 'bar', label: 'Presupuesto', data: meta, order: 2,
             backgroundColor: 'rgba(154, 144, 136, .22)', hoverBackgroundColor: 'rgba(154, 144, 136, .38)',
             borderRadius: 6, borderSkipped: false, maxBarThickness: 34
@@ -125,7 +132,7 @@
           tooltip: {
             backgroundColor: '#1E1915', titleColor: '#fff', bodyColor: '#EAE4DD', padding: 12, cornerRadius: 10, displayColors: true,
             callbacks: {
-              label: function (c) { return ' ' + c.dataset.label + ': $' + fmt(c.parsed.y, 0); },
+              label: function (c) { return c.parsed.y === null ? null : ' ' + c.dataset.label + ': $' + fmt(c.parsed.y, 0); },
               afterBody: function (items) {
                 var v = items.find(function (i) { return i.dataset.label === 'Venta facturada'; });
                 var m = items.find(function (i) { return i.dataset.label === 'Presupuesto'; });

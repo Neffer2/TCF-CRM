@@ -5,7 +5,7 @@
 @endsection
 @section('content')
 @php
-    $cargo = optional($u->user_rol)->description ?: 'Sin rol activo';
+    $cargo = $u->cargo();
     $foto = $u->avatarUrl();
     $desde = $u->created_at ? $u->created_at->locale('es')->isoFormat('D [de] MMMM [de] YYYY') : '—';
 @endphp
