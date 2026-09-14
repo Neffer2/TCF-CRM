@@ -135,7 +135,7 @@ Después de cada caso de "bloqueo" verifica que la acción **realmente no ocurri
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 1.1 | Registro no regala acceso | Cierra sesión → `/register` → crea una cuenta nueva | La cuenta se crea pero al entrar es **expulsada al login** con "cuenta pendiente de activación". No entra a ningún módulo |
+| 1.1 | Sin registro público | Cierra sesión → visita `/register`, `/forgot-password`, `/verify-email` | Todas dan la página 404 de marca: las cuentas las crea un admin en "Mi equipo" y las claves las restablece un desarrollador |
 | 1.2 | Rutas de otro rol | Como `prueba.productor` visita `/dashboard-admin`, `/lista-anticipos-admin`, `/reporte-plano-helisa/3` | En todas: redirigido a su propio dashboard, nunca ve el contenido |
 | 1.3 | Plano contable protegido | Como `prueba.contabilidad` visita `/reporte-plano-helisa/3` | Descarga el Excel (contabilidad SÍ puede) |
 | 1.4 | Deletes protegidos | Como `prueba.productor`, con la consola del navegador o Postman haz POST a `/delete-proyecto/1` (con el token CSRF de cualquier página) | Redirigido; **ningún** proyecto se borra |
