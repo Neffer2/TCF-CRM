@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Produccion\Proveedores;
 
 use Livewire\Component;
 use App\Models\Proveedor;
+use App\Models\EstadoProveedor;
 use App\Models\CategoriaProveedor;
 use Livewire\WithPagination;
 
@@ -21,11 +22,12 @@ class Proveedores extends Component
     public $tercero;                // Filtro por nombre o razón social (búsqueda parcial)
     public $categoria;              // Filtro por ID de categoría del proveedor
     public $ciudad;                 // Filtro por ciudad del proveedor
-    public $estado;                 // Filtro por estado del proveedor (activo/inactivo)
+    public $estado;                 // Filtro por estado del acuerdo (id del catálogo estados_proveedor)
 
     // COLECCIONES PARA OPCIONES DE FILTROS
     public $categorias = [];        // Lista de categorías disponibles para filtrar
     public $ciudades = [];          // Lista de ciudades disponibles para filtrar
+    public $estados = [];           // Catálogo de estados del proveedor
 
     // EVENTOS LIVEWIRE
     protected $listeners = ['refreshProveedores' => 'render']; // Escucha evento para refrescar la lista
@@ -62,11 +64,11 @@ class Proveedores extends Component
 
         // Filtro por estado: búsqueda exacta
         if ($this->estado){
-            array_push($filtros, ['estado', $this->estado]);
+            array_push($filtros, ['estado_id', $this->estado]);
         }
 
         // Consulta con filtros aplicados, ordenada alfabéticamente y paginada
-        $proveedores = Proveedor::where($filtros)->orderBy('tercero', 'asc')->paginate(15);
+        $proveedores = Proveedor::with('estado')->where($filtros)->orderBy('tercero', 'asc')->paginate(15);
         return view('livewire.admin.produccion.proveedores.proveedores', ['proveedores' => $proveedores]);
     }
 
@@ -77,6 +79,7 @@ class Proveedores extends Component
     public function mount (){
         $this->getCategorias();
         $this->getCiudades();
+        $this->estados = EstadoProveedor::activos()->get();
     }
 
     /**

@@ -118,9 +118,12 @@ class Notificador
     /*  Transportes                                                        */
     /* ------------------------------------------------------------------ */
 
-    private static function enviarCorreo(NotificacionLog $log): void
+    /**
+     * @param bool $forzarReal  true = sale por SMTP aunque MAIL_MAILER=log (alertas a desarrollo con CRM_ALERTA_SIEMPRE=true)
+     */
+    private static function enviarCorreo(NotificacionLog $log, bool $forzarReal = false): void
     {
-        if (config('crm.notificaciones.correo_modo') === 'log') {
+        if (config('crm.notificaciones.correo_modo') === 'log' && !$forzarReal) {
             Log::info("[correo simulado] {$log->asunto} -> ".implode(', ', array_column($log->destinatarios, 'email')));
             return;
         }
@@ -204,7 +207,7 @@ class Notificador
                 $tmp = new NotificacionLog(['canal' => 'correo', 'evento' => 'alertaDesarrollo', 'asunto' => "[BULLCRM] Notificación fallida ({$log->canal}: {$log->evento})",
                     'destinatarios' => [['email' => $correo, 'name' => 'Desarrollo']], 'copias' => [], 'adjuntos' => [],
                     'cuerpo' => '<p>'.e($resumen).'</p><p>Detalle en el CRM: menú Acciones → Notificaciones (registro #'.$log->id.').</p>']);
-                self::enviarCorreo($tmp);
+                self::enviarCorreo($tmp, (bool) ($cfg['siempre'] ?? false));
                 $log->alertado_at = now();
             } catch (\Throwable $e) {
                 Log::error("Alerta a desarrollo por correo ({$correo}) también falló: ".$e->getMessage());

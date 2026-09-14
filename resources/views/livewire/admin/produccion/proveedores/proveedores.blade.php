@@ -37,10 +37,7 @@
                         <label for="estado">Estado:</label>
                         <select id="estado" class="form-control" wire:model="estado">
                             <option value="">Seleccionar</option>
-                            <option value="CONFIRMADO">CONFIRMADO</option>
-                            <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
-                            <option value="NO APLICA">NO APLICA</option>
-                            <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
+                            @foreach ($estados as $e)<option value="{{ $e->id }}">{{ $e->nombre }}</option>@endforeach
                         </select> 
                     </div>
                 @endif
@@ -69,6 +66,7 @@
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Tipo</p> 
                                     <span class="badge badge-sm badge-primary">{{ $proveedor->tipo }}</span>
+                                    <p class="text-xs text-secondary mb-0 mt-1" title="{{ optional($proveedor->estado)->descripcion }}">{{ $proveedor->estado_nombre }}</p>
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">{{ $proveedor->tipo_doc }}</p>

@@ -35,6 +35,9 @@ return [
             'telefonos' => array_values(array_filter(array_map('trim', explode(',', env('CRM_ALERTA_TELEFONOS', ''))))),
             // No repetir la misma alerta (por canal) más de una vez en este lapso
             'cada_minutos' => (int) env('CRM_ALERTA_CADA_MINUTOS', 60),
+            // true = la alerta a desarrollo sale por SMTP real aunque MAIL_MAILER=log (útil en pruebas: los
+            // correos a usuarios se simulan, pero si algo falla sí nos enteramos)
+            'siempre' => filter_var(env('CRM_ALERTA_SIEMPRE', false), FILTER_VALIDATE_BOOLEAN),
         ],
     ],
 ];

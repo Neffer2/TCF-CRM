@@ -253,10 +253,7 @@
                 <label for="estado">Estado<span class="text-danger">*</span>: </label>
                 <select id="estado" class="form-control" wire:model="estado">
                     <option value="">Seleccionar</option>
-                    <option value="CONFIRMADO">CONFIRMADO</option>
-                    <option value="CONFIRMADO - COMUNICADO">CONFIRMADO - COMUNICADO</option>
-                    <option value="NO APLICA">NO APLICA</option>
-                    <option value="SE CANCELO ACUERDO">SE CANCELO ACUERDO</option>
+                    @foreach ($estados as $e)<option value="{{ $e->id }}">{{ $e->nombre }}</option>@endforeach
                 </select>
                 @error('estado')
                     <div id="estado" class="text-invalid">

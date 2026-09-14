@@ -35,7 +35,7 @@ Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11
 
 **Base de datos**
 - Fase 6 de reestructuración: normalización, llaves e integridad, esquema documentado (`docs/`), migraciones nuevas (`roles_controller_lider_comercial`, `notificaciones_log_y_estado_pagado`, `tipo_orden_nomina`, `actividad_log`, `documentar_esquema`).
-- `tfc_crm.sql` (raíz del repo) es un dump **ya migrado y con los usuarios de prueba**: basta importarlo (ver A3).
+- `tfc_crm.sql` (raíz del repo) es un dump **ya migrado y con los usuarios de prueba**: basta importarlo (ver A3). Incluye el catálogo de estados de proveedor.
 
 **Visual**
 - Login rediseñado con foto de marca; capa visual Bull coherente y animada en todos los roles (tipografía Manrope, naranja solo en acentos, cabecera con velo carbón). Favicon original intacto.
@@ -371,6 +371,7 @@ La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `tfc_crm
 | `gestion_comercial.comercial_2..4` y `porcentaje_1..4` | tabla `gestion_participantes` (posición 1 = responsable, porcentaje por comercial) |
 | `anticipos.estado_id` apuntando al catálogo de órdenes | catálogo propio `estados_anticipo` (mismos ids + 13 "Rechazo contabilidad") |
 | ítems huérfanos, FKs faltantes, contactos con pbx/web cruzados | limpiados, FKs e índices creados |
+| `proveedores.estado` texto libre | catálogo `estados_proveedor` + `proveedores.estado_id` (FK); el texto viejo en `estado_legacy` |
 
 **Diccionario de datos:** `docs/DICCIONARIO-DATOS.md` describe cada tabla y columna (se regenera con `php artisan tinker docs/generar-diccionario.php`). Además, cada tabla y columna tiene su COMMENT en la base: en phpMyAdmin, TablePlus o DBeaver aparece la descripción al lado del campo.
 
@@ -383,3 +384,4 @@ La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `tfc_crm
 | D.3 | Participantes | Como comercial: cotización con 2 participantes al 60/40 → guarda → reabre | Los porcentajes se conservan; baja a 1 participante → guarda → el segundo desaparece (tabla `gestion_participantes`) |
 | D.4 | Rechazo contable | Como contabilidad rechaza un anticipo de productor | Queda en estado "Rechazo contabilidad" y el productor lo ve en su lista para corregir y reenviar |
 | D.5 | Exports | Cotización PDF/Excel e historial de cambios de un presupuesto | Los proveedores se listan igual que antes |
+| D.6 | Estado de proveedor por catálogo | Admin → Proveedores → Nuevo/Editar → Estado | El select solo ofrece CONFIRMADO, CONFIRMADO - COMUNICADO, NO APLICA y SE CANCELO ACUERDO (tabla `estados_proveedor`); el filtro de la lista usa los mismos valores y cada fila muestra su estado. En la BD `proveedores.estado_id` es llave foránea; el texto viejo quedó en `estado_legacy` |

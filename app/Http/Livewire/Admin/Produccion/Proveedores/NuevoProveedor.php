@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Admin\Produccion\Proveedores;
 use Livewire\Component;
 use App\Models\CategoriaProveedor;
 use App\Models\Proveedor;
+use App\Models\EstadoProveedor;
 
 /**
  * Componente Livewire para crear y editar proveedores
@@ -37,7 +38,8 @@ class NuevoProveedor extends Component
     // INFORMACIÓN ADICIONAL
     public $plazo;                  // Plazo de pago acordado
     public $observaciones;          // Observaciones generales (opcional)
-    public $estado;                 // Estado del proveedor (activo/inactivo)
+    public $estado;                 // Estado del acuerdo (id del catálogo estados_proveedor)
+    public $estados = [];           // Catálogo para el select
     public $nueva_categoria;        // Campo para crear nueva categoría
 
     // COLECCIONES PARA OPCIONES DEL FORMULARIO
@@ -69,6 +71,7 @@ class NuevoProveedor extends Component
 
         $this->getCategorias();
         $this->getCiudades();
+        $this->estados = EstadoProveedor::activos()->get();
         $this->getDepartamentos();
     }
 
@@ -97,7 +100,7 @@ class NuevoProveedor extends Component
         $this->ciudad = $proveedor->ciudad;
         $this->plazo = $proveedor->plazo;
         $this->observaciones = $proveedor->observaciones;
-        $this->estado = $proveedor->estado;
+        $this->estado = $proveedor->estado_id;
     }
 
     // ========== GESTIÓN DE CATEGORÍAS ==========
@@ -173,7 +176,7 @@ class NuevoProveedor extends Component
             'departamento' => 'required|string|max:200',
             'ciudad' => 'required|string|max:200',
             'observaciones' => 'nullable|string|max:1000',
-            'estado' => 'required|string|max:200',
+            'estado' => 'required|integer|exists:estados_proveedor,id',
             'plazo' => 'required|nullable|string|max:200'
         ]);
 
@@ -197,7 +200,7 @@ class NuevoProveedor extends Component
         $proveedor->ciudad = $this->ciudad;
         $proveedor->plazo = $this->plazo;
         $proveedor->observaciones = $this->observaciones;
-        $proveedor->estado = $this->estado;
+        $proveedor->estado_id = (int) $this->estado;
 
         $proveedor->save();
 
@@ -228,7 +231,7 @@ class NuevoProveedor extends Component
             'departamento' => 'required|string|max:200',
             'ciudad' => 'required|string|max:200',
             'observaciones' => 'nullable|string|max:1000',
-            'estado' => 'required|string|max:200',
+            'estado' => 'required|integer|exists:estados_proveedor,id',
             'plazo' => 'nullable|string|max:200'
         ]);
 
@@ -267,7 +270,7 @@ class NuevoProveedor extends Component
         $proveedor->ciudad = $this->ciudad;
         $proveedor->plazo = $this->plazo;
         $proveedor->observaciones = $this->observaciones;
-        $proveedor->estado = $this->estado;
+        $proveedor->estado_id = (int) $this->estado;
         $proveedor->update();
 
         $this->limpiar();
@@ -472,7 +475,7 @@ class NuevoProveedor extends Component
      */
     public function updatedEstado(){
         $this->validate([
-            'estado' => 'required|string|max:200'
+            'estado' => 'required|integer|exists:estados_proveedor,id'
         ]);
     }
 
