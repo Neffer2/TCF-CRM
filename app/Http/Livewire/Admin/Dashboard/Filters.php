@@ -6,115 +6,130 @@ use Livewire\Component;
 use App\Models\Año;
 use App\Models\Mes;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
- * Componente Livewire para gestionar los filtros del dashboard administrativo
+ * Filtros del dashboard de gerencia: año, mes, líder comercial y comercial.
  *
- * Este componente maneja la lógica de filtrado por año, mes y comercial
- * en el dashboard del administrador, emitiendo eventos cuando cambian los filtros
+ * El líder comercial sale de la tabla lider_comercial_user (líder -> comerciales
+ * a su cargo). Al elegir un líder, los indicadores se calculan con la venta y
+ * el presupuesto de todo su equipo y el buscador de comercial se reduce a ese
+ * equipo; al elegir además un comercial, se ve solo ese comercial.
+ *
+ * A los demás componentes se les envía, además de los ids elegidos, la lista
+ * resuelta `comerciales` (ids) con la que deben filtrar: [comercial], los ids
+ * del equipo del líder, o null (todos).
  */
 class Filters extends Component
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Filters Component
-    |--------------------------------------------------------------------------
-    | Este componente Livewire es responsable de gestionar las acciones
-    | de la vista admin/dashboard/filters y coordinar los filtros del dashboard.
-    */
-
-    // Propiedades públicas para los filtros seleccionados
-    public $mes;        // ID del mes seleccionado
-    public $comercial;  // ID del comercial seleccionado
     public $año;        // ID del año seleccionado
-    public $buscarComercial = ''; // Texto del buscador de comercial (filtra la lista mientras se escribe)
+    public $mes;        // ID del mes seleccionado
+    public $lider;      // ID del líder comercial seleccionado
+    public $comercial;  // ID del comercial seleccionado
+    public $buscarComercial = ''; // Texto del buscador de comercial
 
-    // Arrays que almacenan las opciones disponibles para cada filtro
-    public $StdMes = [];        // Lista de meses disponibles según el año seleccionado
-    public $StdComercial = [];  // Lista de comerciales disponibles
-    public $StdAño = [];        // Lista de años disponibles
+    public $StdAño = [];
+    public $StdMes = [];
+    public $StdComercial = [];  // [{id, name}] todos los comerciales (rol 2)
+    public $StdLider = [];      // [{id, name, equipo:[ids]}] líderes con su equipo
 
-    /**
-     * Renderiza la vista del componente
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.admin.dashboard.filters');
     }
 
-    /**
-     * Método que se ejecuta al inicializar el componente
-     *
-     * Carga la lista inicial de años disponibles y ejecuta getFilters()
-     * para inicializar el estado de los filtros
-     */
-    public function mount(){
-        // Obtiene todos los años disponibles de la base de datos
+    public function mount()
+    {
         $this->StdAño = Año::select('id', 'description')->get();
 
         // La lista de comerciales no depende del año: siempre disponible para el buscador
-        $this->StdComercial = User::select('id', 'name')->where('rol', 2)->orderBy('name')->get();
+        $this->StdComercial = User::select('id', 'name')->where('rol', 2)->orderBy('name')->get()
+            ->map(function ($u) { return ['id' => $u->id, 'name' => $u->name]; })->all();
 
-        // Inicializa los filtros dependientes
+        // Líderes comerciales = usuarios que aparecen como lider_id en lider_comercial_user
+        $equipos = DB::table('lider_comercial_user')->select('lider_id', 'comercial_id')->get()->groupBy('lider_id');
+        $this->StdLider = User::select('id', 'name')->whereIn('id', $equipos->keys())->orderBy('name')->get()
+            ->map(function ($u) use ($equipos) {
+                return [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'equipo' => $equipos[$u->id]->pluck('comercial_id')->unique()->values()->all(),
+                ];
+            })->all();
+
         $this->getFilters();
     }
 
-    /**
-     * Listener que se ejecuta cuando cambia el año seleccionado
-     *
-     * Actualiza los filtros dependientes (meses y comerciales) y
-     * emite señales a otros componentes
-     */
-    public function updatedAño(){
-        $this->getFilters();  // Actualiza meses y comerciales disponibles
-        $this->signals();     // Notifica el cambio a otros componentes
-    }
-
-    /**
-     * Listener que se ejecuta cuando cambia el mes seleccionado
-     *
-     * Emite señales a otros componentes del dashboard
-     */
-    public function updatedMes(){
+    public function updatedAño()
+    {
+        $this->getFilters();
         $this->signals();
     }
 
-    /**
-     * Listener que se ejecuta cuando cambia el comercial seleccionado
-     *
-     * Emite señales a otros componentes del dashboard
-     */
-    public function updatedComercial(){
+    public function updatedMes()
+    {
         $this->signals();
     }
 
-    /**
-     * Emite eventos Livewire con los filtros actuales a otros componentes
-     *
-     * Envía la descripción del año (no el ID) junto con el mes y comercial
-     * a los componentes Block1 y Block2 para que actualicen sus datos
-     */
-    // --- Buscador de comercial: filtra la lista mientras se escribe ---
+    /** Al cambiar el líder: si el comercial elegido no es de su equipo, se quita. */
+    public function updatedLider()
+    {
+        $this->lider = $this->lider ?: null;
+        if ($this->comercial && !in_array($this->comercial, $this->equipoActual(), false)) {
+            $this->comercial = null;
+            $this->buscarComercial = '';
+        }
+        $this->asegurarAño();
+        $this->signals();
+    }
+
+    /** Ids del equipo del líder elegido; vacío si no hay líder. */
+    public function equipoActual()
+    {
+        if (!$this->lider) { return []; }
+        $l = collect($this->StdLider)->firstWhere('id', (int) $this->lider);
+        return $l ? $l['equipo'] : [];
+    }
+
+    /** Lista resuelta de comerciales con la que filtran los indicadores (null = todos). */
+    public function comercialesActivos()
+    {
+        if ($this->comercial) { return [(int) $this->comercial]; }
+        if ($this->lider) { return array_map('intval', $this->equipoActual()) ?: [0]; }
+        return null;
+    }
+
+    /** Nombre corto del alcance actual, para títulos ("Equipo de Lady Ortiz"). */
+    public function alcance()
+    {
+        if ($this->comercial) {
+            $c = collect($this->StdComercial)->firstWhere('id', (int) $this->comercial);
+            return $c ? $c['name'] : '';
+        }
+        if ($this->lider) {
+            $l = collect($this->StdLider)->firstWhere('id', (int) $this->lider);
+            return $l ? 'Equipo de '.$l['name'] : '';
+        }
+        return '';
+    }
+
+    // --- Buscador de comercial: filtra la lista mientras se escribe (y por equipo del líder) ---
     public function getComercialesFiltradosProperty()
     {
         $texto = mb_strtolower(trim($this->buscarComercial));
-        return collect($this->StdComercial)->filter(function ($c) use ($texto) {
-            return $texto === '' || mb_strpos(mb_strtolower($c['name'] ?? $c->name), $texto) !== false;
+        $equipo = $this->lider ? $this->equipoActual() : null;
+        return collect($this->StdComercial)->filter(function ($c) use ($texto, $equipo) {
+            if ($equipo !== null && !in_array($c['id'], $equipo, false)) { return false; }
+            return $texto === '' || mb_strpos(mb_strtolower($c['name']), $texto) !== false;
         })->values();
     }
 
     public function elegirComercial($id = null)
     {
         $this->comercial = $id ?: null;
-        // Sin año elegido, el filtro por comercial aplica sobre el año más reciente
-        if (!$this->año) {
-            $ultimo = Año::orderBy('created_at', 'desc')->first();
-            if ($ultimo) { $this->año = $ultimo->id; $this->getFilters(); }
-        }
-        $nombre = collect($this->StdComercial)->first(function ($c) use ($id) { return ($c['id'] ?? $c->id) == $id; });
-        $this->buscarComercial = $nombre ? ($nombre['name'] ?? $nombre->name) : '';
+        $this->asegurarAño();
+        $nombre = collect($this->StdComercial)->firstWhere('id', (int) $id);
+        $this->buscarComercial = $nombre ? $nombre['name'] : '';
         $this->signals();
     }
 
@@ -123,54 +138,60 @@ class Filters extends Component
         $this->elegirComercial(null);
     }
 
-    public function signals (){
-        // Solo emite señales si hay un año seleccionado
-        if ($this->año){
-            // Obtiene la descripción del año seleccionado (no el ID)
-            $año_desc = Año::select('description')->where('id', $this->año)->first();
-
-            // Emite eventos a los componentes Block1 y Block2 con los filtros actuales
-            // Nota: el año se envía como descripción, mes y comercial como IDs
-            $this->emit('Block1', [
-                'año' => $año_desc->description,
-                'mes' => $this->mes,
-                'comercial' => $this->comercial
-            ]);
-            $this->emit('Block2', [
-                'año' => $año_desc->description,
-                'mes' => $this->mes,
-                'comercial' => $this->comercial
-            ]);
-            $this->emit('Tendencia', [
-                'año_id' => $this->año,
-                'comercial' => $this->comercial
-            ]);
-            $this->emit('Ranking', [
-                'año_id' => $this->año,
-                'mes' => $this->mes,
-                'comercial' => $this->comercial
-            ]);
+    /** Sin año elegido, los filtros de líder/comercial aplican sobre el año más reciente. */
+    private function asegurarAño()
+    {
+        if (!$this->año) {
+            $ultimo = Año::orderBy('created_at', 'desc')->first();
+            if ($ultimo) { $this->año = $ultimo->id; $this->getFilters(); }
         }
     }
 
-    /**
-     * Actualiza las opciones disponibles de los filtros dependientes
-     *
-     * Si hay un año seleccionado, carga los meses de ese año y la lista de comerciales.
-     * Si no hay año seleccionado, limpia los filtros dependientes y resetea los componentes.
-     */
-    public function getFilters (){
-        if ($this->año){
-            // Si hay año seleccionado, carga los meses correspondientes a ese año
+    public function signals()
+    {
+        if (!$this->año) { return; }
+
+        $año_desc = Año::select('description')->where('id', $this->año)->first();
+        $comerciales = $this->comercialesActivos();
+        $alcance = $this->alcance();
+
+        $this->emit('Block1', [
+            'año' => $año_desc->description,
+            'mes' => $this->mes,
+            'comercial' => $this->comercial,
+            'comerciales' => $comerciales,
+        ]);
+        $this->emit('Block2', [
+            'año' => $año_desc->description,
+            'mes' => $this->mes,
+            'comercial' => $this->comercial,
+            'comerciales' => $comerciales,
+        ]);
+        $this->emit('Tendencia', [
+            'año_id' => $this->año,
+            'comercial' => $this->comercial,
+            'comerciales' => $comerciales,
+            'alcance' => $alcance,
+        ]);
+        $this->emit('Ranking', [
+            'año_id' => $this->año,
+            'mes' => $this->mes,
+            'comercial' => $this->comercial,
+            'lider' => $this->lider,
+            'comerciales' => $comerciales,
+            'alcance' => $alcance,
+        ]);
+    }
+
+    public function getFilters()
+    {
+        if ($this->año) {
             $this->StdMes = Mes::select('id', 'description')
-                                ->where('ano_id', $this->año)
-                                ->get();
-
+                ->where('ano_id', $this->año)
+                ->orderByRaw('CAST(identifier AS UNSIGNED)')
+                ->get();
         } else {
-            // Si no hay año seleccionado, limpia las opciones dependientes
             $this->StdMes = [];
-
-            // Emite eventos vacíos para resetear los componentes Block1 y Block2
             $this->emit('Block1');
             $this->emit('Block2');
             $this->emit('Tendencia');

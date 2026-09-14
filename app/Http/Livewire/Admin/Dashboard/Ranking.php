@@ -11,16 +11,20 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 /**
- * Ranking de comerciales del periodo: venta facturada (Helisa) frente a su
- * presupuesto y % de cumplimiento. Ordenable por venta o por cumplimiento.
- * Escucha la señal 'Ranking' de Filters.
+ * Ranking del periodo: venta facturada (Helisa) frente al presupuesto y % de
+ * cumplimiento. Tres vistas: comerciales por cumplimiento, comerciales por
+ * venta, y líderes comerciales (la venta y la meta de todo su equipo, según
+ * lider_comercial_user). Escucha la señal 'Ranking' de Filters.
  */
 class Ranking extends Component
 {
     public $año_id;
     public $mes_id;
-    public $comercial;
-    public $orden = 'cumplimiento';   // 'cumplimiento' | 'venta'
+    public $comercial;          // comercial elegido en filtros (se resalta)
+    public $lider;              // líder elegido en filtros (se resalta / acota)
+    public $comerciales = null; // ids con los que filtrar (null = todos)
+    public $alcance = '';
+    public $orden = 'cumplimiento';   // 'cumplimiento' | 'venta' | 'lider'
     public $filas = [];
     public $periodo = '';
 
@@ -39,18 +43,24 @@ class Ranking extends Component
             $this->año_id = $filtros['año_id'] ?? $this->año_id;
             $this->mes_id = $filtros['mes'] ?: null;
             $this->comercial = $filtros['comercial'] ?: null;
+            $this->lider = $filtros['lider'] ?: null;
+            $this->comerciales = $filtros['comerciales'] ?? null;
+            $this->alcance = $filtros['alcance'] ?? '';
         } else {
             $año = Año::orderBy('created_at', 'desc')->first();
             $this->año_id = $año ? $año->id : null;
             $this->mes_id = null;
             $this->comercial = null;
+            $this->lider = null;
+            $this->comerciales = null;
+            $this->alcance = '';
         }
         $this->calcular();
     }
 
     public function ordenar($modo)
     {
-        $this->orden = $modo === 'venta' ? 'venta' : 'cumplimiento';
+        $this->orden = in_array($modo, ['venta', 'lider'], true) ? $modo : 'cumplimiento';
         $this->calcular();
     }
 
@@ -85,8 +95,19 @@ class Ranking extends Component
             ->groupBy('id_user')
             ->pluck('meta', 'id_user');
 
+        $this->filas = $this->orden === 'lider'
+            ? $this->filasLideres($ventas, $metas)
+            : $this->filasComerciales($ventas, $metas);
+    }
+
+    /** Filas de comerciales (acotadas a la lista de filtros si la hay). */
+    private function filasComerciales($ventas, $metas)
+    {
         $ids = $ventas->keys()->merge($metas->keys())->unique()->filter()->values();
-        if ($ids->isEmpty()) { return; }
+        if (is_array($this->comerciales)) {
+            $ids = $ids->intersect($this->comerciales)->values();
+        }
+        if ($ids->isEmpty()) { return []; }
         $usuarios = User::whereIn('id', $ids)->where('rol', '!=', 4)->get()->keyBy('id');
 
         $filas = collect();
@@ -100,9 +121,11 @@ class Ranking extends Component
                 'id' => (int) $id,
                 'nombre' => $u->name,
                 'avatar' => $u->avatar ?: null,
+                'equipo' => null,
                 'venta' => $venta,
                 'presupuesto' => $meta,
                 'cumplimiento' => $meta > 0 ? round($venta / $meta * 100, 1) : null,
+                'seleccionada' => $this->comercial == $id,
             ]);
         }
 
@@ -110,13 +133,48 @@ class Ranking extends Component
             ? $filas->sortByDesc('venta')
             : $filas->sortByDesc(function ($f) { return $f['cumplimiento'] ?? -1; });
 
-        $filas = $filas->take(8)->values();
-        $max = $this->orden === 'venta'
+        return $this->pesar($filas->take(8)->values());
+    }
+
+    /** Filas de líderes: suma de la venta y la meta de los comerciales a su cargo. */
+    private function filasLideres($ventas, $metas)
+    {
+        $equipos = DB::table('lider_comercial_user')->select('lider_id', 'comercial_id')->get()->groupBy('lider_id');
+        if ($equipos->isEmpty()) { return []; }
+        $lideres = User::whereIn('id', $equipos->keys())->get()->keyBy('id');
+
+        $filas = collect();
+        foreach ($equipos as $liderId => $rel) {
+            $l = $lideres->get($liderId);
+            if (!$l) { continue; }
+            $equipo = $rel->pluck('comercial_id')->unique();
+            $venta = (float) $equipo->sum(function ($id) use ($ventas) { return (float) ($ventas[$id] ?? 0); });
+            $meta = (float) $equipo->sum(function ($id) use ($metas) { return (float) ($metas[$id] ?? 0); });
+            $filas->push([
+                'id' => (int) $liderId,
+                'nombre' => $l->name,
+                'avatar' => $l->avatar ?: null,
+                'equipo' => $equipo->count(),
+                'venta' => $venta,
+                'presupuesto' => $meta,
+                'cumplimiento' => $meta > 0 ? round($venta / $meta * 100, 1) : null,
+                'seleccionada' => $this->lider == $liderId,
+            ]);
+        }
+
+        return $this->pesar($filas->sortByDesc(function ($f) { return $f['cumplimiento'] ?? -1; })->values());
+    }
+
+    /** Ancho de la barra de cada fila, relativo al máximo de la lista. */
+    private function pesar($filas)
+    {
+        $porVenta = $this->orden === 'venta';
+        $max = $porVenta
             ? (float) ($filas->max('venta') ?: 1)
             : (float) max(100, $filas->max('cumplimiento') ?: 1);
 
-        $this->filas = $filas->map(function ($f) use ($max) {
-            $base = $this->orden === 'venta' ? $f['venta'] : ($f['cumplimiento'] ?? 0);
+        return $filas->map(function ($f) use ($max, $porVenta) {
+            $base = $porVenta ? $f['venta'] : ($f['cumplimiento'] ?? 0);
             $f['peso'] = round(max(0, $base) / $max * 100, 1);
             return $f;
         })->all();

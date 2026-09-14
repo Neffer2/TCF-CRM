@@ -17,6 +17,8 @@ class Tendencia extends Component
 {
     public $año_id;
     public $comercial;
+    public $comerciales = null; // ids con los que filtrar (un comercial o el equipo de un líder); null = todos
+    public $alcance = '';
     public $labels = [];
     public $venta = [];
     public $presupuesto = [];
@@ -36,10 +38,14 @@ class Tendencia extends Component
         if ($filtros) {
             $this->año_id = $filtros['año_id'] ?? $this->año_id;
             $this->comercial = $filtros['comercial'] ?? null;
+            $this->comerciales = $filtros['comerciales'] ?? ($this->comercial ? [(int) $this->comercial] : null);
+            $this->alcance = $filtros['alcance'] ?? '';
         } else {
             $año = Año::orderBy('created_at', 'desc')->first();
             $this->año_id = $año ? $año->id : null;
             $this->comercial = null;
+            $this->comerciales = null;
+            $this->alcance = '';
         }
         $this->calcular();
     }
@@ -61,14 +67,14 @@ class Tendencia extends Component
         foreach ($meses as $mes) {
             // Misma definición que Block1::getVentaFacturada (Helisa.base_factura por fecha)
             $venta = Helisa::where('año', $año->description)
-                ->when($this->comercial, function ($q) { $q->where('comercial', $this->comercial); })
+                ->when(is_array($this->comerciales), function ($q) { $q->whereIn('comercial', $this->comerciales); })
                 ->whereBetween('fecha', [$mes->f_inicio, $mes->f_fin])
                 ->sum('base_factura');
 
             // Misma definición que Block1::getPresupuesto (presupuestos.valor por mes)
             $presupuesto = Presupuesto::where('ano_id', $año->id)
                 ->where('mes_id', $mes->id)
-                ->when($this->comercial, function ($q) { $q->where('id_user', $this->comercial); })
+                ->when(is_array($this->comerciales), function ($q) { $q->whereIn('id_user', $this->comerciales); })
                 ->sum('valor');
 
             $this->labels[] = mb_substr($mes->description, 0, 3);

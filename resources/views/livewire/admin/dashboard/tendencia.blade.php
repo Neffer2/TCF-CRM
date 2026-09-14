@@ -12,7 +12,7 @@
 <div class="card crm-chart">
     <div class="crm-chart__head">
         <div>
-            <p class="crm-kpi__label">Tendencia mensual · {{ $añoDescripcion }}</p>
+            <p class="crm-kpi__label">Tendencia mensual · {{ $añoDescripcion }}{{ $alcance ? ' · '.$alcance : '' }}</p>
             <h2>Venta facturada frente al presupuesto</h2>
         </div>
         <div class="crm-chart__legend">

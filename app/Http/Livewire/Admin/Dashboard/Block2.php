@@ -90,23 +90,31 @@ class Block2 extends Component
         // Almacena los filtros actuales para uso en la vista
         $this->año = $filters['año'];
         $this->mes = $filters['mes'];
-        $this->comercial = $filters['comercial'];
+        $this->comercial = $filters['comercial'] ?? null;
 
         // Obtiene los objetos de mes y año basados en los filtros
         $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
 
+        // Lista de comerciales con la que se filtra: un comercial, el equipo de
+        // un líder comercial (Filters la resuelve) o null = todos.
+        if (isset($filters['comerciales']) && is_array($filters['comerciales'])) {
+            $ids = array_map('intval', $filters['comerciales']);
+        } else {
+            $ids = !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
+        }
+
         // Calcula cada tipo de venta según su estado en Base_comercial
-        $this->xfacturar = $this->getXfacturar($filters['comercial'], $mes, $año);
-        $this->ventaejecucion = $this->getVentaEjecucion($filters['comercial'], $mes, $año);
-        $this->venta = $this->getVenta($filters['comercial'], $mes, $año);
-        $this->ventatotal = $this->getVentaTotal($filters['comercial'], $mes, $año);
+        $this->xfacturar = $this->getXfacturar($ids, $mes, $año);
+        $this->ventaejecucion = $this->getVentaEjecucion($ids, $mes, $año);
+        $this->venta = $this->getVenta($ids, $mes, $año);
+        $this->ventatotal = $this->getVentaTotal($ids, $mes, $año);
 
         // Calcula las sumatorias de diferentes combinaciones de ventas
-        $this->getSumVentas($filters['comercial'], $mes, $año);
+        $this->getSumVentas($ids, $mes, $año);
 
         // Calcula los porcentajes de cumplimiento vs presupuesto
-        $this->getPers($filters['comercial'], $mes, $año);
+        $this->getPers($ids, $mes, $año);
     }
 
     /**
@@ -153,10 +161,7 @@ class Block2 extends Component
         // Estado de EJECUCIONXFACTURAR = 3
         array_push($filters_array, ['id_estado', 3]);
 
-        // Agrega filtro por comercial si existe
-        if ($comercial_id){
-            array_push($filters_array, ['id_user', $comercial_id]);
-        }
+        // El filtro por comerciales ($comercial_id es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Configura el rango de fechas según si hay mes específico
         if ($mes){
@@ -172,6 +177,7 @@ class Block2 extends Component
 
         // Ejecuta la consulta y suma los valores de proyectos
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
+                        ->when(is_array($comercial_id), function ($q) use ($comercial_id) { $q->whereIn('id_user', $comercial_id); })
                         ->whereBetween('fecha', $date_filters_array)
                         ->sum('valor_proyecto');
 
@@ -196,10 +202,7 @@ class Block2 extends Component
         // Estado de VENTAEJECUCION = 7
         array_push($filters_array, ['id_estado', 7]);
 
-        // Agrega filtro por comercial si existe
-        if ($comercial_id){
-            array_push($filters_array, ['id_user', $comercial_id]);
-        }
+        // El filtro por comerciales ($comercial_id es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Configura el rango de fechas según si hay mes específico
         if ($mes){
@@ -215,6 +218,7 @@ class Block2 extends Component
 
         // Ejecuta la consulta y suma los valores de proyectos
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
+                        ->when(is_array($comercial_id), function ($q) use ($comercial_id) { $q->whereIn('id_user', $comercial_id); })
                         ->whereBetween('fecha', $date_filters_array)
                         ->sum('valor_proyecto');
 
@@ -239,10 +243,7 @@ class Block2 extends Component
         // Estado de VENTA = 6
         array_push($filters_array, ['id_estado', 6]);
 
-        // Agrega filtro por comercial si existe
-        if ($comercial_id){
-            array_push($filters_array, ['id_user', $comercial_id]);
-        }
+        // El filtro por comerciales ($comercial_id es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Configura el rango de fechas según si hay mes específico
         if ($mes){
@@ -258,6 +259,7 @@ class Block2 extends Component
 
         // Ejecuta la consulta y suma los valores de proyectos
         $Base_results = Base_comercial::select('valor_proyecto')->where($filters_array)
+                        ->when(is_array($comercial_id), function ($q) use ($comercial_id) { $q->whereIn('id_user', $comercial_id); })
                         ->whereBetween('fecha', $date_filters_array)
                         ->sum('valor_proyecto');
 
@@ -295,15 +297,13 @@ class Block2 extends Component
             array_push($date_filters_array, [$primer_mes->f_inicio, $ultimo_mes->f_fin]);
         }
 
-        // Agrega filtro por comercial si existe
-        if ($comercial_id){
-            array_push($filters_array, ['comercial', $comercial_id]);
-        }
+        // El filtro por comerciales ($comercial_id es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Obtiene la suma de ventas facturadas desde Helisa
         $this->venta_facturada = 0;
         $helisa_results = Helisa::select('base_factura')
                     ->where($filters_array)
+                    ->when(is_array($comercial_id), function ($q) use ($comercial_id) { $q->whereIn('comercial', $comercial_id); })
                     ->whereBetween('fecha', $date_filters_array)
                     ->sum('base_factura');
 
@@ -353,14 +353,12 @@ class Block2 extends Component
             array_push($filters_array, ['mes_id', $mes->id]);
         }
 
-        // Agrega filtro por comercial si existe
-        if ($comercial_id){
-            array_push($filters_array, ['id_user', $comercial_id]);
-        }
+        // El filtro por comerciales ($comercial_id es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Obtiene la suma total del presupuesto según los filtros
         $presupuesto = Presupuesto::select('id', 'valor')
                                     ->where($filters_array)
+                                    ->when(is_array($comercial_id), function ($q) use ($comercial_id) { $q->whereIn('id_user', $comercial_id); })
                                     ->sum('valor');
 
         // Calcula porcentajes evitando división por cero

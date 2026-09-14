@@ -86,17 +86,42 @@ class Block1 extends Component
         $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
 
+        // Lista de comerciales con la que se filtra: un comercial, el equipo de
+        // un líder comercial (Filters la resuelve) o null = todos.
+        $ids = $this->listaComerciales($filters);
+
         // Ejecuta todos los métodos para calcular las métricas del dashboard
-        $this->getVentaFacturada($año->description, $mes, $filters['comercial'], $año->id);
-        $this->getVentaConsolidada($año->id, $año->description, $mes, $filters['comercial']);
-        $this->getPresupuesto($mes, $filters['comercial'], $año->id);
-        $this->getPresupuestoAcumulado($año->id, $mes, $filters['comercial']);
+        $this->getVentaFacturada($año->description, $mes, $ids, $año->id);
+        $this->getVentaConsolidada($año->id, $año->description, $mes, $ids);
+        $this->getPresupuesto($mes, $ids, $año->id);
+        $this->getPresupuestoAcumulado($año->id, $mes, $ids);
 
         // Actualiza los porcentajes de cumplimiento
         $this->updateCumpli_venta_men();
         $this->updateCumpli_acum_venta_men();
         $this->updateCumpli_acum_venta_men(); // Nota: Esta línea parece duplicada
         $this->updatePresto_x_cumplir();
+    }
+
+    /**
+     * Resuelve la lista de ids de comerciales a partir de los filtros.
+     * `comerciales` (lista ya resuelta por Filters) tiene prioridad; si solo
+     * viene `comercial` se usa como lista de uno; null = sin filtro.
+     */
+    private function listaComerciales($filters)
+    {
+        if (isset($filters['comerciales']) && is_array($filters['comerciales'])) {
+            return array_map('intval', $filters['comerciales']);
+        }
+        return !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
+    }
+
+    /** Fragmento SQL " AND col IN (...)" para las consultas crudas; vacío si no hay filtro. */
+    private function sqlIn($ids, $columna)
+    {
+        if (!is_array($ids)) { return ''; }
+        $lista = implode(',', array_map('intval', $ids)) ?: '0';
+        return " AND {$columna} IN ({$lista})";
     }
 
     /**
@@ -170,13 +195,11 @@ class Block1 extends Component
             array_push($date_filters_array, [$primerMes->f_inicio, $this->latest_month->f_fin]);
         }
 
-        // Agrega filtro por comercial si existe
-        if ($comercial){
-            array_push($filters_array, ['comercial', $comercial]);
-        }
+        // El filtro por comerciales ($comercial es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Ejecuta la consulta con todos los filtros aplicados
         $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
+                    ->when(is_array($comercial), function ($q) use ($comercial) { $q->whereIn('comercial', $comercial); })
                     ->where($filters_array)
                     ->whereBetween('fecha', $date_filters_array)
                     ->get();
@@ -212,21 +235,20 @@ class Block1 extends Component
             array_push($filters_array, ['año', $año_desc]);
         }
 
-        // Agrega filtro por comercial si existe
-        if ($comercial){
-            array_push($filters_array, ['comercial', $comercial]);
-        }
+        // El filtro por comerciales ($comercial es una lista de ids o null) se aplica con whereIn en la consulta
 
         // Configura el rango de fechas según si hay mes específico
         if ($mes){
             // Si hay mes específico, consolida desde enero hasta ese mes
             $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
+                    ->when(is_array($comercial), function ($q) use ($comercial) { $q->whereIn('comercial', $comercial); })
                         ->where($filters_array)
                         ->whereBetween('fecha', [$first_month->f_inicio, $mes->f_fin])
                         ->get();
         }else {
             // Si no hay mes, consolida todo el año
             $helisa_results = Helisa::select('id', 'concepto', 'base_factura')
+                    ->when(is_array($comercial), function ($q) use ($comercial) { $q->whereIn('comercial', $comercial); })
                         ->where($filters_array)
                         ->whereBetween('fecha', [$first_month->f_inicio, $last_month->f_fin])
                         ->get();
@@ -254,10 +276,7 @@ class Block1 extends Component
             array_push($filters_array, ['ano_id', $año]);
         }
 
-        // Agrega filtro por comercial si existe
-        if ($comercial){
-            array_push($filters_array, ['id_user', $comercial]);
-        }
+        // El filtro por comerciales ($comercial es una lista de ids o null) se aplica con whereIn / IN
 
         // Agrega filtro por mes si existe
         if ($mes){
@@ -269,12 +288,13 @@ class Block1 extends Component
         // comercial) comparaba venta de enero-a-hoy contra el presupuesto de
         // los 12 meses y subestimaba el cumplimiento sistematicamente.
         if (is_null($mes)){
-            $sqlComercial = ($comercial != "") ? " AND presupuestos.id_user = ".((int) $comercial) : "";
+            $sqlComercial = $this->sqlIn($comercial, 'presupuestos.id_user');
             $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año".$sqlComercial." AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
         }else {
             // Para casos normales, usa el query builder de Eloquent
             $presupuestos = Presupuesto::select('id', 'valor')
                                 ->where($filters_array)
+                                ->when(is_array($comercial), function ($q) use ($comercial) { $q->whereIn('id_user', $comercial); })
                                 ->get();
         }
 
@@ -294,24 +314,15 @@ class Block1 extends Component
      * @param mixed $general Parámetro adicional (no utilizado actualmente)
      */
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial, $general = null){
-        // Si hay mes específico, acumula desde enero hasta ese mes
+        // $comercial es una lista de ids (o null = todos); se aplica como IN (...)
+        $año_id = (int) $año_id;
+        $sqlComercial = $this->sqlIn($comercial, 'presupuestos.id_user');
         if ($mes) {
-            if ($comercial){
-                // Con filtro de comercial específico
-                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.id_user = $comercial AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
-            }else {
-                // Sin filtro de comercial (todos los comerciales)
-                $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND $mes->identifier"));
-            }
+            // Si hay mes específico, acumula desde enero hasta ese mes
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año_id".$sqlComercial." AND presupuestos.mes_id = meses.id AND CAST(meses.identifier AS UNSIGNED) BETWEEN 1 AND ".((int) $mes->identifier)));
         }else {
             // Si no hay mes, toma todo el año
-            if ($comercial){
-                // Con filtro de comercial específico
-                $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE id_user = $comercial AND ano_id = $año_id"));
-            }else {
-                // Sin filtro de comercial (todos los comerciales)
-                $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE ano_id = $año_id"));
-            }
+            $presupuestos = DB::select(DB::raw("SELECT valor FROM presupuestos WHERE presupuestos.ano_id = $año_id".$sqlComercial));
         }
 
         // Suma todos los valores de presupuesto acumulados

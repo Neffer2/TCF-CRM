@@ -193,6 +193,18 @@ Ejecuta la cadena completa con estos usuarios en orden:
 | 8.3 | Listas de contabilidad/tesorería | `prueba.contabilidad` → anticipos (flujo viejo) → pagina y filtra varias veces | No crashea y los filtros se acumulan (año + centro + productor a la vez) |
 | 8.4 | Excel = pantalla | Comercial → un presupuesto → compara el margen en pantalla vs el del Excel exportado | Mismo número |
 
+## B8b. Dashboard de gerencia — filtros por líder y comercial
+
+Los líderes comerciales salen de la tabla `lider_comercial_user` (líder → comerciales a su cargo). En el dump de producción hay 3: Lady Ortiz (4 comerciales), Leonardo Guarin (5) y Paula Garnica (7).
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8b.1 | Filtro por líder | `prueba.gerencia` → Dashboard → **Líder comercial: Lady Ortiz** (sin elegir año) | El año pasa solo al más reciente; todos los KPI, la gráfica y el ranking dicen "Equipo de Lady Ortiz"; la venta consolidada del equipo = suma de la de sus 4 comerciales |
+| 8b.2 | Comercial dentro del equipo | Con Lady elegida abre **Comercial** | La lista solo muestra a Alejandra Ortiz, Brayan Moreno, Kristel Rey y Viviana Triana; al elegir una, los KPI son solo de ella |
+| 8b.3 | Cambio de líder limpia comercial | Con Alexandra Niño elegida (equipo de Leonardo) cambia el líder a Lady | El comercial se vacía y el dashboard muestra el equipo de Lady |
+| 8b.4 | Ranking por líder | Ranking → **Por líder** | 3 filas (Leonardo, Lady, Paula) con venta y meta de todo su equipo y % de cumplimiento; el líder filtrado aparece resaltado |
+| 8b.5 | Sin líder | Líder comercial: **Todos los equipos** | Vuelven los totales generales y el buscador lista a todos los comerciales |
+
 ## B9. Regresión general (nada se rompió)
 
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.
