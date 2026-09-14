@@ -1,5 +1,4 @@
 @php
-    $filtros = ['año' => $año, 'mes' => $mes, 'comercial' => $comercial];
     $pct = function ($v) { return max(0, min(100, (float) $v)); };
 @endphp
 <div class="card crm-panel" style="--i:1">
@@ -24,27 +23,21 @@
             <tbody>
                 <tr style="--i:0">
                     <td>
-                        <a href="{{ route('base-comercial-general', $filtros + ['estado' => 3]) }}" target="_blank" title="Ver el detalle en la base comercial">
-                            <span class="crm-dot" style="--crm-dot: var(--crm-warn)"></span> Ejecución por facturar
-                        </a>
+                        <button type="button" class="crm-estado-btn" wire:click="abrirEstado(3)" title="Ver los proyectos por líder y comercial"><span class="crm-dot" style="--crm-dot: var(--crm-warn)"></span> Ejecución por facturar</button>
                     </td>
                     <td>$<span data-count="{{ round($xfacturar) }}" data-key="xfacturar">{{ number_format($xfacturar, 0, '.', ',') }}</span></td>
                     <td><span class="crm-sum">$<span data-count="{{ round($sum_1) }}" data-key="sum1">{{ number_format($sum_1, 0, '.', ',') }}</span></span></td>
                 </tr>
                 <tr style="--i:1">
                     <td>
-                        <a href="{{ route('base-comercial-general', $filtros + ['estado' => 7]) }}" target="_blank" title="Ver el detalle en la base comercial">
-                            <span class="crm-dot" style="--crm-dot: var(--crm-accent)"></span> Venta en ejecución
-                        </a>
+                        <button type="button" class="crm-estado-btn" wire:click="abrirEstado(7)" title="Ver los proyectos por líder y comercial"><span class="crm-dot" style="--crm-dot: var(--crm-accent)"></span> Venta en ejecución</button>
                     </td>
                     <td>$<span data-count="{{ round($ventaejecucion) }}" data-key="ventaejecucion">{{ number_format($ventaejecucion, 0, '.', ',') }}</span></td>
                     <td><span class="crm-sum">$<span data-count="{{ round($sum_2) }}" data-key="sum2">{{ number_format($sum_2, 0, '.', ',') }}</span></span></td>
                 </tr>
                 <tr style="--i:2">
                     <td>
-                        <a href="{{ route('base-comercial-general', $filtros + ['estado' => 6]) }}" target="_blank" title="Ver el detalle en la base comercial">
-                            <span class="crm-dot" style="--crm-dot: var(--crm-ok)"></span> Venta
-                        </a>
+                        <button type="button" class="crm-estado-btn" wire:click="abrirEstado(6)" title="Ver los proyectos por líder y comercial"><span class="crm-dot" style="--crm-dot: var(--crm-ok)"></span> Venta</button>
                     </td>
                     <td>$<span data-count="{{ round($venta) }}" data-key="venta">{{ number_format($venta, 0, '.', ',') }}</span></td>
                     <td><span class="crm-sum">$<span data-count="{{ round($sum_3) }}" data-key="sum3">{{ number_format($sum_3, 0, '.', ',') }}</span></span></td>

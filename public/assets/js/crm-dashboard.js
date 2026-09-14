@@ -151,6 +151,9 @@
     grafica();
   }
 
+  // Panel a pantalla completa (detalle de estado): bloquea el scroll del fondo mientras está abierto
+  window.addEventListener('crm-modal', function (e) { document.body.classList.toggle('crm-modal-open', !!(e.detail && e.detail.abierto)); });
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', animarTodo); else animarTodo();
 
   // Re-animar tras cada actualización de Livewire (cambio de año / mes / comercial)

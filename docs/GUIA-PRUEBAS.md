@@ -224,6 +224,8 @@ Los líderes comerciales salen de la tabla `lider_comercial_user` (líder → co
 | 8b.3 | Cambio de líder limpia comercial | Con Alexandra Niño elegida (equipo de Leonardo) cambia el líder a Lady | El comercial se vacía y el dashboard muestra el equipo de Lady |
 | 8b.4 | Ranking por líder | Ranking → **Por líder** | 3 filas (Leonardo, Lady, Paula) con venta y meta de todo su equipo y % de cumplimiento; el líder filtrado aparece resaltado |
 | 8b.5 | Sin líder | Líder comercial: **Todos los equipos** | Vuelven los totales generales y el buscador lista a todos los comerciales |
+| 8b.6 | Detalle de un estado | En "Estado de facturación" pulsa **Ejecución por facturar** (o Venta en ejecución / Venta) | Se abre un panel a pantalla completa (no redirige): proyectos del periodo en ese estado agrupados por líder comercial → comercial → proyecto, con totales y barras; los dos primeros líderes vienen abiertos; se cierra con ×, con Esc o pulsando fuera |
+| 8b.7 | Detalle respeta filtros | Elige líder Lady Ortiz y luego abre "Venta en ejecución" | Solo aparece el equipo de Lady; con un comercial elegido, solo ese comercial |
 
 ## B8c. Base comercial general (listado rediseñado)
 

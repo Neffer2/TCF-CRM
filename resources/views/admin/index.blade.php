@@ -32,4 +32,6 @@
             @livewire('admin.dashboard.block2')
             @livewire('admin.dashboard.ranking')
         </div>
+        {{-- Panel a pantalla completa: detalle de un estado de la venta --}}
+        @livewire('admin.dashboard.detalle-estado')
     @endsection

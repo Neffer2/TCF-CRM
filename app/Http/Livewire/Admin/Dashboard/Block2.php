@@ -33,6 +33,7 @@ class Block2 extends Component
     public $año;        // Año seleccionado en los filtros
     public $mes;        // Mes seleccionado en los filtros
     public $comercial;  // Comercial seleccionado en los filtros
+    public $comerciales = null; // Lista de ids del filtro (equipo del líder o comercial); null = todos
 
     // Variables para almacenar sumatorias de diferentes combinaciones de ventas
     public $sum_1 = 0;  // Suma: venta_facturada + xfacturar
@@ -103,6 +104,7 @@ class Block2 extends Component
         } else {
             $ids = !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
         }
+        $this->comerciales = $ids;
 
         // Calcula cada tipo de venta según su estado en Base_comercial
         $this->xfacturar = $this->getXfacturar($ids, $mes, $año);
@@ -123,6 +125,14 @@ class Block2 extends Component
      * @param int $mes ID del mes
      * @return object Objeto del mes solicitado con fechas de inicio y fin
      */
+    /** Abre el panel a pantalla completa con los proyectos de ese estado (líder -> comercial -> proyecto). */
+    public function abrirEstado($estadoId)
+    {
+        $this->emit('abrirEstado', (int) $estadoId, [
+            'año' => $this->año, 'mes' => $this->mes, 'comercial' => $this->comercial, 'comerciales' => $this->comerciales,
+        ]);
+    }
+
     public function getMes ($mes){
         $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')
                   ->where('id', $mes)
