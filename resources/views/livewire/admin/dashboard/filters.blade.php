@@ -21,12 +21,17 @@
     {{-- Líder comercial: filtra todo el dashboard por el equipo del líder (tabla lider_comercial_user) --}}
     <div class="form-group">
         <label for="filtro_lider">Líder comercial</label>
-        <select id="filtro_lider" class="form-control {{ $lider ? 'is-filled' : '' }}" wire:model="lider">
-            <option value="">Todos los equipos</option>
-            @foreach ($StdLider as $l)
-                <option value="{{ $l['id'] }}">{{ $l['name'] }} ({{ count($l['equipo']) }})</option>
-            @endforeach
-        </select>
+        @if ($liderFijo)
+            {{-- Rol Líder comercial: el dashboard es siempre el de su equipo --}}
+            <div id="filtro_lider" class="form-control is-filled crm-filters__fijo">Mi equipo ({{ count($this->equipoActual()) }})</div>
+        @else
+            <select id="filtro_lider" class="form-control {{ $lider ? 'is-filled' : '' }}" wire:model="lider">
+                <option value="">Todos los equipos</option>
+                @foreach ($StdLider as $l)
+                    <option value="{{ $l['id'] }}">{{ $l['name'] }} ({{ count($l['equipo']) }})</option>
+                @endforeach
+            </select>
+        @endif
     </div>
 
     {{-- Comercial: lista desplegable en la que se puede escribir para filtrar; la selección se guarda en $comercial --}}

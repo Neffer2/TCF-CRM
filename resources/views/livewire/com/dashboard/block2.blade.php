@@ -1,152 +1,86 @@
-<div class="card">
-    <div class="card-header pb-0">
-        <div class="row">
-            <div class="col-md-6 text-center">
-                <h6 class="mb-0 font-weight-bolder">ESTADO DE FACTURACI&Oacute;N</h6>
+@php
+    $pct = function ($v) { return max(0, min(100, (float) $v)); };
+@endphp
+<div class="card crm-panel" style="--i:1">
+    <div class="card-header">
+        <div class="crm-panel__head">
+            <div>
+                <p class="crm-kpi__label">Mis ventas por estado</p>
+                <h2>Estado de facturación</h2>
             </div>
-            <div class="col-md-6 text-center">
-                <h6 class="mb-0 font-weight-bolder">SUMATORIA DE VENTAS</h6>
-            </div>
-        </div>                    
+            <span class="crm-kpi__icon"><i class="ni ni-single-copy-04" aria-hidden="true"></i></span>
+        </div>
     </div>
-    <div class="card-body pt-1">
-        <div class="row"> 
-            <div class="col-md-6 text-center d-flex justify-content-center">
-                <div class="">
-                    <div class="p-3">
-                        <div class="d-flex">
-                            <div class="numbers">
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
-                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
-                                        EJECUCIÓN X FACTURAR
-                                    </p>
-                                    <h5 class="font-weight-bolder mb-0">${{ number_format($xfacturar,2,".",",") }}</h5>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 text-center d-flex justify-content-center pb-3">
-                <div class="d-flex align-items-end">
-                    <div class="numbers">
-                        <h5 class="font-weight-bolder mb-0">${{ number_format($sum_1,2,".",",") }}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card-body">
+        <table class="crm-table">
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Valor</th>
+                    <th>Sumatoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="--i:0">
+                    <td>
+                        <span class="crm-concepto">
+                            <span class="crm-dot" style="--crm-dot: var(--crm-warn)"></span> Ejecución por facturar
+                        </span>
+                    </td>
+                    <td>$<span data-count="{{ round($xfacturar) }}" data-key="xfacturar">{{ number_format($xfacturar, 0, '.', ',') }}</span></td>
+                    <td><span class="crm-sum">$<span data-count="{{ round($sum_1) }}" data-key="sum1">{{ number_format($sum_1, 0, '.', ',') }}</span></span></td>
+                </tr>
+                <tr style="--i:1">
+                    <td>
+                        <span class="crm-concepto">
+                            <span class="crm-dot" style="--crm-dot: var(--crm-accent)"></span> Venta en ejecución
+                        </span>
+                    </td>
+                    <td>$<span data-count="{{ round($ventaejecucion) }}" data-key="ventaejecucion">{{ number_format($ventaejecucion, 0, '.', ',') }}</span></td>
+                    <td><span class="crm-sum">$<span data-count="{{ round($sum_2) }}" data-key="sum2">{{ number_format($sum_2, 0, '.', ',') }}</span></span></td>
+                </tr>
+                <tr style="--i:2">
+                    <td>
+                        <span class="crm-concepto">
+                            <span class="crm-dot" style="--crm-dot: var(--crm-ok)"></span> Venta
+                        </span>
+                    </td>
+                    <td>$<span data-count="{{ round($venta) }}" data-key="venta">{{ number_format($venta, 0, '.', ',') }}</span></td>
+                    <td><span class="crm-sum">$<span data-count="{{ round($sum_3) }}" data-key="sum3">{{ number_format($sum_3, 0, '.', ',') }}</span></span></td>
+                </tr>
+                <tr class="is-total" style="--i:3">
+                    <td>Venta total</td>
+                    <td></td>
+                    <td><span class="crm-sum">$<span data-count="{{ round($ventatotal) }}" data-key="ventatotal">{{ number_format($ventatotal, 0, '.', ',') }}</span></span></td>
+                </tr>
+            </tbody>
+        </table>
 
-        <div class="row">
-            <div class="col-md-6 text-center d-flex justify-content-center">
-                <div class="">
-                    <div class="p-3">
-                        <div class="d-flex">
-                            <div class="numbers"> 
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
-                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
-                                        VENTA<br>EJECUCIÓN
-                                    </p>
-                                    <h5 class="font-weight-bolder mb-0">${{ number_format($ventaejecucion,2,".",",") }}</h5>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+        <div class="crm-mix">
+            <h3>Composición del cumplimiento</h3>
+            <p>Porcentaje del presupuesto cubierto al sumar, en orden, lo facturado y cada estado de la venta.</p>
+            <div class="crm-mix__grid">
+                <div class="crm-mix__item" style="--i:0">
+                    <div class="k">VF + EXF</div>
+                    <div class="v"><span data-count="{{ sprintf('%.1f', $per_1) }}" data-decimals="1" data-key="per1">{{ sprintf('%.1f', $per_1) }}</span><small> %</small></div>
+                    <div class="crm-bar"><span data-width="{{ $pct($per_1) }}"></span></div>
+                </div>
+                <div class="crm-mix__item" style="--i:1">
+                    <div class="k">VF + EXF + VE</div>
+                    <div class="v"><span data-count="{{ sprintf('%.1f', $per_2) }}" data-decimals="1" data-key="per2">{{ sprintf('%.1f', $per_2) }}</span><small> %</small></div>
+                    <div class="crm-bar"><span data-width="{{ $pct($per_2) }}"></span></div>
+                </div>
+                <div class="crm-mix__item" style="--i:2">
+                    <div class="k">VF + EXF + VE + V</div>
+                    <div class="v"><span data-count="{{ sprintf('%.1f', $per_3) }}" data-decimals="1" data-key="per3">{{ sprintf('%.1f', $per_3) }}</span><small> %</small></div>
+                    <div class="crm-bar"><span data-width="{{ $pct($per_3) }}"></span></div>
                 </div>
             </div>
-            <div class="col-md-6 text-center d-flex justify-content-center pb-3">
-                <div class="d-flex align-items-end">
-                    <div class="numbers">
-                        <h5 class="font-weight-bolder mb-0">${{ number_format($sum_2,2,".",",") }}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>  
-        <div class="row">
-            <div class="col-md-6 text-center d-flex justify-content-center">
-                <div class="">
-                    <div class="p-3">
-                        <div class="d-flex">
-                            <div class="numbers">
-                                <a href="{{ route('estados', ['año' => $año, 'mes' => $mes, 'comercial' => $comercial]) }}" target="_blank">
-                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">
-                                        VENTA
-                                    </p>
-                                    <h5 class="font-weight-bolder mb-0">${{ number_format($venta,2,".",",") }}</h5>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 text-center d-flex justify-content-center pb-3">
-                <div class="d-flex align-items-end">
-                    <div class="numbers">
-                        <h5 class="font-weight-bolder mb-0">${{ number_format($sum_3,2,".",",") }}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12 text-center d-flex justify-content-center">
-                <div class="">
-                    <div class="p-3">
-                        <div class="d-flex">
-                            <div class="numbers text-aling">
-                                <p class="text-sm mb-0 text-uppercase font-weight-bold">VENTA TOTAL</p>
-                                <h5 class="font-weight-bolder mb-0">${{ number_format($ventatotal,2,".",",") }}</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-        </div>
-
-        <div class="row">
-            <div class="row mb-4">
-                <div class="col-lg-12">
-                    <div class="d-flex flex-column h-100 text-center">
-                        <h6 class="font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
-                            % ESTADO POR FACTURAR + VENTA FACTURADA
-                        </h6>
-                    </div> 
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
-                            VF + EXF
-                        </h6>
-                    </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-gradient text-primary"><span countto="{{ $per_1 }}">{{ sprintf("%.1f", $per_1) }}</span> <span class="text-lg ms-n2">%</span></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
-                            VF + EXF + VE
-                        </h6>
-                    </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-gradient text-primary"><span countto="{{ $per_2 }}">{{ sprintf("%.1f", $per_2) }}</span> <span class="text-lg ms-n2">%</span></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="text-center font-weight-bolder mb-0 mt-4 fadeIn1 fadeInBottom">
-                            VF + EXF +VE + V
-                        </h6>
-                    </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-gradient text-primary"><span countto="{{ $per_3 }}">{{ sprintf("%.1f", $per_3) }}</span> <span class="text-lg ms-n2">%</span></h2>
-                    </div>
-                </div>
+            <div class="crm-legend">
+                <span><b>VF</b> venta facturada</span>
+                <span><b>EXF</b> ejecución por facturar</span>
+                <span><b>VE</b> venta en ejecución</span>
+                <span><b>V</b> venta</span>
             </div>
         </div>
     </div>

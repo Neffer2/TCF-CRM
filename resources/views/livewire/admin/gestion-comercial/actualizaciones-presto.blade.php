@@ -2,7 +2,7 @@
     <div class="card-header p-0 px-3 mt-3">
         <div class="row">
             <div class="col-md-12">
-                @if(Auth::user()->rol == 1)
+                @if(Auth::user()->revisaPresupuestos())
                     <h3 class="mb-0">Actualizaciones</h3>
                     <p class="text-sm mb-0">Actualizaciones por aprobar.</p>
                 @elseif(Auth::user()->rol == 2 || Auth::user()->rol == 5)
@@ -89,7 +89,7 @@
                                 <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                 <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                             </td>
-                            @if (Auth::user()->rol == 1)
+                            @if (Auth::user()->revisaPresupuestos())
                                 <td class="d-flex align-items-start">
                                     <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
                                     <select @if($presupuesto->estado_id == 1 || $presupuesto->actualizado == 1) disabled @endif class="form-control mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">

@@ -138,7 +138,7 @@
                                             </span>
                                         @endif
                                     </a>
-                                @elseif (Auth::user()->rol == 1)
+                                @elseif (Auth::user()->espacioAdmin())
                                     {{-- Botón normal para los demás de rol 1 --}}
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-2" target="_blank" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
                                 @endif

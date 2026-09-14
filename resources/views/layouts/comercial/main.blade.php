@@ -18,6 +18,11 @@
   <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files --> 
   <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css?v=2.0.5') }}" rel="stylesheet" />
+  <!-- Capa visual BULLCRM (tipografía + tema), la misma del espacio de administración -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=11" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
@@ -167,7 +172,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 ps-2 me-sm-4 me-5">
               <li class="breadcrumb-item text-sm"><a class="text-white opacity-8" href="javascript:;">Inicio</a></li>
-              <li class="breadcrumb-item text-sm text-white active" aria-current="page">Base comercial</li>
+              <li class="breadcrumb-item text-sm text-white active" aria-current="page">@yield('titulo', 'Comercial')</li>
             </ol>
             <h6 class="text-white font-weight-bolder ms-2">Comercial</h6>
           </nav>
@@ -368,6 +373,9 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
+    <!-- Animación de cifras, barras y gráfica (misma del dashboard de gerencia) -->
+    <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
+    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=3"></script>
     @livewireScripts
   </body>
 </html>

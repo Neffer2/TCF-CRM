@@ -579,3 +579,19 @@ html.crm-js .crm-rank { opacity: 0; transform: translateY(8px); }
 
 /* Entrada de las filas también en el listado (mismo escalonado que el dashboard) */
 .is-in .crm-table--data tbody tr { animation-duration: .35s; }
+
+/* Filtro fijo (rol Líder comercial): se ve como un select relleno pero no se cambia */
+.crm-filters .crm-filters__fijo { display: flex; align-items: center; background-image: none; cursor: default; }
+/* Tarjetas KPI que son enlaces (dashboard controller) */
+a.crm-kpi { text-decoration: none; color: inherit; }
+a.crm-kpi:hover .crm-kpi__label { color: var(--crm-accent-deep); }
+
+/* Encabezado del dashboard del comercial: avatar + saludo */
+.crm-perfil { display: flex; align-items: center; gap: 16px; }
+.crm-perfil__avatar {
+  position: relative; flex: 0 0 60px; width: 60px; height: 60px; border-radius: 18px; overflow: hidden;
+  display: grid; place-items: center; background: linear-gradient(135deg, #FF6900, #EF5F17); color: #fff;
+  font-size: 24px; font-weight: 800; box-shadow: 0 10px 24px -12px rgba(239, 95, 23, .8);
+}
+.crm-perfil__avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.crm-perfil__avatar b { position: relative; }

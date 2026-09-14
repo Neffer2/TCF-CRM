@@ -8,9 +8,15 @@
             <div class="card mb-4 crm-page-card">
                 <div class="crm-page-head">
                     <div class="crm-page-head__title">
-                        <span class="crm-eyebrow">Gerencia · Comercial</span>
-                        <h1>Cumplimiento del presupuesto comercial</h1>
-                        <p>Venta facturada y consolidada frente al presupuesto. Filtra por año, mes y comercial.</p>
+                        @if (Auth::user()->esLiderComercial())
+                            <span class="crm-eyebrow">Líder comercial · Mi equipo</span>
+                            <h1>Cumplimiento del presupuesto de mi equipo</h1>
+                            <p>Venta facturada y consolidada de tus comerciales frente a su presupuesto. Filtra por año, mes y comercial.</p>
+                        @else
+                            <span class="crm-eyebrow">Gerencia · Comercial</span>
+                            <h1>Cumplimiento del presupuesto comercial</h1>
+                            <p>Venta facturada y consolidada frente al presupuesto. Filtra por año, mes, líder y comercial.</p>
+                        @endif
                     </div>
                     @livewire('admin.dashboard.filters')
                 </div>

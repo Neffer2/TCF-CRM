@@ -41,6 +41,8 @@ class UsuariosPruebaSeeder extends Seeder
             ['prueba.tesoreria@local.test',    'Prueba Tesoreria',    8,  [8]],
             ['prueba.contabilidad@local.test', 'Prueba Contabilidad', 9,  [9]],
             ['prueba.multirol@local.test',     'Prueba MultiRol',     7,  [7, 2]],
+            ['prueba.controller@local.test',   'Prueba Controller',   11, [11]],
+            ['prueba.lidercom@local.test',     'Prueba Lider Comercial', 12, [12]],
         ];
 
         foreach ($usuarios as $i => [$email, $nombre, $rolActivo, $roles]) {
@@ -76,6 +78,22 @@ class UsuariosPruebaSeeder extends Seeder
             $this->command->info("✓ Centros de costo reasignados a prueba.productor: ".$centros->join(', '));
         } else {
             $this->command->warn('No hay centros de costo en estado Aprobado para reasignar (el productor de prueba no podrá crear órdenes).');
+        }
+
+        // Equipo del líder comercial de prueba: el comercial de prueba + dos comerciales reales
+        $lider = User::where('email', 'prueba.lidercom@local.test')->first();
+        $comercialPrueba = User::where('email', 'prueba.comercial@local.test')->first();
+        if ($lider && DB::getSchemaBuilder()->hasTable('lider_comercial_user')) {
+            $equipo = array_filter([optional($comercialPrueba)->id, 11, 132]); // Alexandra Niño, Juan Camilo Rodriguez
+            foreach ($equipo as $comercialId) {
+                if (User::where('id', $comercialId)->exists()) {
+                    DB::table('lider_comercial_user')->updateOrInsert(
+                        ['lider_id' => $lider->id, 'comercial_id' => $comercialId],
+                        ['created_at' => now(), 'updated_at' => now()]
+                    );
+                }
+            }
+            $this->command->info('✓ Equipo de prueba.lidercom: comerciales '.implode(', ', $equipo));
         }
 
         $this->command->line('');

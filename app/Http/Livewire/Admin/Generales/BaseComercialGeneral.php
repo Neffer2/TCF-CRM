@@ -48,6 +48,7 @@ class BaseComercialGeneral extends Component
     public $porEstado = [];   // [id => ['n' => .., 'valor' => ..]]
 
     public $requested_filters;
+    public $equipo = null;   // rol Líder comercial: ids de sus comerciales (null = sin restricción)
 
     protected $columnasOrdenables = [
         'fecha', 'nom_cliente', 'nom_proyecto', 'cod_cc', 'valor_proyecto', 'id_estado', 'fecha_inicio', 'dura_mes',
@@ -59,8 +60,12 @@ class BaseComercialGeneral extends Component
             ->map(function ($a) { return ['id' => $a->id, 'description' => $a->description]; })->all();
         $this->estados = EstadoCuenta::select('id', 'description')->orderBy('id')->get()
             ->map(function ($e) { return ['id' => $e->id, 'description' => $e->description]; })->all();
+        if (auth()->user()->esLiderComercial()) {
+            $this->equipo = auth()->user()->comercialesAsignados()->pluck('users.id')->map('intval')->all() ?: [0];
+        }
         $this->comerciales = User::select('id', 'name')
             ->whereIn('id', Base_comercial::select('id_user')->distinct())
+            ->when(is_array($this->equipo), function ($q) { $q->whereIn('id', $this->equipo); })
             ->orderBy('name')->get()
             ->map(function ($u) { return ['id' => $u->id, 'name' => $u->name]; })->all();
 
@@ -169,6 +174,9 @@ class BaseComercialGeneral extends Component
     private function consulta($conEstado = true)
     {
         $q = Base_comercial::query();
+        if (is_array($this->equipo)) {
+            $q->whereIn('id_user', $this->equipo);
+        }
 
         if ($this->año && !empty($this->meses)) {
             $rango = $this->mes ? collect($this->meses)->firstWhere('id', (int) $this->mes) : null;
@@ -208,7 +216,7 @@ class BaseComercialGeneral extends Component
 
     public function exportar()
     {
-        return Excel::download(new BaseExport(['filtros' => $this->filtrosParaExport()]), 'Reporte Base Comercial.xlsx');
+        return Excel::download(new BaseExport(['filtros' => $this->filtrosParaExport(), 'equipo' => $this->equipo]), 'Reporte Base Comercial.xlsx');
     }
 
     /** Texto del alcance actual para el encabezado ("2026 · Marzo · Lady Ortiz"). */

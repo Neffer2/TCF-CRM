@@ -106,7 +106,7 @@ class UpdateProfile extends Component
         $user->update();
 
         // Redirige según el rol del usuario con mensaje de éxito
-        if (Auth::user()->rol == 1 || Auth::user()->rol == 20){
+        if (in_array(Auth::user()->rol, [1, 20, 11, 12])){
             return redirect()->route('actualizar-perfil-adm')->with('success', '¡Datos actualizados axitosamente!');
         }elseif (Auth::user()->rol == 2) {
             return redirect()->route('actualizar-perfil-com')->with('success', '¡Datos actualizados axitosamente!');

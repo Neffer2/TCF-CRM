@@ -32,6 +32,7 @@ class Filters extends Component
     public $StdMes = [];
     public $StdComercial = [];  // [{id, name}] todos los comerciales (rol 2)
     public $StdLider = [];      // [{id, name, equipo:[ids]}] líderes con su equipo
+    public $liderFijo = false;  // rol Líder comercial: el filtro de líder queda fijo en su propia cuenta
 
     public function render()
     {
@@ -57,7 +58,21 @@ class Filters extends Component
                 ];
             })->all();
 
+        // Líder comercial (rol 12): solo ve su equipo; el filtro de líder no se puede cambiar
+        if (auth()->user()->esLiderComercial()) {
+            $this->lider = auth()->id();
+            $this->liderFijo = true;
+            if (!collect($this->StdLider)->firstWhere('id', $this->lider)) {
+                $this->StdLider[] = ['id' => $this->lider, 'name' => auth()->user()->name, 'equipo' => []];
+            }
+        }
+
         $this->getFilters();
+
+        if ($this->liderFijo) {
+            $this->asegurarAño();
+            $this->signals();
+        }
     }
 
     public function updatedAño()
@@ -74,6 +89,7 @@ class Filters extends Component
     /** Al cambiar el líder: si el comercial elegido no es de su equipo, se quita. */
     public function updatedLider()
     {
+        if ($this->liderFijo) { $this->lider = auth()->id(); }
         $this->lider = $this->lider ?: null;
         if ($this->comercial && !in_array($this->comercial, $this->equipoActual(), false)) {
             $this->comercial = null;

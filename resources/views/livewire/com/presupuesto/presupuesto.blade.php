@@ -1,5 +1,5 @@
 <div x-data="">
-    @if (( $estadoValidator != 2 && $estadoValidator != 4) || Auth::user()->rol == 1)
+    @if (( $estadoValidator != 2 && $estadoValidator != 4) || Auth::user()->espacioAdmin())
         <div class="card card-frame p-3">
             <div class="row justify-content-md-center mb-3">
                 <div class="col-md-3">
@@ -77,28 +77,28 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">IMPREVISTOS</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        <input type="text" wire:model.lazy="imprevistos" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
                                         class="@error('imprevistos') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">ADMINISTRACI&Oacute;N</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        <input type="text" wire:model.lazy="administracion" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
                                         class="@error('administracion') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">FEE AGENCIA</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->rol == 1) disabled @endif
+                                        <input type="text" wire:model.lazy="fee" placeholder="%" @if (Auth::user()->espacioAdmin()) disabled @endif
                                         class="@error('fee') invalid-input @enderror">
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold font-table">TIEMPO</td>
                                     <td class="font-table">
-                                        <input type="text" wire:model.lazy="tiempoFactura" placeholder="" @if (Auth::user()->rol == 1) disabled @endif
+                                        <input type="text" wire:model.lazy="tiempoFactura" placeholder="" @if (Auth::user()->espacioAdmin()) disabled @endif
                                         class="@error('tiempoFactura') invalid-input @enderror">
                                     </td>
                                 </tr>
@@ -113,7 +113,7 @@
                                 <tr>
                                     <td class="font-weight-bold font-table">NOTAS</td>
                                     <td class="font-table">
-                                        <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->rol == 1) disabled @endif></textarea>
+                                        <textarea wire:model.lazy="notas" cols="55" rows="8" @if (Auth::user()->espacioAdmin()) disabled @endif></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -123,7 +123,7 @@
             </div>
 
             {{-- Actualizacion --}}
-            @if (Auth::user()->rol == 1)
+            @if (Auth::user()->espacioAdmin())
                 <div class="row mt-2">
                     <div class="col-md-3">
                         <div class="card">
@@ -137,7 +137,7 @@
                             </div>
                             <div class="card-body p-2">
                                 <div class="form-group">
-                                    <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
+                                    <textarea name="justificacion" @if(Auth::user()->espacioAdmin()) disabled @endif id="justificacion" cols="10" rows="2" class="form-control" wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion')
                                     <small id="justificacion" class="text-danger bold">
                                         {{ $message }}
@@ -160,7 +160,7 @@
                             </div>
                             <div class="card-body p-2">
                                 <div class="form-group">
-                                    <textarea name="justificacion_lider_comercial" @if(Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
+                                    <textarea name="justificacion_lider_comercial" @if(!in_array(Auth::user()->rol, [1, 12]) || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
                                     id="justificacion_lider_comercial" cols="10" rows="2" class="form-control"
                                               wire:model="justificacion_lider_comercial" class="form-control @error('justificacion_lider_comercial') is-invalid @elseif(strlen($justificacion_lider_comercial) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_lider_comercial')
@@ -171,7 +171,7 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                            @if (Auth::user()->rol != 1 || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
+                                            @if (!in_array(Auth::user()->rol, [1, 12]) || ($presupuesto->estado_id != 4 && Auth::user()->comerciales()->exists())) disabled @endif
                                             wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>
@@ -242,7 +242,7 @@
                 </div>
             @endif
 
-            @if (( $justificacion_compras || $justificacion_lider_comercial || $justificacion_gerencia ) && Auth::user()->rol != 1)
+            @if (( $justificacion_compras || $justificacion_lider_comercial || $justificacion_gerencia ) && !Auth::user()->espacioAdmin())
                 <div class="row mt-2">
                     @if ($justificacion_compras)
                         <div class="col-md-4">
@@ -364,7 +364,7 @@
                         <th class="font-weight-bold font-table bg-rentabilidad text-white">RENTABILIDAD</th>
                     @endif
 
-                    @if (Auth::user()->rol != 1)
+                    @if (!Auth::user()->espacioAdmin())
                         <th colspan="3" class="font-weight-bold font-table bg-gradient-primary text-white">ACCIONES</th>
                     @endif
                 </tr>
@@ -378,7 +378,7 @@
                             <td colspan="@if ($rentabilidadView) 16 @else 13 @endif" class="text-center">
                                 {{ $item->descripcion }}
                             </td>
-                            @if (Auth::user()->rol != 1)
+                            @if (!Auth::user()->espacioAdmin())
                                 <td><button wire:click="deleteItem({{ $item->id }})">✖️</button></td>
                                 <td><button wire:click="getDataEdit({{ $item->id }})">📝</button></td>
                             @endif
@@ -423,7 +423,7 @@
                             </tr>
 
                         {{-- ================= CONDICIÓN 2: ROL 1 ESTÁNDAR (Evalúa 'actualizado') ================= --}}
-                        @elseif (Auth::user()->rol == 1)
+                        @elseif (Auth::user()->espacioAdmin())
                             <tr wire:key="item-{{ $item->id }}" data-id="{{ $item->id }}"
                                 class="{{ $item->actualizado > 0 ? 'text-white' : '' }}"
                                 style="background-color: {{ $item->actualizado == 2 ? '#6f42c1' : ($item->actualizado == 1 ? '#ffbb17' : ($item->actualizado == 3 ? '#e65c00' : 'transparent')) }};">
@@ -714,7 +714,7 @@
                             <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="justificacion">JUSTIFICACI&Oacute;N</label>
-                                    <textarea name="justificacion" @if(Auth::user()->rol == 1) disabled @endif id="justificacion" cols="5" rows="2" class="form-control"
+                                    <textarea name="justificacion" @if(Auth::user()->espacioAdmin()) disabled @endif id="justificacion" cols="5" rows="2" class="form-control"
                                               wire:model="justificacion" class="form-control @error('justificacion') is-invalid @elseif(strlen($justificacion) > 0) is-valid @enderror"
                                               @if($presupuesto->cod_cc) placeholder="Explícale a compras tu presupuesto." @else placeholder="Si es necesario, explícale a compras tu presupuesto." @endif></textarea>
                                     @error('justificacion')
@@ -821,8 +821,8 @@
                             </div>
                         </div>
                     </div>
-                @elseif (Auth::user()->rol == 1)
-                    @if ($estadoValidator == 2)
+                @elseif (Auth::user()->espacioAdmin())
+                    @if ($estadoValidator == 2 && Auth::user()->revisaPresupuestos())
                         {{-- CONTROLLER --}}
                         {{-- <div class="col-md-12 p-2">
                             <div class="row gy-0">
@@ -914,7 +914,7 @@
                                 </div>
                             </div>
                         </div> --}}
-                    @elseif ($estadoValidator == 4 )
+                    @elseif ($estadoValidator == 4 && in_array(Auth::user()->rol, [1, 12]))
                         {{-- LIDER COMERCIAL --}}
                         <div class="col-md-12 p-2">
                             <div class="row gy-0">

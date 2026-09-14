@@ -84,7 +84,7 @@
                                 <p class="text-xs font-weight-bold mb-0">Margen Proyecto</p>
                                 <p class="text-xs text-secondary mb-0">$ {{ $presupuesto->margen_proy }} %</p>
                             </td>
-                            @if (Auth::user()->rol == 1)
+                            @if (in_array(Auth::user()->rol, [1, 12]))
                                 <td class="d-flex align-items-start">
                                     <a class="btn bg-gradient-primary m-0 me-1" href="{{ route('presupuesto', $presupuesto->id_gestion) }}">Ver</a>
                                     <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control w-auto mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">

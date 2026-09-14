@@ -15,9 +15,11 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMapping, WithColumnFormatting, WithColumnWidths
 {
     protected $filtros = [];
+    protected $equipo = null; // ids de comerciales (rol Líder comercial); null = todos
 
     function __construct($filtros) {
         $this->filtros = $filtros['filtros'];
+        $this->equipo = $filtros['equipo'] ?? null;
     }
 
     /** 
@@ -25,7 +27,9 @@ class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMappin
     */ 
     public function collection()
     {   
-        $registros_base = Base_comercial::where($this->filtros)->get(); 
+        $registros_base = Base_comercial::where($this->filtros)
+            ->when(is_array($this->equipo), function ($q) { $q->whereIn('id_user', $this->equipo); })
+            ->get();
         return $registros_base;
     }
 

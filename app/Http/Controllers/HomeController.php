@@ -32,6 +32,10 @@ class HomeController extends Controller
             return redirect()->route('dashboard-tesoreria');
         }elseif (Auth::user()->rol == 9){
             return redirect()->route('dashboard-contabilidad');
+        }elseif (Auth::user()->rol == 11){
+            return redirect()->route('dashboard-controller');
+        }elseif (Auth::user()->rol == 12){
+            return redirect()->route('dashboard-lider-comercial');
         }
 
         // Rol 10 "Centinela": cuenta sin dashboard propio cuyo único acceso

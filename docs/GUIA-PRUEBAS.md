@@ -218,6 +218,22 @@ Los líderes comerciales salen de la tabla `lider_comercial_user` (líder → co
 | 8c.7 | Exportar | Con cualquier filtro → **Exportar Excel** | Descarga `Reporte Base Comercial.xlsx` con exactamente las filas filtradas |
 | 8c.8 | Paginación | Cambia "por página" a 50 y ve a la página 2 | El contador "Mostrando X–Y de Z" y las filas coinciden |
 
+## B8d. Roles Controller y Líder comercial (nuevos)
+
+Controller (rol 11) y Líder comercial (rol 12) dejan de ser cuentas Admin. En el dump, la migración `roles_controller_lider_comercial` convierte a Adriana Trujillo, Laura Álvarez y Astrid Morales en Controller, y a Lady Ortiz, Leonardo Guarin y Paula Garnica en Líder comercial (todos conservan Admin como rol secundario en el selector). Usuarios de prueba: `prueba.controller@local.test` y `prueba.lidercom@local.test` (su equipo: prueba.comercial, Alexandra Niño y Juan Camilo Rodríguez).
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8d.1 | Dashboard Controller | Entra como `prueba.controller` | Cae en `/dashboard-controller`: KPIs (cambios por revisar, en validación, aprobados del mes, órdenes en revisión) y tres listas con enlace "Ver" al presupuesto |
+| 8d.2 | Menú Controller | Recorre el menú | Solo: Dashboard, Base comercial general, Helisa general, Presupuestos, Actualizaciones, Consumidos, Reporte de consumidos, Plano Helisa, Actualizar perfil |
+| 8d.3 | Bloqueos Controller | Visita `/validaciones`, `/mi-equpo`, `/ordenes-compra`, `/dashboard-admin` | Redirige a su dashboard en todos |
+| 8d.4 | Presupuesto como Controller | Presupuestos → Ver uno | Ve el presupuesto en modo lectura (parámetros deshabilitados) y la sección de actualización; no puede validar como líder ni gerencia |
+| 8d.5 | Dashboard Líder | Entra como `prueba.lidercom` | `/dashboard-lider-comercial` con el filtro de líder fijo "Mi equipo (3)"; KPIs, gráfica y ranking solo de su equipo; el buscador de comercial solo lista a su equipo |
+| 8d.6 | Menú Líder | Recorre el menú | Solo: Dashboard del equipo, Base comercial del equipo, Helisa general, Validaciones, Presupuestos del equipo, Actualizar perfil |
+| 8d.7 | Base del equipo | Líder → Base comercial del equipo → Exportar | Registros y Excel solo de sus comerciales |
+| 8d.8 | Validación de líder | Líder → Validaciones → un presupuesto en estado 4 de su equipo → Validar / Rechazar | Funciona igual que antes para un admin líder; `/actualizaciones` y `/consumidos` le redirigen |
+| 8d.9 | Admin sigue igual | Entra como `prueba.admin` | Menú completo, dashboard con filtro de líder seleccionable, validaciones y actualizaciones accesibles |
+
 ## B9. Regresión general (nada se rompió)
 
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.

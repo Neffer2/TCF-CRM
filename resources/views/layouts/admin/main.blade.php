@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=10" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=11" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -38,6 +38,12 @@
     </div>
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+      {{-- Menú según el rol activo: Controller y Líder comercial tienen el suyo; Admin/Gerencia el completo --}}
+      @if (Auth::user()->esControl())
+        @include('layouts.admin.menu-controller')
+      @elseif (Auth::user()->esLiderComercial())
+        @include('layouts.admin.menu-lider-comercial')
+      @else
       <ul class="navbar-nav">
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
@@ -201,6 +207,7 @@
           </div>
         </li>
       </ul>
+      @endif
     </div>
   </aside>
   <!-- End Barra lateral -->

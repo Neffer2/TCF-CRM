@@ -32,6 +32,8 @@ class Filters extends Component
         /* Trae la lislta de años */
             $this->StdAño = Año::select('id', 'description')->get();
         /* --- */
+        // El selector arranca en el año más reciente, que es el que muestran los bloques por defecto
+        $this->año = Año::orderBy('created_at', 'desc')->value('id');
         $this->getFilters();
     }
 
@@ -60,6 +62,8 @@ class Filters extends Component
             // $this->emit('Graphs', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => $this->comercial]);
             $this->emit('Block1', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id(), 'cuenta' => $this->cuenta]);
             $this->emit('Block2', ['año' => $año_desc->description, 'mes' => $this->mes, 'comercial' => Auth::id(), 'cuenta' => $this->cuenta]);
+            // Gráfica mensual (componente compartido con gerencia), siempre acotada a este comercial
+            $this->emit('Tendencia', ['año_id' => $this->año, 'comerciales' => [Auth::id()], 'alcance' => '']);
         } 
     }
 
@@ -77,6 +81,7 @@ class Filters extends Component
             // Block1 refresh
             $this->emit('Block1');
             $this->emit('Block2');
+            $this->emit('Tendencia');
         }
     } 
 }

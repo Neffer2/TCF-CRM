@@ -63,9 +63,9 @@ class ActualizacionesPresto extends Component
         $admin = Auth::user()->can('gerente-comercial');
         
         // Para rol 1: ajustar según si es gerencia o revisión líder
-        if ($this->rol == 1 && !$admin){
+        if (in_array($this->rol, [1, 11]) && !$admin){
             $filtros[] = ['estado_id', 4];
-        } else if($this->rol == 1 && $admin){
+        } else if(in_array($this->rol, [1, 11]) && $admin){
             $filtros[] = ['estado_id', 5];
         }
 
@@ -92,7 +92,7 @@ class ActualizacionesPresto extends Component
                 ->orderBy('id', $this->fecha)
                 ->paginate(15);
 
-        } elseif ($this->rol == 1){
+        } elseif (in_array($this->rol, [1, 11])){
             // Rol 1 (Administrador / Líder)
             $query = PresupuestoProyecto::where($filtros);
 

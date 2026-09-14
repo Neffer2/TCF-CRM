@@ -18,6 +18,7 @@ class Tendencia extends Component
     public $año_id;
     public $comercial;
     public $comerciales = null; // ids con los que filtrar (un comercial o el equipo de un líder); null = todos
+    public $comercialesFijos = null; // dashboard del comercial: se monta con [su id] y nunca se amplía
     public $alcance = '';
     public $labels = [];
     public $venta = [];
@@ -26,8 +27,10 @@ class Tendencia extends Component
 
     protected $listeners = ['Tendencia' => 'actualizar'];
 
-    public function mount()
+    public function mount($comercialesFijos = null)
     {
+        $this->comercialesFijos = $comercialesFijos;
+        $this->comerciales = $comercialesFijos;
         $año = Año::orderBy('created_at', 'desc')->first();
         $this->año_id = $año ? $año->id : null;
         $this->calcular();
@@ -39,12 +42,13 @@ class Tendencia extends Component
             $this->año_id = $filtros['año_id'] ?? $this->año_id;
             $this->comercial = $filtros['comercial'] ?? null;
             $this->comerciales = $filtros['comerciales'] ?? ($this->comercial ? [(int) $this->comercial] : null);
+            if (is_array($this->comercialesFijos)) { $this->comerciales = $this->comercialesFijos; }
             $this->alcance = $filtros['alcance'] ?? '';
         } else {
             $año = Año::orderBy('created_at', 'desc')->first();
             $this->año_id = $año ? $año->id : null;
             $this->comercial = null;
-            $this->comerciales = null;
+            $this->comerciales = $this->comercialesFijos;
             $this->alcance = '';
         }
         $this->calcular();

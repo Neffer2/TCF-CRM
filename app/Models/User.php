@@ -59,6 +59,36 @@ class User extends Authenticatable
         return $this->roles()->where('roles_user.id', $rolId)->exists();
     }
 
+    /* Roles del espacio administrativo (comparten el layout de admin) */
+    const ROL_ADMIN = 1;
+    const ROL_CONTROLLER = 11;
+    const ROL_LIDER_COMERCIAL = 12;
+    const ROL_GERENCIA = 20;
+
+    /** Controller: revisión financiera de presupuestos, actualizaciones, consumidos y reportes. */
+    public function esControl(): bool
+    {
+        return (int) $this->rol === self::ROL_CONTROLLER;
+    }
+
+    /** Líder comercial: dashboard, validaciones y presupuestos de su equipo (lider_comercial_user). */
+    public function esLiderComercial(): bool
+    {
+        return (int) $this->rol === self::ROL_LIDER_COMERCIAL;
+    }
+
+    /** Admin, Gerencia, Controller o Líder comercial: usan el layout y las pantallas de administración. */
+    public function espacioAdmin(): bool
+    {
+        return in_array((int) $this->rol, [self::ROL_ADMIN, self::ROL_GERENCIA, self::ROL_CONTROLLER, self::ROL_LIDER_COMERCIAL], true);
+    }
+
+    /** Puede revisar/aprobar presupuestos con centro de costos (Admin y Controller). */
+    public function revisaPresupuestos(): bool
+    {
+        return in_array((int) $this->rol, [self::ROL_ADMIN, self::ROL_GERENCIA, self::ROL_CONTROLLER], true);
+    }
+
     public function asistente(){
         return $this->hasMany(Asistente::class, 'comercial_id', 'id');
     }
