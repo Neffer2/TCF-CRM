@@ -5,19 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0B0908">
-  <link rel="icon" href="{{ asset('assets/img/favicon.png') }}" />
+  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-32x32.png" sizes="32x32" />
+  <link rel="icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-192x192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="https://www.bullmarketing.com.co/wp-content/uploads/2022/04/cropped-favicon-bull-180x180.png" />
   <title>BULLCRM · @yield('auth-title')</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-auth.css') }}?v=1" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-auth.css') }}?v=2" rel="stylesheet" />
   @livewireStyles
 </head>
 <body class="bl-auth">
 
   {{-- Atmósfera --}}
   <div class="bl-scene" aria-hidden="true">
+    <div class="bl-photo" id="blPhoto"><img src="{{ asset('assets/img/hero-2.jpg') }}" alt=""></div>
+    <div class="bl-duotone"></div>
+    <div class="bl-tint"></div>
     <div class="bl-orb bl-orb--1"></div>
     <div class="bl-orb bl-orb--2"></div>
     <div class="bl-orb bl-orb--3"></div>
@@ -90,19 +94,27 @@
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var fine = window.matchMedia('(pointer: fine)').matches;
 
-      // Inclinación 3D de la tarjeta siguiendo el cursor (solo escritorio, solo transform)
+      // Profundidad con el cursor (solo escritorio, solo transform): la foto
+      // se desplaza en sentido contrario a la tarjeta, que se inclina en 3D.
       var card = document.getElementById('blCard');
+      var photo = document.getElementById('blPhoto');
       if (card && fine && !reduce) {
-        var raf = null, rx = 0, ry = 0;
-        function apply () { card.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; raf = null; }
+        var raf = null, rx = 0, ry = 0, px = 0, py = 0;
+        function apply () {
+          card.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+          if (photo) photo.style.transform = 'translate3d(' + px + 'px, ' + py + 'px, 0)';
+          raf = null;
+        }
         window.addEventListener('mousemove', function (e) {
           var r = card.getBoundingClientRect();
           var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
           var dx = (e.clientX - cx) / Math.max(window.innerWidth, 1), dy = (e.clientY - cy) / Math.max(window.innerHeight, 1);
           ry = Math.max(-6, Math.min(6, dx * 14)); rx = Math.max(-6, Math.min(6, -dy * 14));
+          var nx = e.clientX / window.innerWidth - .5, ny = e.clientY / window.innerHeight - .5;
+          px = -nx * 26; py = -ny * 18;
           if (!raf) raf = requestAnimationFrame(apply);
         }, { passive: true });
-        window.addEventListener('mouseleave', function () { rx = 0; ry = 0; if (!raf) raf = requestAnimationFrame(apply); });
+        window.addEventListener('mouseleave', function () { rx = 0; ry = 0; px = 0; py = 0; if (!raf) raf = requestAnimationFrame(apply); });
       }
 
       // Mostrar / ocultar contraseña
