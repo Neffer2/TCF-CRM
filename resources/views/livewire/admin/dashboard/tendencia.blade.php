@@ -25,11 +25,11 @@
                 data-labels='@json($labels)'
                 data-venta='@json($venta)'
                 data-presupuesto='@json($presupuesto)'
-                height="260"></canvas>
+                height="320"></canvas>
     </div>
     <div class="crm-chart__foot">
-        <div><span>Facturado en el año</span><b data-count="{{ $totalVenta }}" data-prefix="$">${{ number_format($totalVenta, 0, '.', ',') }}</b></div>
-        <div><span>Presupuesto del año</span><b data-count="{{ $totalPresupuesto }}" data-prefix="$">${{ number_format($totalPresupuesto, 0, '.', ',') }}</b></div>
+        <div><span>Facturado en el año</span><b data-count="{{ $totalVenta }}" data-key="t_venta">${{ number_format($totalVenta, 0, '.', ',') }}</b></div>
+        <div><span>Presupuesto del año</span><b data-count="{{ $totalPresupuesto }}" data-key="t_presto">${{ number_format($totalPresupuesto, 0, '.', ',') }}</b></div>
         <div><span>Mejor mes</span><b>{{ $mejorMes ? $mejorMes.' · '.sprintf('%.0f', $mejorPct).' %' : '—' }}</b></div>
     </div>
 </div>

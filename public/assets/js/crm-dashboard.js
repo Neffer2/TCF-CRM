@@ -12,11 +12,16 @@
     return Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   };
 
+  // Último valor mostrado por clave: al cambiar filtros la cifra cuenta desde
+  // el valor anterior hacia el nuevo, en vez de arrancar de cero.
+  var previos = {};
   function contar(el) {
     var target = parseFloat(el.getAttribute('data-count'));
     if (isNaN(target)) return;
     var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
-    var from = parseFloat(el.getAttribute('data-from') || '0');
+    var key = el.getAttribute('data-key');
+    var from = key && previos[key] !== undefined ? previos[key] : 0;
+    if (key) previos[key] = target;
     if (reduce) { el.textContent = fmt(target, decimals); el.setAttribute('data-from', target); return; }
     var dur = 950, start = null;
     function step(ts) {

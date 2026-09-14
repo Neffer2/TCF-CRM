@@ -18,20 +18,21 @@
         </select>
     </div>
 
-    {{-- Comercial: escribe para filtrar la lista; la selección se guarda en $comercial --}}
+    {{-- Comercial: lista desplegable en la que se puede escribir para filtrar; la selección se guarda en $comercial --}}
     <div class="form-group crm-combo">
         <label for="filtro_comercial">Comercial</label>
         <div class="crm-combo__box">
             <svg class="crm-combo__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
             <input id="filtro_comercial" type="text" class="form-control" autocomplete="off"
-                   placeholder="{{ $año ? 'Todo el equipo — escribe un nombre' : 'Elige primero un año' }}"
-                   wire:model.debounce.150ms="buscarComercial"
-                   {{ $año ? '' : 'disabled' }}>
+                   placeholder="Todo el equipo — escribe o elige"
+                   wire:model.debounce.150ms="buscarComercial">
             @if ($comercial)
                 <button type="button" class="crm-combo__clear" wire:click="limpiarComercial" title="Quitar filtro de comercial" aria-label="Quitar filtro de comercial">×</button>
+            @else
+                <span class="crm-combo__caret" aria-hidden="true"></span>
             @endif
         </div>
-        <ul class="crm-combo__list" role="listbox">
+        <ul class="crm-combo__list" role="listbox" aria-label="Comerciales">
             <li>
                 <button type="button" class="crm-combo__item {{ $comercial ? '' : 'is-active' }}" wire:click="elegirComercial(null)" role="option">
                     <span class="crm-combo__avatar">∑</span> Todo el equipo

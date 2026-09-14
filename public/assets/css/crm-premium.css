@@ -157,7 +157,14 @@ body { -webkit-font-smoothing: antialiased; }
   flex: 0 0 44px; width: 44px; height: 44px; border-radius: 12px;
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--crm-accent-soft); color: var(--crm-accent-deep); font-size: 18px;
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1), background .3s ease;
 }
+/* Dentro de una tarjeta KPI el ícono va anclado arriba a la derecha: así nunca
+   compite con la cifra por el ancho ni se sale de la tarjeta. */
+.crm-kpi .crm-kpi__icon { position: absolute; top: 16px; right: 16px; }
+.crm-kpi .crm-kpi__head { padding-right: 56px; }
+.crm-kpi .crm-kpi__head > div { min-width: 0; }
+.crm-kpi:hover .crm-kpi__icon { transform: translateY(-2px) rotate(-6deg); background: var(--crm-accent); color: #fff; }
 .crm-kpi__icon i { line-height: 1; }
 .crm-kpi__sub {
   display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--crm-ink-2);
@@ -267,7 +274,7 @@ body { -webkit-font-smoothing: antialiased; }
 @media (max-width: 1199px) { .crm-kpis--six { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 720px) { .crm-kpis--six { grid-template-columns: 1fr; } }
 .crm-kpi__foot { flex-wrap: wrap; }
-.crm-kpis--six .crm-kpi__value { font-size: clamp(18px, 1.35vw, 22px); }
+.crm-kpis--six .crm-kpi__value { font-size: clamp(17px, 1.25vw, 22px); }
 .crm-kpi__note { margin: 0; font-size: 12.5px; color: var(--crm-ink-3); line-height: 1.4; }
 .crm-kpi__delta { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .crm-kpi__delta.is-up { color: var(--crm-ok); }
@@ -326,3 +333,93 @@ body { -webkit-font-smoothing: antialiased; }
 .crm-chart__foot span { display: block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--crm-ink-3); margin-bottom: 3px; }
 .crm-chart__foot b { font-size: 15px; font-weight: 800; color: var(--crm-ink); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
 @media (max-width: 576px) { .crm-chart__foot { grid-template-columns: 1fr; } }
+
+
+/* ==========================================================================
+   Dashboard v3: foto de marca en el hero, columna derecha completa, ranking
+   ========================================================================== */
+.crm-hero--photo {
+  background-size: cover; background-position: 55% 38%;
+  animation: crm-hero-pan 40s ease-in-out infinite alternate;
+}
+.crm-hero--photo::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(112deg, rgba(239, 95, 23, .93) 0%, rgba(255, 105, 0, .8) 48%, rgba(206, 141, 0, .72) 100%);
+}
+.crm-hero--photo::after { mix-blend-mode: soft-light; }
+@keyframes crm-hero-pan { from { background-position: 55% 38%; } to { background-position: 48% 44%; } }
+.crm-page-card { position: relative; overflow: hidden; }
+.crm-page-card::after {
+  content: ""; position: absolute; top: -40%; right: -10%; width: 40%; height: 180%; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(239, 95, 23, .06) 50%, transparent 70%);
+  transform: translateX(-160%) skewX(-16deg); animation: crm-sheen 9s cubic-bezier(.4, 0, .2, 1) 1.2s infinite;
+}
+@keyframes crm-sheen { 0% { transform: translateX(-160%) skewX(-16deg); } 35%, 100% { transform: translateX(260%) skewX(-16deg); } }
+
+.crm-col-derecha { display: flex; flex-direction: column; gap: 16px; }
+.crm-col-derecha .crm-panel { margin: 0; }
+.crm-panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.crm-panel__head .crm-kpi__label { margin-bottom: 4px; }
+.crm-panel .card-header { padding: 20px 24px 6px; }
+
+/* Filas del estado de facturación y composición: entrada escalonada */
+.crm-table tbody tr, .crm-mix__item { opacity: 0; transform: translateX(-8px); }
+.is-in .crm-table tbody tr, .is-in .crm-mix__item {
+  animation: crm-row .6s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.25s + var(--i, 0) * 80ms);
+}
+@keyframes crm-row { to { opacity: 1; transform: translateX(0); } }
+.crm-table tbody tr { transition: background .25s ease; }
+.crm-table tbody tr:hover td { background: rgba(239, 95, 23, .04); }
+
+/* Ranking de comerciales */
+.crm-ranking .card-body { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+.crm-rank {
+  display: grid; grid-template-columns: 22px 36px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 10px 12px; border-radius: 12px; border: 1px solid transparent;
+  opacity: 0; transform: translateY(8px);
+  transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+.is-in .crm-rank { animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.2s + var(--i, 0) * 90ms); }
+.crm-rank:hover { background: var(--crm-paper); }
+.crm-rank.is-selected { background: var(--crm-accent-soft); border-color: rgba(239, 95, 23, .25); }
+.crm-rank__pos { font-size: 12px; font-weight: 800; color: var(--crm-ink-3); text-align: center; font-variant-numeric: tabular-nums; }
+.crm-rank:nth-child(1) .crm-rank__pos { color: var(--crm-accent-deep); }
+.crm-rank__avatar {
+  position: relative; width: 36px; height: 36px; border-radius: 10px; overflow: hidden; display: grid; place-items: center;
+  background: var(--crm-accent-soft); color: var(--crm-accent-deep); font-size: 13px; font-weight: 800;
+}
+.crm-rank__avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.crm-rank__body { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.crm-rank__top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.crm-rank__name { font-size: 13.5px; font-weight: 700; color: var(--crm-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crm-rank__venta { font-size: 13.5px; font-weight: 800; color: var(--crm-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.crm-rank__venta small { color: var(--crm-ink-3); font-weight: 700; margin-right: 1px; }
+.crm-rank .crm-bar { height: 6px; }
+.crm-rank__foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11.5px; color: var(--crm-ink-3); font-variant-numeric: tabular-nums; }
+.crm-rank .crm-chip { padding: 2px 8px; font-size: 11px; }
+
+/* Buscador: flecha de lista desplegable */
+.crm-combo__caret {
+  position: absolute; right: 14px; top: 50%; width: 7px; height: 7px; pointer-events: none;
+  border-right: 2px solid var(--crm-ink-3); border-bottom: 2px solid var(--crm-ink-3);
+  transform: translateY(-70%) rotate(45deg); transition: transform .3s ease;
+}
+.crm-combo:focus-within .crm-combo__caret { transform: translateY(-30%) rotate(-135deg); }
+.crm-combo { min-width: 260px; }
+
+/* Gráfica a todo el ancho */
+.crm-chart { margin-top: 0; }
+.crm-chart__canvas, .crm-chart__canvas canvas { height: 320px !important; }
+
+/* Conmutador del ranking */
+.crm-seg { display: inline-flex; gap: 4px; padding: 4px; margin-top: 12px; border-radius: 999px; background: var(--crm-paper); border: 1px solid var(--crm-line); }
+.crm-seg__btn {
+  border: 0; background: transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  font: 700 12px "Manrope", system-ui, sans-serif; color: var(--crm-ink-2);
+  transition: background .3s cubic-bezier(.16, 1, .3, 1), color .3s ease, transform .2s ease;
+}
+.crm-seg__btn:hover { color: var(--crm-ink); }
+.crm-seg__btn:active { transform: scale(.97); }
+.crm-seg__btn.is-active { background: var(--crm-card); color: var(--crm-accent-deep); box-shadow: var(--crm-shadow-sm); }
+.crm-rank__pct { color: var(--crm-tone, var(--crm-ink)); }
+.crm-rank__foot > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

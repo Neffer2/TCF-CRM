@@ -54,6 +54,9 @@ class Filters extends Component
         // Obtiene todos los años disponibles de la base de datos
         $this->StdAño = Año::select('id', 'description')->get();
 
+        // La lista de comerciales no depende del año: siempre disponible para el buscador
+        $this->StdComercial = User::select('id', 'name')->where('rol', 2)->orderBy('name')->get();
+
         // Inicializa los filtros dependientes
         $this->getFilters();
     }
@@ -105,6 +108,11 @@ class Filters extends Component
     public function elegirComercial($id = null)
     {
         $this->comercial = $id ?: null;
+        // Sin año elegido, el filtro por comercial aplica sobre el año más reciente
+        if (!$this->año) {
+            $ultimo = Año::orderBy('created_at', 'desc')->first();
+            if ($ultimo) { $this->año = $ultimo->id; $this->getFilters(); }
+        }
         $nombre = collect($this->StdComercial)->first(function ($c) use ($id) { return ($c['id'] ?? $c->id) == $id; });
         $this->buscarComercial = $nombre ? ($nombre['name'] ?? $nombre->name) : '';
         $this->signals();
@@ -137,6 +145,11 @@ class Filters extends Component
                 'año_id' => $this->año,
                 'comercial' => $this->comercial
             ]);
+            $this->emit('Ranking', [
+                'año_id' => $this->año,
+                'mes' => $this->mes,
+                'comercial' => $this->comercial
+            ]);
         }
     }
 
@@ -153,19 +166,15 @@ class Filters extends Component
                                 ->where('ano_id', $this->año)
                                 ->get();
 
-            // Carga todos los usuarios con rol de comercial (rol = 2)
-            $this->StdComercial = User::select('id', 'name')
-                                      ->where('rol', 2)
-                                      ->get();
         } else {
             // Si no hay año seleccionado, limpia las opciones dependientes
             $this->StdMes = [];
-            $this->StdComercial = [];
 
             // Emite eventos vacíos para resetear los componentes Block1 y Block2
             $this->emit('Block1');
             $this->emit('Block2');
             $this->emit('Tendencia');
+            $this->emit('Ranking');
         }
     }
 }
