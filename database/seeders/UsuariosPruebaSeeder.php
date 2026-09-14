@@ -64,6 +64,18 @@ class UsuariosPruebaSeeder extends Seeder
             $this->command->info("✓ {$email} (rol activo {$rolActivo}, roles [".implode(',', $roles)."])");
         }
 
+        // Ejecutivo de cuenta de prueba: asiste al comercial con más facturación (Alejandra Ortiz).
+        // Sin comercial asignado, todo el módulo de asistente falla.
+        $ejecutivo = User::where('email', 'prueba.ejecutivo@local.test')->first();
+        $comercialTop = User::whereRaw('LOWER(email) = ?', ['crm.alejandra.ortiz@bullmarketing.com.co'])->first();
+        if ($ejecutivo && $comercialTop && DB::getSchemaBuilder()->hasTable('asistentes')) {
+            DB::table('asistentes')->updateOrInsert(
+                ['asistente_id' => $ejecutivo->id],
+                ['comercial_id' => $comercialTop->id, 'created_at' => now(), 'updated_at' => now()]
+            );
+            $this->command->info("✓ prueba.ejecutivo asiste a {$comercialTop->name}");
+        }
+
         // Centros de costo para el productor de prueba: reasigna los 3 más
         // recientes en estado Aprobado para que pueda crear OC y anticipos.
         $productor = User::where('email', 'prueba.productor@local.test')->first();
@@ -96,6 +108,36 @@ class UsuariosPruebaSeeder extends Seeder
             $this->command->info('✓ Equipo de prueba.lidercom: comerciales '.implode(', ', $equipo));
         }
 
+
+        // ------------------------------------------------------------------
+        // CUENTAS REALES PARA PRUEBAS (solo local): a un usuario representativo
+        // de cada rol se le pone la misma clave de prueba, para probar cada
+        // pantalla con SUS datos reales (ventas, presupuestos, órdenes…).
+        // Sus correos y datos no cambian; solo la clave en esta base local.
+        // ------------------------------------------------------------------
+        $reales = [
+            // [correo, para qué sirve]
+            ['crm.Alejandra.Ortiz@bullmarketing.com.co', 'Comercial con más facturación 2026 (Alejandra Ortiz)'],
+            ['alexandra.nino@bullmarketing.com.co',      'Comercial del equipo de Leonardo Guarin (Alexandra Niño)'],
+            ['lady.ortiz@bullmarketing.com.co',          'Líder comercial con 4 comerciales a cargo (Lady Ortiz)'],
+            ['Lider.Controller@bullmarketing.com.co',    'Controller con permiso de validar nómina (Astrid Morales)'],
+            ['j.ariza@bullmarketing.com.co',             'Gerencia (Jony Ariza)'],
+            ['compras@bullmarketing.com.co',             'Admin del área de compras (Luz Compras)'],
+            ['andre.aguirre@bullmarketing.com.co',       'Productor con más centros de costo (Andreina Aguirre)'],
+            ['fernando.paez@bullmarketing.com.co',       'Líder de producción (Fernando Páez)'],
+            ['geraldin.parada2@bullmarketing.com.co',    'Ejecutivo de cuenta (Geraldin Cañas)'],
+            ['tesoreria@bullmarketing.com.co',           'Tesorería'],
+            ['contadores@bullmarketing.com.co',          'Contabilidad'],
+        ];
+        $this->command->line('');
+        $this->command->info('Cuentas REALES con clave de prueba (datos reales del dump):');
+        foreach ($reales as [$correo, $para]) {
+            $u = User::whereRaw('LOWER(email) = ?', [mb_strtolower($correo)])->first();
+            if (!$u) { $this->command->warn("  ✗ {$correo} no existe en el dump"); continue; }
+            $u->password = Hash::make(self::PASSWORD);
+            $u->save();
+            $this->command->info("  ✓ {$correo} (rol {$u->rol}) — {$para}");
+        }
         $this->command->line('');
         $this->command->info('Contraseña de TODOS los usuarios de prueba: '.self::PASSWORD);
     }

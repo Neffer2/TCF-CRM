@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=12" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=13" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -35,9 +35,9 @@
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
     'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
-    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 'actualizar-perfil-adm' => 'Actualizar perfil',
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 
     'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
-    'consumidos-com' => 'Consumidos', 'actualizar-perfil-com' => 'Actualizar perfil', 'update-gestion-comercial' => 'Gestión comercial',
+    'consumidos-com' => 'Consumidos', 'update-gestion-comercial' => 'Gestión comercial',
   ];
   $crmTitulo = $crmTitulos[optional(request()->route())->getName()] ?? 'Inicio';
 @endphp
@@ -78,12 +78,6 @@
                   <span class="sidenav-normal"> Dashboard </span>
                 </a>
               </li>
-              {{-- <li @class(['active' => request()->is('estado-facturacion'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('estado-facturacion'), 'nav-link' => true]) href="{{ route('estado-facturacion') }}">
-                  <span class="sidenav-mini-icon"> E </span>
-                  <span class="sidenav-normal"> Estado de facturaci&oacute;n </span>
-                </a>
-              </li> --}}
               <li @class(['active' => request()->is('base-comercial-general'), 'nav-item' => true])>
                 <a @class(['active' => request()->is('base-comercial-general'), 'nav-link' => true]) href="{{ route('base-comercial-general') }}">
                   <span class="sidenav-mini-icon"> B </span>
@@ -200,27 +194,6 @@
             </ul>
           </div>
         </li>
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Ajustes</span>
-          </a>
-          <div @class([
-            'show' => (request()->is('actualizar-perfil-adm')),
-            'collapse' => true
-            ]) id="ajustes" style="">
-            <ul class="nav ms-4">
-              <li @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-item' => true])>
-                <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">
-                  <span class="sidenav-mini-icon"> K </span>
-                  <span class="sidenav-normal"> Actualizar perfil </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
       </ul>
       @endif
     </div>
@@ -234,11 +207,11 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-4 me-5">
             <li class="breadcrumb-item text-sm">
-              <a class="text-white" href="javascript:;">
+              <a class="text-white" href="{{ route('dashboard') }}">
                 <i class="ni ni-box-2"></i>
               </a>
             </li>
-            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Inicio</a></li>
+            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="{{ route('dashboard') }}">Inicio</a></li>
             <li class="breadcrumb-item text-sm text-white active" aria-current="page">@yield('titulo', $crmTitulo)</li>
           </ol>
           <h6 class="font-weight-bolder mb-0 text-white">@yield('titulo', $crmTitulo)</h6>
@@ -260,6 +233,12 @@
           </div>
           <ul class="navbar-nav  justify-content-end">
             @include('components.selector-rol')
+            <li class="nav-item d-flex align-items-center pe-3">
+              <a href="{{ route('mi-perfil') }}" class="nav-link text-white font-weight-bold px-0 crm-nav-perfil" title="Ver mi perfil">
+                <span class="crm-nav-perfil__avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }}</span>
+              </a>
+            </li>
             <li class="nav-item d-flex align-items-center">
               @auth
                 <form action="{{ route('logout') }}" method="POST">

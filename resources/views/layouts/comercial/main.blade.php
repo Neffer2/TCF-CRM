@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=12" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=13" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
 </head>
@@ -35,9 +35,9 @@
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
     'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
-    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 'actualizar-perfil-adm' => 'Actualizar perfil',
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 
     'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
-    'consumidos-com' => 'Consumidos', 'actualizar-perfil-com' => 'Actualizar perfil', 'update-gestion-comercial' => 'Gestión comercial',
+    'consumidos-com' => 'Consumidos', 'update-gestion-comercial' => 'Gestión comercial',
   ];
   $crmTitulo = $crmTitulos[optional(request()->route())->getName()] ?? 'Inicio';
 @endphp
@@ -153,27 +153,6 @@
               </ul>
             </div>
           </li>
-          <li class="nav-item">
-            <a data-bs-toggle="collapse" href="#applicationsExamples" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
-              <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                <i class="ni ni-ui-04 text-info text-sm opacity-10"></i>
-              </div>
-              <span class="nav-link-text ms-1">Ajustes</span>
-            </a>
-            <div @class([
-              'show' => (request()->is('actualizar-perfil-com')),
-              'collapse' => true
-              ]) id="applicationsExamples" style="">
-              <ul class="nav ms-4"> 
-                <li @class(['active' => request()->is('actualizar-perfil-com'), 'nav-item' => true])>
-                  <a @class(['active' => request()->is('actualizar-perfil-com'), 'nav-link' => true]) href="{{ route('actualizar-perfil-com') }}"> 
-                    <span class="sidenav-mini-icon"> A </span>
-                    <span class="sidenav-normal"> Actualizar perfil </span>
-                  </a>
-                </li>
-              </ul> 
-            </div>
-          </li>
         </ul>
       </div>
     </aside>
@@ -206,6 +185,12 @@
             </div>
             <ul class="navbar-nav justify-content-end">
               @include('components.selector-rol')
+              <li class="nav-item d-flex align-items-center pe-3">
+                <a href="{{ route('mi-perfil') }}" class="nav-link text-white font-weight-bold px-0 crm-nav-perfil" title="Ver mi perfil">
+                  <span class="crm-nav-perfil__avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                  <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                </a>
+              </li>
               <li class="nav-item d-flex align-items-center">
                 @auth
                   <form action="{{ route('logout') }}" method="POST">

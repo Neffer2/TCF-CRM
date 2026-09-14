@@ -17,22 +17,21 @@ class AsistenteController extends Controller
     */
 
     /**
-     * Muestra la página para actualizar el perfil del asistente
-     *
-     * @return \Illuminate\View\View
-     */
-    public function showActualizarPerfil(){
-        return view('asistente.ajustes.perfil.actualizar');
-    }
-
-    /**
      * Muestra la página principal del asistente con información del comercial asignado
      *
      * @return \Illuminate\View\View
      */
+    /** Comercial al que asiste el usuario, o null si no tiene ninguno asignado (sin esto el módulo revienta). */
+    private function comercialAsignado()
+    {
+        $a = Asistente::where('asistente_id', Auth::user()->id)->first();
+        return ($a && $a->comercial) ? $a : null;
+    }
+
     public function index (){
         // Buscar el comercial asignado al asistente autenticado
-        $comercialAsignado = Asistente::where('asistente_id', Auth::user()->id)->first();
+        $comercialAsignado = $this->comercialAsignado();
+        if (!$comercialAsignado) { return view('asistente.sin-comercial'); }
         return view('asistente.index', ['comercial' => $comercialAsignado->comercial->name]);
     }
 
@@ -42,6 +41,7 @@ class AsistenteController extends Controller
      * @return \Illuminate\View\View
      */
     public function gestionComercial(){
+        if (!$this->comercialAsignado()) { return view('asistente.sin-comercial'); }
         return view('asistente.gestion');
     }
 
@@ -52,7 +52,8 @@ class AsistenteController extends Controller
      */
     public function gestionHelisa(){
         // Obtener el comercial asignado al asistente autenticado
-        $comercialAsignado = Asistente::where('asistente_id', Auth::user()->id)->first();
+        $comercialAsignado = $this->comercialAsignado();
+        if (!$comercialAsignado) { return view('asistente.sin-comercial'); }
         return view('asistente.helisa.index', ['comercial' => $comercialAsignado->comercial->name]);
     }
 
@@ -62,6 +63,7 @@ class AsistenteController extends Controller
      * @return \Illuminate\View\View
      */
     public function Contactos(){
+        if (!$this->comercialAsignado()) { return view('asistente.sin-comercial'); }
         return view('asistente.contactos');
     }
 
@@ -73,7 +75,8 @@ class AsistenteController extends Controller
      */
     public function base(){
         // Buscar el comercial asignado al asistente autenticado
-        $comercialAsignado = Asistente::where('asistente_id', Auth::user()->id)->first();
+        $comercialAsignado = $this->comercialAsignado();
+        if (!$comercialAsignado) { return view('asistente.sin-comercial'); }
         return view('asistente.base', [
             'comercial' => $comercialAsignado->comercial->name,
             'comercial_id' => $comercialAsignado->comercial_id

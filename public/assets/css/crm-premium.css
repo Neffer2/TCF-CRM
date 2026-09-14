@@ -744,3 +744,40 @@ html.crm-js .main-content .is-in .table:not(.crm-table) tbody tr {
 .crm-doc { color: var(--crm-ink-3); font-weight: 700; font-size: 11.5px; margin-left: 4px; font-variant-numeric: tabular-nums; }
 .crm-cc { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; color: var(--crm-ink); margin-right: 4px; }
 .crm-table--data td.is-valor.is-neg { color: var(--crm-bad); }
+
+/* --- Enlace "Mi perfil" en la barra superior --- */
+.crm-nav-perfil { display: inline-flex; align-items: center; gap: 8px; }
+.crm-nav-perfil__avatar {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 9px;
+  background: rgba(255, 255, 255, .22); border: 1px solid rgba(255, 255, 255, .45); font-size: 12px; font-weight: 800;
+  transition: transform .35s cubic-bezier(.16, 1, .3, 1), background .3s ease;
+}
+.crm-nav-perfil:hover .crm-nav-perfil__avatar { transform: translateY(-1px) rotate(-6deg); background: #fff; color: var(--crm-accent-deep); }
+
+/* --- Mi perfil --- */
+.crm-perfil-card { padding: 28px 24px 22px; }
+.crm-perfil-card__top { text-align: center; }
+.crm-perfil-card__avatar {
+  position: relative; display: grid; place-items: center; width: 108px; height: 108px; border-radius: 32px; margin: 0 auto 16px; overflow: hidden;
+  background: linear-gradient(135deg, #FF6900, #EF5F17); color: #fff; font-size: 42px; font-weight: 800;
+  box-shadow: 0 18px 34px -16px rgba(239, 95, 23, .9);
+}
+.crm-perfil-card__avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.crm-perfil-card__avatar b { position: relative; }
+.crm-perfil-card__top h1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; margin: 4px 0 2px; color: var(--crm-ink); }
+.crm-perfil-card__top p { margin: 0; color: var(--crm-ink-2); font-size: 13px; }
+.crm-perfil-card__datos { margin: 22px 0 0; display: grid; gap: 0; border-top: 1px solid var(--crm-line); }
+.crm-perfil-card__datos > div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--crm-line); }
+.crm-perfil-card__datos dt { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--crm-ink-3); margin: 0; }
+.crm-perfil-card__datos dd { margin: 0; font-weight: 700; color: var(--crm-ink); text-align: right; word-break: break-word; }
+.crm-perfil-card__nota { margin: 16px 0 0; font-size: 12.5px; color: var(--crm-ink-3); text-align: center; }
+.crm-perfil-bloque { padding: 14px 0; border-bottom: 1px solid var(--crm-line); }
+.crm-perfil-bloque:last-child { border-bottom: 0; }
+.crm-perfil-bloque h3 { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--crm-ink-3); margin: 0 0 10px; }
+.crm-perfil-permiso { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; font-size: 13px; }
+.crm-perfil-permiso b { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--crm-accent-deep); white-space: nowrap; }
+.crm-perfil-permiso span { color: var(--crm-ink-2); }
+.crm-perfil-personas { display: flex; flex-wrap: wrap; gap: 8px; }
+.crm-perfil-persona { display: inline-flex; align-items: center; padding: 6px 12px 6px 6px; border: 1px solid var(--crm-line); border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--crm-card); }
+.crm-perfil-persona .crm-avatar-mini { margin-right: 8px; }
+.crm-estados .crm-estado.is-active.tone-neutral { cursor: default; }

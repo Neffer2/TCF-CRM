@@ -48,15 +48,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Muestra la página para actualizar el perfil del administrador
-     *
-     * @return \Illuminate\View\View
-     */
-    public function showActualizarPerfil (){
-        return view('admin.ajustes.perfil.actualizar');
-    }
-
-    /**
      * Muestra la página de base comercial general con filtros aplicados
      *
      * @param Request $request - Contiene los filtros: año, mes, comercial, estado

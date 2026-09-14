@@ -93,6 +93,26 @@ El seeder **solo corre en entorno local** y crea estos usuarios (contraseña de 
 | prueba.tesoreria@local.test | Tesorería | pago de anticipos |
 | prueba.contabilidad@local.test | Contabilidad | causación |
 | prueba.multirol@local.test | Productor + Comercial | el selector de cambio de rol |
+| prueba.controller@local.test | **Controller** | dashboard de revisión, presupuestos, actualizaciones, consumidos, reportes |
+| prueba.lidercom@local.test | **Líder comercial** | dashboard de su equipo (prueba.comercial, Alexandra Niño, Juan Camilo Rodríguez), validaciones |
+
+Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales**, el seeder también deja con la clave `Prueba123*` a un usuario real de cada rol (solo en la base local; sus correos y datos no cambian):
+
+| Correo real | Rol | Por qué este |
+|---|---|---|
+| crm.Alejandra.Ortiz@bullmarketing.com.co | Comercial | la mayor facturación de 2026 (231 movimientos Helisa) |
+| alexandra.nino@bullmarketing.com.co | Comercial | del equipo de Leonardo Guarin; también es del equipo de prueba.lidercom |
+| lady.ortiz@bullmarketing.com.co | Líder comercial | 4 comerciales a cargo |
+| Lider.Controller@bullmarketing.com.co | Controller | Astrid Morales, con permiso de validar nómina |
+| j.ariza@bullmarketing.com.co | Gerencia | Jony Ariza (Admin + Gerencia) |
+| compras@bullmarketing.com.co | Admin (compras) | recibe las OC |
+| andre.aguirre@bullmarketing.com.co | Productor | la que más centros de costo tiene (616) |
+| fernando.paez@bullmarketing.com.co | Líder de producción | |
+| geraldin.parada2@bullmarketing.com.co | Ejecutivo de cuenta | |
+| tesoreria@bullmarketing.com.co | Tesorería | |
+| contadores@bullmarketing.com.co | Contabilidad | |
+
+Todos los roles tienen **Mi perfil** (nombre en la barra superior): foto, cargo, datos, roles, permisos y equipo, solo lectura. La sección "Ajustes / Actualizar perfil" se eliminó: los datos y las claves los cambia un desarrollador.
 
 ## A6. Arrancar
 

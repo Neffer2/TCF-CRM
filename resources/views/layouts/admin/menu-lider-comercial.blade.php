@@ -55,22 +55,4 @@
             </ul>
         </div>
     </li>
-    <li class="nav-item">
-        <a data-bs-toggle="collapse" href="#lidAjustes" class="nav-link" aria-controls="lidAjustes" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-                <i class="ni ni-settings text-warning text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Ajustes</span>
-        </a>
-        <div @class(['show' => request()->is('actualizar-perfil-adm'), 'collapse' => true]) id="lidAjustes">
-            <ul class="nav ms-4">
-                <li @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-item' => true])>
-                    <a @class(['active' => request()->is('actualizar-perfil-adm'), 'nav-link' => true]) href="{{ route('actualizar-perfil-adm') }}">
-                        <span class="sidenav-mini-icon"> A </span>
-                        <span class="sidenav-normal"> Actualizar perfil </span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </li>
 </ul>

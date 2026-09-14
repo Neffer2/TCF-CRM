@@ -83,6 +83,28 @@ class User extends Authenticatable
         return in_array((int) $this->rol, [self::ROL_ADMIN, self::ROL_GERENCIA, self::ROL_CONTROLLER, self::ROL_LIDER_COMERCIAL], true);
     }
 
+    /** Layout (menú lateral) que corresponde al rol activo. */
+    public function layoutRol(): string
+    {
+        if ($this->espacioAdmin()) { return 'layouts.admin.main'; }
+        switch ((int) $this->rol) {
+            case 2: return 'layouts.comercial.main';
+            case 5: return 'layouts.asistente.main';
+            case 6: return 'layouts.lider-produccion.main';
+            case 7: return 'layouts.productor.main';
+            case 8: return 'layouts.tesoreria.main';
+            case 3: case 9: return 'layouts.contabilidad.main';
+            default: return 'layouts.admin.main';
+        }
+    }
+
+    /** URL pública del avatar (o null si es el genérico / no existe). */
+    public function avatarUrl(): ?string
+    {
+        if (!$this->avatar || str_ends_with($this->avatar, 'avatar.jpg')) { return null; }
+        return asset('storage/'.str_replace('public/', '', $this->avatar));
+    }
+
     /** Puede revisar/aprobar presupuestos con centro de costos (Admin y Controller). */
     public function revisaPresupuestos(): bool
     {

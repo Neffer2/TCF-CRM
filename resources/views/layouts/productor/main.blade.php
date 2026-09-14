@@ -132,24 +132,6 @@
                 </ul>
             </div>
         </li>
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#ajustes" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
-            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
-              <i class="ni ni-settings text-secondary text-sm opacity-10"></i>
-            </div>
-            <span class="nav-link-text ms-1">Ajustes</span>
-          </a>
-          <div class="collapse" id="ajustes" style="">
-            <ul class="nav ms-4">
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('actualizar-perfil-adm') }}">
-                  <span class="sidenav-mini-icon"> K </span>
-                  <span class="sidenav-normal"> Actualizar perfil </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
       </ul>
     </div>
   </aside>
@@ -162,11 +144,11 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-4 me-5">
             <li class="breadcrumb-item text-sm">
-              <a class="text-white" href="javascript:;">
+              <a class="text-white" href="{{ route('dashboard') }}">
                 <i class="ni ni-box-2"></i>
               </a>
             </li>
-            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="javascript:;">Inicio</a></li>
+            <li class="breadcrumb-item text-sm text-white"><a class="opacity-5 text-white" href="{{ route('dashboard') }}">Inicio</a></li>
             <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
           </ol>
           <h6 class="font-weight-bolder mb-0 text-white">Dashboard</h6>
@@ -188,6 +170,12 @@
           </div>
           <ul class="navbar-nav  justify-content-end">
             @include('components.selector-rol')
+            <li class="nav-item d-flex align-items-center pe-3">
+              <a href="{{ route('mi-perfil') }}" class="nav-link text-white font-weight-bold px-0 crm-nav-perfil" title="Ver mi perfil">
+                <span class="crm-nav-perfil__avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                <span class="d-sm-inline d-none">{{ explode(' ', Auth::user()->name)[0] }}</span>
+              </a>
+            </li>
             <li class="nav-item d-flex align-items-center">
               @auth
                 <form action="{{ route('logout') }}" method="POST">

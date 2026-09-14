@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ControlController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\LiderProduccionController;
@@ -40,7 +41,6 @@ Route::get('/', function () {
     Route::get('/dashboard-lider-comercial', [AdminController::class, 'index'])->middleware(['auth', 'rol:12'])->name('dashboard-lider-comercial');
     Route::get('/dashboard-admin', [AdminController::class, 'index'])->middleware(['auth'])->middleware(['admin'])->name('dashboard-admin');
     Route::get('/mi-equpo', [AdminController::class, 'show_team'])->middleware(['auth'])->middleware(['admin'])->name('mi-equpo');
-    Route::get('/actualizar-perfil-adm', [AdminController::class, 'showActualizarPerfil'])->middleware(['auth', 'rol:1,11,12'])->name('actualizar-perfil-adm');
     Route::get('/base-comercial-general/{filtro?}', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth', 'rol:1,11,12'])->name('base-comercial-general');
     Route::get('/helisa-general', [AdminController::class, 'showHelisaGeneral'])->middleware(['auth', 'rol:1,11,12'])->name('helisa-general');
     Route::get('/export-helisa/{comercial?}/{centro?}', [AdminController::class, 'exportHelisa'])->middleware(['auth', 'rol:1,11,12'])->name('export-helisa');
@@ -52,19 +52,15 @@ Route::get('/', function () {
     Route::get('/validaciones', [AdminController::class, 'validaciones'])->middleware(['auth', 'rol:1,12'])->name('validaciones');
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');
 
-    Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
-    Route::get('/orden-natural/{orden_id?}', function ($orden_id){
+    Route::get('/orden-juridica/{orden}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
+    Route::get('/orden-natural/{orden_id}', function ($orden_id){
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);
     })->middleware(['auth'])->middleware(['admin'])->name('orden-natural');
-    Route::get('/orden-nomina/{orden?}', [AdminController::class, 'showOrdenNomina'])->middleware(['auth', 'rol:1,11'])->name('orden-nomina');
-    Route::get('/orden-compra_anticipó', [AdminController::class, 'showOrdenCompra_Anticipo'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra_anticipate');
-
-    Route::get('/cuenta-cobro/pdf/{orden}', [AdminController::class, 'cuentaCobroPdf'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro.pdf');
 
     Route::get('/validacionesCliente', [AdminController::class, 'ValidacionesClientes'])->middleware(['auth', 'rol:1'])->name('validacionesCliente');
 
     Route::get('/consumidos', [AdminController::class, 'showConsumidos'])->middleware(['auth', 'rol:1,11'])->name('consumidos');
-    Route::get('/consumido/{presupuesto_id?}', [AdminController::class, 'showConsumido'])->middleware(['auth', 'rol:1,2,5,7,11'])->name('consumido');
+    Route::get('/consumido/{presupuesto_id}', [AdminController::class, 'showConsumido'])->middleware(['auth', 'rol:1,2,5,7,11'])->name('consumido');
     Route::get('/estados/{params?}', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estados');
     Route::get('/proveedores', [HomeController::class, 'showProveedores'])->middleware(['auth', 'rol:1,2,7'])->name('proveedores');
 
@@ -76,7 +72,6 @@ Route::get('/', function () {
 /* commercial */
     Route::get('/dashboard-com', [ComercialController::class, 'index'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-com');
     Route::get('/dashboard-base', [ComercialController::class, 'base'])->middleware(['auth'])->middleware(['comercial'])->name('dashboard-base');
-    Route::get('/actualizar-perfil-com', [ComercialController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['comercial'])->name('actualizar-perfil-com');
     Route::get('/gestion-comercial', [ComercialController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-comercial');
     Route::get('/gestion-helisa', [ComercialController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['comercial'])->name('gestion-helisa');
     Route::get('/contactos', [ComercialController::class, 'Contactos'])->middleware(['auth'])->middleware(['comercial'])->name('contactos');
@@ -89,17 +84,15 @@ Route::get('/', function () {
 
     Route::post('/delete-proyecto/{id_user?}', [ComercialController::class, 'delete_proyecto'])->middleware(['auth', 'rol:1,2,5'])->name('delete-proyecto');
     Route::post('/delete-contacto/{id?}', [ComercialController::class, 'delete_contacto'])->middleware(['auth', 'rol:1,2,5'])->name('delete-contacto');
-    Route::post('/update-proyecto/{id_user?}', [ComercialController::class, 'update_proyecto'])->middleware(['auth', 'rol:1,2,5'])->name('update-proyecto');
-    Route::post('/com-update-helisa/{id_user?}', [ComercialController::class, 'update_helisa'])->middleware(['auth'])->middleware(['comercial'])->name('com-update-helisa');
-    Route::get('/update-gestion-comercial/{leadId?}', [ComercialController::class, 'update_gestion'])->middleware(['auth', 'rol:1,2,5'])->name('update-gestion-comercial');
+    Route::get('/update-gestion-comercial/{leadId}', [ComercialController::class, 'update_gestion'])->middleware(['auth', 'rol:1,2,5'])->name('update-gestion-comercial');
     Route::post('/update-contacto/{id?}', [ComercialController::class, 'update_contacto'])->middleware(['auth', 'rol:1,2,5'])->name('update-contacto');
 
     // DEPRECATED
     Route::post('/delete-registro/{centro?}/{num_doc}', [ComercialController::class, 'delete_registro'])->middleware(['auth', 'rol:1,2,5'])->name('delete-registro');
 
     // Presupuesto
-    Route::get('/presupuesto/{gestion?}', [ComercialController::class, 'presupuesto'])->middleware(['auth', 'rol:1,2,5,11,12'])->name('presupuesto');
-    Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth', 'rol:1,2,5,11,12'])->name('presupuestos');
+    Route::get('/presupuesto/{gestion}', [ComercialController::class, 'presupuesto'])->middleware(['auth', 'rol:1,2,5,11,12'])->name('presupuesto');
+    Route::get('presupuestos', [ComercialController::class, 'presupuestos'])->middleware(['auth', 'rol:1,2,5'])->name('presupuestos');
     /* --- */
     Route::get('cotizacion/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionPdf'])->middleware(['auth'])->name('cotizacion');
     Route::get('cotizacionExcel/{prespuesto?}/{nom_proyecto?}/{tipo}', [ComercialController::class, 'cotizacionExcel'])->middleware(['auth'])->name('cotizacionExcel');
@@ -109,7 +102,6 @@ Route::get('/', function () {
     Route::get('/asis-gestion-helisa', [AsistenteController::class, 'gestionHelisa'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-helisa');
     Route::get('/asis-gestion-comercial', [AsistenteController::class, 'gestionComercial'])->middleware(['auth'])->middleware(['asistente'])->name('asis-gestion-comercial');
     Route::get('/asis-contactos', [AsistenteController::class, 'Contactos'])->middleware(['auth'])->middleware(['asistente'])->name('asis-contactos');
-    Route::get('/actualizar-perfil-asis', [AsistenteController::class, 'showActualizarPerfil'])->middleware(['auth'])->middleware(['asistente'])->name('actualizar-perfil-asis');
 /* --- */
 
 /* Líder produccion */
@@ -118,7 +110,7 @@ Route::get('/', function () {
 
 /* Productor */
     Route::get('/dashboard-productor', [ProductorController::class, 'index'])->middleware(['auth'])->middleware(['productor'])->name('dashboard-productor');
-    Route::get('/firmar-remision/{orden?}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');;
+    Route::get('/firmar-remision/{orden}', [ProductorController::class, 'showRemision'])->middleware(['auth'])->middleware(['productor'])->name('firmar-remision');;
     Route::get('/consumidos-prod', [ProductorController::class, 'showConsumidos'])->middleware(['auth'])->middleware(['productor'])->name('consumidos-prod');
     Route::view('/ordenes-compra-prod', 'productor.ordenes.index')->middleware(['auth'])->middleware(['productor'])->name('ordenes-prod');
     Route::get('/orden-compra-natural/{orden_id?}', function ($orden_id = null){
@@ -130,10 +122,10 @@ Route::get('/', function () {
 /* Contabilidad */
     Route::get('/dashboard-contabilidad', [ContabilidadController::class, 'index'])->middleware(['auth'])->middleware(['contabilidad'])->name('dashboard-contabilidad');
     Route::get('/anticipos-contabilidad', [ContabilidadController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipos-contabilidad');
-    Route::get('/anticipo-contabilidad/{orden?}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
+    Route::get('/anticipo-contabilidad/{orden}', [ContabilidadController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['contabilidad'])->name('anticipo-contabilidad');
     Route::view('/lista-anticipos-contabilidad', 'contabilidad.anticipos_.index')->middleware(['auth'])->middleware(['contabilidad'])->name('lista-anticipos-contabilidad');
 
-    Route::get('/detalle-anticipo-contabilidad/{anticipo_id?}', function ($anticipo_id){
+    Route::get('/detalle-anticipo-contabilidad/{anticipo_id}', function ($anticipo_id){
         return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
     })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
@@ -141,7 +133,7 @@ Route::get('/', function () {
 /* Tesoreria */
     Route::get('/dashboard-tesoreria', [TesoreriaController::class, 'index'])->middleware(['auth'])->middleware(['tesoreria'])->name('dashboard-tesoreria');
     Route::get('/anticipos', [TesoreriaController::class, 'showAnticipos'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipos');
-    Route::get('/anticipo/{orden?}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
+    Route::get('/anticipo/{orden}', [TesoreriaController::class, 'showAnticipo'])->middleware(['auth'])->middleware(['tesoreria'])->name('anticipo');
 /* --- */
 
 /* Anticipos (flujo nuevo): rutas que el código invocaba pero nunca fueron definidas */
@@ -179,6 +171,9 @@ Route::get('/', function () {
     })->middleware(['auth', 'tesoreria'])->name('detalle-anticipo-tesoreria');
 /* --- */
 
+/* Mi perfil (solo lectura): foto, cargo y datos de la cuenta, para todos los roles */
+    Route::get('/mi-perfil', [PerfilController::class, 'show'])->middleware(['auth'])->name('mi-perfil');
+
 /* Cambio de rol activo (multi-rol por cuenta única) */
     Route::post('/cambiar-rol/{rol}', function ($rol) {
         // El rol 20 (Gerencia) otorga permisos pero no tiene dashboard propio:
@@ -201,12 +196,4 @@ Route::get('/', function () {
         ->middleware('signed')->name('consulta-terceros');
 /* --- */
 
-
-Route::get('trial-mail', function (){
-    return view('mails.grGenerado');
-});
-
-Route::get('trial', function (){
-    return view('exports.orden_compra_pdf');
-});
 require __DIR__.'/auth.php';

@@ -101,14 +101,6 @@ class ComercialController extends Controller
     }
 
     /**
-     * Muestra la vista para actualizar el perfil del usuario
-     * @return \Illuminate\View\View
-     */
-    public function showActualizarPerfil(){
-        return view('comercial.ajustes.perfil.actualizar');
-    }
-
-    /**
      * Muestra la vista principal de Helisa (alias del método gestionHelisa)
      * @return \Illuminate\View\View
      */
