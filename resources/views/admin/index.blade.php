@@ -17,6 +17,7 @@
         </div>
         <div class="col-12 col-xl-7">
             @livewire('admin.dashboard.block1')
+            @livewire('admin.dashboard.tendencia')
         </div>
         <div class="col-12 col-xl-5 mt-4 mt-xl-0">
             @livewire('admin.dashboard.block2')

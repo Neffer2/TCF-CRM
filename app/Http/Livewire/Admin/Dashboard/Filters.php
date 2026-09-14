@@ -27,6 +27,7 @@ class Filters extends Component
     public $mes;        // ID del mes seleccionado
     public $comercial;  // ID del comercial seleccionado
     public $año;        // ID del año seleccionado
+    public $buscarComercial = ''; // Texto del buscador de comercial (filtra la lista mientras se escribe)
 
     // Arrays que almacenan las opciones disponibles para cada filtro
     public $StdMes = [];        // Lista de meses disponibles según el año seleccionado
@@ -92,6 +93,28 @@ class Filters extends Component
      * Envía la descripción del año (no el ID) junto con el mes y comercial
      * a los componentes Block1 y Block2 para que actualicen sus datos
      */
+    // --- Buscador de comercial: filtra la lista mientras se escribe ---
+    public function getComercialesFiltradosProperty()
+    {
+        $texto = mb_strtolower(trim($this->buscarComercial));
+        return collect($this->StdComercial)->filter(function ($c) use ($texto) {
+            return $texto === '' || mb_strpos(mb_strtolower($c['name'] ?? $c->name), $texto) !== false;
+        })->values();
+    }
+
+    public function elegirComercial($id = null)
+    {
+        $this->comercial = $id ?: null;
+        $nombre = collect($this->StdComercial)->first(function ($c) use ($id) { return ($c['id'] ?? $c->id) == $id; });
+        $this->buscarComercial = $nombre ? ($nombre['name'] ?? $nombre->name) : '';
+        $this->signals();
+    }
+
+    public function limpiarComercial()
+    {
+        $this->elegirComercial(null);
+    }
+
     public function signals (){
         // Solo emite señales si hay un año seleccionado
         if ($this->año){
@@ -108,6 +131,10 @@ class Filters extends Component
             $this->emit('Block2', [
                 'año' => $año_desc->description,
                 'mes' => $this->mes,
+                'comercial' => $this->comercial
+            ]);
+            $this->emit('Tendencia', [
+                'año_id' => $this->año,
                 'comercial' => $this->comercial
             ]);
         }
@@ -138,6 +165,7 @@ class Filters extends Component
             // Emite eventos vacíos para resetear los componentes Block1 y Block2
             $this->emit('Block1');
             $this->emit('Block2');
+            $this->emit('Tendencia');
         }
     }
 }
