@@ -199,7 +199,7 @@ class Presupuesto extends Component
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
             $item->v_total = $this->valor_total;
-            $item->proveedor = serialize($this->proveedor);
+            $item->proveedoresPendientes = (array) $this->proveedor;
             $item->margen_utilidad = $this->utilidad;
             $item->mes = !empty($this->mes) ? $this->mes : null;
             $item->dias = !empty($this->dias) ? (int)$this->dias : 0;
@@ -475,7 +475,7 @@ class Presupuesto extends Component
         $this->valor_total = $this->selected_item->v_total;
         $this->valor_unitario_cliente = $this->selected_item->v_unitario_cot;
         $this->valor_total_cliente = $this->selected_item->v_total_cliente;
-        $this->proveedor = (@unserialize($this->selected_item->proveedor)) ? @unserialize($this->selected_item->proveedor) : [$this->selected_item->proveedor];
+        $this->proveedor = $this->selected_item->proveedorIds();
         $this->utilidad = $this->selected_item->margen_utilidad;
         $this->mes = $this->selected_item->mes;
         $this->dias = $this->selected_item->dias;
@@ -493,7 +493,7 @@ class Presupuesto extends Component
 
         HistorialItemPresupuesto::create([
             'item_presupuesto_id' => $item->id,
-            'valores_anteriores'  => $item->toArray(),
+            'valores_anteriores'  => $item->snapshotHistorial(),
             'user_id'             => auth()->id(),
         ]);
 
@@ -521,7 +521,7 @@ class Presupuesto extends Component
 
             HistorialItemPresupuesto::create([
                 'item_presupuesto_id' => $itemOriginal->id,
-                'valores_anteriores'  => $itemOriginal->toArray(),
+                'valores_anteriores'  => $itemOriginal->snapshotHistorial(),
                 'user_id'             => auth()->id(),
             ]);
 
@@ -535,7 +535,7 @@ class Presupuesto extends Component
             $itemOriginal->v_unitario = 0;
             $itemOriginal->v_total = 0;
             $itemOriginal->v_total_cliente = 0;
-            $itemOriginal->proveedor = serialize([]);
+            $itemOriginal->proveedoresPendientes = [];
             $itemOriginal->margen_utilidad = 0;
             $itemOriginal->mes = 1;
             $itemOriginal->dias = 0;
@@ -567,8 +567,8 @@ class Presupuesto extends Component
                 return $orden->OrdenCompra->proveedor_id;
             });
 
-            if ((@unserialize($itemOriginal->proveedor))){
-                foreach (@unserialize($itemOriginal->proveedor) as $proveedor) {
+            if (true){
+                foreach ($itemOriginal->proveedorIds() as $proveedor) {
                     if ($proveedores_consumidos->contains($proveedor) && in_array($proveedor, $this->proveedor) == false){
                         $this->addError('proveedor', "No puedes cambiar el proveedor {$this->proveedores->find($proveedor)->tercero} porque ya ha sido consumido.");
                         return redirect()->back();
@@ -578,7 +578,7 @@ class Presupuesto extends Component
 
             HistorialItemPresupuesto::create([
                 'item_presupuesto_id' => $itemOriginal->id,
-                'valores_anteriores'  => $itemOriginal->toArray(),
+                'valores_anteriores'  => $itemOriginal->snapshotHistorial(),
                 'user_id'             => auth()->id(),
             ]);
 
@@ -614,7 +614,7 @@ class Presupuesto extends Component
             $itemOriginal->v_total = $this->valor_total;
             $itemOriginal->v_total_cliente = $this->valor_total_cliente;
             $itemOriginal->v_unitario_cot = $this->valor_unitario_cliente;
-            $itemOriginal->proveedor = serialize($this->proveedor);
+            $itemOriginal->proveedoresPendientes = (array) $this->proveedor;
             $itemOriginal->margen_utilidad = $this->utilidad;
             $itemOriginal->mes = $this->mes;
             $itemOriginal->dias = $this->dias;
@@ -935,19 +935,12 @@ class Presupuesto extends Component
         $presupuesto->gestion->update();
 
         // Calcula el presupuesto para el usuario creador de la gestión
-        array_push($prestosCom, [
-            'comercial_id' => $presupuesto->gestion->id_user,
-            'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->porcentaje)/100
-        ]);
-
-        // Calcula el presupuesto para los usuarios participantes en la gestión
-        $i = 2;
-        while($i < 5){
+        // Un reparto por cada participante (posición 1 = responsable)
+        foreach ($presupuesto->gestion->participantes as $participante) {
             array_push($prestosCom, [
-                'comercial_id' => $presupuesto->gestion->{'comercial_'.$i},
-                'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->{'porcentaje_'.$i})/100,
+                'comercial_id' => $participante->user_id,
+                'presupuesto' => ($presupuesto->gestion->presto_cot * $participante->porcentaje)/100,
             ]);
-            $i++;
         }
 
         // Actualiza los valores en la base comercial emparejando por id_user.

@@ -293,15 +293,16 @@ class CotizacionForm extends Component
         $lead->presto_cot = $this->presupuesto;
  
         $lead->participaciones = $this->participaciones;
+        // Participantes (posición, comercial, porcentaje): se persisten en
+        // gestion_participantes al guardar; las posiciones vacías no se guardan.
+        $lead->participantesPendientes = [
+            [1, $this->comercial0, $this->porcentaje0],
+            [2, $this->comercial1, $this->porcentaje1],
+            [3, $this->comercial2, $this->porcentaje2],
+            [4, $this->comercial3, $this->porcentaje3],
+        ];
  
-        $lead->comercial_2 = $this->comercial1; 
-        $lead->comercial_3 = $this->comercial2;
-        $lead->comercial_4 = $this->comercial3;
         
-        $lead->porcentaje = $this->porcentaje0;
-        $lead->porcentaje_2 = $this->porcentaje1;
-        $lead->porcentaje_3 = $this->porcentaje2;
-        $lead->porcentaje_4 = $this->porcentaje3;
 
         $lead->nom_proyecto_cot = $this->nom_proyecto;
         $lead->fecha_estimada_cot = $this->fecha;

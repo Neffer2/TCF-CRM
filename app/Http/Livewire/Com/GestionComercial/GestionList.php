@@ -58,9 +58,7 @@ class GestionList extends Component
             // Comerciales ven sus propias gestiones y donde participan
             $datos = GestionComercial::select('id', 'id_contacto', 'id_estado', 'nom_proyecto_cot', 'presto_cot')->where(function ($query) {
                 $query->where('id_user', Auth::user()->id)
-                    ->orWhere('comercial_2', Auth::user()->id)
-                    ->orWhere('comercial_3', Auth::user()->id)
-                    ->orWhere('comercial_4', Auth::user()->id);
+                    ->orWhereHas('participantes', function ($p) { $p->where('user_id', Auth::user()->id); });
             })->where($filtros)->orderBy('created_at', $this->order)->paginate(15);
 
         }else if(Auth::user()->rol == 5){
@@ -68,9 +66,7 @@ class GestionList extends Component
             $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
             $datos = GestionComercial::select('id','id_contacto','id_estado', 'nom_proyecto_cot', 'presto_cot')->where(function ($query) use ($asistente) {
                 $query->where('id_user', $asistente->comercial_id)
-                    ->orWhere('comercial_2', $asistente->comercial_id)
-                    ->orWhere('comercial_3', $asistente->comercial_id)
-                    ->orWhere('comercial_4', $asistente->comercial_id);
+                    ->orWhereHas('participantes', function ($p) use ($asistente) { $p->where('user_id', $asistente->comercial_id); });
             })->where($filtros)->orderBy('created_at', $this->order)->paginate(15);
         }
 

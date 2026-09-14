@@ -407,13 +407,11 @@
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($proveedores_item = @unserialize($item->proveedor))
-                                        @foreach ($proveedores_item as $proveedor)
-                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach
-                                    @else
-                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
-                                    @endif
+                                    @forelse ($item->proveedores as $proveedorItem)
+                                    {{ $proveedorItem->tercero }} <br>
+                                @empty
+                                    {{ $item->proveedor_legacy }}
+                                @endforelse
                                 </td>
                                 <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
                                 <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>
@@ -443,13 +441,11 @@
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($proveedores_item = @unserialize($item->proveedor))
-                                        @foreach ($proveedores_item as $proveedor)
-                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach
-                                    @else
-                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
-                                    @endif
+                                    @forelse ($item->proveedores as $proveedorItem)
+                                    {{ $proveedorItem->tercero }} <br>
+                                @empty
+                                    {{ $item->proveedor_legacy }}
+                                @endforelse
                                 </td>
                                 <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
                                 <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>
@@ -480,13 +476,11 @@
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_unitario_cot) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($item->v_total_cliente) }}</td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($proveedores_item = @unserialize($item->proveedor))
-                                        @foreach ($proveedores_item as $proveedor)
-                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach
-                                    @else
-                                        {{ $proveedores->find($item->proveedor)->tercero ?? $item->proveedor }}
-                                    @endif
+                                    @forelse ($item->proveedores as $proveedorItem)
+                                    {{ $proveedorItem->tercero }} <br>
+                                @empty
+                                    {{ $item->proveedor_legacy }}
+                                @endforelse
                                 </td>
                                 <td class="font-weight-bold font-table">{{ number_format(100 - ($item->margen_utilidad * 100), 2) }} %</td>
                                 <td class="font-weight-bold font-table">{{ $item->mesDescription->description ?? '' }}</td>

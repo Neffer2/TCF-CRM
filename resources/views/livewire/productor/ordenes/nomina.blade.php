@@ -733,7 +733,7 @@
                                         <option value="">Seleccionar</option>
                                         @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                             @if (!$presupuestoItem->evento)
-                                                @php (@unserialize($presupuestoItem->proveedor)) ? $itemProveedor = unserialize($presupuestoItem->proveedor) : $itemProveedor = $presupuestoItem->proveedor; @endphp
+                                                @php $itemProveedor = $presupuestoItem->proveedores->pluck('id')->all(); @endphp
                                                 <option value="{{ $presupuestoItem->id }}"
                                                         @if (is_array($itemProveedor))
                                                             @php

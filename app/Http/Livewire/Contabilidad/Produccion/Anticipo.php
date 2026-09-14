@@ -69,7 +69,9 @@ class Anticipo extends Component
         // Limpia el código causal y actualiza la observación y estado
         $this->anticipo->cod_causal = null;
         $this->anticipo->observacion_causal = $this->observacion_causacion;
-        $this->anticipo->estado_id = 2; // Estado: Revisión
+        // Jurídico vuelve a Revisión (2); el de productor pasa a Rechazo contabilidad (13),
+        // un estado propio en vez del 2 (ajeno a su flujo, lo dejaba fuera de todas las listas).
+        $this->anticipo->estado_id = $this->anticipo->presupuesto_id ? 13 : 2;
         $this->anticipo->update();
 
         // $this->ocNaturalContabilidadRechazo($this->orden);

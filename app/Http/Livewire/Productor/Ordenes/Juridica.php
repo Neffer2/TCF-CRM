@@ -148,17 +148,13 @@ class Juridica extends Component
         $proveedores_db = Proveedor::select('id', 'tercero')->get();
 
         // Recorre los items únicos del presupuesto para obtener proveedores
-        foreach ($this->presupuesto->presupuestoItems->unique('proveedor') as $item){
-            if ($proveedores_id = @unserialize($item->proveedor)){
-                foreach ($proveedores_id as $proveedor_id) {
-                    array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
-                }
-            }else {
-                array_push($proveedores_presupuesto, $proveedores_db->find($item->proveedor));
+        foreach ($this->presupuesto->presupuestoItems as $item){
+            foreach ($item->proveedorIds() as $proveedor_id) {
+                array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
             }
         }
 
-        $this->proveedores = collect($proveedores_presupuesto);
+        $this->proveedores = collect($proveedores_presupuesto)->filter()->unique('id')->values();
     }
 
     // Valida que el item no esté repetido en la OC

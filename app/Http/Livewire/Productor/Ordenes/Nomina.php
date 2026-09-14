@@ -115,11 +115,10 @@ class Nomina extends Component
                 ['estado_id', 1]
             ])
             ->whereHas('presupuestoItems', function ($item){
-                $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total', 'proveedor')
+                $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total')
                     ->where('disponible', 1)
-                    ->where(function ($q) {
-                        $q->where('proveedor', 'LIKE', '%s:1:"1"%')
-                            ->orWhere('proveedor', 'LIKE', '%s:1:"2"');
+                    ->whereHas('proveedores', function ($q) {
+                        $q->whereIn('proveedores.id', [1, 2]); // 1 = nómina por día, 2 = nómina mensual
                     });
             })
             ->orderBy('created_at', 'desc')
@@ -169,17 +168,13 @@ class Nomina extends Component
             ->get();
 
         // Recorre los items únicos del presupuesto para obtener proveedores
-        foreach ($this->presupuesto->presupuestoItems->unique('proveedor') as $item){
-            if ($proveedores_id = @unserialize($item->proveedor)){
-                foreach ($proveedores_id as $proveedor_id) {
-                    array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
-                }
-            }else {
-                array_push($proveedores_presupuesto, $proveedores_db->find($item->proveedor));
+        foreach ($this->presupuesto->presupuestoItems as $item){
+            foreach ($item->proveedorIds() as $proveedor_id) {
+                array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
             }
         }
 
-        $this->proveedores = collect($proveedores_presupuesto);
+        $this->proveedores = collect($proveedores_presupuesto)->filter()->unique('id')->values();
     }
 
     // Valida que el item no esté repetido en la OC

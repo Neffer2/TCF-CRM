@@ -35,17 +35,11 @@
                                 <td class="font-weight-bold font-table">{{ $presupuestoItem->dia }}</td>
                                 <td class="font-weight-bold font-table">{{ $presupuestoItem->otros }}</td>
                                 <td class="font-weight-bold font-table">
-                                    @if ($proveedores_item = @unserialize($presupuestoItem->proveedor))
-                                        @foreach ($proveedores_item as $proveedor)
-                                            {{ @$proveedores->find($proveedor)->tercero }} <br>
-                                        @endforeach
-                                    @else
-                                        @if ($proveedores->find($presupuestoItem->proveedor))
-                                            {{ $proveedores->find($presupuestoItem->proveedor)->tercero }}
-                                        @else
-                                            {{ $presupuestoItem->proveedor }}
-                                        @endif
-                                    @endif
+                                    @forelse ($presupuestoItem->proveedores as $proveedorItem)
+                                    {{ $proveedorItem->tercero }} <br>
+                                @empty
+                                    {{ $presupuestoItem->proveedor_legacy }}
+                                @endforelse
                                 </td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_unitario) }}</td>
                                 <td class="font-weight-bold font-table">$ {{ number_format($presupuestoItem->v_total) }}</td>

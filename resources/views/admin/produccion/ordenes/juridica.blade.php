@@ -62,17 +62,11 @@
                                             $ {{ number_format($item->itemPresupuesto->v_total) }}
                                         </td>
                                         <td class="font-weight-bold font-table">
-                                            @if ($proveedores_item = @unserialize($item->itemPresupuesto->proveedor))
-                                                @foreach ($proveedores_item as $proveedor) 
-                                                    {{ $proveedores->find($proveedor)->tercero }} <br>
-                                                @endforeach 
-                                            @else  
-                                                @if ($proveedores->find($item->itemPresupuesto->proveedor))
-                                                    {{ $proveedores->find($item->itemPresupuesto->proveedor)->tercero }}
-                                                @else   
-                                                    {{ $item->itemPresupuesto->proveedor }}
-                                                @endif
-                                            @endif
+                                            @forelse ($item->itemPresupuesto->proveedores as $proveedorItem)
+                                    {{ $proveedorItem->tercero }} <br>
+                                @empty
+                                    {{ $item->itemPresupuesto->proveedor_legacy }}
+                                @endforelse
                                         </td>
                                         <td class="font-weight-bold font-table">
                                             {{ $item->itemPresupuesto->margen_utilidad }}

@@ -87,8 +87,8 @@ class Edit extends Component
         $this->nom_proyecto = $this->stored->nom_proyecto_cot;
         $this->presupuesto = $this->stored->presto_cot;
         $this->fecha = $this->stored->fecha_estimada_cot;
-        $this->porcentaje = $this->stored->porcentaje;
-        $this->com_2 = $this->stored->comercial_2;
+        $this->porcentaje = $this->stored->participantePorcentaje(1);
+        $this->com_2 = $this->stored->participanteUserId(2);
         // $this->cotizacionFile = $this->stored->cotizacion_file;
 
         $this->nom_proyecto_prop = $this->stored->nom_proyecto_prop;
@@ -215,15 +215,14 @@ class Edit extends Component
             $this->validate([
                 'com_2' => 'required|numeric',
             ]);
-            $gestion->comercial_2 = $this->com_2;
+            $gestion->participantesPendientes = [[1, $gestion->id_user, $this->porcentaje], [2, $this->com_2, 100 - (float) $this->porcentaje]];
         }else {
-            $gestion->comercial_2 = null;
+            $gestion->participantesPendientes = [[1, $gestion->id_user, $this->porcentaje]];
         }
 
         $gestion->nom_proyecto_cot = $this->nom_proyecto;
         $gestion->presto_cot = $this->presupuesto;
         $gestion->fecha_estimada_cot = $this->fecha;
-        $gestion->porcentaje = $this->porcentaje;
 
         // Si se sube un archivo de cotización, lo guarda
         if ($this->cotizacionFile){

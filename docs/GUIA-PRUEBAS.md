@@ -213,3 +213,28 @@ Para cada ❌, reporta en un documento/issue:
 - Los correos NO salen de tu máquina (`MAIL_MAILER=log`): el "envío" se verifica en `storage/logs/laravel.log`.
 - Los SMS no salen (no hay `SMS_TOKEN` en tu `.env`).
 - Si dañas los datos de prueba, reimporta el dump (paso A4) y vuelve a correr A5.
+
+---
+
+# PARTE D — Estructura de la base de datos (reestructuración de sep-2026)
+
+La rama `correcciones` trae 5 migraciones que normalizan el esquema. Se aplican solas con `php artisan migrate` (paso A5) y **solo en tu base local**.
+
+| Antes | Ahora |
+|---|---|
+| `items_presupuesto.proveedor` con un array PHP serializado | tabla `item_presupuesto_proveedor` (una fila por proveedor del ítem); la columna vieja se llama `proveedor_legacy` y es solo auditoría |
+| `gestion_comercial.comercial_2..4` y `porcentaje_1..4` | tabla `gestion_participantes` (posición 1 = responsable, porcentaje por comercial) |
+| `anticipos.estado_id` apuntando al catálogo de órdenes | catálogo propio `estados_anticipo` (mismos ids + 13 "Rechazo contabilidad") |
+| ítems huérfanos, FKs faltantes, contactos con pbx/web cruzados | limpiados, FKs e índices creados |
+
+**Diccionario de datos:** `docs/DICCIONARIO-DATOS.md` describe cada tabla y columna (se regenera con `php artisan tinker docs/generar-diccionario.php`). Además, cada tabla y columna tiene su COMMENT en la base: en phpMyAdmin, TablePlus o DBeaver aparece la descripción al lado del campo.
+
+**Casos de prueba adicionales:**
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| D.1 | Proveedores de un ítem | Como comercial: presupuesto → agrega un ítem con 2 proveedores → guarda → reabre el ítem | Los 2 proveedores aparecen en la tabla del presupuesto y en el formulario de edición (tabla `item_presupuesto_proveedor`) |
+| D.2 | Ítems por tipo de proveedor | Como productor: nueva orden natural / nómina / anticipo | Solo aparecen ítems cuyo proveedor es "Cuenta de cobro" (natural/anticipo) o "Nómina" (nómina) |
+| D.3 | Participantes | Como comercial: cotización con 2 participantes al 60/40 → guarda → reabre | Los porcentajes se conservan; baja a 1 participante → guarda → el segundo desaparece (tabla `gestion_participantes`) |
+| D.4 | Rechazo contable | Como contabilidad rechaza un anticipo de productor | Queda en estado "Rechazo contabilidad" y el productor lo ve en su lista para corregir y reenviar |
+| D.5 | Exports | Cotización PDF/Excel e historial de cambios de un presupuesto | Los proveedores se listan igual que antes |

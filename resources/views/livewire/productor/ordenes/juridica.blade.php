@@ -450,7 +450,7 @@
                                     @foreach ($presupuesto->presupuestoItems as $key => $presupuestoItem)
                                         @if (!$presupuestoItem->evento)
                                             @php 
-                                                $itemProveedor = @unserialize($presupuestoItem->proveedor) ? unserialize($presupuestoItem->proveedor) : $presupuestoItem->proveedor; 
+                                                $itemProveedor = $presupuestoItem->proveedores->pluck('id')->all(); 
                                             @endphp
                                             <option value="{{ $presupuestoItem->id }}"
                                                 @if (is_array($itemProveedor))

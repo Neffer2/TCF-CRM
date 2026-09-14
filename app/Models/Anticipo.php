@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Anticipo extends Model
 {
     use HasFactory;
+
     protected $table = 'anticipos';
 
     protected $fillable = [
@@ -23,8 +24,9 @@ class Anticipo extends Model
         'firma_productor'
     ];
 
+    // Catálogo propio de anticipos (estados_anticipo), ya no el de órdenes de compra
     public function estado(){
-        return $this->belongsTo(EstadoOrdenesCompra::class, 'estado_id');
+        return $this->belongsTo(EstadoAnticipo::class, 'estado_id');
     }
 
     public function ordenCompra(){
@@ -41,5 +43,11 @@ class Anticipo extends Model
 
     public function productor_info(){
         return $this->hasOne(User::class, 'id', 'productor_id');
+    }
+
+    // true si es un anticipo de productor (sobre presupuesto); false si es jurídico (sobre orden)
+    public function esDeProductor(): bool
+    {
+        return !is_null($this->presupuesto_id);
     }
 }

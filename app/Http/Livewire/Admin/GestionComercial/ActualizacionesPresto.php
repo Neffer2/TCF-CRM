@@ -179,19 +179,12 @@ class ActualizacionesPresto extends Component
         $presupuesto->gestion->update();
 
         // Calcula el presupuesto del comercial principal (creador de la gestión)
-        array_push($prestosCom, [
-            'comercial_id' => $presupuesto->gestion->id_user,
-            'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->porcentaje)/100
-        ]);
-
-        // Calcula el presupuesto de los comerciales participantes (2, 3 y 4)
-        $i = 2;
-        while($i < 5){
+        // Un reparto por cada participante (posición 1 = responsable)
+        foreach ($presupuesto->gestion->participantes as $participante) {
             array_push($prestosCom, [
-                'comercial_id' => $presupuesto->gestion->{'comercial_'.$i},
-                'presupuesto' => ($presupuesto->gestion->presto_cot * $presupuesto->gestion->{'porcentaje_'.$i})/100,
+                'comercial_id' => $participante->user_id,
+                'presupuesto' => ($presupuesto->gestion->presto_cot * $participante->porcentaje)/100,
             ]);
-            $i++;
         }
 
         // Actualiza los valores en la base comercial emparejando por id_user.

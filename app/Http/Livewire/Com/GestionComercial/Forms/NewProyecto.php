@@ -98,8 +98,8 @@ class NewProyecto extends Component
             $this->valor_proyecto = $informacionGeneral->presto_cot;
         }
 
-        $this->com_2 = $informacionGeneral->comercial_2;
-        $this->porcentaje = $informacionGeneral->porcentaje;
+        $this->com_2 = $informacionGeneral->participanteUserId(2);
+        $this->porcentaje = $informacionGeneral->participantePorcentaje(1);
         $this->comerciales = User::select('id', 'name')->where('rol', 2)->get();
 
         $this->participaciones = $informacionGeneral->participaciones;
@@ -111,14 +111,14 @@ class NewProyecto extends Component
             $this->comercial0 = $asistente->comercial_id;
         }
 
-        $this->comercial1 = $informacionGeneral->comercial_2;
-        $this->comercial2 = $informacionGeneral->comercial_3;
-        $this->comercial3 = $informacionGeneral->comercial_4;
+        $this->comercial1 = $informacionGeneral->participanteUserId(2);
+        $this->comercial2 = $informacionGeneral->participanteUserId(3);
+        $this->comercial3 = $informacionGeneral->participanteUserId(4);
 
-        $this->porcentaje0 = $informacionGeneral->porcentaje;
-        $this->porcentaje1 = $informacionGeneral->porcentaje_2;
-        $this->porcentaje2 = $informacionGeneral->porcentaje_3;
-        $this->porcentaje3 = $informacionGeneral->porcentaje_4;
+        $this->porcentaje0 = $informacionGeneral->participantePorcentaje(1);
+        $this->porcentaje1 = $informacionGeneral->participantePorcentaje(2);
+        $this->porcentaje2 = $informacionGeneral->participantePorcentaje(3);
+        $this->porcentaje3 = $informacionGeneral->participantePorcentaje(4);
 
         $prestoInfo = PresupuestoProyecto::select('cod_cc', 'fecha_cc')->where('id_gestion', $this->lead_id)->first();
         if ($prestoInfo){

@@ -31,4 +31,9 @@ class ProductorController extends Controller
     public function showRemision($orden){
         return view('productor.remision.index', ['orden' => $orden]);
     }
+
+    // Consumidos del productor (la ruta existía desde el origen pero el método nunca se creó: 500 permanente)
+    public function showConsumidos(){
+        return view('productor.consumidos.list');
+    }
 }

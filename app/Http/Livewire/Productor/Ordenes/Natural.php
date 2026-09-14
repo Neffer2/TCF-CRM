@@ -85,8 +85,8 @@ class Natural extends Component
         $this->presupuestos = PresupuestoProyecto::with('presupuestoItems')->select('id', 'cod_cc')
                             ->where([['productor', $this->productor->id], ['estado_id', 1]])
                             ->whereHas('presupuestoItems', function ($item){
-                                $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total', 'proveedor')
-                                    ->where([['proveedor', 'LIKE', '%s:1:"3"%'], ['disponible', 1]]);
+                                $item->select('id', 'cantidad', 'dia', 'otros', 'v_unitario', 'v_total')
+                                    ->where('disponible', 1)->whereHas('proveedores', function ($q) { $q->where('proveedores.id', 3); });
                             })
                             ->get();
     }
@@ -591,7 +591,7 @@ class Natural extends Component
         if ($this->presupuesto){
             $items_presupuesto = $this->presupuestos->where('id', $this->presupuesto)->first()->presupuestoItems;
             $this->items_presupuesto = $items_presupuesto->filter(function($item) {
-                return Str::contains($item->proveedor, 's:1:"3"') && $item->disponible == 1;
+                return $item->proveedores->contains('id', 3) && $item->disponible == 1;
             });
         }else {
             $this->items_presupuesto = [];

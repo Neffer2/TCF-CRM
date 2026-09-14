@@ -270,7 +270,7 @@ class AnticipoProductor extends Component
         if ($this->centro_costo) {
             $items_presupuesto = $this->centros_costo->where('id', $this->centro_costo)->first()->presupuestoItems;
             $this->items_presupuesto = $items_presupuesto->filter(function($item) {
-                return Str::contains($item->proveedor, 's:1:"3"') && $item->disponible == 1;
+                return $item->proveedores->contains('id', 3) && $item->disponible == 1;
             });
         }
         else {
@@ -442,7 +442,7 @@ class AnticipoProductor extends Component
             $this->addError('items-error', 'No tienes permisos para actualizar este anticipo.');
             return back();
         }
-        if (!in_array($this->queriedAnticipo->estado_id, [8, 11, 12])) {
+        if (!in_array($this->queriedAnticipo->estado_id, [8, 11, 12, 13])) {
             $this->addError('items-error', 'El anticipo no está en un estado válido para actualizarse.');
             return back();
         }

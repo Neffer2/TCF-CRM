@@ -44,7 +44,7 @@
                                         {{ $orden->proveedor->tercero }}
                                     @endif
                                 </label>
-                                <textarea class="form-control" disabled>@if ($orden) {{ $orden->proveedor->OrdenCompra->last()->observaciones_negociacion }} @endif</textarea>
+                                <textarea class="form-control" disabled>@if ($orden) {{ $orden->observaciones_negociacion }} @endif</textarea>
                             </div>
                         </td>
                     </tr>
