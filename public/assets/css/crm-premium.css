@@ -378,7 +378,7 @@ html.crm-js .crm-kpi.is-in, html.crm-js .crm-chart.is-in, html.crm-js .crm-panel
 
 /* Filas del estado de facturación y composición: entrada escalonada */
 html.crm-js .crm-table tbody tr, html.crm-js .crm-mix__item { opacity: 0; transform: translateX(-8px); }
-.is-in .crm-table tbody tr, .is-in .crm-mix__item {
+html.crm-js .is-in .crm-table tbody tr, html.crm-js .is-in .crm-mix__item {
   opacity: 1; transform: none;
   animation: crm-row .6s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.25s + var(--i, 0) * 80ms);
 }
@@ -394,7 +394,7 @@ html.crm-js .crm-table tbody tr, html.crm-js .crm-mix__item { opacity: 0; transf
   transition: background .25s ease, border-color .25s ease, transform .25s ease;
 }
 html.crm-js .crm-rank { opacity: 0; transform: translateY(8px); }
-.is-in .crm-rank { opacity: 1; transform: none; animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.2s + var(--i, 0) * 90ms); }
+html.crm-js .is-in .crm-rank { opacity: 1; transform: none; animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.2s + var(--i, 0) * 90ms); }
 .crm-rank:hover { background: var(--crm-paper); }
 .crm-rank.is-selected { background: var(--crm-accent-soft); border-color: rgba(239, 95, 23, .25); }
 .crm-rank__pos { font-size: 12px; font-weight: 800; color: var(--crm-ink-3); text-align: center; font-variant-numeric: tabular-nums; }
