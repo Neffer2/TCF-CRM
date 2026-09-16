@@ -260,10 +260,11 @@ body { -webkit-font-smoothing: antialiased; }
    sin JS, o con "reducir movimiento", todo se ve de inmediato. */
 html.crm-js .crm-kpi, html.crm-js .crm-chart, html.crm-js .crm-panel { opacity: 0; transform: translateY(14px); }
 html.crm-js .crm-kpi.is-in, html.crm-js .crm-chart.is-in, html.crm-js .crm-panel.is-in {
-  animation: crm-in .8s cubic-bezier(.16, 1, .3, 1) forwards;
+  opacity: 1; transform: none;
+  animation: crm-in .8s cubic-bezier(.16, 1, .3, 1) backwards;
   animation-delay: calc(var(--i, 0) * 70ms);
 }
-@keyframes crm-in { to { opacity: 1; transform: translateY(0); } }
+@keyframes crm-in { from { opacity: 0; transform: translateY(14px); } }
 @media (prefers-reduced-motion: reduce) {
   html.crm-js .crm-kpi, html.crm-js .crm-chart, html.crm-js .crm-panel,
   html.crm-js .crm-table tbody tr, html.crm-js .crm-mix__item, html.crm-js .crm-rank { opacity: 1; transform: none; animation: none; }
@@ -378,9 +379,10 @@ html.crm-js .crm-kpi.is-in, html.crm-js .crm-chart.is-in, html.crm-js .crm-panel
 /* Filas del estado de facturación y composición: entrada escalonada */
 html.crm-js .crm-table tbody tr, html.crm-js .crm-mix__item { opacity: 0; transform: translateX(-8px); }
 .is-in .crm-table tbody tr, .is-in .crm-mix__item {
-  animation: crm-row .6s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.25s + var(--i, 0) * 80ms);
+  opacity: 1; transform: none;
+  animation: crm-row .6s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.25s + var(--i, 0) * 80ms);
 }
-@keyframes crm-row { to { opacity: 1; transform: translateX(0); } }
+@keyframes crm-row { from { opacity: 0; transform: translateX(-8px); } }
 .crm-table tbody tr { transition: background .25s ease; }
 .crm-table tbody tr:hover td { background: rgba(239, 95, 23, .04); }
 
@@ -392,7 +394,7 @@ html.crm-js .crm-table tbody tr, html.crm-js .crm-mix__item { opacity: 0; transf
   transition: background .25s ease, border-color .25s ease, transform .25s ease;
 }
 html.crm-js .crm-rank { opacity: 0; transform: translateY(8px); }
-.is-in .crm-rank { animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.2s + var(--i, 0) * 90ms); }
+.is-in .crm-rank { opacity: 1; transform: none; animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.2s + var(--i, 0) * 90ms); }
 .crm-rank:hover { background: var(--crm-paper); }
 .crm-rank.is-selected { background: var(--crm-accent-soft); border-color: rgba(239, 95, 23, .25); }
 .crm-rank__pos { font-size: 12px; font-weight: 800; color: var(--crm-ink-3); text-align: center; font-variant-numeric: tabular-nums; }
@@ -734,13 +736,15 @@ a.crm-kpi:hover .crm-kpi__label { color: var(--crm-accent-deep); }
 /* --- Entrada animada de TODAS las tarjetas de contenido (no solo las del dashboard) --- */
 html.crm-js .main-content .card:not(.crm-kpi):not(.crm-panel):not(.crm-chart) { opacity: 0; transform: translateY(12px); }
 html.crm-js .main-content .card.is-in:not(.crm-kpi):not(.crm-panel):not(.crm-chart) {
-  animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(var(--i, 0) * 60ms);
+  opacity: 1; transform: none;
+  animation: crm-in .7s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(var(--i, 0) * 60ms);
 }
 /* Filas de las tablas de Argon: aparecen escalonadas (crm-dashboard.js numera --i) */
 html.crm-js .main-content .table:not(.crm-table) tbody tr { opacity: 0; transform: translateX(-6px); }
 /* La tabla se marca a sí misma con .is-in (crm-dashboard.js), esté o no dentro de una tarjeta */
 html.crm-js .main-content .table.is-in:not(.crm-table) tbody tr {
-  animation: crm-row .5s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.15s + var(--i, 0) * 35ms);
+  opacity: 1; transform: none;
+  animation: crm-row .5s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.15s + var(--i, 0) * 35ms);
 }
 @media (prefers-reduced-motion: reduce) {
   html.crm-js .main-content .card, html.crm-js .main-content .table tbody tr { opacity: 1; transform: none; animation: none; }
@@ -832,7 +836,7 @@ html.crm-js .main-content .table.is-in:not(.crm-table) tbody tr {
 .crm-formula__lista { margin: 0; padding-left: 18px; font-size: 13px; color: var(--crm-ink-2); line-height: 1.5; }
 .crm-formula__lista li { margin-bottom: 4px; }
 .crm-formula__lista b { color: var(--crm-ink); }
-html.crm-js .is-in .crm-formula { animation: crm-row .5s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.2s + var(--i, 0) * 70ms); }
+html.crm-js .is-in .crm-formula { opacity: 1; transform: none; animation: crm-row .5s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(.2s + var(--i, 0) * 70ms); }
 html.crm-js .crm-formula { opacity: 0; transform: translateX(-6px); }
 
 
@@ -870,7 +874,7 @@ body.crm-modal-open { overflow: hidden; }
 .crm-modal__cerrar:hover { transform: rotate(90deg); background: var(--crm-accent); color: #fff; border-color: var(--crm-accent); }
 .crm-modal__cuerpo { flex: 1 1 auto; overflow-y: auto; padding: 22px 32px 32px; }
 .crm-modal__cargando { display: grid; place-items: center; height: 100%; color: var(--crm-ink-3); font-weight: 700; }
-.crm-lider { background: var(--crm-card); border: 1px solid var(--crm-line); border-radius: 18px; margin-bottom: 14px; overflow: hidden; animation: crm-in .6s cubic-bezier(.16, 1, .3, 1) both; animation-delay: calc(var(--i, 0) * 80ms); }
+.crm-lider { background: var(--crm-card); border: 1px solid var(--crm-line); border-radius: 18px; margin-bottom: 14px; overflow: hidden; animation: crm-in .6s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(var(--i, 0) * 80ms); }
 .crm-lider > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px; padding: 16px 20px; }
 .crm-lider > summary::-webkit-details-marker { display: none; }
 .crm-lider__avatar { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #3A322C, #1E1915); color: #fff; font-weight: 800; font-size: 17px; }
@@ -1067,3 +1071,11 @@ body.crm-modal-open { overflow: hidden; }
 .crm-presupuesto textarea { width: 100%; }
 .crm-presupuesto:has(.crm-info[open]) { position: relative; z-index: 1050; overflow: visible; }
 .crm-info__pop { white-space: normal; text-align: left; font-weight: 400; }
+
+/* Los modales de Bootstrap viven dentro de tarjetas y filas. Cualquier transform/filtro en un ancestro los
+   atrapa (position: fixed pasa a medirse contra ese ancestro y el fondo oscuro queda encima). Por eso las
+   animaciones de entrada terminan sin transform (keyframes "from" + fill backwards) y, mientras un modal
+   está abierto, el ancestro que lo contiene no puede tener transform ni animación. */
+body.modal-open .main-content .card, body.modal-open .main-content .card *:has(> .modal),
+body.modal-open .main-content tr, body.modal-open .main-content .crm-kpi, body.modal-open .main-content .crm-panel { transform: none !important; animation: none !important; opacity: 1 !important; }
+.main-content .card:has(> .modal.show), .main-content tr:has(.modal.show), .main-content .card:has(.modal.show) { transform: none !important; animation: none !important; opacity: 1 !important; }
