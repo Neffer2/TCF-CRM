@@ -122,7 +122,7 @@ class Natural extends Component
                 'id' => $item->id,
                 'nombre' => $item->descripcion,
                 'cod_cc' => $presupuesto->cod_cc,
-                'display_item' => $item->displayItem()
+                'display_item' => $item->num_item
             ],
             'tipo_servicio' => $this->tipo_servicio,
             'tipo_contrato' => $this->tipo_contrato,
@@ -192,7 +192,7 @@ class Natural extends Component
                 'id' => $item->id,
                 'nombre' => $item->descripcion,
                 'cod_cc' => $presupuesto->cod_cc,
-                'display_item' => $item->displayItem()
+                'display_item' => $item->num_item
             ],
             'cant' => $this->cantidad,
             'dias' => $this->dias,
@@ -427,7 +427,7 @@ class Natural extends Component
                     'id' => $item->itemPresupuesto->id,
                     'nombre' => $item->itemPresupuesto->descripcion,
                     'cod_cc' => $item->itemPresupuesto->presto->cod_cc,
-                    'display_item' => $item->itemPresupuesto->displayItem()
+                    'display_item' => $item->itemPresupuesto->num_item
                 ],
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
