@@ -810,6 +810,7 @@ class Presupuesto extends Component
         ItemPresupuesto::where('presupuesto_id', $presto->id)->update(['actualizado' => false]);
 
         $presto->update();
+        $this->marcarConCambiosPendientes();
 
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }
@@ -833,10 +834,12 @@ class Presupuesto extends Component
 
         ItemPresupuesto::where('presupuesto_id', $presto->id)->update(['actualizado' => false]);
 
+
         $presto->update();
 
         // Envía notificación de revisión
         $this->presupuestoAprobacion($presto, Auth::user());
+        $this->marcarConCambiosPendientes();
 
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }

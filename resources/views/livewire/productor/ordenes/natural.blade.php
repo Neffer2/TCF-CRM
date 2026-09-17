@@ -230,7 +230,7 @@
                     <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
                         <option value="">Seleccionar</option>
                         @foreach ($items_presupuesto as $item_presupuesto)
-                            <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
+                            <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->num_item }}</option>
                         @endforeach
                     </select>
                     @error('item_presupuesto')
@@ -380,7 +380,7 @@
                         <select id="item_presupuesto" class="form-control" wire:model.change="item_presupuesto">
                             <option value="">Seleccionar</option>
                             @foreach ($items_presupuesto as $item_presupuesto)
-                                <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->displayItem() }}</option>
+                                <option value="{{ $item_presupuesto->id }}">{{ $item_presupuesto->descripcion }} - ITEM {{ $item_presupuesto->num_item }}</option>
                             @endforeach
                         </select>
                         @error('item_presupuesto')
