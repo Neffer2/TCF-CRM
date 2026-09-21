@@ -328,7 +328,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
-    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=9"></script>
+    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=10"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 @livewireScripts

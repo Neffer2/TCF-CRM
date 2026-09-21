@@ -317,6 +317,7 @@ Todas las pantallas del espacio administrativo y comercial comparten ahora la mi
 | 8e.5 | Líder en Helisa | Como `prueba.lidercom` → Helisa general | Solo movimientos y comerciales de su equipo |
 | 8e.6 | Formularios | Abre un presupuesto y una orden de compra | Campos con borde suave y foco naranja; nada ilegible ni superpuesto |
 | 8e.7 | Modales por encima de todo | Proveedores → Editar; Helisa → Editar; Base comercial → Editar; Contactos → Editar/Eliminar; Prospecto → Eliminar; Presupuesto → Enviar a aprobación; Solicitudes → Ver detalles | La ventana emergente aparece centrada, **encima** del fondo oscuro y se puede usar (antes quedaba debajo del velo por la animación de entrada de las tarjetas y no se podía hacer clic) |
+| 8e.8 | Modal abierto durante una acción | Presupuesto → abre Exportar y, con el modal abierto, cambia un campo de recargos (o cualquier acción Livewire) | El modal se cierra o refresca, el velo oscuro desaparece y la página sigue usable (antes quedaba el velo sin modal y había que recargar) |
 
 ## B8g. Notificaciones, actividad, pagos y nómina
 

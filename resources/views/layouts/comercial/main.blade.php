@@ -380,7 +380,7 @@
     <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
     <!-- Animación de cifras, barras y gráfica (misma del dashboard de gerencia) -->
     <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
-    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=9"></script>
+    <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=10"></script>
     @livewireScripts
   </body>
 </html>

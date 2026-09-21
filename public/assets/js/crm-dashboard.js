@@ -189,3 +189,29 @@
     if (e.key === 'Escape') document.querySelectorAll('details.crm-info[open]').forEach(function (o) { o.open = false; });
   });
 })();
+
+/* crm-backdrop-huerfano: los modales de Bootstrap viven dentro de componentes Livewire. Si el componente se
+   re-renderiza con un modal abierto (p. ej. un wire:model.lazy que dispara mientras el modal está en pantalla),
+   Livewire reemplaza el DOM del modal pero el velo (.modal-backdrop) y la clase modal-open quedan en <body>
+   y la página queda bloqueada hasta recargar. Aquí se detecta y se limpia. */
+(function () {
+  function limpiar() {
+    if (document.querySelector('.modal.show')) return;      // hay un modal legítimo abierto: no tocar
+    var velos = document.querySelectorAll('.modal-backdrop');
+    if (!velos.length && !document.body.classList.contains('modal-open')) return;
+    velos.forEach(function (v) { v.remove(); });
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+  }
+  function enganchar() {
+    if (!window.Livewire || !window.Livewire.hook) return false;
+    window.Livewire.hook('message.processed', function () { setTimeout(limpiar, 60); });
+    return true;
+  }
+  if (!enganchar()) document.addEventListener('livewire:load', enganchar);
+  // Red de seguridad: si por cualquier otra vía queda un velo sin modal, un clic sobre él lo limpia.
+  document.addEventListener('click', function (e) {
+    if (e.target.classList && e.target.classList.contains('modal-backdrop')) limpiar();
+  }, true);
+})();
