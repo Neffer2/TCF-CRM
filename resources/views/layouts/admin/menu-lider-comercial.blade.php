@@ -28,6 +28,12 @@
                         <span class="sidenav-normal"> Helisa general </span>
                     </a>
                 </li>
+                <li @class(['active' => request()->is('gestion-kam'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('gestion-kam'), 'nav-link' => true]) href="{{ route('gestion-kam') }}">
+                    <span class="sidenav-mini-icon"> K </span>
+                    <span class="sidenav-normal"> Gesti&oacute;n por KAM </span>
+                  </a>
+                </li>
             </ul>
         </div>
     </li>

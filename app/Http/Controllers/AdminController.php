@@ -68,6 +68,11 @@ class AdminController extends Controller
         return view('admin.generales.helisa');
     }
 
+    /** Gestión comercial por KAM: embudo y desempeño de cada comercial. */
+    public function showGestionKam() {
+        return view('admin.generales.gestion-kam');
+    }
+
     /**
      * Muestra la página de presupuestos (acciones)
      *

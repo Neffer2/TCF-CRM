@@ -1079,3 +1079,23 @@ body.crm-modal-open { overflow: hidden; }
 body.modal-open .main-content .card, body.modal-open .main-content .card *:has(> .modal),
 body.modal-open .main-content tr, body.modal-open .main-content .crm-kpi, body.modal-open .main-content .crm-panel { transform: none !important; animation: none !important; opacity: 1 !important; }
 .main-content .card:has(> .modal.show), .main-content tr:has(.modal.show), .main-content .card:has(.modal.show) { transform: none !important; animation: none !important; opacity: 1 !important; }
+
+/* ---- Gestión comercial por KAM ---- */
+.crm-kam .crm-kpis--cinco { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1399px) { .crm-kam .crm-kpis--cinco { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 767px)  { .crm-kam .crm-kpis--cinco { grid-template-columns: 1fr; } }
+.crm-embudo { display: grid; gap: 14px; }
+.crm-embudo__fila { --crm-tone: var(--crm-accent); }
+.crm-embudo__fila.tone-ok { --crm-tone: #2E7D5B } .crm-embudo__fila.tone-warn { --crm-tone: #B8770A }
+.crm-embudo__fila.tone-bad { --crm-tone: #B3261E } .crm-embudo__fila.tone-muted { --crm-tone: #9A8F87 }
+.crm-embudo__fila.tone-neutral { --crm-tone: #3E3532 }
+.crm-embudo__cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+.crm-embudo__etapa { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--crm-ink-2); }
+.crm-embudo__n { font-size: 15px; font-weight: 800; color: var(--crm-ink); font-variant-numeric: tabular-nums; }
+.crm-embudo .crm-bar { height: 9px; background: #F0EBE5; }
+.crm-embudo .crm-bar > span { background: var(--crm-tone); display: block; height: 100%; border-radius: 99px; }
+.crm-embudo__valor { display: block; margin-top: 4px; font-size: 11.5px; color: var(--crm-ink-3); font-variant-numeric: tabular-nums; }
+.crm-mini-bar { display: block; height: 4px; margin-top: 4px; border-radius: 99px; background: #F0EBE5; overflow: hidden; }
+.crm-mini-bar > i { display: block; height: 100%; border-radius: 99px; background: var(--crm-accent); }
+.crm-kam .crm-table td.is-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.crm-kam .crm-chip { white-space: nowrap; }

@@ -43,6 +43,7 @@ Route::get('/', function () {
     Route::get('/mi-equpo', [AdminController::class, 'show_team'])->middleware(['auth'])->middleware(['admin'])->name('mi-equpo');
     Route::get('/base-comercial-general/{filtro?}', [AdminController::class, 'showBaseComercialGeneral'])->middleware(['auth', 'rol:1,11,12'])->name('base-comercial-general');
     Route::get('/helisa-general', [AdminController::class, 'showHelisaGeneral'])->middleware(['auth', 'rol:1,11,12'])->name('helisa-general');
+    Route::get('/gestion-kam', [AdminController::class, 'showGestionKam'])->middleware(['auth', 'rol:1,11,12'])->name('gestion-kam');
     Route::get('/export-helisa/{comercial?}/{centro?}', [AdminController::class, 'exportHelisa'])->middleware(['auth', 'rol:1,11,12'])->name('export-helisa');
     Route::get('/presupuesto', [AdminController::class, 'showPresupuestos'])->middleware(['auth'])->middleware(['admin'])->name('presupuestos-admin');
     Route::get('/presupuesto-proyecto', [AdminController::class, 'showPresupuestosProyecto'])->middleware(['auth', 'rol:1,11,12'])->name('presupuesto-proyecto');

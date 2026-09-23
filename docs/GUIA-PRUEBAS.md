@@ -304,6 +304,35 @@ La pantalla del presupuesto se mantiene **igual a la que la gente ya conoce** (c
 | 8f.6 | Tabla de ítems | Pasa el ratón por las cabeceras | Cabeceras legibles (texto blanco sobre carbón/verde) con tooltip que explica cada columna; filas visibles y editables como antes |
 | 8f.7 | Nada perdido | Compara con la versión anterior | Siguen la justificación, validaciones de líder/gerencia, acciones de admin, exportar historial y cotizaciones PDF/Excel |
 
+## B8h. Gestión comercial por KAM (nueva pantalla)
+
+Inicio → **Gestión por KAM** (`/gestion-kam`). Disponible para Admin, Gerencia, Controller y Líder comercial. Mide cómo trabaja cada comercial su embudo, no la venta facturada (eso ya está en el dashboard). Fuente: `gestion_comercial` + `gestion_participantes` (posición 1 = responsable).
+
+**Cómo se calcula cada cosa**
+
+| Indicador | Definición |
+|---|---|
+| Gestiones del año | Gestiones creadas en el año elegido (`created_at`) |
+| Ganadas | En estado **Venta** (5) o **Presupuesto** (7) |
+| Perdidas | En estado **Perdido** (6) |
+| Abiertas | Prospecto, Oportunidad, Cotización o Propuesta |
+| Efectividad | Ganadas ÷ gestiones del año. **No** se usa ganadas ÷ (ganadas + perdidas) porque el estado Perdido casi no se registra y esa fórmula daría 100 % a todos |
+| Días en cerrar | Promedio de días entre crear la gestión y su último movimiento, solo en las ganadas |
+| Quietas | Abiertas sin ningún movimiento (`updated_at`) en los días elegidos: 15, 30, 60 o 90 |
+| Ticket | Valor ganado ÷ gestiones ganadas |
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8h.1 | Carga por defecto | `prueba.gerencia` → Inicio → Gestión por KAM | Año más reciente, todos los equipos, ordenado por efectividad; cinco cifras arriba, embudo a la izquierda y tabla por comercial a la derecha |
+| 8h.2 | Embudo | Mira la columna izquierda | Una barra por etapa con su conteo y su valor; las barras son proporcionales a la etapa más grande |
+| 8h.3 | Filtro por líder | Elige **Lady Ortiz** | Solo su equipo (4 comerciales); el encabezado de la tabla dice "Equipo filtrado" y las cifras se recalculan |
+| 8h.4 | Orden por quietas | Ordenar por → **Gestiones quietas** | Primero quien más gestiones tiene abandonadas, con su porcentaje sobre las abiertas |
+| 8h.5 | Umbral de quietas | Cambia a **90 días sin mover** | Bajan los conteos de quietas y la nota al pie dice 90 días |
+| 8h.6 | Poco volumen | Ordena por efectividad y baja en la tabla | Quien abrió menos de 10 gestiones aparece al final con la marca "poco volumen": su porcentaje no es comparable |
+| 8h.7 | Líder comercial | Entra como `prueba.lidercom` | El filtro de líder sale fijo en su nombre y deshabilitado: solo ve a su equipo |
+| 8h.8 | Roles sin acceso | Como comercial, productor o tesorería visita `/gestion-kam` | Redirige a su dashboard |
+| 8h.9 | Aviso del dato | Mira la nota al pie de la tabla | Advierte cuántas gestiones están marcadas como Perdido; mientras el equipo no cierre las que no prosperan, lo no ganado se cuenta como abierto |
+
 ## B8e. Piel visual global y Helisa general
 
 Todas las pantallas del espacio administrativo y comercial comparten ahora la misma capa visual (cabecera con foto de marca, tipografía Manrope, botones y tablas en la paleta Bull, entrada animada de tarjetas y filas). Helisa general fue rediseñada como Base comercial general.

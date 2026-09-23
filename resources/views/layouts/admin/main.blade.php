@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=29" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=30" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -30,7 +30,7 @@
   // Título de la sección por nombre de ruta (las vistas pueden sobrescribirlo con @section('titulo'))
   $crmTitulos = [
     'dashboard-admin' => 'Dashboard', 'dashboard-controller' => 'Dashboard Controller', 'dashboard-lider-comercial' => 'Dashboard del equipo',
-    'base-comercial-general' => 'Base comercial general', 'helisa-general' => 'Helisa general', 'estado-facturacion' => 'Estado de facturación', 'estados' => 'Estado de facturación',
+    'base-comercial-general' => 'Base comercial general', 'helisa-general' => 'Helisa general', 'gestion-kam' => 'Gestión por KAM', 'estado-facturacion' => 'Estado de facturación', 'estados' => 'Estado de facturación',
     'presupuesto-proyecto' => 'Presupuestos', 'presupuestos-admin' => 'Presupuesto', 'presupuesto' => 'Presupuesto', 'presupuestos' => 'Presupuestos',
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
@@ -75,7 +75,7 @@
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
           <div @class([
-            'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general')),
+            'show' => (request()->is('dashboard-admin') || request()->is('estado-facturacion') || request()->is('base-comercial-general')|| request()->is('helisa-general') || request()->is('gestion-kam')),
             'collapse' => true
             ]) id="dashboardsExamples">
             <ul class="nav ms-4">
@@ -95,6 +95,12 @@
                 <a @class(['active' => request()->is('helisa-general'), 'nav-link' => true]) href="{{ route('helisa-general') }}">
                   <span class="sidenav-mini-icon"> B </span>
                   <span class="sidenav-normal"> Helisa general </span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('gestion-kam'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('gestion-kam'), 'nav-link' => true]) href="{{ route('gestion-kam') }}">
+                  <span class="sidenav-mini-icon"> K </span>
+                  <span class="sidenav-normal"> Gesti&oacute;n por KAM </span>
                 </a>
               </li>
             </ul>
