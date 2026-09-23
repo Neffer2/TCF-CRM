@@ -158,10 +158,13 @@
                             </tr></thead>
                             <tbody>
                                 @forelse ($filas as $i => $f)
-                                    <tr style="--i:{{ min($i, 30) }}">
+                                    <tr style="--i:{{ min($i, 30) }}" class="is-clicable"
+                                        wire:click="$emit('abrirKam', {{ $f->id }}, {{ $anio }}, {{ $diasEstancado }})"
+                                        title="Ver todos los proyectos de {{ $f->name }}">
                                         <td class="is-comercial">
                                             <span class="crm-avatar-mini">{{ mb_strtoupper(mb_substr($f->name, 0, 1)) }}</span>
                                             <span class="crm-clamp">{{ $f->name }}</span>
+                                            <span class="crm-ver" aria-hidden="true">ver →</span>
                                         </td>
                                         <td class="is-num">
                                             {{ $num($f->gestiones) }}
@@ -193,6 +196,7 @@
                         <b>Efectividad</b>: de todas las gestiones que el comercial abrió en el año, cuántas llegaron a Venta o Presupuesto.
                         Una gestión queda <b>quieta</b> cuando lleva {{ $diasEstancado }} días o más sin ningún movimiento.
                         Quien abrió menos de {{ $minimo }} gestiones en el año aparece al final: su porcentaje no es comparable.
+                        <b>Pulsa cualquier fila</b> para ver, uno por uno, todos los proyectos de ese comercial con lo cotizado y lo realmente facturado.
                         @if ($tot['perdidas'] < $tot['gestiones'] * 0.05)
                             <br><b>Ojo con el dato:</b> en este periodo solo {{ $num($tot['perdidas']) }} de {{ $num($tot['gestiones']) }} gestiones están marcadas como <i>Perdido</i>.
                             Mientras el equipo no cierre las que no prosperan, lo que no se ganó queda contado como <i>abierto</i>, no como perdido.

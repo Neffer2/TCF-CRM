@@ -332,6 +332,11 @@ Inicio → **Gestión por KAM** (`/gestion-kam`). Disponible para Admin, Gerenci
 | 8h.7 | Líder comercial | Entra como `prueba.lidercom` | El filtro de líder sale fijo en su nombre y deshabilitado: solo ve a su equipo |
 | 8h.8 | Roles sin acceso | Como comercial, productor o tesorería visita `/gestion-kam` | Redirige a su dashboard |
 | 8h.9 | Aviso del dato | Mira la nota al pie de la tabla | Advierte cuántas gestiones están marcadas como Perdido; mientras el equipo no cierre las que no prosperan, lo no ganado se cuenta como abierto |
+| 8h.10 | Panel del comercial | Pulsa cualquier fila de la tabla | Se abre un panel a pantalla completa con **todos** sus proyectos del año, agrupados por etapa: proyecto, cliente y contacto, centro de costos, valor cotizado, **facturado real** (Helisa, cruzado por centro de costos), % de cumplimiento, fecha de apertura y días sin mover |
+| 8h.11 | Buscar dentro del panel | Escribe un cliente o un centro de costos en el buscador del panel | Filtra los proyectos de ese comercial; el contador de cada ficha se recalcula |
+| 8h.12 | Ficha de etapa | Pulsa la ficha **Venta** dentro del panel | Deja solo esa etapa y la ficha queda marcada; pulsarla de nuevo la quita |
+| 8h.13 | Ir al presupuesto | Pulsa el centro de costos de una fila | Abre el presupuesto de ese proyecto en otra pestaña |
+| 8h.14 | Cerrar el panel | Cierra con la ×, con Esc o pulsando fuera | El panel se cierra, no queda velo oscuro y la tabla de KAM vuelve a ser usable |
 
 ## B8e. Piel visual global y Helisa general
 
