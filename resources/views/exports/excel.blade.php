@@ -97,7 +97,7 @@
             @foreach ($items as $key => $item)
                 @if (!$item->evento == 1)
                     <tr>
-                        @if (!$tipo) <td style="text-align: center">{{ $key+=1 }}</td> @endif
+                        @if (!$tipo) <td style="text-align: center">{{ $item->num_item }}</td> @endif
                         <td colspan="7">{{ $item->descripcion }}</td>
                         <td colspan="1" style="text-align: center">{{ $item->cantidad }}</td>
                         @if (!$tipo)

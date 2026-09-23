@@ -647,15 +647,15 @@ class Presupuesto extends Component
         $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
         // Protegido contra división por cero (presupuestos con utilidad 0
         // o solo eventos tienen v_total_cot en 0), igual que getMetricas().
-        $sumTotalCot = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                    ->where('evento', 0)
-                    ->sum('v_total_cot');
-        $margenItems = $sumTotalCot > 0
-            ? ( ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
-                    ->where('evento', 0)
-                    ->where('margen_utilidad', '>', 0)
-                    ->sum('v_total') ) / $sumTotalCot
-            : 0;
+        $sumVTotalCot = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->where('evento', 0)
+            ->sum('v_total_cot');
+        $sumVTotalMargen = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
+            ->where('evento', 0)
+            ->where('margen_utilidad', '>', 0)
+            ->sum('v_total');
+
+        $margenItems = $sumVTotalCot > 0 ? ($sumVTotalMargen / $sumVTotalCot) : 0;
 
         // NOTA: Ajustamos las llaves para que coincidan EXACTAMENTE con tu 'PresupuestosSheetsExports'
         $payloadActual = [
