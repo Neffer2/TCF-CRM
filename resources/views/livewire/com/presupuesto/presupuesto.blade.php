@@ -723,7 +723,7 @@
                                         @foreach ($categorias_proveedor as $categoria)
                                             <optgroup label="{{ $categoria->description }}">
                                                 @foreach ($categoria->proveedores as $proveedor)
-                                                    <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $proveedor->categoria->description }}</option>
+                                                    <option value="{{ $proveedor->id }}">{{ $proveedor->tercero }} - {{ $categoria->description }}</option>
                                                 @endforeach
                                             </optgroup>
                                         @endforeach

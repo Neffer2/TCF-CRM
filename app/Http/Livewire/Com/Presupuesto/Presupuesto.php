@@ -251,7 +251,8 @@ class Presupuesto extends Component
             $item->descripcion = $this->descripcion;
             $item->v_unitario = 0;
             $item->v_total = 0;
-            $item->proveedor = 0;
+            // Un evento no tiene proveedor. La columna 'proveedor' ya no existe:
+            // los proveedores de un ítem viven en item_presupuesto_proveedor.
             $item->margen_utilidad = 0;
             $item->mes = 0;
             $item->dias = 0;
@@ -357,7 +358,11 @@ class Presupuesto extends Component
 
     // Obtiene la lista de proveedores y categorías
     public function getProveedores(){
-        $this->categorias_proveedor = CategoriaProveedor::select('id', 'description')->orderBy('id','desc')->get();
+        // Se precargan los proveedores de cada categoría: la vista los recorre para el desplegable
+        // y sin esto hacía una consulta por cada proveedor (1.688 por acción).
+        $this->categorias_proveedor = CategoriaProveedor::select('id', 'description')
+            ->with(['proveedores' => function ($q) { $q->select('id', 'categoria_id', 'tercero')->orderBy('tercero'); }])
+            ->orderBy('id','desc')->get();
         $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 
