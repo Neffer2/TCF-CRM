@@ -318,6 +318,8 @@ Todas las pantallas del espacio administrativo y comercial comparten ahora la mi
 | 8e.6 | Formularios | Abre un presupuesto y una orden de compra | Campos con borde suave y foco naranja; nada ilegible ni superpuesto |
 | 8e.7 | Modales por encima de todo | Proveedores → Editar; Helisa → Editar; Base comercial → Editar; Contactos → Editar/Eliminar; Prospecto → Eliminar; Presupuesto → Enviar a aprobación; Solicitudes → Ver detalles | La ventana emergente aparece centrada, **encima** del fondo oscuro y se puede usar (antes quedaba debajo del velo por la animación de entrada de las tarjetas y no se podía hacer clic) |
 | 8e.8 | Modal abierto durante una acción | Presupuesto → abre Exportar y, con el modal abierto, cambia un campo de recargos (o cualquier acción Livewire) | El modal se cierra o refresca, el velo oscuro desaparece y la página sigue usable (antes quedaba el velo sin modal y había que recargar) |
+| 8e.9 | Número de ítem coherente | Comercial: abre un presupuesto y anota los números de la columna ÍTEM; exporta el PDF y el Excel internos; como productor abre una orden natural de ese centro de costos | El número es el mismo en las tres pantallas y corresponde al guardado en la base (`num_item`), no a la posición en la lista. **Ojo:** en presupuestos donde se borraron ítems la numeración tiene huecos (ítem 2, 3, 4…) y no empieza en 1: es lo esperado |
+| 8e.10 | Aviso de cambios al validar | Líder comercial valida un presupuesto (estado 4) y luego Gerencia valida uno en estado 5 | En ambos casos el presupuesto queda marcado con cambios pendientes y sale el correo al controller (`actualizacionControllerPresupuesto` en Acciones → Notificaciones) |
 
 ## B8g. Notificaciones, actividad, pagos y nómina
 
