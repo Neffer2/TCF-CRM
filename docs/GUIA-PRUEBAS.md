@@ -304,39 +304,39 @@ La pantalla del presupuesto se mantiene **igual a la que la gente ya conoce** (c
 | 8f.6 | Tabla de ítems | Pasa el ratón por las cabeceras | Cabeceras legibles (texto blanco sobre carbón/verde) con tooltip que explica cada columna; filas visibles y editables como antes |
 | 8f.7 | Nada perdido | Compara con la versión anterior | Siguen la justificación, validaciones de líder/gerencia, acciones de admin, exportar historial y cotizaciones PDF/Excel |
 
-## B8h. Gestión comercial por KAM (nueva pantalla)
+## B8h. Gestión comercial por KAM
 
-Inicio → **Gestión por KAM** (`/gestion-kam`). Disponible para Admin, Gerencia, Controller y Líder comercial. Mide cómo trabaja cada comercial su embudo, no la venta facturada (eso ya está en el dashboard). Fuente: `gestion_comercial` + `gestion_participantes` (posición 1 = responsable).
+Inicio → **Gestión por KAM** (`/gestion-kam`). Para Admin, Gerencia, Controller y Líder comercial (el líder solo ve a su equipo). Mide cómo trabaja cada comercial su embudo y cuánto de lo que vende ya se facturó. La pantalla se explica sola: cada cifra lleva su pregunta y su cálculo, sin iconos decorativos.
 
-**Cómo se calcula cada cosa**
+**Cómo se clasifica una gestión** (verificado en el código de los formularios; `App\Services\GestionKamDatos`):
 
-| Indicador | Definición |
-|---|---|
-| Gestiones del año | Gestiones creadas en el año elegido (`created_at`) |
-| Ganadas | En estado **Venta** (5) o **Presupuesto** (7) |
-| Perdidas | En estado **Perdido** (6) |
-| Abiertas | Prospecto, Oportunidad, Cotización o Propuesta |
-| Efectividad | Ganadas ÷ gestiones del año. **No** se usa ganadas ÷ (ganadas + perdidas) porque el estado Perdido casi no se registra y esa fórmula daría 100 % a todos |
-| Días en cerrar | Promedio de días entre crear la gestión y su último movimiento, solo en las ganadas |
-| Quietas | Abiertas sin ningún movimiento (`updated_at`) en los días elegidos: 15, 30, 60 o 90 |
-| Ticket | Valor ganado ÷ gestiones ganadas |
+| Etapa en el CRM | Se muestra como | Cuenta como |
+|---|---|---|
+| 1 Prospecto | Prospecto · contacto identificado | En curso |
+| 2 Oportunidad | Oportunidad · hay una necesidad concreta | En curso |
+| 7 Presupuesto | **Cotizando** · armando el presupuesto | En curso (NO es venta) |
+| 4 Propuesta | **Propuesta enviada** · presupuesto aprobado, esperando al cliente | En curso |
+| 5 Venta | Venta · el cliente aceptó | **Venta** (única etapa ganada) |
+| 6 Perdido | Perdida · no se dio | Perdida |
+
+**Cómo se calcula la facturación.** La tabla de Helisa del CRM **no** es la contabilidad completa (en 2026, 176 ventas marcadas como facturadas no aparecen en ella). Por eso el estado de cobro sale del estado de cada venta en la base comercial, el mismo del dashboard: *facturada o cerrada*, *facturada en parte*, *ejecutada por facturar*, *en ejecución*. Helisa se muestra como verificación por proyecto.
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 8h.1 | Carga por defecto | `prueba.gerencia` → Inicio → Gestión por KAM | Año más reciente, todos los equipos, ordenado por efectividad; cinco cifras arriba, embudo a la izquierda y tabla por comercial a la derecha |
-| 8h.2 | Embudo | Mira la columna izquierda | Una barra por etapa con su conteo y su valor; las barras son proporcionales a la etapa más grande |
-| 8h.3 | Filtro por líder | Elige **Lady Ortiz** | Solo su equipo (4 comerciales); el encabezado de la tabla dice "Equipo filtrado" y las cifras se recalculan |
-| 8h.4 | Orden por quietas | Ordenar por → **Gestiones quietas** | Primero quien más gestiones tiene abandonadas, con su porcentaje sobre las abiertas |
-| 8h.5 | Umbral de quietas | Cambia a **90 días sin mover** | Bajan los conteos de quietas y la nota al pie dice 90 días |
-| 8h.6 | Poco volumen | Ordena por efectividad y baja en la tabla | Quien abrió menos de 10 gestiones aparece al final con la marca "poco volumen": su porcentaje no es comparable |
-| 8h.7 | Líder comercial | Entra como `prueba.lidercom` | El filtro de líder sale fijo en su nombre y deshabilitado: solo ve a su equipo |
-| 8h.8 | Roles sin acceso | Como comercial, productor o tesorería visita `/gestion-kam` | Redirige a su dashboard |
-| 8h.9 | Aviso del dato | Mira la nota al pie de la tabla | Advierte cuántas gestiones están marcadas como Perdido; mientras el equipo no cierre las que no prosperan, lo no ganado se cuenta como abierto |
-| 8h.10 | Panel del comercial | Pulsa cualquier fila de la tabla | Se abre un panel a pantalla completa con **todos** sus proyectos del año, agrupados por etapa: proyecto, cliente y contacto, centro de costos, valor cotizado, **facturado real** (Helisa, cruzado por centro de costos), % de cumplimiento, fecha de apertura y días sin mover |
-| 8h.11 | Buscar dentro del panel | Escribe un cliente o un centro de costos en el buscador del panel | Filtra los proyectos de ese comercial; el contador de cada ficha se recalcula |
-| 8h.12 | Ficha de etapa | Pulsa la ficha **Venta** dentro del panel | Deja solo esa etapa y la ficha queda marcada; pulsarla de nuevo la quita |
-| 8h.13 | Ir al presupuesto | Pulsa el centro de costos de una fila | Abre el presupuesto de ese proyecto en otra pestaña |
-| 8h.14 | Cerrar el panel | Cierra con la ×, con Esc o pulsando fuera | El panel se cierra, no queda velo oscuro y la tabla de KAM vuelve a ser usable |
+| 8h.1 | El año en una frase | `prueba.gerencia` → Gestión por KAM | Arriba, dos frases con las cifras del año: gestiones, ventas, perdidas, en curso, quietas; y cuánto de lo vendido está facturado, ejecutado sin facturar y en ejecución |
+| 8h.2 | Cuatro preguntas | Mira las cuatro tarjetas | ¿Cuánto abrieron? · ¿Cuánto se volvió venta? · ¿Cuánto de lo vendido ya se facturó? (con barra por estado) · ¿Qué se está quedando quieto? |
+| 8h.3 | Embudo | Sección "Dónde está cada gestión" | Pasos de izquierda a derecha con flecha: Prospecto → Oportunidad → Cotizando → Propuesta enviada → Venta; Perdida aparte. Cada paso con su explicación, su conteo y su valor |
+| 8h.4 | Leyenda | Arriba a la derecha de la tabla | Verde = listo, gris = en proceso, ámbar = pide atención, rojo = problema; vale para las dos barras de cada fila |
+| 8h.5 | Ordenar | Pulsa el título **Se volvió venta** y luego otra vez | Ordena de mayor a menor y luego al revés; la flecha lo indica. Quien abrió menos de 10 gestiones queda al final con "pocas gestiones" |
+| 8h.6 | Equipo | Elige **Equipo de Lady Ortiz** | Solo su equipo; bajo cada nombre dice su líder real (nunca un usuario de pruebas si hay uno real) |
+| 8h.7 | Líder comercial | Entra como `prueba.lidercom` | El filtro de equipo está fijo en el suyo y deshabilitado |
+| 8h.8 | Panel del comercial | Pulsa una fila | Panel a pantalla completa: su año en una frase, cuatro cifras y siete pestañas con su conteo: Todas, Por facturar, En ejecución, Quietas, En curso, Perdidas, Revisar datos |
+| 8h.9 | Por facturar | En el panel → **Por facturar** | Ventas ejecutadas sin facturar o facturadas en parte, de mayor a menor saldo, con "$X por facturar" |
+| 8h.10 | Revisar datos | En el panel → **Revisar datos** | Cada fila explica el motivo: "marcada como facturada pero Helisa no registra nada" o "la base comercial la marca como perdida aunque la gestión dice venta" |
+| 8h.11 | Buscar | Escribe un cliente en el buscador del panel | Filtra; los conteos de las pestañas se recalculan |
+| 8h.12 | Ir al presupuesto | Pulsa el código de centro de costos de un proyecto | Abre el presupuesto en otra pestaña |
+| 8h.13 | Cerrar | ×, Esc o clic fuera | Se cierra sin dejar velo y la tabla sigue usable |
+| 8h.14 | Roles sin acceso | Comercial, productor, tesorería visitan `/gestion-kam` | Redirige a su dashboard |
 
 ## B8e. Piel visual global y Helisa general
 
