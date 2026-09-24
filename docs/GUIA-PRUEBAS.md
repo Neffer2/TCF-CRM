@@ -3,7 +3,16 @@
 **Rama a probar:** `correcciones` · **NUNCA toques la rama `main`** (subir a main despliega a producción automáticamente).
 **Versión de esta guía:** 24 de septiembre de 2026 (commit más reciente de `correcciones`).
 
-> **Si ya tenías la base importada:** después de `git pull` corre `php artisan migrate` en tu base local. Aplica la migración `2026_09_24_120000_anticipo_juridico_flujo` (anticipo jurídico nuevo). No la corras en ningún servidor.
+> **Actualización del 24-sep (anticipo jurídico):** si ya tenías el entorno montado, corre esto en la raíz del proyecto y pasa a **B6b**. Todo es solo para tu base local; no lo corras en ningún servidor.
+>
+> ```bash
+> git pull origin correcciones
+> php artisan migrate
+> php artisan db:seed --class=AnticiposJuridicosDemoSeeder
+> php artisan view:clear
+> ```
+>
+> `migrate` aplica `2026_09_24_120000_anticipo_juridico_flujo`; el seeder crea dos anticipos de demostración y te muestra sus números. Recarga el navegador con Ctrl+F5 para tomar los estilos nuevos.
 
 ---
 
@@ -38,7 +47,7 @@ Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11
 
 **Base de datos**
 - Fase 6 de reestructuración: normalización, llaves e integridad, esquema documentado (`docs/`), migraciones nuevas (`roles_controller_lider_comercial`, `notificaciones_log_y_estado_pagado`, `tipo_orden_nomina`, `actividad_log`, `documentar_esquema`).
-- `tfc_crm.sql` (raíz del repo) es un dump **ya migrado y con los usuarios de prueba**: basta importarlo (ver A3). Incluye el catálogo de estados de proveedor.
+- La base de pruebas (`bullcrm.sql`) se entrega **aparte, no en el repositorio**: el repositorio es público y la base tiene datos personales reales. El `tfc_crm.sql` que está en el repositorio es un volcado viejo (mar-2025): no lo uses. Ver A3.
 
 **Visual**
 - Login rediseñado con foto de marca; capa visual Bull coherente y animada en todos los roles (tipografía Manrope, naranja solo en acentos, cabecera con velo carbón). Favicon original intacto.
@@ -71,9 +80,9 @@ npm install
 npm run production
 ```
 
-## A3. Base de datos: importar el dump del repositorio
+## A3. Base de datos: importar `bullcrm.sql`
 
-El archivo **`tfc_crm.sql`** (raíz del repo, ~43 MB, generado el 14-sep-2026) es una copia de la base de pruebas ya lista: datos reales de producción + **todas las migraciones aplicadas** + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada.
+El archivo **`bullcrm.sql`** (~43 MB, o `bullcrm.sql.gz` de 9 MB) te llega en el paquete de QA, **no está en el repositorio**: el repositorio es público y la base trae datos reales de personas (cédulas, cuentas bancarias, correos). No lo subas a GitHub ni lo compartas. Es una copia de la base de pruebas ya lista: datos reales de producción + migraciones aplicadas hasta el 23-sep + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada. Las instrucciones detalladas (también para Windows) están en `COMO-IMPORTAR-LA-BASE.md`, dentro del mismo paquete.
 
 > Producción (`u630167073_CRM` en Hostinger) es **solo lectura y no se toca**. Si algún día necesitas datos más frescos, expórtala desde phpMyAdmin (Exportar → Rápido → SQL) a `db-snapshots/` (carpeta ignorada por git) y sigue el mismo procedimiento; en ese caso sí tendrás que correr `php artisan migrate` después.
 
@@ -92,26 +101,24 @@ QUEUE_CONNECTION=sync
 
 > ⚠ Verifica dos veces que `DB_HOST` apunta a tu máquina. Si apunta a producción, DETENTE.
 
-Importa (el dump ya viene sin `DEFINER` ni líneas de GTID, así que entra limpio en MySQL 8/9 y MariaDB):
+Importa. El archivo **crea la base él mismo** (empieza con `DROP DATABASE IF EXISTS tfc_crm`, así que reemplaza la que tengas) y viene sin `DEFINER` ni líneas de GTID, así que entra limpio en MySQL 8/9 y MariaDB:
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS tfc_crm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p < bullcrm.sql
 ```
 
-```bash
-mysql -u root -p tfc_crm < tfc_crm.sql
-```
-
-Debe terminar sin errores. Comprueba: `SELECT COUNT(*) FROM users;` → **215** usuarios; `SELECT COUNT(*) FROM migrations;` → **53**.
+Debe terminar sin errores. Comprueba: `SELECT COUNT(*) FROM users;` → **215** usuarios; `SELECT COUNT(*) FROM migrations;` → **54** (55 después de A4).
 
 ## A4. Verificar migraciones y usuarios de prueba
 
 ```bash
-php artisan migrate:status | grep "| No"     # no debe mostrar nada: todo está aplicado
-php artisan db:seed --class=UsuariosPruebaSeeder   # opcional: reescribe las claves de prueba si alguien las cambió
+php artisan migrate                          # aplica lo posterior al volcado (hoy: el anticipo jurídico), solo en tu base local
+php artisan migrate:status | grep "| No"     # después de migrar no debe mostrar nada
+php artisan db:seed --class=UsuariosPruebaSeeder          # opcional: reescribe las claves de prueba si alguien las cambió
+php artisan db:seed --class=AnticiposJuridicosDemoSeeder  # anticipos jurídicos de demostración para B6b (se puede repetir: no duplica)
 ```
 
-El seeder **solo corre en entorno local**. Los usuarios de prueba ya vienen en el dump (contraseña de todos: **`Prueba123*`**):
+Los seeders **solo corren en entorno local**. Los usuarios de prueba ya vienen en el dump (contraseña de todos: **`Prueba123*`**):
 
 | Correo | Rol | Para probar |
 |---|---|---|
@@ -237,7 +244,7 @@ Ejecuta la cadena completa con estos usuarios en orden:
 
 Regla de la matriz: **Productor → Líder de producción → Controller → hasta $10.000.000 queda aprobado; más de $10.000.000 lo aprueba Gerencia**. Después: orden de anticipo (PDF) → Contabilidad causa → Tesorería paga.
 
-Datos listos en la base: **#17** (sin orden de compra, $12.000.000, ya aprobado por líder, Controller y Gerencia: está en Contabilidad) y **#18** (sin orden, $1.000.000, en revisión del líder). Los dos son de `prueba.productor`. En el ambiente local los correos no salen: se ven en **Acciones → Notificaciones** (Admin) y en `storage/logs/laravel.log`.
+Datos de demostración: `php artisan db:seed --class=AnticiposJuridicosDemoSeeder` (paso A4) crea dos anticipos de `prueba.productor` y muestra sus números: uno de **$12.000.000** sin orden de compra, ya aprobado por líder, Controller y Gerencia (está en Contabilidad con su orden de anticipo en PDF), y uno de **$1.000.000** que espera al líder. Si quieres empezar de cero, vuelve a importar `bullcrm.sql` y repite A4. En el ambiente local los correos no salen: se ven en **Acciones → Notificaciones** (Admin) y en `storage/logs/laravel.log`.
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
@@ -249,10 +256,10 @@ Datos listos en la base: **#17** (sin orden de compra, $12.000.000, ya aprobado 
 | 6b.6 | Productor corrige | `prueba.productor` → abre el anticipo | Ve quién lo devolvió y por qué; el formulario viene lleno. Reenviar sin decir qué corrigió → error; con la explicación → vuelve a **Revisión líder** |
 | 6b.7 | Líder aprueba | `prueba.lider` aprueba | Pasa a **Revisión controller**; el recorrido muestra quién aprobó y su observación |
 | 6b.8 | Controller: umbral | `prueba.controller` → Producción → Anticipos jurídicos → Revisar | El panel dice qué pasa al aprobar: "queda aprobado" (≤ $10 M) o "pasa a Gerencia" (> $10 M). Aprueba |
-| 6b.9 | ≤ $10 M no pasa por Gerencia | Aprueba como Controller el #18 ($1.000.000) después del líder | Queda **Aprobado** directo y se genera la **orden de anticipo OA-000018** (PDF en "Soportes y documentos") |
+| 6b.9 | ≤ $10 M no pasa por Gerencia | Con el de $1.000.000: apruébalo como `prueba.lider` y luego como `prueba.controller` | Queda **Aprobado** directo, sin pasar por Gerencia, y se genera su **orden de anticipo** (OA- más su número; PDF en "Soportes y documentos") |
 | 6b.10 | Gerencia | Con uno de más de $10 M en Revisión gerencia: entra como `prueba.admin` y luego como `prueba.gerencia` | `prueba.admin` (sin permiso de Gerencia) solo lo consulta: "Le toca a Gerencia". `prueba.gerencia` ve "Te toca · Gerencia", aprueba → orden de anticipo |
 | 6b.11 | Orden de anticipo | Abre el PDF de la orden | Datos de Bull, proveedor, proyecto, base × % = valor y la tabla de aprobaciones (quién, cuándo, observación) solo de la última ronda |
-| 6b.12 | Contabilidad devuelve al Controller | `prueba.contabilidad` → #17 → "Devolver al Controller" con motivo | Queda **Rechazo contabilidad**; lo ve el Controller en su bandeja (no el productor) con el motivo. El Controller lo aprueba de nuevo → vuelve a Contabilidad con la misma orden |
+| 6b.12 | Contabilidad devuelve al Controller | `prueba.contabilidad` → el de $12.000.000 → "Devolver al Controller" con motivo | Queda **Rechazo contabilidad**; lo ve el Controller en su bandeja (no el productor) con el motivo. El Controller lo aprueba de nuevo → vuelve a Contabilidad con la misma orden |
 | 6b.13 | Causar | `prueba.contabilidad` → número con letras; luego solo dígitos | Con letras: error. Con dígitos: **Causado** y correo a tesorería |
 | 6b.14 | Pagar | `prueba.tesoreria` → Anticipos → Pagar → sin comprobante; luego con un PDF | Sin archivo: error. Con PDF: **Pagado**; la ficha dice "Flujo terminado" y muestra el comprobante |
 | 6b.15 | Nadie se salta pasos | Como Controller abre uno en Revisión líder; como Tesorería uno Aprobado; como productor uno de otro productor (`/anticipo-prod/2`) | Sin botones ("¿Qué sigue? Le toca a…"); el de otro productor da **403** |
@@ -425,13 +432,13 @@ Para cada ❌, reporta en un documento/issue:
 **Notas finales:**
 - Los correos NO salen de tu máquina (`MAIL_MAILER=log`): el "envío" se verifica en `storage/logs/laravel.log`.
 - Los SMS no salen (`SMS_MODO=log`).
-- Si dañas los datos de prueba, reimporta `tfc_crm.sql` (paso A3) y listo.
+- Si dañas los datos de prueba, reimporta `bullcrm.sql` (paso A3) y repite A4.
 
 ---
 
 # PARTE D — Estructura de la base de datos (reestructuración de sep-2026)
 
-La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `tfc_crm.sql` ya vienen aplicadas (paso A3); si importas un dump fresco de producción se aplican con `php artisan migrate`, **solo en tu base local**.
+La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `bullcrm.sql` ya vienen aplicadas (paso A3); si importas un dump fresco de producción se aplican con `php artisan migrate`, **solo en tu base local**.
 
 | Antes | Ahora |
 |---|---|
