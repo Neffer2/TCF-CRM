@@ -60,7 +60,13 @@
     </style>
 </head>
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
-@yield('hero-style')
+{{-- La franja oscura con foto va siempre: si la página no trae la suya, se pone la de marca.
+     Sin ella el menú superior (blanco) queda invisible sobre el fondo claro. --}}
+@hasSection('hero-style')
+  @yield('hero-style')
+@else
+  <div class="position-absolute w-100 min-height-300 top-0 crm-hero crm-hero--photo" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}')"></div>
+@endif
 <div class="main-content position-relative max-height-vh-100 h-100">
     <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky">

@@ -42,7 +42,13 @@
   $crmTitulo = $crmTitulos[optional(request()->route())->getName()] ?? 'Inicio';
 @endphp
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
-  @yield('hero-style')
+  {{-- La franja oscura con foto va siempre: si la página no trae la suya, se pone la de marca.
+       Sin ella el menú superior (blanco) queda invisible sobre el fondo claro. --}}
+  @hasSection('hero-style')
+    @yield('hero-style')
+  @else
+    <div class="position-absolute w-100 min-height-300 top-0 crm-hero crm-hero--photo" style="background-image: url('{{ asset('assets/img/hero-2.jpg') }}')"></div>
+  @endif
   <!-- Barra lateral -->
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
