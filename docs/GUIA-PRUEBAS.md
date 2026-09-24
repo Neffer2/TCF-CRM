@@ -47,7 +47,7 @@ Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11
 
 **Base de datos**
 - Fase 6 de reestructuración: normalización, llaves e integridad, esquema documentado (`docs/`), migraciones nuevas (`roles_controller_lider_comercial`, `notificaciones_log_y_estado_pagado`, `tipo_orden_nomina`, `actividad_log`, `documentar_esquema`).
-- La base de pruebas (`bullcrm.sql`) se entrega **aparte, no en el repositorio**: el repositorio es público y la base tiene datos personales reales. El `tfc_crm.sql` que está en el repositorio es un volcado viejo (mar-2025): no lo uses. Ver A3.
+- La base de pruebas (`bullcrm.sql`) se entrega **aparte, no en el repositorio**: tiene datos personales reales y no debe quedar en el historial de git, donde cada clon guarda una copia. El `tfc_crm.sql` que está en el repositorio es un volcado viejo (mar-2025): no lo uses. Ver A3.
 
 **Visual**
 - Login rediseñado con foto de marca; capa visual Bull coherente y animada en todos los roles (tipografía Manrope, naranja solo en acentos, cabecera con velo carbón). Favicon original intacto.
@@ -82,7 +82,7 @@ npm run production
 
 ## A3. Base de datos: importar `bullcrm.sql`
 
-El archivo **`bullcrm.sql`** (~43 MB, o `bullcrm.sql.gz` de 9 MB) te llega en el paquete de QA, **no está en el repositorio**: el repositorio es público y la base trae datos reales de personas (cédulas, cuentas bancarias, correos). No lo subas a GitHub ni lo compartas. Es una copia de la base de pruebas ya lista: datos reales de producción + migraciones aplicadas hasta el 23-sep + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada. Las instrucciones detalladas (también para Windows) están en `COMO-IMPORTAR-LA-BASE.md`, dentro del mismo paquete.
+El archivo **`bullcrm.sql`** (~43 MB, o `bullcrm.sql.gz` de 9 MB) te llega en el paquete de QA, **no está en el repositorio**: la base trae datos reales de personas (cédulas, cuentas bancarias, correos) y no debe quedar en el historial de git. No lo subas a GitHub ni lo compartas. Es una copia de la base de pruebas ya lista: datos reales de producción + migraciones aplicadas hasta el 23-sep + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada. Las instrucciones detalladas (también para Windows) están en `COMO-IMPORTAR-LA-BASE.md`, dentro del mismo paquete.
 
 > Producción (`u630167073_CRM` en Hostinger) es **solo lectura y no se toca**. Si algún día necesitas datos más frescos, expórtala desde phpMyAdmin (Exportar → Rápido → SQL) a `db-snapshots/` (carpeta ignorada por git) y sigue el mismo procedimiento; en ese caso sí tendrás que correr `php artisan migrate` después.
 
