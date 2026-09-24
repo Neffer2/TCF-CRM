@@ -1,7 +1,9 @@
 # Guía de pruebas — TCF-CRM (rama `correcciones`)
 **Para:** desarrollador/tester que valida la reestructuración antes del paso a producción.
 **Rama a probar:** `correcciones` · **NUNCA toques la rama `main`** (subir a main despliega a producción automáticamente).
-**Versión de esta guía:** 14 de septiembre de 2026 (commit más reciente de `correcciones`).
+**Versión de esta guía:** 24 de septiembre de 2026 (commit más reciente de `correcciones`).
+
+> **Si ya tenías la base importada:** después de `git pull` corre `php artisan migrate` en tu base local. Aplica la migración `2026_09_24_120000_anticipo_juridico_flujo` (anticipo jurídico nuevo). No la corras en ningún servidor.
 
 ---
 
@@ -28,6 +30,7 @@ Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11
 
 **Producción, pagos y notificaciones**
 - Motor de transiciones de anticipos y órdenes con topes de dinero validados en servidor; candado anti doble pago; estado **Pagado (14)** para anticipos; tipo de orden **Nómina (3)**.
+- **Anticipo jurídico según la matriz de Gerencia (24-sep)**: productor → líder de producción → **Controller** → si supera **$10.000.000**, Gerencia. Cada revisor puede devolverlo con motivo; al aprobarse se genera la **orden de anticipo (PDF)**; Contabilidad causa (o lo devuelve al Controller) y Tesorería paga. Se puede pedir con orden de compra o **sin orden previa** (borrador con soporte). Una sola pantalla para todos los roles con el recorrido de seis etapas, y bandeja nueva del Controller (menú Producción → Anticipos jurídicos). Ver **B6b**.
 - 13 correos que el código llamaba y no existían, creados. Todo correo/SMS pasa por `Notificador`: queda registrado en **Acciones → Notificaciones** con reintentos, y si falla se alerta a desarrollo (`CRM_ALERTA_*`).
 - **Registro de actividad** (`/actividad`): sesiones, páginas, acciones con datos y cambios de registros (antes/después).
 - Inicio de **Tesorería** y **Contabilidad** (antes en blanco): órdenes por pagar/causar, valor, procesadas por mes, anticipos pendientes, accesos directos.
@@ -112,7 +115,7 @@ El seeder **solo corre en entorno local**. Los usuarios de prueba ya vienen en e
 
 | Correo | Rol | Para probar |
 |---|---|---|
-| prueba.gerencia@local.test | Admin + **Gerencia** | aprobaciones de margen, validación de nómina y anticipos |
+| prueba.gerencia@local.test | Admin + **Gerencia** | aprobaciones de margen, validación de nómina y anticipos (jurídicos de más de $10 M) |
 | prueba.admin@local.test | Admin (sin gerencia) | que un admin común **NO** pueda aprobar márgenes |
 | prueba.comercial@local.test | Comercial | todo el flujo comercial |
 | prueba.ejecutivo@local.test | Ejecutivo de cuenta | módulo asistente |
@@ -121,7 +124,7 @@ El seeder **solo corre en entorno local**. Los usuarios de prueba ya vienen en e
 | prueba.tesoreria@local.test | Tesorería | pago de anticipos, inicio de tesorería |
 | prueba.contabilidad@local.test | Contabilidad | causación, inicio de contabilidad |
 | prueba.multirol@local.test | Productor + Comercial | el selector de cambio de rol |
-| prueba.controller@local.test | **Controller** | dashboard de revisión, presupuestos, actualizaciones, consumidos, reportes |
+| prueba.controller@local.test | **Controller** | dashboard de revisión, presupuestos, actualizaciones, consumidos, reportes y **revisión de anticipos jurídicos** |
 | prueba.lidercom@local.test | **Líder comercial** | dashboard de su equipo (prueba.comercial, Alexandra Niño, Juan Camilo Rodríguez), validaciones |
 
 Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales**, estas cuentas reales también tienen la clave `Prueba123*` (solo en la base local; sus correos y datos no cambian):
@@ -228,7 +231,32 @@ Ejecuta la cadena completa con estos usuarios en orden:
 | 6.5 | Evidencias | `prueba.productor` → sube evidencias del anticipo → envía | Estado avanza; intenta borrar una evidencia de OTRO anticipo por consola → bloqueado |
 | 6.6 | Causación | `prueba.contabilidad` → lista anticipos (estado aprobado) → causa con código | Pasa a causado. Intenta causarlo de nuevo → bloqueado |
 | 6.7 | Pago | `prueba.tesoreria` → **lista-anticipos-tesoreria** (¡esta pantalla antes no existía!) → detalle → registra comprobante | Pago registrado. **Intenta pagarlo otra vez → "Este anticipo ya fue pagado"** (candado anti doble pago) |
-| 6.8 | Anticipo jurídico coherente | Como productor: anticipo jurídico → elige una OC, pon 50% → cambia a OTRA OC | El total se recalcula con la orden nueva (antes conservaba el total de la anterior) |
+| 6.8 | Anticipo jurídico | Tiene flujo propio desde el 24-sep | Ver **B6b** |
+
+## B6b. Anticipo jurídico — matriz de Gerencia (24-sep-2026)
+
+Regla de la matriz: **Productor → Líder de producción → Controller → hasta $10.000.000 queda aprobado; más de $10.000.000 lo aprueba Gerencia**. Después: orden de anticipo (PDF) → Contabilidad causa → Tesorería paga.
+
+Datos listos en la base: **#17** (sin orden de compra, $12.000.000, ya aprobado por líder, Controller y Gerencia: está en Contabilidad) y **#18** (sin orden, $1.000.000, en revisión del líder). Los dos son de `prueba.productor`. En el ambiente local los correos no salen: se ven en **Acciones → Notificaciones** (Admin) y en `storage/logs/laravel.log`.
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 6b.1 | Pantalla que se explica sola | `prueba.productor` → Solicitar anticipo → pestaña Anticipo Jurídico | Arriba dice qué es y quién lo revisa; debajo el recorrido de 6 etapas (Productor, Líder, Controller, Gerencia, Contabilidad, Tesorería) |
+| 6b.2 | Sin orden de compra | "Aún no hay orden de compra" → proyecto → busca el proveedor por nombre o NIT → valor base 30.000.000 → 40 % | Calcula **$12.000.000** y avisa que **pasa por Gerencia**; si el acuerdo con el proveedor es menor, lo advierte. Enviar sin adjuntar soporte → error "hay que adjuntar al menos un soporte" |
+| 6b.3 | Validaciones | Valor base mayor al costo del proyecto; porcentaje 0 o 150; proveedor persona natural; archivo .exe | Cada uno rechazado con su mensaje en el campo |
+| 6b.4 | Envío | Adjunta una cotización (PDF o imagen, puedes adjuntar varias y quitar una) → Enviar a revisión | Abre la ficha del anticipo con el mensaje de confirmación; estado **Revisión líder de producción** |
+| 6b.5 | Líder devuelve | `prueba.lider` → Anticipos (ahora sí aparecen los jurídicos) → Revisar → "Devolver al productor" sin escribir motivo; luego con motivo | Sin motivo: error. Con motivo: **Rechazo líder** y correo al productor con el motivo |
+| 6b.6 | Productor corrige | `prueba.productor` → abre el anticipo | Ve quién lo devolvió y por qué; el formulario viene lleno. Reenviar sin decir qué corrigió → error; con la explicación → vuelve a **Revisión líder** |
+| 6b.7 | Líder aprueba | `prueba.lider` aprueba | Pasa a **Revisión controller**; el recorrido muestra quién aprobó y su observación |
+| 6b.8 | Controller: umbral | `prueba.controller` → Producción → Anticipos jurídicos → Revisar | El panel dice qué pasa al aprobar: "queda aprobado" (≤ $10 M) o "pasa a Gerencia" (> $10 M). Aprueba |
+| 6b.9 | ≤ $10 M no pasa por Gerencia | Aprueba como Controller el #18 ($1.000.000) después del líder | Queda **Aprobado** directo y se genera la **orden de anticipo OA-000018** (PDF en "Soportes y documentos") |
+| 6b.10 | Gerencia | Con uno de más de $10 M en Revisión gerencia: entra como `prueba.admin` y luego como `prueba.gerencia` | `prueba.admin` (sin permiso de Gerencia) solo lo consulta: "Le toca a Gerencia". `prueba.gerencia` ve "Te toca · Gerencia", aprueba → orden de anticipo |
+| 6b.11 | Orden de anticipo | Abre el PDF de la orden | Datos de Bull, proveedor, proyecto, base × % = valor y la tabla de aprobaciones (quién, cuándo, observación) solo de la última ronda |
+| 6b.12 | Contabilidad devuelve al Controller | `prueba.contabilidad` → #17 → "Devolver al Controller" con motivo | Queda **Rechazo contabilidad**; lo ve el Controller en su bandeja (no el productor) con el motivo. El Controller lo aprueba de nuevo → vuelve a Contabilidad con la misma orden |
+| 6b.13 | Causar | `prueba.contabilidad` → número con letras; luego solo dígitos | Con letras: error. Con dígitos: **Causado** y correo a tesorería |
+| 6b.14 | Pagar | `prueba.tesoreria` → Anticipos → Pagar → sin comprobante; luego con un PDF | Sin archivo: error. Con PDF: **Pagado**; la ficha dice "Flujo terminado" y muestra el comprobante |
+| 6b.15 | Nadie se salta pasos | Como Controller abre uno en Revisión líder; como Tesorería uno Aprobado; como productor uno de otro productor (`/anticipo-prod/2`) | Sin botones ("¿Qué sigue? Le toca a…"); el de otro productor da **403** |
+| 6b.16 | Anticipos anteriores | Abre como admin `/anticipo-admin/1`, `/2` y `/3` | Abren sin error; el #1 figura **Pagado** (ya tenía comprobante) y el #2 y #3 están en Revisión líder |
 
 ## B7. Portal público de terceros
 
@@ -366,8 +394,8 @@ Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío q
 | 8g.1 | Registro de envíos | Admin → Acciones → Notificaciones | Tarjetas (fallidas / enviadas 24 h, modo correo y SMS), tabla con evento, destinatarios, estado e intentos; "Ver" muestra el cuerpo |
 | 8g.2 | Fallo y alerta | En `.env` pon `MAIL_MAILER=smtp` con un host inexistente, aprueba una OC jurídica | El registro queda "Fallido" con 3 intentos y el error; el dashboard de admin/gerencia muestra el aviso rojo; en el log aparece "Alerta a desarrollo"; "Reintentar" vuelve a intentarlo |
 | 8g.3 | Nómina completa | `prueba.productor` crea una orden de nómina → `prueba.lider` la aprueba (estado 9) → `prueba.gerencia` la valida | Queda **Aprobada** con el PDF de la orden y llegan los correos (producción, gerencia, compras/productor/comercial). Antes no podía ni crearse |
-| 8g.4 | Pago de anticipo | `contadores@…` causa un anticipo → `tesoreria@…` sube el comprobante | Contabilidad genera el correo a tesorería; tesorería lo ve en "Por pagar", tras el comprobante pasa a "Pagados" (estado Pagado) y sale el correo con el comprobante adjunto |
-| 8g.5 | Anticipo de productor | `prueba.productor` crea un anticipo → `prueba.lider` aprueba → (si ≥ $500.000) `prueba.gerencia` aprueba | Cada paso genera su correo (producción, gerencia, productor); el umbral se cambia con `CRM_ANTICIPO_UMBRAL_GERENCIA` |
+| 8g.4 | Pago de anticipo | `prueba.contabilidad` causa un **anticipo jurídico** aprobado → `prueba.tesoreria` sube el comprobante | Sale el correo a tesorería (`anticipoCausado`); tesorería lo ve en "Por pagar", tras el comprobante pasa a "Pagados" (estado Pagado) y sale el correo con el comprobante adjunto. (El anticipo de productor no llega a contabilidad: ver 8g.5) |
+| 8g.5 | Anticipo de productor | `prueba.productor` crea un anticipo → `prueba.lider` aprueba → (si ≥ $500.000) `prueba.gerencia` aprueba | Cada paso genera su correo (producción, gerencia, productor). **Corrección 24-sep:** el umbral de $500.000 está fijo en el código; cambiar `CRM_ANTICIPO_UMBRAL_GERENCIA` **no** tiene efecto (pendiente conocido, no lo reportes como hallazgo nuevo). Tras las evidencias el anticipo queda en "Revisión de evidencias" y ninguna pantalla lo avanza (pendiente conocido) |
 | 8g.6 | Portal del contratista | Abre el enlace firmado de una orden natural (botón "Copiar enlace" en Órdenes de compra) | Arriba se ve "Estado de tu orden" con los pasos cumplidos y el estado del pago |
 | 8g.7 | Registro de actividad | Admin → Acciones → Registro de actividad | Sesiones, páginas, acciones (con "Datos": método y campos enviados) y cambios de datos (campo, antes, después); filtros por usuario, tipo, fechas y texto |
 | 8g.8 | Pronóstico | Dashboard de gerencia → gráfica | Línea punteada "Pronóstico" desde el último mes cerrado hasta diciembre y tarjeta "Pronóstico de cierre" con % vs presupuesto y vs año anterior; el "?" explica el cálculo |

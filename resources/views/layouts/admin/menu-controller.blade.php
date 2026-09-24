@@ -1,5 +1,5 @@
 {{-- Menú lateral del rol CONTROLLER (rol 11): revisión financiera de presupuestos,
-     actualizaciones, consumidos y reportes. No ve producción, equipo ni proveedores. --}}
+     actualizaciones, consumidos, reportes y la revisión de anticipos jurídicos. No ve equipo ni proveedores. --}}
 <ul class="navbar-nav">
     <li class="nav-item">
         <a data-bs-toggle="collapse" href="#ctrlInicio" class="nav-link active" aria-controls="ctrlInicio" role="button" aria-expanded="true">
@@ -56,6 +56,24 @@
                     <a @class(['active' => request()->is('actualizaciones'), 'nav-link' => true]) href="{{ route('actualizaciones') }}">
                         <span class="sidenav-mini-icon"> A </span>
                         <span class="sidenav-normal"> Actualizaciones </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#ctrlProduccion" class="nav-link" aria-controls="ctrlProduccion" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+                <i class="ni ni-money-coins text-primary text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Producci&oacute;n</span>
+        </a>
+        <div @class(['show' => request()->is('lista-anticipos-controller') || request()->is('anticipo-controller/*'), 'collapse' => true]) id="ctrlProduccion">
+            <ul class="nav ms-4">
+                <li @class(['active' => request()->is('lista-anticipos-controller') || request()->is('anticipo-controller/*'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('lista-anticipos-controller') || request()->is('anticipo-controller/*'), 'nav-link' => true]) href="{{ route('lista-anticipos-controller') }}">
+                        <span class="sidenav-mini-icon"> AJ </span>
+                        <span class="sidenav-normal"> Anticipos jur&iacute;dicos </span>
                     </a>
                 </li>
             </ul>

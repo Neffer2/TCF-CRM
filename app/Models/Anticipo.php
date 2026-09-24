@@ -12,9 +12,12 @@ class Anticipo extends Model
     protected $table = 'anticipos';
 
     protected $fillable = [
+        'tipo',
         'oc_id',
         'presupuesto_id',
+        'proveedor_id',
         'porcentaje_anticipo',
+        'valor_base',
         'total_anticipo',
         'fecha_solicitud',
         'fecha_aprobacion',
@@ -23,6 +26,15 @@ class Anticipo extends Model
         'productor_id',
         'firma_productor'
     ];
+
+    protected $casts = [
+        'fecha_solicitud' => 'datetime',
+        'fecha_aprobacion' => 'datetime',
+        'fecha_orden_anticipo' => 'datetime',
+    ];
+
+    const TIPO_JURIDICO = 'juridico';
+    const TIPO_PRODUCTOR = 'productor';
 
     // Catálogo propio de anticipos (estados_anticipo), ya no el de órdenes de compra
     public function estado(){
@@ -45,9 +57,28 @@ class Anticipo extends Model
         return $this->hasOne(User::class, 'id', 'productor_id');
     }
 
-    // true si es un anticipo de productor (sobre presupuesto); false si es jurídico (sobre orden)
+    public function proveedor(){
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+
+    /** Historial de decisiones del flujo (quién, cuándo, de qué estado a cuál, con qué observación). */
+    public function pasos(){
+        return $this->hasMany(AnticipoPaso::class, 'anticipo_id')->orderBy('created_at')->orderBy('id');
+    }
+
+    public function evidencias(){
+        return $this->hasMany(EvidenciaAnticipo::class, 'anticipo_id');
+    }
+
+    // El tipo es explícito (columna tipo): un anticipo jurídico borrador no tiene orden de compra
+    // pero sí presupuesto, así que ya no se puede deducir de oc_id ni de presupuesto_id.
+    public function esJuridico(): bool
+    {
+        return $this->tipo === self::TIPO_JURIDICO;
+    }
+
     public function esDeProductor(): bool
     {
-        return !is_null($this->presupuesto_id);
+        return !$this->esJuridico();
     }
 }

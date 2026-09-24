@@ -5,7 +5,7 @@
 
     @section('content')
         @if ($tipo == 1)
-
+            @livewire('produccion.anticipo-juridico', ['anticipo_id' => $anticipo_id])
         @else
             @livewire('productor.ordenes.anticipo-productor', ['anticipo_id' => $anticipo_id])
         @endif

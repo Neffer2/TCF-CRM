@@ -4,7 +4,7 @@
     @endsection
 
     @section('content')
-        <div class="card" x-data="{ show: true }" x-cloak>
+        <div class="card" x-data="{ show: true }" x-cloak data-crm-quieto>
             <div id="accordion-anticipos">
                 <div class="row px-3 pt-3 pb-0">
                     <div class="col-md-6">
@@ -19,7 +19,7 @@
             </div>
 
             <div class="card-body pt-0" id="anticipo-juridico" x-show="show" x-transition>
-                @livewire('productor.ordenes.anticipo-juridico')
+                @livewire('produccion.anticipo-juridico')
             </div>
             <div class="card-body pt-0" id="anticipo-productor" x-show="!show" x-transition>
                 @livewire('productor.ordenes.anticipo-productor')

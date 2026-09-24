@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=36" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=39" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -35,7 +35,7 @@
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
     'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
-    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'mi-equpo' => 'Mi equipo', 'notificaciones' => 'Notificaciones', 'actividad' => 'Registro de actividad', 
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'lista-anticipos-controller' => 'Anticipos jurídicos', 'anticipo-controller' => 'Anticipo jurídico', 'mi-equpo' => 'Mi equipo', 'notificaciones' => 'Notificaciones', 'actividad' => 'Registro de actividad', 
     'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
     'consumidos-com' => 'Consumidos', 'update-gestion-comercial' => 'Gestión comercial',
   ];
@@ -356,7 +356,7 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('assets/js/argon-dashboard.min.js?v=2.0.5') }}"></script>
-  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=10"></script>
+  <script src="{{ asset('assets/js/crm-dashboard.js') }}?v=11"></script>
   @livewireScripts
 </body>
 </html>

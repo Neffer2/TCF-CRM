@@ -13,6 +13,9 @@ return [
         // Anticipos de productor por debajo de este valor no pasan por gerencia:
         // el líder de producción los aprueba y van directo a evidencias.
         'umbral_gerencia' => (float) env('CRM_ANTICIPO_UMBRAL_GERENCIA', 500000),
+        // Anticipo jurídico: por encima de este valor, después del Controller lo aprueba Gerencia
+        // (matriz de flujos de Gerencia, sep-2026: "> 10 MM"). Por debajo o igual, queda aprobado.
+        'juridico_umbral_gerencia' => (float) env('CRM_AJ_UMBRAL_GERENCIA', 10000000),
     ],
 
     'sms' => [

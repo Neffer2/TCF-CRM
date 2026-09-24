@@ -127,7 +127,8 @@ Route::get('/', function () {
     Route::view('/lista-anticipos-contabilidad', 'contabilidad.anticipos_.index')->middleware(['auth'])->middleware(['contabilidad'])->name('lista-anticipos-contabilidad');
 
     Route::get('/detalle-anticipo-contabilidad/{anticipo_id}', function ($anticipo_id){
-        return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+        $tipo = optional(Anticipo::find($anticipo_id))->esJuridico() ? 1 : 2;
+        return view('contabilidad.anticipos_.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
     })->middleware(['auth'])->middleware(['contabilidad'])->name('detalle-anticipo-contabilidad');
 /* --- */
 
@@ -141,7 +142,7 @@ Route::get('/', function () {
     // Productor
     Route::view('/lista-anticipos-prod', 'productor.anticipos.index')->middleware(['auth', 'productor'])->name('lista-anticipos-prod');
     Route::get('/anticipo-prod/{anticipo_id}', function ($anticipo_id){
-        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        $tipo = optional(Anticipo::find($anticipo_id))->esJuridico() ? 1 : 2; // 1 = jurídico (con o sin orden), 2 = de productor
         return view('productor.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
     })->middleware(['auth', 'productor'])->name('anticipo-prod');
     Route::view('/solicitud-anticipo-prod', 'productor.ordenes.anticipo')->middleware(['auth', 'productor'])->name('solicitd-anticipo-prod');
@@ -152,7 +153,7 @@ Route::get('/', function () {
     // Líder de producción
     Route::view('/lista-anticipos-lid', 'lider-produccion.anticipos.index')->middleware(['auth', 'lproduccion'])->name('lista-anticipos-lid');
     Route::get('/anticipo-lid/{anticipo_id}', function ($anticipo_id){
-        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        $tipo = optional(Anticipo::find($anticipo_id))->esJuridico() ? 1 : 2; // 1 = jurídico (con o sin orden), 2 = de productor
         return view('lider-produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
     })->middleware(['auth', 'lproduccion'])->name('anticipo-lid');
     Route::view('/ordenes-compra-lid', 'lider-produccion.ordenes.index')->middleware(['auth', 'lproduccion'])->name('ordenes-compra-lid');
@@ -161,15 +162,22 @@ Route::get('/', function () {
     Route::view('/lista-anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth', 'admin'])->name('lista-anticipos-admin');
     Route::view('/anticipos-admin', 'admin.produccion.anticipos.index')->middleware(['auth', 'admin'])->name('anticipos-admin');
     Route::get('/anticipo-admin/{anticipo_id}', function ($anticipo_id){
-        $tipo = optional(Anticipo::find($anticipo_id))->oc_id ? 1 : 2;
+        $tipo = optional(Anticipo::find($anticipo_id))->esJuridico() ? 1 : 2; // 1 = jurídico (con o sin orden), 2 = de productor
         return view('admin.produccion.anticipos.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
     })->middleware(['auth', 'admin'])->name('anticipo-admin');
 
     // Tesorería (con esto la cola de pago del flujo nuevo por fin es alcanzable)
     Route::view('/lista-anticipos-tesoreria', 'tesoreria.anticipos_.index')->middleware(['auth', 'tesoreria'])->name('lista-anticipos-tesoreria');
     Route::get('/detalle-anticipo-tesoreria/{anticipo_id}', function ($anticipo_id){
-        return view('tesoreria.anticipos_.anticipo', ['anticipo_id' => $anticipo_id]);
+        $tipo = optional(Anticipo::find($anticipo_id))->esJuridico() ? 1 : 2;
+        return view('tesoreria.anticipos_.anticipo', ['anticipo_id' => $anticipo_id, 'tipo' => $tipo]);
     })->middleware(['auth', 'tesoreria'])->name('detalle-anticipo-tesoreria');
+
+    // Controller: revisa los anticipos jurídicos después del líder (matriz de flujos de Gerencia, sep-2026)
+    Route::view('/lista-anticipos-controller', 'controller.anticipos.index')->middleware(['auth', 'rol:11'])->name('lista-anticipos-controller');
+    Route::get('/anticipo-controller/{anticipo_id}', function ($anticipo_id){
+        return view('controller.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
+    })->middleware(['auth', 'rol:11'])->name('anticipo-controller');
 /* --- */
 
 /* Registro de actividad (auditoría): páginas, acciones, sesiones y cambios de datos por usuario */

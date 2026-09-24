@@ -64,22 +64,29 @@ trait Email
         ];
     }
 
-    /** Datos legibles de un anticipo (jurídico, natural o de productor). */
+    /** Datos legibles de un anticipo (jurídico, con o sin orden de compra, o de productor). */
     private function ctxAnticipo($anticipo): array
     {
         $orden = $anticipo->ordenCompra ?? null;
         $presupuesto = $anticipo->presupuesto ?? ($orden->presupuesto ?? null);
         $gestion = optional($presupuesto)->gestion;
         $productor = $anticipo->productor_info ?? optional($presupuesto)->productor_info;
+        $proveedor = $anticipo->proveedor ?? optional($orden)->proveedor;
+        if (method_exists($anticipo, 'esJuridico') && $anticipo->esJuridico()) {
+            $tipo = $orden ? 'anticipo jurídico sobre la orden de compra '.($orden->cod_oc ?: '#'.$orden->id) : 'anticipo jurídico (sin orden de compra)';
+            if ($proveedor) { $tipo .= ' para '.e($proveedor->tercero); }
+        } else {
+            $tipo = 'anticipo de productor';
+        }
         return [
             'orden' => $orden,
             'proyecto' => optional($gestion)->nom_proyecto_cot ?: 'sin nombre',
             'cc' => optional($presupuesto)->cod_cc ?: '—',
             'productor' => optional($productor),
             'comercial' => optional(optional($gestion)->comercial),
-            'proveedor' => optional(optional($orden)->proveedor),
+            'proveedor' => optional($proveedor),
             'total' => '$'.number_format((float) $anticipo->total_anticipo, 0, '.', ','),
-            'tipo' => $orden ? ('anticipo sobre la '.((int) $orden->tipo_oc === 2 ? 'orden natural' : 'orden de compra').' '.($orden->cod_oc ?: '#'.$orden->id)) : 'anticipo de productor',
+            'tipo' => $tipo,
             'ref' => 'anticipo:'.$anticipo->id,
         ];
     }
@@ -412,6 +419,82 @@ trait Email
             null, null, array_merge($this->destUsuario($c['productor']), NotificacionDestinatario::area('compras')), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 
+    /* ---- Anticipo jurídico (matriz de Gerencia, sep-2026): App\Services\AnticipoJuridicoFlujo ---- */
+
+    /** Última observación del recorrido (el motivo de una devolución, o lo que el productor corrigió). */
+    private function obsAnticipo($anticipo): string
+    {
+        // reorder(): la relación ya viene ordenada de la más antigua a la más reciente
+        $paso = $anticipo->pasos()->reorder()->orderByDesc('id')->first();
+        return ($paso && $paso->observacion) ? e($paso->observacion) : '—';
+    }
+
+    private function enlaceAnticipo(string $ruta, $anticipo): string
+    {
+        return '<p><a href="'.route($ruta, ['anticipo_id' => $anticipo->id]).'">Abrir el anticipo en el CRM</a></p>';
+    }
+
+    /** Productor lo solicita o lo reenvía corregido: revisa el líder de producción. */
+    public function ajRevisionLider($anticipo){
+        $reenvio = $anticipo->pasos()->where('accion', 'reenviar')->exists();
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico para revisión del líder de producción",
+            $this->cuerpoAnticipo($anticipo, $reenvio ? 'fue corregido y reenviado. Lo que corrigió: '.$this->obsAnticipo($anticipo).'. Espera revisión del líder de producción.' : 'espera revisión del líder de producción.')
+            .$this->enlaceAnticipo('anticipo-lid', $anticipo),
+            null, null, NotificacionDestinatario::area('produccion'), [], null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Líder aprobó: revisa el Controller. */
+    public function ajRevisionController($anticipo){
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico para revisión del Controller",
+            $this->cuerpoAnticipo($anticipo, 'fue aprobado por el líder de producción y espera revisión del Controller.').$this->enlaceAnticipo('anticipo-controller', $anticipo),
+            null, null, NotificacionDestinatario::area('controller'), [], null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Controller aprobó y el valor supera el umbral: aprueba Gerencia. */
+    public function ajRevisionGerencia($anticipo){
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico para aprobación de Gerencia",
+            $this->cuerpoAnticipo($anticipo, 'fue aprobado por el líder de producción y el Controller y, por superar $'.number_format(\App\Services\AnticipoJuridicoFlujo::umbral(), 0, '.', ',').', espera aprobación de Gerencia.').$this->enlaceAnticipo('anticipo-admin', $anticipo),
+            null, null, Permiso::usuariosCon('revisar-anticipos-gerencia'), NotificacionDestinatario::area('controller'), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Aprobado: Contabilidad lo causa con la orden de anticipo adjunta; el productor queda enterado. */
+    public function ajAprobado($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $adj = $anticipo->archivo_orden_anticipo ? [['ruta' => $anticipo->archivo_orden_anticipo, 'nombre' => "ORDEN_DE_ANTICIPO_{$anticipo->cod_orden_anticipo}.pdf"]] : [];
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico aprobado".($anticipo->cod_orden_anticipo ? " ({$anticipo->cod_orden_anticipo})" : '').": pendiente de causar",
+            $this->cuerpoAnticipo($anticipo, 'fue <b>aprobado</b> y está pendiente de causar. Se adjunta la orden de anticipo.').$this->enlaceAnticipo('detalle-anticipo-contabilidad', $anticipo),
+            null, null, array_merge(NotificacionDestinatario::area('contabilidad'), $this->destUsuario($c['productor'])), NotificacionDestinatario::area('controller'), $adj, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    public function ajRechazoLider($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $this->sendMail("NOTIFICACIÓN CRM - Tu anticipo jurídico fue devuelto por el líder de producción",
+            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por el líder de producción. Motivo: '.$this->obsAnticipo($anticipo).'. Corrígelo y vuelve a enviarlo.').$this->enlaceAnticipo('anticipo-prod', $anticipo),
+            null, null, $this->destUsuario($c['productor']), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    public function ajRechazoController($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $this->sendMail("NOTIFICACIÓN CRM - Tu anticipo jurídico fue devuelto por el Controller",
+            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por el Controller. Motivo: '.$this->obsAnticipo($anticipo).'. Corrígelo y vuelve a enviarlo.').$this->enlaceAnticipo('anticipo-prod', $anticipo),
+            null, null, $this->destUsuario($c['productor']), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    public function ajRechazoGerencia($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $this->sendMail("NOTIFICACIÓN CRM - Tu anticipo jurídico fue devuelto por Gerencia",
+            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por Gerencia. Motivo: '.$this->obsAnticipo($anticipo).'. Corrígelo y vuelve a enviarlo.').$this->enlaceAnticipo('anticipo-prod', $anticipo),
+            null, null, $this->destUsuario($c['productor']), array_merge(NotificacionDestinatario::area('produccion'), NotificacionDestinatario::area('controller')), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Contabilidad lo devuelve: lo revisa de nuevo el Controller (no el productor). */
+    public function ajRechazoContabilidad($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico devuelto por Contabilidad",
+            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por Contabilidad al Controller. Motivo: '.e($anticipo->observaciones_contabilidad ?: '—').'.').$this->enlaceAnticipo('anticipo-controller', $anticipo),
+            null, null, NotificacionDestinatario::area('controller'), $this->destUsuario($c['productor']), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
     /** Tesorería subió el comprobante: el anticipo está pagado. */
     public function anticipoPagado($anticipo, $observaciones = null){
         $c = $this->ctxAnticipo($anticipo);
@@ -420,6 +503,7 @@ trait Email
         if (!empty($c['proveedor']->correo)) { $cc[] = ['name' => $c['proveedor']->contacto ?? '', 'email' => $c['proveedor']->correo]; }
         $adj = $anticipo->comprobante_pago ? [['ruta' => $anticipo->comprobante_pago, 'nombre' => "COMPROBANTE_PAGO_ANTICIPO_{$anticipo->id}.pdf"]] : [];
         $body = $this->cuerpoAnticipo($anticipo, 'fue <b>pagado</b> por tesorería'.($observaciones ? '. Observaciones: '.e($observaciones) : '').'. Se adjunta el comprobante.');
-        $this->sendMail("NOTIFICACIÓN CRM - Anticipo pagado".($c['orden'] && $c['orden']->cod_oc ? " (OC {$c['orden']->cod_oc})" : ''), $body, null, null, $para, $cc, $adj, ['ref' => 'anticipo:'.$anticipo->id]);
+        $ref = ($c['orden'] && $c['orden']->cod_oc) ? " (OC {$c['orden']->cod_oc})" : ($anticipo->cod_orden_anticipo ? " ({$anticipo->cod_orden_anticipo})" : '');
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo pagado".$ref, $body, null, null, $para, $cc, $adj, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 }

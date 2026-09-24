@@ -64,12 +64,15 @@
     var orden = 0;
     tarjetas.forEach(function (el) {
       if (!el.style.getPropertyValue('--i') && !el.closest('.card:not(.crm-kpi) .card')) el.style.setProperty('--i', orden++);
+      // Formularios ([data-crm-quieto]): se animan al entrar, no en cada tecla que actualiza Livewire
+      if (el.classList.contains('is-in') && el.closest('[data-crm-quieto]')) return;
       el.classList.remove('is-in');
       void el.offsetWidth; // reinicia la animación
       el.classList.add('is-in');
     });
     // Filas de las tablas de Argon: numeradas para la entrada escalonada (máx. 40 filas animadas)
     document.querySelectorAll('.main-content .table:not(.crm-table)').forEach(function (t) {
+      if (t.classList.contains('is-in') && t.closest('[data-crm-quieto]')) return;
       Array.prototype.forEach.call(t.tBodies, function (tb) {
         Array.prototype.forEach.call(tb.rows, function (tr, i) { tr.style.setProperty('--i', Math.min(i, 40)); });
       });

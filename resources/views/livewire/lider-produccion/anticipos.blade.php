@@ -18,8 +18,9 @@
                 <tbody>
                     <tr>
                         @foreach ($anticipos as $key => $anticipo)
-                            {{-- ANTICIPOS JURIDICOS --}}
-                            @if ($anticipo->oc_id)
+                            {{-- ANTICIPOS JURIDICOS (con o sin orden de compra): fila compartida --}}
+                            @if ($anticipo->esJuridico())
+                                @include('partials.anticipo-juridico-fila', ['anticipo' => $anticipo, 'ruta' => 'anticipo-lid', 'boton' => 'Revisar'])
                             {{-- ANTICIPOS PRODUCTOR --}}
                             @elseif ($anticipo->presupuesto_id)
                                 <tr>

@@ -4,5 +4,9 @@
     @endsection
 
     @section('content')     
-        @livewire('tesoreria.produccion.anticipo', ['anticipo_id' => $anticipo_id])
+        @if (($tipo ?? 2) == 1)
+            @livewire('produccion.anticipo-juridico', ['anticipo_id' => $anticipo_id])
+        @else
+            @livewire('tesoreria.produccion.anticipo', ['anticipo_id' => $anticipo_id])
+        @endif
     @endsection 

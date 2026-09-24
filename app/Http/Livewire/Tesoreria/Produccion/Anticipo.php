@@ -61,8 +61,10 @@ class Anticipo extends Component
 
     // Al montar el componente, busca la orden de compra por id
     public function mount(){
-        $this->orden = AnticipoModel::find($this->anticipo_id)->ordenCompra; 
         $this->anticipo = AnticipoModel::find($this->anticipo_id);
+        // Los jurídicos se pagan desde su ficha (App\Http\Livewire\Produccion\AnticipoJuridico)
+        abort_unless($this->anticipo && !$this->anticipo->esJuridico(), 404);
+        $this->orden = $this->anticipo->ordenCompra;
     }
 
     /* ACTUALIZACIONES */

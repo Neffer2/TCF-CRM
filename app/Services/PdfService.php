@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Anticipo;
 use App\Models\OrdenCompra;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,44 @@ class PdfService
         Storage::put($file_path, $output);
 
         return $file_path;
+    }
+
+    /**
+     * Orden de anticipo de un anticipo jurídico aprobado: a quién se le anticipa, cuánto, sobre qué
+     * base y quién lo aprobó (del recorrido en anticipo_pasos). Devuelve la ruta en storage.
+     */
+    public function generarPdfOrdenAnticipo(Anticipo $anticipo): string
+    {
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($this->htmlOrdenAnticipo($anticipo));
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $ruta = 'public/anticipos_juridicos/ordenes/orden_anticipo_'.$anticipo->cod_orden_anticipo.'.pdf';
+        Storage::put($ruta, $dompdf->output());
+        return $ruta;
+    }
+
+    public function htmlOrdenAnticipo(Anticipo $anticipo): string
+    {
+        $anticipo->load(['proveedor', 'ordenCompra', 'presupuesto.gestion.contacto', 'productor_info', 'pasos.usuario']);
+
+        // Solo cuenta la última ronda: si lo devolvieron y se reenvió, las aprobaciones anteriores ya no aplican
+        $pasos = $anticipo->pasos->values();
+        $inicio = null;
+        foreach ($pasos as $i => $p) {
+            if (in_array($p->accion, ['solicitar', 'reenviar'], true)) { $inicio = $i; }
+        }
+        $aprobaciones = $pasos->slice($inicio ?? 0)
+            ->filter(fn ($p) => in_array($p->accion, ['aprobar_lider', 'aprobar_controller', 'aprobar_gerencia'], true))->values();
+
+        $logo = public_path('assets/img/bull-logo.png');
+        return View::make('exports.orden_anticipo_pdf', [
+            'a' => $anticipo,
+            'aprobaciones' => $aprobaciones,
+            'solicitud' => $inicio === null ? null : $pasos[$inicio],
+            'logo' => is_file($logo) ? 'data:image/png;base64,'.base64_encode(file_get_contents($logo)) : null,
+        ])->render();
     }
 
     public function generarPdfCCO(OrdenCompra $orden, $path) {

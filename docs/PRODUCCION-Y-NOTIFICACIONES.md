@@ -16,9 +16,10 @@ Análisis del módulo de producción del BULLCRM (rama `correcciones`, base de p
 |---|---|---|
 | **Productor** (rol 7) | Dashboard (sus centros de costos), Órdenes de compra, Anticipos, Firmar remisión, Consumidos, Personal/Terceros, Proveedores (consulta) | Crea OC jurídicas/naturales/nómina, pide anticipos, sube evidencias de sus anticipos, firma remisiones, registra terceros, revisa sus consumidos |
 | **Líder de producción** (rol 6) | Dashboard, Asignar proyectos, Órdenes de compra, Anticipos | Asigna centros de costos a productores, revisa órdenes de nómina y anticipos de productor (estado 8), revisa evidencias (estado 10) |
-| **Admin / Compras** (rol 1, área compras) | Órdenes de compra, Anticipos, Proveedores, Personal, Consumidos | Aprueba OC jurídicas (con código y PDF de Helisa), genera GR (good receipt), anula, aprueba anticipos jurídicos/naturales, valida evidencias de OC naturales, administra proveedores |
+| **Admin / Compras** (rol 1, área compras) | Órdenes de compra, Anticipos, Proveedores, Personal, Consumidos | Aprueba OC jurídicas (con código y PDF de Helisa), genera GR (good receipt), anula, consulta anticipos (desde sep-2026 ya no aprueba anticipos jurídicos), valida evidencias de OC naturales, administra proveedores |
+| **Controller** (rol 11) | Producción → Anticipos jurídicos | Revisa los anticipos jurídicos después del líder de producción (estado 15) y los que Contabilidad devuelve (estado 13) |
 | **Controller** (rol 11) | Presupuestos, Consumidos, Reportes; nómina con permiso `validar-nomina` | Revisión de OC naturales y nóminas (estado 2), validación final de nómina y GR (estado 14 → 5) |
-| **Gerencia** (permisos) | Anticipos, Nómina | Aprueba anticipos de productor ≥ $500.000 (permiso `revisar-anticipos-gerencia`) y nóminas (permiso `validar-nomina`, estado 9) |
+| **Gerencia** (permisos) | Anticipos, Nómina | Con el permiso `revisar-anticipos-gerencia`: anticipos jurídicos de más de $10.000.000 (estado 9) y anticipos de productor ≥ $500.000; nóminas con `validar-nomina` (estado 9) |
 | **Contabilidad** (rol 9) | Anticipos (lista estado 1) | Causa el anticipo (código causal) o lo rechaza |
 | **Tesorería** (rol 8) | Anticipos (lista estado 5) | Sube el comprobante de pago (PDF) |
 | **Tercero / contratista** (sin cuenta) | Portal público `/consulta-terceros/{orden}` con enlace firmado | Completa sus datos y documentos, acepta términos, firma, sube evidencias y cuenta de cobro |
@@ -30,8 +31,8 @@ Análisis del módulo de producción del BULLCRM (rama `correcciones`, base de p
 | Orden de compra jurídica (`tipo_oc` 1) | `ordenes_compra` + `oc_items` | Productor | Compra a un proveedor empresa (`proveedores`), con ítems del presupuesto, cotización adjunta (`archivo_cot`) |
 | Orden de compra natural (`tipo_oc` 2) | `ordenes_compra` + `natural_info` + `oc_items` | Productor | Contratación de una persona natural (`terceros`); genera contrato PDF, requiere términos y firma del tercero |
 | Orden de nómina (`tipo_oc` 3) | `ordenes_compra` + `oc_items` | Productor | Personal por nómina; tiene su propia cadena de revisión (líder → gerencia → controller) |
-| Anticipo jurídico | `anticipos` (con `oc_id`) | Productor | % de anticipo sobre una OC jurídica; el total se calcula en servidor |
-| Anticipo natural | `anticipos` (con `oc_id`) | Productor | % de anticipo sobre una OC natural |
+| Anticipo jurídico | `anticipos` (`tipo = juridico`, con o sin `oc_id`) + `anticipo_pasos` + `evidencias_anticipo` (soportes) | Productor | % de anticipo sobre una OC jurídica aprobada, o sobre un valor base sin orden previa (borrador); el total se calcula en servidor |
+| Anticipo natural | — | — | La matriz de Gerencia le da un flujo propio (pendiente de construir). Desde sep-2026 el formulario del anticipo jurídico solo ofrece órdenes jurídicas |
 | Anticipo de productor | `anticipos` (con `presupuesto_id`) + `items_anticipo` + `evidencias_anticipo` | Productor | Dinero para gastos directos del productor con firma digital; luego debe legalizar con evidencias |
 | Remisión firmada | `ordenes_compra.archivo_remision` + `archivo_firma` | Productor | Constancia de recibido de una OC aprobada (PDF + firma dibujada) |
 | Evidencias de OC natural | `evidencias` | Tercero (portal) | Fotos del trabajo realizado, con fecha y observación, más cuenta de cobro |
@@ -93,30 +94,47 @@ Nota: este flujo **nunca pudo usarse en producción**: el catálogo `tipo_ordene
 
 ### 4.4 Anticipos
 
-Estados de `estados_anticipo`: 1 Aprobado – pendiente de causar · 2 Revisión · 3 Editable · 4 Recibido · 5 Causado – pendiente de pago · 6 Anulado · 7 Cargue de evidencias · 8 Revisión líder · 9 Revisión gerencia · 10 Revisión evidencias · 11/12/13 Rechazos.
+Estados de `estados_anticipo`: 1 Aprobado – pendiente de causar · 2 Revisión (flujo anterior, ya no se usa) · 5 Causado – pendiente de pago · 6 Anulado · 7 Cargue de evidencias · 8 Revisión líder · 9 Revisión gerencia · 10 Revisión evidencias · 11 Rechazo líder · 12 Rechazo gerencia · 13 Rechazo contabilidad · 14 Pagado · 15 Revisión controller · 16 Rechazo controller. (3 Editable y 4 Recibido existen pero ningún flujo los usa.) El tipo de anticipo es explícito en `anticipos.tipo` (`juridico` | `productor`).
 
-**Anticipo jurídico / natural** (sobre una OC): el productor indica el % (el total se calcula en servidor sobre los ítems de la OC) → estado 2 → **Admin** aprueba → 1 → Contabilidad causa → 5 → Tesorería paga (comprobante).
+**Anticipo jurídico (A.J.)** — matriz de flujos de Gerencia, sep-2026, fila "Anticipo jurídica". Reglas en `App\Services\AnticipoJuridicoFlujo`; una sola pantalla para todos los roles (`App\Http\Livewire\Produccion\AnticipoJuridico`) con el recorrido de seis etapas, los datos, los documentos y, a quien le toca, los botones de su paso.
 
-**Anticipo de productor** (gastos directos):
+Se pide de dos formas: **con orden de compra** (jurídica, aprobada, de un proyecto del productor y sin otro anticipo; la base es el valor de la orden) o **sin orden previa** (borrador: proyecto aprobado del productor, proveedor persona jurídica, valor base que no supere el costo del proyecto y al menos un soporte, normalmente la cotización).
+
+| Paso | Estado | Quién | Qué pasa | Aviso |
+|---|---|---|---|---|
+| 1 | 8 | Productor | Solicita, o reenvía corregido diciendo qué corrigió (vuelve a empezar por el líder) | **Correo** a producción (`ajRevisionLider`) |
+| 2 | 15 / 11 | Líder de producción | Aprueba → Controller · devuelve con motivo → productor | **Correo** al controller (`ajRevisionController`) / al productor (`ajRechazoLider`) |
+| 3 | 1 ó 9 / 16 | Controller | Aprueba: si el total es de **$10.000.000 o menos queda aprobado**; si **supera $10.000.000 pasa a Gerencia** · devuelve → productor | **Correo** a contabilidad y productor con la orden de anticipo adjunta (`ajAprobado`) o a gerencia (`ajRevisionGerencia`) / al productor (`ajRechazoController`) |
+| 4 | 1 / 12 | Gerencia (`revisar-anticipos-gerencia`) | Aprueba → aprobado · devuelve → productor | `ajAprobado` / `ajRechazoGerencia` |
+| 5 | 5 / 13 | Contabilidad | Causa con el número de causación → tesorería · devuelve con motivo → **Controller** | `anticipoCausado` (tesorería, cc contabilidad_pagos y productor) / `ajRechazoContabilidad` (controller, cc productor) |
+| 5b | 1 / 16 | Controller | Si Contabilidad lo devolvió: lo aprueba de nuevo (vuelve a Contabilidad con la misma orden de anticipo) o lo devuelve al productor | `ajAprobado` / `ajRechazoController` |
+| 6 | 14 | Tesorería | Sube el comprobante de pago (PDF ≤ 10 MB) | `anticipoPagado` con el comprobante |
+
+- **Orden de anticipo**: al quedar aprobado se genera `OA-000123` (número del anticipo) en PDF (`storage/app/public/anticipos_juridicos/ordenes/`) con proveedor, proyecto, base × % = valor, y la tabla de aprobaciones de la ronda vigente (quién, cuándo, observación). Si el productor corrige y se vuelve a aprobar, se regenera.
+- **Umbral**: `CRM_AJ_UMBRAL_GERENCIA` (por defecto 10.000.000; "más de" pasa a Gerencia, igual o menos no).
+- **Controles**: cada paso solo lo puede dar su rol y desde su estado (con bloqueo de fila para que dos personas no decidan a la vez); nadie revisa su propia solicitud; devolver exige motivo; no se paga dos veces.
+- **Recorrido**: cada decisión queda en `anticipo_pasos` (acción, de qué estado a cuál, usuario, rol, observación, fecha). Los tres A.J. anteriores a este flujo tienen su paso de solicitud reconstruido; el que estaba en "Revisión" (2) entra por la revisión del líder (8) y el que ya tenía comprobante de pago quedó en Pagado (14).
+- **Bandejas**: productor (sus anticipos), líder (estado 8), Controller (15 y 13, más "Todos"), Admin/Gerencia (9), Contabilidad (1), Tesorería (5 y pagados). Todas muestran también los A.J. sin orden de compra.
+- Si el porcentaje pedido supera el acuerdo registrado con el proveedor (`proveedores.anticipo`), la pantalla lo advierte al productor y a los revisores (no bloquea).
+
+**Anticipo de productor** (gastos directos; sin cambios en sep-2026):
 
 | Paso | Estado | Quién | Qué pasa | Aviso |
 |---|---|---|---|---|
 | 1 | 8 | Productor | Ítems + firma dibujada (se guarda como PNG) | **Correo** a producción (líderes) |
-| 2 | 9 ó 7 | Líder de producción | Aprueba con observaciones; si el total es menor al umbral (`CRM_ANTICIPO_UMBRAL_GERENCIA`, hoy $500.000) salta gerencia y va directo a evidencias (7); si no, a gerencia (9) | **Correo** a gerencia o al productor |
+| 2 | 9 ó 7 | Líder de producción | Aprueba con observaciones; si el total es menor a **$500.000 (valor fijo en el código: la variable `CRM_ANTICIPO_UMBRAL_GERENCIA` existe pero este flujo no la lee)** salta gerencia y va directo a evidencias (7); si no, a gerencia (9) | **Correo** a gerencia o al productor |
 | 2b | 11 | Líder | Rechaza → productor corrige | **Correo** al productor |
-| 3 | 7 | Gerencia (`revisar-anticipos-gerencia`) | Aprueba → cargue de evidencias | **Correo** al productor (cc producción) |
+| 3 | 7 | Gerencia: en la práctica **cualquier usuario con rol Admin activo** (el código revisa el rol, no el permiso; el correo sí va solo a quienes tienen `revisar-anticipos-gerencia`) | Aprueba → cargue de evidencias | **Correo** al productor (cc producción) |
 | 3b | 12 | Gerencia | Rechaza | **Correo** al productor |
 | 4 | 10 | Productor (`enviarEvidencias`) | Sube una evidencia por ítem | — |
-| 5 | … | Líder | Revisa evidencias (estado 10) | — |
+| 5 | 10 | — | **Ninguna pantalla lo saca de "Revisión de evidencias"**: el anticipo de productor nunca llega a Contabilidad (pendiente) | — |
 
-**Pago** (común a todos los anticipos): **Contabilidad** ve los de estado 1, registra código causal, observación y fecha → 5 (**correo** a tesorería, cc contabilidad_pagos y productor) o rechaza → 13 / 2 (**correo** al productor y compras); **Tesorería** ve los de estado 5 en "Por pagar", sube el **comprobante de pago** (PDF, ≤10 MB) y el anticipo pasa a **14 Pagado** (pestaña "Pagados") con **correo** a compras, productor, comercial, proveedor y contabilidad_pagos con el comprobante adjunto.
-
-Volumen: 3 anticipos en total (oct-2025 a jul-2026), 1 comprobante de pago. El flujo existe pero casi no se usa.
+Volumen: 3 anticipos en total antes de sep-2026 (oct-2025 a jul-2026), todos jurídicos, 1 con comprobante de pago.
 
 ## 5. Pago a proveedores: la cadena completa
 
 1. **Compromiso**: la OC aprobada (jurídica: `cod_oc` + PDF de Helisa) es el compromiso de pago; el correo "orden aprobada" llega al proveedor con copia.
-2. **Anticipo opcional**: si la OC lleva anticipo (`proveedores.anticipo`), el productor lo solicita, admin lo aprueba, contabilidad lo causa y tesorería lo paga con comprobante; el correo de orden aprobada copia a `contabilidad_pagos` cuando hay anticipo.
+2. **Anticipo opcional**: si la OC lleva anticipo (`proveedores.anticipo`), el productor lo solicita y lo aprueban el líder de producción, el Controller y, si supera $10.000.000, Gerencia (sección 4.4); se genera la orden de anticipo, contabilidad lo causa y tesorería lo paga con comprobante; el correo de orden aprobada copia a `contabilidad_pagos` cuando hay anticipo.
 3. **Recepción**: el productor firma la remisión (jurídica) o el tercero sube evidencias + cuenta de cobro (natural).
 4. **GR / comprobado**: admin registra el GR; el correo "GR generado" le pide al proveedor radicar la factura en `Facturacion.proveedores@bullmarketing.com.co` con copia a `compras@`.
 5. **Pago final**: **no está en el CRM**. La factura, su causación y el pago se hacen fuera (Helisa/tesorería); el CRM solo guarda comprobantes para anticipos. El botón de WhatsApp al tercero dice "puedes seguir el estado de tu pago desde este enlace", pero el portal solo muestra datos, términos y evidencias, no el estado del pago.
@@ -130,7 +148,9 @@ Volumen: 3 anticipos en total (oct-2025 a jul-2026), 1 comprobante de pago. El f
 | Remisión firmada (`archivo_remision`) + firma (`archivo_firma`) | Productor | `remisiones/`, `firmas_produccion/` | PDF + PNG generado de la firma |
 | Evidencias de OC natural (`evidencias.foto_evidencia`) | Tercero (portal) | `evidencias/` | Imagen, fecha y observación; una lista por orden |
 | Cuenta de cobro (`archivo_cuenta_cobro`) | Tercero (portal) | `cuentas_cobro/` | Archivo |
-| Evidencias de anticipo (`evidencias_anticipo`) | Productor | `evidencias/` | Una por ítem; obligatorio tener todas para enviar |
+| Evidencias de anticipo de productor (`evidencias_anticipo`) | Productor | `evidencias_anticipos/` | Una por ítem; obligatorio tener todas para enviar |
+| Soportes del anticipo jurídico (`evidencias_anticipo`, sin ítem) | Productor | `anticipos_juridicos/soportes/` | PDF o imagen ≤ 10 MB; obligatorio al menos uno si no hay orden de compra |
+| Orden de anticipo (`anticipos.archivo_orden_anticipo`) | Generada por el sistema al aprobar | `anticipos_juridicos/ordenes/` | PDF |
 | Firma del productor (`anticipos.firma_productor`) | Productor | `firmas_productores/{id}.png` | Se reutiliza si ya existe |
 | Comprobante de pago (`anticipos.comprobante_pago`) | Tesorería | `anticipos/` | PDF ≤ 10 MB, uno solo |
 | Contrato (`natural_info.contrato`) | Generado por el sistema | PDF | Requiere planilla, cédula, cert. bancaria y (si aplica) RUT |
@@ -157,8 +177,12 @@ Datos: 16.705 evidencias, 2.901 remisiones, 801 certificaciones bancarias, 797 c
 | OC natural aprobada → contabilidad | `ocNaturalRevisionContabilidad` | contabilidad | Activo |
 | Nómina a revisión de controller | `ocJuridicaRevisionController` | controller | **Creado hoy** (antes no existía y rompía el flujo) |
 | Nómina corregida → líder de producción | `ocJuridicaRevisionLiderProd` | producción | **Creado hoy** |
-| Anticipo causado → tesorería | `ocNaturalRevisionTesoreria` | tesorería | **Comentado** (no se envía) |
-| Anticipo pagado | `mailAnticipoPagado` | compras, comercial, productor; cc compras_cc, proveedor, contabilidad_pagos | **Comentado** (no se envía) |
+| Anticipo jurídico: a revisión del líder / del Controller / de Gerencia | `ajRevisionLider`, `ajRevisionController`, `ajRevisionGerencia` | producción / controller / permiso `revisar-anticipos-gerencia` (cc controller) | **Nuevo (sep-24)** |
+| Anticipo jurídico devuelto por líder / Controller / Gerencia | `ajRechazoLider`, `ajRechazoController`, `ajRechazoGerencia` | productor; cc producción (y controller si fue Gerencia) | **Nuevo (sep-24)** |
+| Anticipo jurídico aprobado (con la orden de anticipo) | `ajAprobado` | contabilidad y productor; cc controller | **Nuevo (sep-24)** |
+| Anticipo jurídico devuelto por Contabilidad | `ajRechazoContabilidad` | controller; cc productor | **Nuevo (sep-24)** |
+| Anticipo causado → tesorería | `anticipoCausado` | tesorería; cc contabilidad_pagos, productor | Activo en el anticipo jurídico (sep-24). La pantalla vieja de contabilidad (anticipo de productor) no lo envía |
+| Anticipo pagado | `anticipoPagado` | compras, productor, comercial; cc compras_cc, contabilidad_pagos, proveedor; comprobante adjunto | Activo |
 | Presupuesto: validación líder / aprobación / aprobado / rechazado / actualización controller | 5 funciones | líder_comercial, aprobadores, comercial (+ ejecutivo), controller | Activo (flujo comercial) |
 
 ### 7.2 SMS
@@ -185,17 +209,20 @@ La tabla `actividad_log` guarda cada inicio y cierre de sesión (y los intentos 
 1. `Nomina::enviarAprobacion` y otros pasos de nómina y anticipos de productor llamaban a **trece funciones de correo inexistentes** → error fatal. Todas existen ahora y se probaron.
 2. El catálogo `tipo_ordenes_compra` no tenía el tipo 3 "Nómina": ninguna nómina podía crearse (clave foránea). Añadido por migración.
 3. Botones WhatsApp y "Copiar enlace" del listado de órdenes generaban el enlace del portal sin firma (403). Ahora van firmados.
-4. Correos de la cadena de pago activados: causación → tesorería (cc contabilidad_pagos y productor), rechazo de contabilidad → productor y compras, anticipo pagado → compras, productor, comercial, proveedor y contabilidad_pagos con el comprobante.
+4. Correos de la cadena de pago: anticipo pagado → compras, productor, comercial, proveedor y contabilidad_pagos con el comprobante (activo desde sep-14). **Corrección (sep-24):** la causación → tesorería y la devolución de contabilidad no se enviaban (las funciones existían pero la pantalla de contabilidad no las llamaba); ahora se envían en el anticipo jurídico.
 5. Estado **14 "Pagado"** para anticipos; tesorería tiene pestañas "Por pagar" y "Pagados".
 6. Gerencia y líder avisan al productor al aprobar o rechazar su anticipo; el productor avisa a producción al crearlo.
-7. Umbral de gerencia (`CRM_ANTICIPO_UMBRAL_GERENCIA`) y teléfono de saludo (`SMS_SALUDO_TELEFONO`) en configuración.
+7. Teléfono de saludo (`SMS_SALUDO_TELEFONO`) en configuración. **Corrección (sep-24):** el umbral del anticipo de productor (`CRM_ANTICIPO_UMBRAL_GERENCIA`) se agregó a la configuración pero el código sigue usando $500.000 fijo; el anticipo jurídico sí lee el suyo (`CRM_AJ_UMBRAL_GERENCIA`).
 8. Correo y SMS con registro en base de datos, reintentos, alertas a desarrollo, pantalla de notificaciones y opción de cola (sección 7.4).
 9. El portal del contratista muestra el estado de la orden (pasos cumplidos) y del pago, que es lo que promete el mensaje de WhatsApp.
 10. Registro de actividad de toda la plataforma (sección 7.5).
+11. **Anticipo jurídico según la matriz de Gerencia (sep-24)**: líder de producción → Controller → Gerencia si supera $10.000.000, con devoluciones, orden de anticipo en PDF, borrador sin orden previa, bandeja del Controller y recorrido auditable (sección 4.4). Antes lo aprobaba cualquier administrador sin umbral ni documento, el líder no lo veía en su lista y el productor no podía abrir su detalle.
 
 **Pendientes**
-11. Proveedores: la columna `estado` es texto libre (CONFIRMADO / CONFIRMADO - COMUNICADO / NO APLICA); no existe un "activo/inactivo" real.
-12. Producción debe definir `CRM_ALERTA_CORREOS` / `CRM_ALERTA_TELEFONOS` y, si quiere envíos en segundo plano, activar la cola (ver `.env.example`).
+12. ~~Proveedores: estado en texto libre~~ resuelto el 14-sep con el catálogo `estados_proveedor` (sigue sin existir un "activo/inactivo" real).
+13. Anticipo de productor: se queda en "Revisión de evidencias" (10) porque ninguna pantalla lo saca de ahí, y su umbral de $500.000 está fijo en el código.
+14. Las demás filas de la matriz de Gerencia (OC jurídica, GR jurídica, OC/anticipo/GR natural, OC nómina, anticipo de empleado) cambian flujos que hoy funcionan; están analizadas pero no implementadas.
+15. Producción debe definir `CRM_ALERTA_CORREOS` / `CRM_ALERTA_TELEFONOS` y, si quiere envíos en segundo plano, activar la cola (ver `.env.example`).
 
 ## 9. Recomendaciones (aplicadas)
 

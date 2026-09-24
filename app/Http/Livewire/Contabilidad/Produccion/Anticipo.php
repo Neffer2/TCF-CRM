@@ -69,9 +69,9 @@ class Anticipo extends Component
         // Limpia el código causal y actualiza la observación y estado
         $this->anticipo->cod_causal = null;
         $this->anticipo->observacion_causal = $this->observacion_causacion;
-        // Jurídico vuelve a Revisión (2); el de productor pasa a Rechazo contabilidad (13),
-        // un estado propio en vez del 2 (ajeno a su flujo, lo dejaba fuera de todas las listas).
-        $this->anticipo->estado_id = $this->anticipo->presupuesto_id ? 13 : 2;
+        // Rechazo contabilidad (13). Esta pantalla ya solo atiende anticipos de productor: los jurídicos
+        // se causan o devuelven desde su ficha (App\Http\Livewire\Produccion\AnticipoJuridico).
+        $this->anticipo->estado_id = 13;
         $this->anticipo->update();
 
         // $this->ocNaturalContabilidadRechazo($this->orden);
@@ -82,8 +82,10 @@ class Anticipo extends Component
 
     // Al montar el componente, carga la orden de compra correspondiente
     public function mount(){
-        $this->orden = AnticipoModel::find($this->anticipo_id)->ordenCompra;
         $this->anticipo = AnticipoModel::find($this->anticipo_id);
+        // Los jurídicos tienen su propio flujo (Controller, orden de anticipo): no se causan aquí
+        abort_unless($this->anticipo && !$this->anticipo->esJuridico(), 404);
+        $this->orden = $this->anticipo->ordenCompra;
     }
 
     /* MÉTODOS DE ACTUALIZACIÓN EN TIEMPO REAL */
