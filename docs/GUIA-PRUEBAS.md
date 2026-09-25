@@ -3,22 +3,31 @@
 **Rama a probar:** `correcciones` · **NUNCA toques la rama `main`** (subir a main despliega a producción automáticamente).
 **Versión de esta guía:** 25 de septiembre de 2026 (commit más reciente de `correcciones`).
 
-> **Actualización del 24-sep (anticipo jurídico):** si ya tenías el entorno montado, corre esto en la raíz del proyecto y pasa a **B6b**. Todo es solo para tu base local; no lo corras en ningún servidor.
+> **Actualización del 25-sep (paquete de QA nuevo):** si ya tenías el entorno montado, trae el código y **reimporta la base nueva** del paquete (`bullcrm.sql` del 25-sep, ver A3): ya trae todas las migraciones aplicadas, incluidas las siete de mejoras de base de datos. Todo es solo para tu base local; no lo corras en ningún servidor.
 >
 > ```bash
 > git pull origin correcciones
-> php artisan migrate
-> php artisan db:seed --class=AnticiposJuridicosDemoSeeder
-> php artisan view:clear
+> composer install
+> mysql -u root -p < bullcrm.sql
+> php artisan migrate:status | grep "| No"    # no debe mostrar nada
+> php artisan optimize:clear
 > ```
 >
-> `migrate` aplica `2026_09_24_120000_anticipo_juridico_flujo`; el seeder crea dos anticipos de demostración y te muestra sus números. Recarga el navegador con Ctrl+F5 para tomar los estilos nuevos.
+> Recarga el navegador con Ctrl+F5 para tomar los estilos nuevos. Empieza por **B8k**, **B8j** y **B8i** (lo nuevo) y sigue con el resto.
 
 ---
 
 # PARTE 0 — Qué cambió (resumen para ubicarse)
 
 Todo lo que sigue está en la rama `correcciones`, commit por commit desde el 11-sep-2026. Si algo de esta lista no se comporta como se describe, es un hallazgo.
+
+**Lo nuevo del 24 y 25 de septiembre (lo primero que hay que probar)**
+- **Auditoría 360 (B8i y B8j):** cada acción revisa en el servidor rol, permiso, estado y equipo, igual que los botones (antes se podían aprobar presupuestos ajenos desde la consola del navegador). 65 de 69 hallazgos corregidos; los demás son de datos o de plataforma.
+- **Regla de Gerencia al 30 %:** con margen del proyecto **menor al 30 %** el presupuesto lo aprueba Gerencia, en la pantalla, en las tres listas de validación, en el filtro y en el correo.
+- **Anticipo de productor completo:** el líder de producción revisa las evidencias; Contabilidad y Tesorería tienen su pantalla para este anticipo.
+- **Archivos protegidos:** `/storage/...` exige sesión; comerciales y ejecutivos no abren documentos de terceros.
+- **Base de datos (B8k):** papelera para lo que se elimina (Administración → Papelera), historial de estados fila a fila, catálogo de ciudades, código puro del centro de costos, `roles_user` pasa a `roles` y todas las columnas documentadas. El mapa de la base viene en el paquete (`mapa-datos-bullcrm.html`).
+- **Pruebas automáticas:** `php artisan test` corre 11 escenarios (359 casos) sobre una copia de la base llamada `tfc_crm_testing`, con correo y SMS simulados.
 
 **Seguridad y estabilidad**
 - Registro público, "olvidé mi clave" y verificación de correo **eliminados**: las cuentas las crea un admin y las claves las cambia un desarrollador. Páginas 404/403/500 propias con la marca.
@@ -82,7 +91,7 @@ npm run production
 
 ## A3. Base de datos: importar `bullcrm.sql`
 
-El archivo **`bullcrm.sql`** (~43 MB, o `bullcrm.sql.gz` de 9 MB) te llega en el paquete de QA, **no está en el repositorio**: la base trae datos reales de personas (cédulas, cuentas bancarias, correos) y no debe quedar en el historial de git. No lo subas a GitHub ni lo compartas. Es una copia de la base de pruebas ya lista: datos reales de producción + migraciones aplicadas hasta el 23-sep + **usuarios de prueba creados**. No necesitas entrar a Hostinger ni a producción para nada. Las instrucciones detalladas (también para Windows) están en `COMO-IMPORTAR-LA-BASE.md`, dentro del mismo paquete.
+El archivo **`bullcrm.sql`** (o `bullcrm.sql.gz`, comprimido) te llega en el paquete de QA, **no está en el repositorio**: la base trae datos reales de personas (cédulas, teléfonos, correos) y no debe quedar en el historial de git. No lo subas a GitHub ni lo compartas. Es una copia de la base de pruebas ya lista: datos reales de producción + **las 62 migraciones aplicadas** (hasta las mejoras del 25-sep) + usuarios de prueba. En esta copia **todas las cuentas tienen la clave `Prueba123*`** y los números de cuenta bancaria de los terceros vienen enmascarados (`****1234`). No necesitas entrar a Hostinger ni a producción para nada. Las instrucciones detalladas (también para Windows) están en `COMO-IMPORTAR-LA-BASE.md`, dentro del mismo paquete.
 
 > Producción (`u630167073_CRM` en Hostinger) es **solo lectura y no se toca**. Si algún día necesitas datos más frescos, expórtala desde phpMyAdmin (Exportar → Rápido → SQL) a `db-snapshots/` (carpeta ignorada por git) y sigue el mismo procedimiento; en ese caso sí tendrás que correr `php artisan migrate` después.
 
@@ -107,12 +116,12 @@ Importa. El archivo **crea la base él mismo** (empieza con `DROP DATABASE IF EX
 mysql -u root -p < bullcrm.sql
 ```
 
-Debe terminar sin errores. Comprueba: `SELECT COUNT(*) FROM users;` → **215** usuarios; `SELECT COUNT(*) FROM migrations;` → **54** (55 después de A4).
+Debe terminar sin errores. Comprueba: `SELECT COUNT(*) FROM users;` → **215** usuarios; `SELECT COUNT(*) FROM migrations;` → **62**; `SHOW TABLES;` → **53** tablas.
 
 ## A4. Verificar migraciones y usuarios de prueba
 
 ```bash
-php artisan migrate                          # aplica lo posterior al volcado (el anticipo jurídico y las 7 migraciones de mejoras de base de datos del 25-sep), solo en tu base local
+php artisan migrate                          # con la base del 25-sep no debe aplicar nada: ya viene al día (solo en tu base local)
 php artisan migrate:status | grep "| No"     # después de migrar no debe mostrar nada
 php artisan db:seed --class=UsuariosPruebaSeeder          # opcional: reescribe las claves de prueba si alguien las cambió
 php artisan db:seed --class=AnticiposJuridicosDemoSeeder  # anticipos jurídicos de demostración para B6b (se puede repetir: no duplica)
@@ -136,7 +145,7 @@ Los seeders **solo corren en entorno local**. Los usuarios de prueba ya vienen e
 | prueba.controller@local.test | **Controller** | dashboard de revisión, presupuestos, actualizaciones, consumidos, reportes y **revisión de anticipos jurídicos** |
 | prueba.lidercom@local.test | **Líder comercial** | dashboard de su equipo (prueba.comercial, Alexandra Niño, Juan Camilo Rodríguez), validaciones |
 
-Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales**, estas cuentas reales también tienen la clave `Prueba123*` (solo en la base local; sus correos y datos no cambian):
+Los `prueba.*` sirven para probar flujos desde cero, pero casi no tienen datos. Para ver cada pantalla **con datos reales** entra con una cuenta real: en esta copia **todas** tienen la clave `Prueba123*` (solo en la base local; sus correos y datos no cambian). Estas son las más útiles:
 
 | Correo real | Rol | Por qué este |
 |---|---|---|
@@ -209,11 +218,11 @@ Después de cada caso de "bloqueo" verifica que la acción **realmente no ocurri
 |---|---|---|---|
 | 4.1 | Editar contacto no cruza campos | Como comercial: Contactos → edita uno cambiando SOLO el cargo → guarda → reabre | PBX y Web quedan **iguales** que antes (no intercambiados) |
 | 4.2 | Helisa edita el documento correcto | Gestión Helisa: busca un centro de costos con 2+ documentos → edita uno | El formulario carga los porcentajes/comisiones de ESE documento (verifica contra la lista), no del primero del centro |
-| 4.3 | Reducir participaciones limpia | Gestión → proyecto con 2 participantes → edita la propuesta bajando a 1 → guarda | El comercial retirado desaparece del proyecto (verifica en la BD: `comercial_2` y `porcentaje_2` en NULL para esa gestión) |
+| 4.3 | Reducir participaciones limpia | Gestión → proyecto con 2 participantes → edita la propuesta bajando a 1 → guarda | El comercial retirado desaparece del proyecto (verifica en la BD: ya no tiene fila en `gestion_participantes` para esa gestión) |
 | 4.4 | Filtro de mes Helisa | Lista Helisa → filtra por Enero | Solo registros de Enero (antes mezclaba Oct/Nov/Dic) |
 | 4.5 | Export = lo que ves | Base comercial: filtra por centro de costos → Exportar | El Excel contiene SOLO lo filtrado |
 | 4.6 | % por cumplir | Dashboard comercial | "% por cumplir" está entre 0 y 100, nunca negativo |
-| 4.7 | Margen exactamente 35 | Crea un presupuesto cuyo margen dé 35.00 exacto → envíalo a aprobación → apruébalo como gerencia | La aprobación funciona sin error 500 |
+| 4.7 | Margen en el límite | Presupuesto con margen de 30,00 exacto → el líder lo aprueba con centro de costos; repite con 29,99 | Con 30,00 queda aprobado sin Gerencia y sin error 500; con 29,99 pasa a Validación Gerencia |
 
 ## B5. Producción — órdenes de compra
 
@@ -237,7 +246,7 @@ Ejecuta la cadena completa con estos usuarios en orden:
 | 6.2 | No saltarse al líder | Con la consola del navegador invoca el método Livewire `revisionAnticipoProductor(1)` sobre su propio anticipo | Rechazado ("transición no permitida" / "sin permisos"); el estado NO cambia |
 | 6.3 | Revisión líder | `prueba.lider` → lista de anticipos → aprueba con observaciones | Pasa a revisión de gerencia **sin error 500** y la página redirige bien |
 | 6.4 | Revisión gerencia | `prueba.gerencia` → aprueba | Pasa a cargue de evidencias; el productor recibe la notificación (log) |
-| 6.5 | Evidencias | `prueba.productor` → sube evidencias del anticipo → envía | Estado avanza; intenta borrar una evidencia de OTRO anticipo por consola → bloqueado |
+| 6.5 | Evidencias | `prueba.productor` → sube evidencias del anticipo → envía | Pasa a **Revisión de evidencias**: `prueba.lider` las aprueba o las devuelve antes de Contabilidad (ver 8j.7). Intenta borrar una evidencia de OTRO anticipo por consola → bloqueado |
 | 6.6 | Causación | `prueba.contabilidad` → lista anticipos (estado aprobado) → causa con código | Pasa a causado. Intenta causarlo de nuevo → bloqueado |
 | 6.7 | Pago | `prueba.tesoreria` → **lista-anticipos-tesoreria** (¡esta pantalla antes no existía!) → detalle → registra comprobante | Pago registrado. **Intenta pagarlo otra vez → "Este anticipo ya fue pagado"** (candado anti doble pago) |
 | 6.8 | Anticipo jurídico | Tiene flujo propio desde el 24-sep | Ver **B6b** |
@@ -318,11 +327,11 @@ Controller (rol 11) y Líder comercial (rol 12) dejan de ser cuentas Admin. En e
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
 | 8d.1 | Dashboard Controller | Entra como `prueba.controller` | Cae en `/dashboard-controller`: KPIs (cambios por revisar, en validación, aprobados del mes, órdenes en revisión) y tres listas con enlace "Ver" al presupuesto |
-| 8d.2 | Menú Controller | Recorre el menú | Solo: Dashboard, Base comercial general, Helisa general, Presupuestos, Actualizaciones, Consumidos, Reporte de consumidos, Plano Helisa, Actualizar perfil |
+| 8d.2 | Menú Controller | Recorre el menú | Solo: Dashboard, Base comercial general, Helisa general, Presupuestos, Actualizaciones, Consumidos, Reporte de consumidos, Plano Helisa (Mi perfil está en la barra superior) |
 | 8d.3 | Bloqueos Controller | Visita `/validaciones`, `/mi-equpo`, `/ordenes-compra`, `/dashboard-admin` | Redirige a su dashboard en todos |
 | 8d.4 | Presupuesto como Controller | Presupuestos → Ver uno | Ve el presupuesto en modo lectura (parámetros deshabilitados) y la sección de actualización; no puede validar como líder ni gerencia |
 | 8d.5 | Dashboard Líder | Entra como `prueba.lidercom` | `/dashboard-lider-comercial` con el filtro de líder fijo "Mi equipo (3)"; KPIs, gráfica y ranking solo de su equipo; el buscador de comercial solo lista a su equipo |
-| 8d.6 | Menú Líder | Recorre el menú | Solo: Dashboard del equipo, Base comercial del equipo, Helisa general, Validaciones, Presupuestos del equipo, Actualizar perfil |
+| 8d.6 | Menú Líder | Recorre el menú | Solo: Dashboard del equipo, Base comercial del equipo, Helisa general, Validaciones, Presupuestos del equipo (Mi perfil está en la barra superior) |
 | 8d.7 | Base del equipo | Líder → Base comercial del equipo → Exportar | Registros y Excel solo de sus comerciales |
 | 8d.8 | Validación de líder | Líder → Validaciones → un presupuesto en estado 4 de su equipo → Validar / Rechazar | Funciona igual que antes para un admin líder; `/actualizaciones` y `/consumidos` le redirigen |
 | 8d.9 | Admin sigue igual | Entra como `prueba.admin` | Menú completo, dashboard con filtro de líder seleccionable, validaciones y actualizaciones accesibles |
@@ -404,7 +413,7 @@ Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío q
 | 8g.2 | Fallo y alerta | En `.env` pon `MAIL_MAILER=smtp` con un host inexistente, aprueba una OC jurídica | El registro queda "Fallido" con 3 intentos y el error; el dashboard de admin/gerencia muestra el aviso rojo; en el log aparece "Alerta a desarrollo"; "Reintentar" vuelve a intentarlo |
 | 8g.3 | Nómina completa | `prueba.productor` crea una orden de nómina → `prueba.lider` la aprueba (estado 9) → `prueba.gerencia` la valida | Queda **Aprobada** con el PDF de la orden y llegan los correos (producción, gerencia, compras/productor/comercial). Antes no podía ni crearse |
 | 8g.4 | Pago de anticipo | `prueba.contabilidad` causa un **anticipo jurídico** aprobado → `prueba.tesoreria` sube el comprobante | Sale el correo a tesorería (`anticipoCausado`); tesorería lo ve en "Por pagar", tras el comprobante pasa a "Pagados" (estado Pagado) y sale el correo con el comprobante adjunto. (El anticipo de productor no llega a contabilidad: ver 8g.5) |
-| 8g.5 | Anticipo de productor | `prueba.productor` crea un anticipo → `prueba.lider` aprueba → (si ≥ $500.000) `prueba.gerencia` aprueba | Cada paso genera su correo (producción, gerencia, productor). **Corrección 24-sep:** el umbral de $500.000 está fijo en el código; cambiar `CRM_ANTICIPO_UMBRAL_GERENCIA` **no** tiene efecto (pendiente conocido, no lo reportes como hallazgo nuevo). Tras las evidencias el anticipo queda en "Revisión de evidencias" y ninguna pantalla lo avanza (pendiente conocido) |
+| 8g.5 | Anticipo de productor | `prueba.productor` crea un anticipo → `prueba.lider` aprueba → (si ≥ $500.000) `prueba.gerencia` aprueba | Cada paso genera su correo (producción, gerencia, productor). **Corrección 24-sep:** el umbral de $500.000 está fijo en el código; cambiar `CRM_ANTICIPO_UMBRAL_GERENCIA` **no** tiene efecto (pendiente conocido, no lo reportes como hallazgo nuevo). Tras las evidencias, el líder de producción las revisa (ver 8j.7) |
 | 8g.6 | Portal del contratista | Abre el enlace firmado de una orden natural (botón "Copiar enlace" en Órdenes de compra) | Arriba se ve "Estado de tu orden" con los pasos cumplidos y el estado del pago |
 | 8g.7 | Registro de actividad | Admin → Acciones → Registro de actividad | Sesiones, páginas, acciones (con "Datos": método y campos enviados) y cambios de datos (campo, antes, después); filtros por usuario, tipo, fechas y texto |
 | 8g.8 | Pronóstico | Dashboard de gerencia → gráfica | Línea punteada "Pronóstico" desde el último mes cerrado hasta diciembre y tarjeta "Pronóstico de cierre" con % vs presupuesto y vs año anterior; el "?" explica el cálculo |
@@ -490,7 +499,7 @@ Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna p
 
 # PARTE C — Cómo reportar
 
-Para cada ❌, reporta en un documento/issue:
+Llena **`PLANTILLA-RESULTADOS.xlsx`** (viene en el paquete: una fila por caso, con el resultado y tus observaciones) y devuélvela. Para cada ❌ agrega:
 
 1. **Número del caso** (ej. B6.7) o "regresión" + página.
 2. **Usuario** con el que probabas y **pasos exactos**.
@@ -507,7 +516,7 @@ Para cada ❌, reporta en un documento/issue:
 
 # PARTE D — Estructura de la base de datos (reestructuración de sep-2026)
 
-La rama `correcciones` trae 5 migraciones que normalizan el esquema. En `bullcrm.sql` ya vienen aplicadas (paso A3); si importas un dump fresco de producción se aplican con `php artisan migrate`, **solo en tu base local**.
+La rama `correcciones` trae 5 migraciones que normalizan el esquema (14-sep) y 7 de mejoras (25-sep, casos en **B8k**). En `bullcrm.sql` ya vienen aplicadas (paso A3); si importas un dump fresco de producción se aplican con `php artisan migrate`, **solo en tu base local**. Para ver las 53 tablas, sus relaciones y qué cambió, abre `mapa-datos-bullcrm.html` (viene en el paquete) en el navegador.
 
 | Antes | Ahora |
 |---|---|
