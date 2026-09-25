@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => array_values(array_filter([env('APP_URL')])), // solo el dominio del CRM (antes '*')
 
     'allowed_origins_patterns' => [],
 

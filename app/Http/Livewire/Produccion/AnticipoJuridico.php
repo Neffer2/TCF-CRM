@@ -31,11 +31,13 @@ class AnticipoJuridico extends Component
     public $valor_base = '';
     public $porcentaje = '';
     public $observacion = '';
+    public $oc_vincular = '';       // corrección de un borrador: orden de compra a la que se vincula (opcional)
     public $soportes = [];
     public $nuevos = [];            // cada selección de archivos se suma a $soportes
 
     // Decisión de un revisor
     public $obs_decision = '';
+    public $obs_anulacion = '';
     public $cod_causal = '';
     public $comprobante;
 
@@ -48,6 +50,12 @@ class AnticipoJuridico extends Component
         'comprobante.mimes' => 'El comprobante debe ser un PDF.',
         'comprobante.max' => 'El comprobante puede pesar máximo 10 MB.',
     ];
+
+    public function updating($name, $value)
+    {
+        // El anticipo lo fija la dirección: cambiarlo desde el navegador mostraba el de otro productor.
+        abort_if($name === 'anticipo_id', 403);
+    }
 
     public function mount($anticipo_id = null)
     {
@@ -132,7 +140,7 @@ class AnticipoJuridico extends Component
         $datos = [
             'modo' => $this->modo, 'oc_id' => $this->oc_id, 'presupuesto_id' => $this->presupuesto_id,
             'proveedor_id' => $this->proveedor_id, 'valor_base' => $this->valor_base,
-            'porcentaje' => $this->porcentaje, 'observacion' => $this->observacion,
+            'porcentaje' => $this->porcentaje, 'observacion' => $this->observacion, 'oc_vincular' => $this->oc_vincular,
         ];
 
         if (!$this->anticipo_id) {
@@ -141,8 +149,9 @@ class AnticipoJuridico extends Component
             return redirect()->route('anticipo-prod', ['anticipo_id' => $a->id]);
         }
 
-        (new F)->reenviar(Anticipo::findOrFail($this->anticipo_id), Auth::user(), $datos, $this->soportes);
-        $this->reset(['soportes', 'observacion']);
+        $a = (new F)->reenviar(Anticipo::findOrFail($this->anticipo_id), Auth::user(), $datos, $this->soportes);
+        $this->reset(['soportes', 'observacion', 'oc_vincular']);
+        $this->llenarDesde($a->fresh());
         $this->hecho = 'Corrección enviada. Vuelve a empezar por el líder de producción.';
         $this->dispatchBrowserEvent('aj-hecho');
     }
@@ -177,6 +186,18 @@ class AnticipoJuridico extends Component
         $this->dispatchBrowserEvent('aj-hecho'); // sube a mostrar el mensaje y el recorrido actualizado
     }
 
+    /** Anular (Controller) o retirar la solicitud (productor): motivo obligatorio. */
+    public function anular()
+    {
+        $u = Auth::user();
+        $a = Anticipo::findOrFail($this->anticipo_id);
+        $f = new F;
+        $a = F::es($u, 'productor') ? $f->retirar($a, $u, $this->obs_anulacion) : $f->anular($a, $u, $this->obs_anulacion);
+        $this->reset(['obs_anulacion']);
+        $this->hecho = 'Anticipo anulado'.($a->oc_id ? ': la orden de compra queda libre para otro anticipo.' : '.');
+        $this->dispatchBrowserEvent('aj-hecho');
+    }
+
     private function queSigue(Anticipo $a): string
     {
         switch ((int) $a->estado_id) {
@@ -198,6 +219,15 @@ class AnticipoJuridico extends Component
         $a = $this->anticipo_id
             ? Anticipo::with(['estado', 'proveedor', 'ordenCompra', 'presupuesto.gestion.contacto', 'productor_info', 'pasos.usuario', 'evidencias'])->find($this->anticipo_id)
             : null;
+        abort_if($a && (int) $u->rol === 7 && (int) $a->productor_id !== (int) $u->id, 403);
+
+        // Para el Controller: otros anticipos vigentes al mismo proveedor en el mismo proyecto (nada impide pedir dos)
+        $similares = collect();
+        if ($a && $a->proveedor_id && $a->presupuesto_id) {
+            $similares = Anticipo::with('estado')->where('tipo', Anticipo::TIPO_JURIDICO)->where('id', '!=', $a->id)
+                ->where('proveedor_id', $a->proveedor_id)->where('presupuesto_id', $a->presupuesto_id)
+                ->where('estado_id', '!=', F::ANULADO)->orderByDesc('id')->get();
+        }
 
         $acciones = $a ? F::acciones($a, $u) : [];
         $editando = !$a || in_array('reenviar', $acciones, true);
@@ -214,6 +244,8 @@ class AnticipoJuridico extends Component
                 ->orderBy('tercero')->limit(8)->get(['id', 'tercero', 'documento', 'ciudad', 'anticipo']);
         }
         $proveedor = $this->proveedor_id ? Proveedor::find($this->proveedor_id) : null;
+        // Borrador en corrección: órdenes de compra de esa misma compra a las que se puede vincular
+        $ordenesVinculables = ($a && $editando && !$a->oc_id) ? F::ordenesVinculables($a, $u) : collect();
 
         // Vista previa del cálculo mientras se edita
         $orden = null;
@@ -239,6 +271,8 @@ class AnticipoJuridico extends Component
             'total' => $total,
             'umbral' => F::umbral(),
             'recorrido' => $this->recorrido($a, $total),
+            'similares' => $similares,
+            'ordenesVinculables' => $ordenesVinculables,
         ]);
     }
 

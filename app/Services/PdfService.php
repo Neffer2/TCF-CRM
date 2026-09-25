@@ -54,8 +54,14 @@ class PdfService
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $ruta = 'public/anticipos_juridicos/ordenes/orden_anticipo_'.$anticipo->cod_orden_anticipo.'.pdf';
+        // Nombre no adivinable (la carpeta pública se sirve sin sesión); la versión anterior se reemplaza.
+        $ruta = 'public/anticipos_juridicos/ordenes/orden_anticipo_'.$anticipo->cod_orden_anticipo.'_'.\Illuminate\Support\Str::random(20).'.pdf';
         Storage::put($ruta, $dompdf->output());
+        if ($anticipo->archivo_orden_anticipo && $anticipo->archivo_orden_anticipo !== $ruta) {
+            $anterior = $anticipo->archivo_orden_anticipo;
+            // Solo cuando la aprobación queda guardada (si la transacción se deshace, el archivo viejo sigue siendo el vigente)
+            \Illuminate\Support\Facades\DB::afterCommit(function () use ($anterior) { Storage::delete($anterior); });
+        }
         return $ruta;
     }
 

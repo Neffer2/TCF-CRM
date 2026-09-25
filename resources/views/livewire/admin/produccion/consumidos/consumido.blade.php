@@ -100,7 +100,7 @@
                             <tr>
                                 <td class="font-weight-bold font-table">NOTAS</td>
                                 <td class="font-table">
-                                    <textarea wire:model.lazy="notas" cols="55" rows="8" disabled>{{ $presupuesto->notas }}</textarea>
+                                    <textarea cols="55" rows="8" disabled>{{ $presupuesto->notas }}</textarea>
                                 </td>
                             </tr>
                         </table>

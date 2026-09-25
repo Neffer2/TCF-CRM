@@ -56,6 +56,9 @@ class Block1 extends Component
         if ($filters == null){
             return $this->default();
         }
+        // El comercial del ejecutivo sale de su asignación, no del evento ni de la propiedad pública
+        // (el navegador puede cambiar ambos y así veía las cifras de cualquier comercial).
+        $filters['comercial'] = optional(Asistente::where('asistente_id', Auth::id())->first())->comercial_id;
 
         $mes = $this->getMes($filters['mes']); 
         $año = $this->getAño($filters['año']);
@@ -163,6 +166,7 @@ class Block1 extends Component
     }
 
     public function getPresupuesto($mes, $comercial, $año) {
+        $comercial = $comercial ? (int) $comercial : null; // va dentro de SQL crudo: solo un entero
         $filters_array = [];
 
         if ($año){
@@ -194,6 +198,7 @@ class Block1 extends Component
     }
 
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial){
+        $comercial = $comercial ? (int) $comercial : null; // va dentro de SQL crudo: solo un entero
         // Si no hay mes, hace el conteo de todos los meses
         if ($mes) {
             if ($comercial){

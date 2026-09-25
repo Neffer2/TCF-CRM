@@ -34,10 +34,10 @@
             <div class="author align-items-center">
                 @php
                     if ($userInfo){
-                        $aux = str_replace('public/', '', $userInfo->avatar);    
+                        $aux = $userInfo->avatarSrc();    
                     }
                 @endphp
-                <img @if ($userInfo) src="{{ asset("storage/$aux") }}" @endif alt="Foto de perfil" class="avatar shadow">
+                <img @if ($userInfo) src="{{ $aux }}" @endif alt="Foto de perfil" class="avatar shadow">
                     <div class="name ps-3">
                         <span>
                             @if ($userInfo)

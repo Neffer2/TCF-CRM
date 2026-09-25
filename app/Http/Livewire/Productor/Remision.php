@@ -66,19 +66,24 @@ class Remision extends Component
 
         // Guarda el archivo PDF de la remisión
         $orden->archivo_remision = $this->remision->store('public/remisiones');
-        // Define la ruta donde se guardará la firma
-        $orden->archivo_firma = "public/firmas_produccion/$this->orden.png";
+        // Define la ruta donde se guardará la firma (con parte aleatoria: la carpeta se sirve sin sesión
+        // y con solo el número de orden se podían recorrer todas las firmas)
+        $rutaFirma = 'public/firmas_produccion/'.$this->orden.'_'.\Illuminate\Support\Str::random(20).'.png';
+        $orden->archivo_firma = $rutaFirma;
         // Guarda las observaciones
         $orden->observacion_remision = $this->observaciones;
         // Cambia el estado de la orden a "Recibido"
         $orden->estado_id = 4; //Recibido
 
-        // Procesa la imagen de la firma recibida en base64
-        $data_uri = $data;
-        $encoded_image = explode(",", $data_uri)[1];
-        $decoded_image = base64_decode($encoded_image);
+        // Procesa la imagen de la firma recibida en base64 (solo un PNG de tamaño razonable)
+        $decoded_image = is_string($data) && str_starts_with($data, 'data:image/png;base64,')
+            ? base64_decode(substr($data, strlen('data:image/png;base64,')), true) : false;
+        if ($decoded_image === false || strlen($decoded_image) > 1024 * 1024 || substr($decoded_image, 0, 8) !== "\x89PNG\r\n\x1a\n") {
+            $this->addError('remision', 'La firma no es válida: vuelve a firmar.');
+            return redirect()->back();
+        }
         // Guarda la firma vía Storage (la ruta relativa al CWD fallaba con artisan serve)
-        Storage::put("public/firmas_produccion/{$this->orden}.png", $decoded_image);
+        Storage::put($rutaFirma, $decoded_image);
 
         // Actualiza la orden en la base de datos
         $orden->update();

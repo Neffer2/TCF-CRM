@@ -14,6 +14,10 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Los archivos subidos (/storage) pasan por Laravel: exigen sesión (antes se servían sin iniciar sesión)
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteRule ^ index.php [L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

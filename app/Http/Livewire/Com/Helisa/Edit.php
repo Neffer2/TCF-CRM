@@ -138,7 +138,7 @@ class Edit extends Component
     // VALIDACIONES EN TIEMPO REAL DE LOS CAMPOS DEL FORMULARIO
 
     public function updatedFecha(){
-        $this->validate(['fecha' => ['required']]);
+        $this->validate(['fecha' => 'required|date|after_or_equal:2015-01-01|before_or_equal:2099-12-31'], ['fecha.after_or_equal' => 'Revisa el año de la fecha.', 'fecha.before_or_equal' => 'Revisa el año de la fecha.']);
     }
 
     public function updatedTipoDoc(){
@@ -399,7 +399,7 @@ class Edit extends Component
     // Actualiza los registros Helisa en la base de datos con los datos del formulario
     public function update_helisa(){
         $this->validate([
-            'fecha' => 'required',
+            'fecha' => 'required|date|after_or_equal:2015-01-01|before_or_equal:2099-12-31', // con año real (había fechas del año 0026)
             'tipo_doc' => 'required|string',
             'num_doc' => 'required|string',
             'identidad' => 'required|string',

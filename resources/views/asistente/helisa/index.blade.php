@@ -6,9 +6,9 @@
               <div class="col-auto">  
                   <div class="avatar avatar-xl position-relative">
                   @php
-                      $aux = str_replace('public/', '', Auth::user()->avatar);
+                      $aux = Auth::user()->avatarSrc();
                   @endphp
-                  <img src="{{ asset("storage/$aux") }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+                  <img src="{{ $aux }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
                   </div>
               </div> 
               <div class="col-auto my-auto">
@@ -65,10 +65,12 @@
   @endsection
   @section('scripts')  
     <script>
-        const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
+        // La lista ahora se pagina en el servidor (Livewire): el buscador en el navegador solo si la tabla existe
+        const tablaHelisa = document.querySelector("#datatable-search");
+        const dataTableSearch = tablaHelisa ? new simpleDatatables.DataTable(tablaHelisa, {
           searchable: true,
           fixedHeight: true
-        });
+        }) : null;
 
         function menu(){ 
           return {

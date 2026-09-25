@@ -274,7 +274,7 @@
             <tr>
                 <td style="text-align: center;">
                     <p class="bold">LA SOCIEDAD CONTRATANTE. <br><br><br></p>
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign__.png'))) }}" alt="Firma">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/signs/sign__.png'))) }}" alt="Firma">
                     <p class="bold">__________________________</p>
                     <p class="bold">BULL MARKETING S.A.S.</p>
                     <p>Representante Legal</p>
@@ -294,7 +294,7 @@
         <table class="table legal" style="padding: 0 2.5rem;">
             <tr>
                 <td>
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/signs/sign_2.png'))) }}" alt="Firma" height="90">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/signs/sign_2.png'))) }}" alt="Firma" height="90">
                 </td>
             </tr>
         </table>

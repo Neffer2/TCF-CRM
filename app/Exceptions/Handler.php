@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -36,6 +37,11 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Enlace del portal de terceros vencido o alterado: explicación en vez del "403 Invalid signature"
+        $this->renderable(function (InvalidSignatureException $e, $request) {
+            return response()->view('errors.enlace-vencido', [], 403);
         });
     }
 }

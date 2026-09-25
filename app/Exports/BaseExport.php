@@ -27,7 +27,8 @@ class BaseExport implements FromCollection, WithHeadings, WithStyles, WithMappin
     */ 
     public function collection()
     {   
-        $registros_base = Base_comercial::where($this->filtros)
+        // Con sus relaciones: el mapeo de cada fila hacía 3 consultas (más de 3.000 para un año)
+        $registros_base = Base_comercial::with(['estado_cuenta', 'cuenta', 'comercial'])->where($this->filtros)
             ->when(is_array($this->equipo), function ($q) { $q->whereIn('id_user', $this->equipo); })
             ->get();
         return $registros_base;

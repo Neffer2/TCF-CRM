@@ -255,7 +255,8 @@ class NuevoPersonal extends Component
         ]);
 
         if (!Auth::check()){
-            return redirect()->route('consulta-terceros');
+            // La ruta del portal exige firma: volver sin ella daba 403 al tercero justo al terminar.
+            return redirect()->to(\Illuminate\Support\Facades\URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => session('portal_terceros_orden')]));
         }
 
         return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
@@ -321,7 +322,8 @@ class NuevoPersonal extends Component
 
         // Guardar el PDF en el almacenamiento
         $output = $dompdf->output();
-        $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
+        // Con parte aleatoria: la carpeta se sirve sin sesión y con la hora se podían adivinar los contratos
+        $filePath = storage_path('app/public/contratos/contrato_' . time() . '_' . \Illuminate\Support\Str::random(16) . '.pdf');
         file_put_contents($filePath, $output);
 
         // Generar una URL pública para el archivo
@@ -457,7 +459,7 @@ class NuevoPersonal extends Component
 
         $this->ocNaturalEvidenciasEnviadas($this->orden);
 
-        return redirect()->route('consulta-terceros');
+        return redirect()->to(\Illuminate\Support\Facades\URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => session('portal_terceros_orden')]));
     }
 
     /*

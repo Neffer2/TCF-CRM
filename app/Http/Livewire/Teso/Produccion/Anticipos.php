@@ -51,7 +51,8 @@ class Anticipos extends Component
         // Filtro obligatorio: Solo órdenes con causal (anticipo) y sin comprobante de pago
         // (la comparación con el texto literal 'NULL' era un accidente; whereNotNull basta)
         $query->whereNotNull('cod_causal')
-            ->whereNull('archivo_comprobante_pago');
+            ->whereNull('archivo_comprobante_pago')
+            ->where('estado_id', '!=', 6); // una orden anulada no se paga
 
         // Filtra por código de centro de costos
         if ($this->cod_cc) {

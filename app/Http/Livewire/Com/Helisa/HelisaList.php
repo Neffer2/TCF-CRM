@@ -51,7 +51,10 @@ class HelisaList extends Component
 
     // Elimina un registro Helisa por ID
     public function delete_registro($registro_id){
-        Helisa::find($registro_id)->delete();
+        // Solo sus propios registros (la lista ya filtra por comercial; el id llega del navegador).
+        $registro = Helisa::where('comercial', Auth::id())->find($registro_id);
+        abort_unless($registro, 403);
+        $registro->delete();
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
     }
 

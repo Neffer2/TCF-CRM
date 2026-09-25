@@ -21,11 +21,17 @@
         <server name="APP_ENV" value="testing"/>
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
-        <!-- <server name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <server name="DB_DATABASE" value=":memory:"/> -->
-        <server name="MAIL_MAILER" value="array"/>
+        <!-- Las pruebas NUNCA usan la base del .env: RefreshDatabase la borra por completo. -->
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <!-- Correo y SMS SIEMPRE simulados en pruebas: con "array" el CRM calculaba modo SMTP y envió correos reales (25-sep-2026) -->
+        <server name="MAIL_MAILER" value="log"/>
+        <server name="SMS_MODO" value="log"/>
+        <server name="CRM_ALERTA_SIEMPRE" value="false"/>
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="SESSION_DRIVER" value="array"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Escenarios de la auditoría: copia de la base de pruebas (crear-bd-testing.sh); sin ella se omiten -->
+        <server name="DB_TESTING_DATABASE" value="tfc_crm_testing"/>
     </php>
 </phpunit>

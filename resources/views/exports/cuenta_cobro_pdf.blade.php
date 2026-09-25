@@ -267,7 +267,7 @@
                             @if ( ! $borrador && $orden->naturalInfo->tercero->firma )
                                 <img
                                     class="firma-tercero"
-                                    src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path( str_replace('public', 'storage', $orden->naturalInfo->tercero->firma) ))) }}"
+                                    src="data:image/png;base64,{{ base64_encode(file_get_contents(\Illuminate\Support\Facades\Storage::path($orden->naturalInfo->tercero->firma))) }}"
                                     alt="Firma tercero">
                             @endif
                             <p class="bold">__________________________</p>

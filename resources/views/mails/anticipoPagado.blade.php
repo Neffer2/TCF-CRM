@@ -9,7 +9,11 @@
 <body>  
     <p>
         <b>Sr. Proveedor</b><br>
-        Se relaciona el comprobante de pago del {{ $orden->proveedor->anticipo }}% correspondiente al anticipo acordado en la negociaci&oacute;n realizada.
+        @if (optional($orden->proveedor)->anticipo)
+            Se relaciona el comprobante de pago del {{ $orden->proveedor->anticipo }}% correspondiente al anticipo acordado en la negociaci&oacute;n realizada.
+        @else
+            Se relaciona el comprobante de pago correspondiente a la orden de compra.
+        @endif
         <ul>
             <li>OC: {{ $orden->cod_oc }}</li>
         </ul>

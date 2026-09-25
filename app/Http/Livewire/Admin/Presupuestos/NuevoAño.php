@@ -80,22 +80,21 @@ class NuevoAño extends Component
         // Valida nuevamente la información antes de procesar
         $this->validate(['description' => ['required', 'unique:anos', 'numeric', "min:$currentYear", "max:$nextYear"]]);
 
-        // Crea el nuevo año en la base de datos
-        Año::create([
-            'description' => $this->description
-        ]);
-
-        // Obtiene el ID del año recién creado
-        $created_year = Año::select('id')->where('description', "$this->description")->first();
-
-        // Crea los 12 meses asociados al año
-        foreach ($meses as $key => $mes){
-            Mes::create([
-                'ano_id' => $created_year->id,           // ID del año padre
-                'identifier' => $identifiers[$key],      // Identificador numérico del mes
-                'description' => $mes                    // Nombre del mes en español
+        // El año y sus 12 meses se crean juntos: si algo falla no queda un año incompleto
+        \Illuminate\Support\Facades\DB::transaction(function () use ($meses, $identifiers) {
+            $created_year = Año::create([
+                'description' => $this->description
             ]);
-        }
+
+            // Crea los 12 meses asociados al año
+            foreach ($meses as $key => $mes){
+                Mes::create([
+                    'ano_id' => $created_year->id,           // ID del año padre
+                    'identifier' => $identifiers[$key],      // Identificador numérico del mes
+                    'description' => $mes                    // Nombre del mes en español
+                ]);
+            }
+        });
 
         // Limpia el campo después de crear exitosamente
         $this->description = "";

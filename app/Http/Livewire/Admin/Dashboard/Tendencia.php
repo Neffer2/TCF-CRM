@@ -32,10 +32,15 @@ class Tendencia extends Component
     public function mount($comercialesFijos = null)
     {
         $this->comercialesFijos = $comercialesFijos;
-        $this->comerciales = $comercialesFijos;
+        $this->comerciales = auth()->user()->limitarAEquipo($comercialesFijos);
         $año = Año::orderBy('created_at', 'desc')->first();
         $this->año_id = $año ? $año->id : null;
         $this->calcular();
+    }
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array($name, ['comerciales', 'comercialesFijos'], true), 403); // los fija el servidor
     }
 
     public function actualizar($filtros = null)
@@ -53,6 +58,8 @@ class Tendencia extends Component
             $this->comerciales = $this->comercialesFijos;
             $this->alcance = '';
         }
+        // El líder comercial solo ve a su equipo, aunque el evento pida otra cosa
+        $this->comerciales = auth()->user()->limitarAEquipo($this->comerciales);
         $this->calcular();
     }
 

@@ -5,7 +5,7 @@
             <h5 class="mb-0">Base comercial</h5>
         </div>
         <div class="table-responsive">
-            <table class="table table-flush" id="datatable-search">
+            <table class="table table-flush" id="helisa-ejecutivo">
                 <thead class="thead-light">
                 <tr> 
                     <th>#</th>
@@ -31,7 +31,7 @@
                 <tbody>  
                     @foreach ($list as $key => $item)  
                         <tr>
-                            <td class="text-sm font-weight-normal">{{ $key+=1 }}</td>
+                            <td class="text-sm font-weight-normal">{{ $list->firstItem() + $key }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->fecha }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->tipo_doc }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->num_doc }}</td>
@@ -41,8 +41,8 @@
                             <td class="text-sm font-weight-normal">{{ $item->nom_centro_costo }}</td>
                             <td class="text-sm font-weight-normal">{{ number_format($item->debito) }}</td>
                             <td class="text-sm font-weight-normal">{{ number_format($item->credito) }}</td> 
-                            <td class="text-sm font-weight-normal">{{ $item->comercial_user->name }}</td>
-                            <td class="text-sm font-weight-normal">{{ $item->cuenta->description }}</td>
+                            <td class="text-sm font-weight-normal">{{ optional($item->comercial_user)->name }}</td>
+                            <td class="text-sm font-weight-normal">{{ optional($item->cuenta)->description }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->participacion }}</td>
                             <td class="text-sm font-weight-normal">{{ number_format($item->base_factura) }}</td>
                             <td class="text-sm font-weight-normal">{{ $item->mes }}</td>
@@ -56,7 +56,7 @@
                         {{-- edit modal --}}   
                         <div class="modal fade" id="editmodal{{ $item->id }}" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
                             <div class="modal-dialog"> 
-                                @livewire('com.helisa.edit', ['id_helisa' => $item->id ])  
+                                @livewire('com.helisa.edit', ['id_helisa' => $item->id ], key('helisa-edit-'.$item->id))  
                             </div> 
                         </div>
                         {{-- delete modal --}}
@@ -84,5 +84,6 @@
                 </tbody>
             </table>
         </div>
+        <div class="px-3 pt-3">{{ $list->links() }}</div>
     </div>
 </div>

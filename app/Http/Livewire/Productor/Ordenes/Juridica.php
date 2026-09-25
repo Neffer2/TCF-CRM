@@ -8,6 +8,8 @@ use App\Models\OcItem;
 use App\Models\Proveedor;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Juridica extends Component
 {
@@ -27,6 +29,29 @@ class Juridica extends Component
 
     public $edit = false;
 
+    // Las fija el servidor (orden, topes y lista de ítems): el navegador no puede cambiarlas.
+    protected $propiedadesBloqueadas = ['presupuesto', 'orden_compra', 'ocItems', 'selectedItem', 'maxCant', 'maxValor', 'maxDias', 'maxOtros', 'items', 'proveedores'];
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array(explode('.', $name)[0], $this->propiedadesBloqueadas, true), 403);
+    }
+
+    /** Saldo del ítem: lo presupuestado menos lo pedido en otras órdenes no anuladas (sin contar esta). */
+    private function saldoItem($dbItemPresto): array
+    {
+        $cant = 0;
+        $valor = 0;
+        foreach ($dbItemPresto->consumidos as $consumido) {
+            $esOtraOrden = !$this->orden_compra || $consumido->oc_id != $this->orden_compra->id;
+            if ($esOtraOrden && optional($consumido->OrdenCompra)->estado_id != 6) {
+                $cant += $consumido->cant_oc;
+                $valor += $consumido->vtotal_oc;
+            }
+        }
+        return [($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $cant, $dbItemPresto->v_total - $valor];
+    }
+
     // Renderiza la vista y carga proveedores
     public function render()
     {
@@ -45,6 +70,15 @@ class Juridica extends Component
         * Añade una nueva fila a la lista de items en la orden de compra.
     */
     public function newItem(){
+        // Los topes salen del presupuesto, no del navegador.
+        $this->validate(['item' => 'required']);
+        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
+        if (!$dbItemPresto) {
+            $this->addError('customError', 'El ítem seleccionado no es válido.');
+            return;
+        }
+        [$this->maxCant, $this->maxValor] = $this->saldoItem($dbItemPresto);
+
         // Valida los datos del formulario antes de agregar el item
         $this->validate([
             'item' => 'required',
@@ -57,14 +91,6 @@ class Juridica extends Component
         ]);
 
         $this->getVTotal();
-
-        // Buscamos directamente el modelo ItemPresupuesto en la BD / Presupuesto
-        $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
-
-        if (!$dbItemPresto) {
-            $this->addError('customError', 'El ítem seleccionado no es válido.');
-            return;
-        }
 
         if (is_null($this->selectedItem)){
             // Valida que el item no esté repetido
@@ -104,6 +130,11 @@ class Juridica extends Component
     // Elimina un item de la lista de items de la OC
     public function delete($id){
         unset($this->ocItems[$id]);
+        // La vista pasa la posición en la lista: se reenumera para que editar/borrar otra fila apunte a la correcta.
+        $this->ocItems = array_values($this->ocItems);
+        foreach ($this->ocItems as $i => $fila) {
+            $this->ocItems[$i]['id'] = $i;
+        }
         $this->resetFields();
     }
 
@@ -126,35 +157,21 @@ class Juridica extends Component
         // (total - consumido en otras órdenes no anuladas), no los valores brutos.
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
         if ($dbItemPresto) {
-            $contCant = 0;
-            $acumVTotal = 0;
-            foreach ($dbItemPresto->consumidos as $consumido) {
-                $esOtraOrden = !$this->orden_compra || $consumido->oc_id != $this->orden_compra->id;
-                if ($esOtraOrden && $consumido->OrdenCompra->estado_id != 6) {
-                    $contCant += $consumido->cant_oc;
-                    $acumVTotal += $consumido->vtotal_oc;
-                }
-            }
-            $this->maxCant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
+            [$this->maxCant, $this->maxValor] = $this->saldoItem($dbItemPresto);
             $this->maxDias = $dbItemPresto->dia;
             $this->maxOtros = $dbItemPresto->otros;
-            $this->maxValor = ($dbItemPresto->v_total - $acumVTotal);
         }
     }
 
     // Obtiene los proveedores disponibles para el presupuesto
     public function getProveedores(){
-        $proveedores_presupuesto = [];
-        $proveedores_db = Proveedor::select('id', 'tercero')->get();
-
-        // Recorre los items únicos del presupuesto para obtener proveedores
-        foreach ($this->presupuesto->presupuestoItems as $item){
-            foreach ($item->proveedorIds() as $proveedor_id) {
-                array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
-            }
-        }
-
-        $this->proveedores = collect($proveedores_presupuesto)->filter()->unique('id')->values();
+        // Los proveedores de los ítems del presupuesto, en una consulta (antes recorría ítems × proveedores
+        // y cargaba todos los proveedores por cada componente de la página)
+        $this->proveedores = Proveedor::select('proveedores.id', 'proveedores.tercero')
+            ->join('item_presupuesto_proveedor as ipp', 'ipp.proveedor_id', '=', 'proveedores.id')
+            ->join('items_presupuesto as ip', 'ip.id', '=', 'ipp.item_presupuesto_id')
+            ->where('ip.presupuesto_id', $this->presupuesto->id)
+            ->distinct()->orderBy('proveedores.tercero')->get();
     }
 
     // Valida que el item no esté repetido en la OC
@@ -215,6 +232,17 @@ class Juridica extends Component
 
     // Envía la orden de compra para aprobación de controller (crea o actualiza)
     public function enviarAprobacion(){
+        // Solo el productor del proyecto (o un admin); una orden existente, mientras está en revisión o editable,
+        // y una nueva, sobre un presupuesto aprobado.
+        $user = Auth::user();
+        $esDueño = (int) $user->rol === 7 && (int) $this->presupuesto->productor === (int) $user->id;
+        abort_unless($esDueño || (int) $user->rol === 1, 403);
+        if ($this->orden_compra) {
+            abort_unless(in_array((int) $this->orden_compra->fresh()->estado_id, [2, 3], true), 403);
+        } else {
+            abort_unless((int) $this->presupuesto->estado_id === 1, 403);
+        }
+
         $this->validate([
             'proveedor' => 'required',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
@@ -225,29 +253,45 @@ class Juridica extends Component
             return redirect()->back();
         }
 
-        // Si la orden está creada, actualiza
-        if ($this->orden_compra){
-            $this->orden_compra->estado_id = 2;
-            $this->orden_compra->fecha_envio_produccion = now();
-            $this->orden_compra->proveedor_id = $this->proveedor;
-            $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
-            $this->orden_compra->update();
-
-            $this->deleteItems($this->orden_compra->id);
-            $this->storeItems($this->orden_compra->id);
-        }else{
-            // Si no existe, crea una nueva OC
-            $orden = new OrdenCompra;
-            $orden->tipo_oc = 1;
-            $orden->fecha_envio_produccion = now();
-            $orden->presupuesto_id = $this->presupuesto->id;
-
-            $orden->proveedor_id = $this->proveedor;
-            $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
-
-            $orden->save();
-            $this->storeItems($orden->id);
+        // Cada ítem se revalida contra el presupuesto: otra orden pudo consumir el saldo mientras tanto.
+        $vistos = [];
+        foreach ($this->ocItems as $fila) {
+            $dbItemPresto = $this->presupuesto->presupuestoItems->find($fila['item']);
+            [$maxCant, $maxValor] = $dbItemPresto ? $this->saldoItem($dbItemPresto) : [0, 0];
+            if (!$dbItemPresto || isset($vistos[$dbItemPresto->id])
+                || (float) $fila['cant'] > $maxCant || (float) $fila['vTotal'] > $maxValor + 0.01) {
+                $this->addError('customError', 'El ítem '.optional($dbItemPresto)->num_item.' supera lo disponible en el presupuesto o no es válido: revísalo antes de enviar.');
+                return;
+            }
+            $vistos[$dbItemPresto->id] = true;
         }
+
+        $archivoCot = $this->file_cot->store('public/ordenes_juridicas');
+        DB::transaction(function () use ($archivoCot) {
+            // Si la orden está creada, actualiza
+            if ($this->orden_compra){
+                $this->orden_compra->estado_id = 2;
+                $this->orden_compra->fecha_envio_produccion = now();
+                $this->orden_compra->proveedor_id = $this->proveedor;
+                $this->orden_compra->archivo_cot = $archivoCot;
+                $this->orden_compra->update();
+
+                $this->deleteItems($this->orden_compra->id);
+                $this->storeItems($this->orden_compra->id);
+            }else{
+                // Si no existe, crea una nueva OC
+                $orden = new OrdenCompra;
+                $orden->tipo_oc = 1;
+                $orden->fecha_envio_produccion = now();
+                $orden->presupuesto_id = $this->presupuesto->id;
+
+                $orden->proveedor_id = $this->proveedor;
+                $orden->archivo_cot = $archivoCot;
+
+                $orden->save();
+                $this->storeItems($orden->id);
+            }
+        });
 
         $this->resetFields();
         $this->resetOcInfo();
@@ -256,7 +300,7 @@ class Juridica extends Component
     }
 
     // Guarda los items de la OC en la base de datos
-    public function storeItems($orden_id){
+    private function storeItems($orden_id){
         foreach ($this->ocItems as $item) {
             $itemsOrden = new OcItem;
             $itemsOrden->oc_id = $orden_id;
@@ -273,7 +317,7 @@ class Juridica extends Component
     }
 
     // Elimina los items de la OC en la base de datos
-    public function deleteItems($orden_id){
+    private function deleteItems($orden_id){
         $items = OcItem::where('oc_id', $orden_id)->get();
 
         $items->map(function ($item){
@@ -355,6 +399,11 @@ class Juridica extends Component
         $this->orden_compra->estado_id = $estado;
         $this->orden_compra->update();
 
+        // Sus anticipos jurídicos abiertos se anulan con ella (antes se podían seguir causando y pagando).
+        if ((int) $estado === 6) {
+            (new \App\Services\AnticipoJuridicoFlujo)->anularPorOrdenAnulada($this->orden_compra, Auth::user());
+        }
+
         return redirect()->route('ordenes-compra')->with('success', $messaje);
     }
 
@@ -394,24 +443,14 @@ class Juridica extends Component
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
 
         // Valida disponibilidad
-        if (!$dbItemPresto->disponible){
+        if (!$dbItemPresto || !$dbItemPresto->disponible){
             $this->addError('customError', 'Este item no está disponible para ser consumido.');
             $this->resetFields();
             return redirect()->back();
         }
 
         // Calcula cantidades y valores disponibles
-        $contCant = 0;
-        $acumVTotal = 0;
-        foreach ($dbItemPresto->consumidos as $item) {
-            if (!($item->OrdenCompra->estado_id == 6)){
-                $contCant += $item->cant_oc;
-                $acumVTotal += $item->vtotal_oc;
-            }
-        }
-
-        $this->cant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
-        $this->vTotal = ($dbItemPresto->v_total - $acumVTotal);
+        [$this->cant, $this->vTotal] = $this->saldoItem($dbItemPresto);
 
         if ($this->cant == 0 || $this->vTotal == 0){
             $this->addError('customError', 'Este item ya fué consumido.');

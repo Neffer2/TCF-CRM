@@ -282,14 +282,14 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-success m-0 me-1 mb-1"
-                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ URL::signedRoute('consulta-terceros', ['orden' => $orden->id]) }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
+                                    href="https://wa.me/{{ strlen(preg_replace('/\D/', '', (string) $orden->naturalInfo->tercero->telefono)) === 10 ? '57' : '' }}{{ preg_replace('/\D/', '', (string) $orden->naturalInfo->tercero->telefono) }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => $orden->id]) }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
                                     target="_blank">
                                         <i class="fa-brands fa-whatsapp"></i>
                                     </a>
                                 </td>
                                 <td>
                                     <div x-data="init">
-                                        <p class="text-xs font-weight-bold mb-0"><a href="#" @click="copyToClipboard('{{ URL::signedRoute('consulta-terceros', ['orden' => $orden->id]) }}')">Copiar enlace</a></p>
+                                        <p class="text-xs font-weight-bold mb-0"><a href="#" @click="copyToClipboard('{{ URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => $orden->id]) }}')">Copiar enlace</a></p>
                                     </div>
                                 </td>
                                 <td class="d-flex align-items-center justify-content-center">

@@ -40,6 +40,77 @@ class AnticipoProductor extends Component
     // Listener para ejecutar el metodo nuevoAnticipoProductor cuando se emite 'store-anticipo'
     protected $listeners = ['store-anticipo' => 'nuevoAnticipoProductor'];
 
+    // Las fija el servidor (anticipo, ítems, total, firma, topes): el navegador no puede cambiarlas.
+    protected $propiedadesBloqueadas = ['anticipo_id', 'queriedAnticipo', 'items', 'total_anticipo', 'firma_productor', 'centros_costo',
+        'items_presupuesto', 'items_anticipos_general', 'evidencias', 'selected_item',
+        'limiteCantidad', 'limiteDias', 'limiteOtros', 'limiteValorUnitario', 'limiteValorTotal'];
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array(explode('.', $name)[0], $this->propiedadesBloqueadas, true), 403);
+    }
+
+    /**
+     * Saldo del ítem para anticipos: lo presupuestado menos lo pedido en órdenes de compra no anuladas y en otros
+     * anticipos no anulados. La misma fórmula al crear y al corregir (antes la corrección ignoraba las órdenes).
+     */
+    private function saldoItem($item_info): array
+    {
+        $oc = $item_info->consumidos()->whereHas('OrdenCompra', function ($q) { $q->where('estado_id', '!=', 6); })->get();
+        $anticipos = $item_info->consumidos_anticipo()
+            ->whereHas('anticipo', function ($q) { $q->where('estado_id', '!=', 6); })
+            ->when($this->queriedAnticipo, function ($q) { $q->where('anticipo_id', '!=', $this->queriedAnticipo->id); })
+            ->get();
+        return [
+            ($item_info->cantidad * $item_info->dia * $item_info->otros) - ($oc->sum('cant_oc') + $anticipos->sum('cant')),
+            $item_info->v_total - ($oc->sum('vtotal_oc') + $anticipos->sum('vanticipo')),
+        ];
+    }
+
+    /**
+     * Antes de guardar: el proyecto es un presupuesto aprobado del productor, cada ítem es de ese proyecto y cabe en
+     * su saldo, y el anticipo no pasa el valor del ítem. Devuelve el total calculado aquí (no el que llegó del navegador).
+     */
+    private function totalValidado(): ?float
+    {
+        $presupuesto = CentrosCosto::where('productor', Auth::id())->where('estado_id', 1)->find($this->centro_costo);
+        if (!$presupuesto) {
+            $this->addError('items-error', 'Elige uno de tus proyectos aprobados.');
+            return null;
+        }
+        $vistos = [];
+        foreach ($this->items as $fila) {
+            $item = $presupuesto->presupuestoItems->where('id', $fila['item_id'])->first();
+            if (!$item || isset($vistos[$item->id])) {
+                $this->addError('items-error', 'Uno de los ítems no es de este proyecto o está repetido.');
+                return null;
+            }
+            $vistos[$item->id] = true;
+            [$cant, $valor] = $this->saldoItem($item);
+            if ((float) $fila['cant'] > $cant || (float) $fila['valor_total'] > $valor + 0.01
+                || (float) $fila['valor_anticipo'] <= 0 || (float) $fila['valor_anticipo'] > (float) $fila['valor_total'] + 0.01) {
+                $this->addError('items-error', 'El ítem '.$fila['display_item'].' supera lo disponible en el presupuesto.');
+                return null;
+            }
+        }
+        return (float) $this->items->sum(function ($fila) { return (float) $fila['valor_anticipo']; });
+    }
+
+    /** Guarda la firma dibujada como un archivo propio del anticipo (PNG validado); nunca sobrescribe otra. */
+    private function guardarFirma($dataUri): ?string
+    {
+        if (!is_string($dataUri) || !str_starts_with($dataUri, 'data:image/png;base64,')) {
+            return null;
+        }
+        $png = base64_decode(substr($dataUri, strlen('data:image/png;base64,')), true);
+        if ($png === false || strlen($png) > 1024 * 1024 || substr($png, 0, 8) !== "\x89PNG\r\n\x1a\n") {
+            return null;
+        }
+        $ruta = 'public/firmas_productores/'.Auth::id().'_'.Str::random(24).'.png';
+        Storage::put($ruta, $png);
+        return $ruta;
+    }
+
     public function render()
     {
         return view('livewire.productor.ordenes.anticipo-productor');
@@ -52,6 +123,11 @@ class AnticipoProductor extends Component
 
         if ($this->anticipo_id) {
             $this->queriedAnticipo = ModelAnticipo::find($this->anticipo_id);
+            abort_unless($this->queriedAnticipo, 404);
+            // El productor solo abre sus anticipos (líder y admin entran por sus propias rutas).
+            if ((int) Auth::user()->rol === 7) {
+                abort_unless((int) $this->queriedAnticipo->productor_id === (int) Auth::id(), 403);
+            }
         }
 
         $this->getData();
@@ -64,8 +140,9 @@ class AnticipoProductor extends Component
         })->get();
 
         // Consultamos si el productor ya tiene una firma guardada
-        $anticipos_productor = ModelAnticipo::where('productor_id', Auth::user()->id)->first();
-        $this->firma_productor = $anticipos_productor ? $anticipos_productor->firma_productor : '';
+        // (su último anticipo con firma: el primero solía ser un jurídico sin firma y pedía firmar otra vez)
+        $this->firma_productor = ModelAnticipo::where('productor_id', Auth::user()->id)->whereNotNull('firma_productor')
+            ->where('firma_productor', '!=', '')->latest('id')->value('firma_productor') ?: '';
 
         // Si existe un anticipo, cargamos los datos
         if ($this->queriedAnticipo) {
@@ -94,12 +171,8 @@ class AnticipoProductor extends Component
                 $this->items->push($newItem);
             }
 
-            // Si el estado_id es 7 (Evidencias), obtenemos las evidencias guardadas
-            if ($this->queriedAnticipo->estado_id == 7) {
-                $this->evidencias = EvidenciaAnticipo::where([
-                    ['anticipo_id', $this->queriedAnticipo->id],
-                ])->get();
-            }
+            // Evidencias cargadas (las ve el productor al cargarlas y el líder al revisarlas)
+            $this->evidencias = EvidenciaAnticipo::with('itemPresupuesto')->where('anticipo_id', $this->queriedAnticipo->id)->get();
         }
         else {
             // Centros de costo del productor autenticado
@@ -119,15 +192,8 @@ class AnticipoProductor extends Component
         // Trae información del item seleccionado
         $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
 
-        /* LIMITES: LOS LIMITES OMITEN LOS ITEMS DEL ANTICIPO ACTUAL SI ES ACTUALIZACIÓN */
-        if ($this->queriedAnticipo){
-            $this->limiteCantidad = ( ( $item_info->cantidad * $item_info->dia * $item_info->otros ) - $item_info->consumidos_anticipo()->where('anticipo_id', '!=', $this->queriedAnticipo->id)->get()->sum('cant') );
-            $this->limiteValorTotal = ( $item_info->v_total - $item_info->consumidos_anticipo()->where('anticipo_id', '!=', $this->queriedAnticipo->id)->get()->sum('vanticipo') );
-        }
-        else {
-            $this->limiteCantidad = ( ( $item_info->cantidad * $item_info->dia * $item_info->otros ) - ( $item_info->consumidos()->get()->sum('cant_oc') + $item_info->consumidos_anticipo()->get()->sum('cant') ) );
-            $this->limiteValorTotal = ( $item_info->v_total - ( $item_info->consumidos()->get()->sum('vtotal_oc') + $item_info->consumidos_anticipo()->get()->sum('vanticipo') ) );
-        }
+        /* LIMITES: omiten los ítems del anticipo actual si es actualización, y lo anulado */
+        [$this->limiteCantidad, $this->limiteValorTotal] = $this->saldoItem($item_info);
 
         $this->limiteDias = $item_info->dia;
         $this->limiteOtros = $item_info->otros;
@@ -371,20 +437,17 @@ class AnticipoProductor extends Component
             return back();
         }
 
-        $firma = "public/firmas_productores/".Auth::user()->id.".png";
-
-        // Si ya existe una firma guardada, usamos la ruta de esa firma, de lo contrario guardamos la nueva firma
-        if ($this->firma_productor) {
-            $firma = $this->firma_productor;
+        $total = $this->totalValidado();
+        if ($total === null) {
+            return back();
         }
-        else {
-            // Procesa la imagen de la firma recibida en base64
-            $data_uri = $data;
-            $encoded_image = explode(",", $data_uri)[1];
-            $decoded_image = base64_decode($encoded_image);
 
-            // Guarda la firma como archivo PNG en storage
-            file_put_contents("storage" . str_replace("public", "", $firma), $decoded_image);
+        // Si ya hay una firma guardada se reutiliza; si no, la dibujada se guarda como archivo propio
+        // (antes todos los anticipos compartían un archivo que se sobrescribía, y la carpeta podía no existir).
+        $firma = $this->firma_productor ?: $this->guardarFirma($data);
+        if (!$firma) {
+            $this->addError('items-error', 'Firma no válida: vuelve a firmar.');
+            return back();
         }
 
         // Creamos el registro en la tabla "anticipos"
@@ -392,7 +455,7 @@ class AnticipoProductor extends Component
             'oc_id' => null,
             'presupuesto_id' => $this->centro_costo,
             'porcentaje_anticipo' => 0,
-            'total_anticipo' => $this->total_anticipo,
+            'total_anticipo' => $total,
             'estado_id' => 8,
             'fecha_solicitud' => now(),
             'productor_id' => Auth::user()->id,
@@ -451,10 +514,16 @@ class AnticipoProductor extends Component
             $this->addError('items-error', 'No se han agregado items al anticipo.');
             return back();
         }
+        $total = $this->totalValidado();
+        if ($total === null) {
+            return back();
+        }
+        \DB::beginTransaction();
 
-        // Actualizamos el estado del anticipo a estado_id = 8 (Revisión lider de producción)
+        // Vuelve a Revisión del líder (8) con el total de los ítems corregidos (antes quedaba el total viejo)
         $this->queriedAnticipo->update([
-            'estado_id' => 8
+            'estado_id' => 8,
+            'total_anticipo' => $total,
         ]);
 
         // Elimina los items actuales y crea los nuevos
@@ -478,6 +547,7 @@ class AnticipoProductor extends Component
                 'saldo' => $item['saldo'],
             ]);
         }
+        \DB::commit();
 
         // Se envia notificación por correo a los Lideres de producción
         $this->anticipoProdRevisionLiderProd($this->queriedAnticipo);
@@ -513,7 +583,8 @@ class AnticipoProductor extends Component
             $this->addError('items-error', 'Transición de estado no permitida.');
             return back();
         }
-        if (!in_array(Auth::user()->rol, $reglas[$estado_id]['roles'])) {
+        if (!in_array(Auth::user()->rol, $reglas[$estado_id]['roles'])
+            || (in_array($estado_id, [7, 12]) && !Auth::user()->can('revisar-anticipos-gerencia'))) {
             $this->addError('items-error', 'No tienes permisos para realizar esta acción.');
             return back();
         }
@@ -521,6 +592,9 @@ class AnticipoProductor extends Component
             $this->addError('items-error', 'El anticipo no está en un estado válido para esta acción.');
             return back();
         }
+
+        // Los correos salen después de guardar, con la observación ya asignada (antes llevaban el motivo viejo).
+        $correo = null;
 
         // REVISIÓN GERENCIA APROBADA
         if ($estado_id == 7) {
@@ -532,7 +606,7 @@ class AnticipoProductor extends Component
             $redirect_route = 'lista-anticipos-admin';
 
             // Se envia notificación al productor para el cargue de evidencias
-            $this->anticipoProdEvidencias($this->queriedAnticipo);
+            $correo = 'anticipoProdEvidencias';
         }
         // REVISIÓN LIDER PRODUCCIÓN APROBADA
         elseif ($estado_id == 9) {
@@ -546,11 +620,11 @@ class AnticipoProductor extends Component
                 $estado_id = 7;
 
                 // Se envia notificación al productor para el cargue de evidencias
-                $this->anticipoProdEvidencias($this->queriedAnticipo);
+                $correo = 'anticipoProdEvidencias';
             }
             else {
                 // Se envia notificación por correo a los Gerentes
-                $this->anticipoProdRevisionGerencia($this->queriedAnticipo);
+                $correo = 'anticipoProdRevisionGerencia';
             }
 
             $this->queriedAnticipo->observaciones_revision_lider = $this->observaciones_revision_lider;
@@ -561,10 +635,10 @@ class AnticipoProductor extends Component
                 'rechazo_revision_lider' => 'required|string|max:1000',
             ]);
 
-            // Se envia notificación al productor para gestionar el rechazo
-            $this->anticipoProdRechazoLiderProd($this->queriedAnticipo);
-
             $this->queriedAnticipo->rechazo_revision_lider = $this->rechazo_revision_lider;
+
+            // Se envia notificación al productor para gestionar el rechazo
+            $correo = 'anticipoProdRechazoLiderProd';
         }
         // RECHAZO REVISIÓN GERENCIA
         elseif ($estado_id == 12) {
@@ -575,31 +649,66 @@ class AnticipoProductor extends Component
             $this->queriedAnticipo->rechazo_revision_gerencia = $this->rechazo_revision_gerencia;
 
             // Se envia notificación al productor para gestionar el rechazo
-            $this->anticipoProdRechazoGerencia($this->queriedAnticipo);
+            $correo = 'anticipoProdRechazoGerencia';
 
             $redirect_route = 'lista-anticipos-admin';
         }
 
         $this->queriedAnticipo->estado_id = $estado_id;
         $this->queriedAnticipo->update();
+        if ($correo) {
+            $this->{$correo}($this->queriedAnticipo);
+        }
 
         return redirect()->route($redirect_route)->with('success', 'Información guardada correctamente.');
     }
 
+    /**
+     * El líder de producción revisa las evidencias (estado 10): aprobadas → Aprobado, pendiente de causar (1),
+     * y Contabilidad recibe el aviso; devueltas → Cargue de evidencias (7) con el motivo para el productor.
+     * (Este paso no existía: los anticipos se quedaban en revisión de evidencias para siempre.)
+     */
+    public function revisionEvidencias($aprobar) {
+        if ((int) Auth::user()->rol !== 6) {
+            $this->addError('items-error', 'No tienes permisos para realizar esta acción.');
+            return back();
+        }
+        if ((int) $this->queriedAnticipo->fresh()->estado_id !== 10) {
+            $this->addError('items-error', 'El anticipo no está en revisión de evidencias.');
+            return back();
+        }
+        if ($aprobar) {
+            $this->validate(['observaciones_revision_evidencias' => 'nullable|string|max:1000']);
+            $this->queriedAnticipo->observaciones_revision_evidencias = $this->observaciones_revision_evidencias;
+            $this->queriedAnticipo->fecha_aprobacion = now();
+            $this->queriedAnticipo->estado_id = 1;
+            $this->queriedAnticipo->update();
+            $this->anticipoProdEvidenciasAprobadas($this->queriedAnticipo);
+        } else {
+            $this->validate(['rechazo_revision_evidencias' => 'required|string|max:1000']);
+            $this->queriedAnticipo->rechazo_revision_evidencias = $this->rechazo_revision_evidencias;
+            $this->queriedAnticipo->estado_id = 7;
+            $this->queriedAnticipo->update();
+            $this->anticipoProdRechazoEvidencias($this->queriedAnticipo);
+        }
+        return redirect()->route('lista-anticipos-lid')->with('success', 'Información guardada correctamente.');
+    }
+
     public function borrarFirmaProductor() {
-        Storage::delete($this->firma_productor);
+        // Solo deja de reutilizar la firma guardada para firmar de nuevo. Antes borraba el archivo de la ruta que
+        // mandara el navegador (cualquier archivo de storage) y dejaba sin firma a los anticipos anteriores.
         $this->firma_productor = null;
     }
 
     /*
         * EVIDENCIAS
     */
-    // Solo el productor dueño gestiona evidencias, y solo en estado 7 (cargue de evidencias)
+    // Solo el productor dueño gestiona evidencias: al cargarlas (7) o cuando Contabilidad las devolvió (13)
     private function puedeGestionarEvidencias() {
         return $this->queriedAnticipo
             && Auth::user()->rol == 7
             && $this->queriedAnticipo->productor_id == Auth::user()->id
-            && $this->queriedAnticipo->estado_id == 7;
+            && in_array((int) $this->queriedAnticipo->estado_id, [7, 13], true);
     }
 
     public function newEvidencia() {
@@ -609,7 +718,7 @@ class AnticipoProductor extends Component
         }
 
         $this->validate([
-            'item_evidencia' => 'required',
+            'item_evidencia' => ['required', \Illuminate\Validation\Rule::in($this->queriedAnticipo->anticipoItems->pluck('item_id')->all())],
             'fecha_evidencia' => 'required|date',
             'foto_evidencia' => 'required|file|mimes:jpg,jpeg,png|max:10000',
             'observacion_evidencia' => 'required|string|max:255'
@@ -652,8 +761,11 @@ class AnticipoProductor extends Component
             return back();
         }
 
-        if ($this->evidencias->count() < $this->items->count()) {
-            $this->addError('evidencias-error', 'No se han cargado evidencias.');
+        // Al menos una evidencia por cada ítem del anticipo (antes bastaba con el número de fotos)
+        $conEvidencia = EvidenciaAnticipo::where('anticipo_id', $this->queriedAnticipo->id)->pluck('item_id')->map(function ($id) { return (int) $id; })->unique();
+        $faltan = $this->queriedAnticipo->anticipoItems->pluck('item_id')->map(function ($id) { return (int) $id; })->diff($conEvidencia);
+        if ($faltan->isNotEmpty()) {
+            $this->addError('evidencias-error', 'Falta la evidencia de '.$faltan->count().' ítem(s) del anticipo.');
             return back();
         }
 

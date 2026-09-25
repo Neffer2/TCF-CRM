@@ -1,129 +1,154 @@
+@php
+    // Anticipo de productor (sin orden de compra): se paga con el comprobante; el detalle sale del presupuesto y los ítems
+    $pesos = function ($v) { return '$'.number_format((float) $v, 0, ',', '.'); };
+    $fecha = function ($v) { return $v ? \Carbon\Carbon::parse($v)->format('d/m/Y') : '—'; };
+    $archivo = function ($ruta) { return $ruta ? asset('storage/'.preg_replace('#^public/#', '', $ruta)) : null; };
+    $items = $anticipo->anticipoItems()->with('itemPresupuesto')->get();
+    $evidencias = $anticipo->evidencias()->with('itemPresupuesto')->get();
+    $proyecto = $anticipo->presupuesto;
+    $gestion = optional($proyecto)->gestion;
+@endphp
 <div class="card">
     <div class="card-header p-0 px-3 mt-3 position-relative z-index-1 col-md-12">
-        <div class="row">
-            <div class="col-md-12">
-                <h3 class="mb-0">Pago Anticipo {{ $orden->proveedor->tercero }}</h3>
-                <p class="text-sm mb-0">Adjunta el comprobante de pago para el anticipo.</p>
-            </div>
-        </div>
+        <h3 class="mb-0">Pago &middot; Anticipo de productor #{{ $anticipo->id }}</h3>
+        <p class="text-sm mb-0">
+            {{ optional($proyecto)->cod_cc ?: 'Sin centro de costos' }} &middot; {{ optional($gestion)->nom_proyecto_cot ?: 'Proyecto sin nombre' }}
+            &middot; Productor: {{ optional($anticipo->productor_info)->name ?: '—' }} &middot; Estado: {{ optional($anticipo->estado)->description }}
+        </p>
     </div>
     <div class="card-body pt-2">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="row">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h6 style="margin: 0">Valor Orden de Compra:</h6>
-                                <input type="text" class="form-control" value="{{ number_format($orden->ordenItems->sum('vtotal_oc'), 2) }}" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h6 style="margin: 0">% Anticipo:</h6>
-                                <input type="text" class="form-control" value="{{ number_format($anticipo->porcentaje_anticipo, 2) }}" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h6 style="margin: 0">Valor Anticipo:</h6>
-                                <input type="text" class="form-control" value="{{ number_format($anticipo->total_anticipo, 2) }}" disabled>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <h6 style="margin: 0">Valor del anticipo:</h6>
+                            <input type="text" class="form-control" value="{{ $pesos($anticipo->total_anticipo) }}" disabled>
                         </div>
                     </div>
-
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <h6 style="margin: 0">N&uacute;mero de causaci&oacute;n:</h6>
-                            <input value="{{ $anticipo->cod_causal }}" class="form-control" disabled>
-                        </div> 
-                        @if ($orden->observacion_causal)
-                            <div class="form-group">
-                                <h6 style="margin: 0">Observaciones contabilidad:</h6>
-                                <textarea class="form-control" disabled>{{ $anticipo->observacion_causal }}</textarea>
-                            </div>
-                        @endif
-                        <div class="form-group">
-                            <h6 style="margin: 0">Comprobante:</h6>
-                            <div style="font-size: 9px;">
-                                Adjunta el comprobante de pago para el proveedor {{ $orden->proveedor->tercero }}.
-                            </div>
-                            <input id="comprobante" wire:model="comprobante" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
-                            @error('comprobante')
-                                <div id="comprobante" class="text-invalid">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <h6 style="margin: 0">Observaciones (opcional):</h6>
-                            <div style="font-size: 9px;">
-                                Notif&iacute;ca si existe alguna novedad en el pago.
-                            </div>
-                            <textarea id="observacion_anticipo" wire:model="observacion_anticipo" class="form-control"></textarea>
-                            @error('observacion_anticipo')
-                                <div id="observacion_anticipo" class="text-invalid">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <button wire:click="store" wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1" >Marcar como pagado</button>
-                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        @error('error')
-                            <div id="error" class="text-invalid">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                        <div style="font-size: 9px;">
-                            Se enviar&aacute; un correo al proveedor y productor del proyecto con el comprobante y las observaciones del pago del anticipo.
+                            <h6 style="margin: 0">Causado el:</h6>
+                            <input type="text" class="form-control" value="{{ $fecha($anticipo->fecha_causal) }}" disabled>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            @php
-                                $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
-                            @endphp
-                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
-                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Orden de compra.</span>
-                            </a> 
-                            <br>
-                            @if ($orden->tipo_oc == 2)
-                                @if ($orden->naturalInfo->tercero->art383)
-                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">
-                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                        <span class="btn-inner--text">Certificación Art. 383.</span>
-                                    </a>
-                                    <br>
-                                @endif
-                                @if ($orden->naturalInfo->tercero->planilla_aportes)
-                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">
-                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                        <span class="btn-inner--text">Planilla de Aportes.</span>
-                                    </a>
-                                    <br>
-                                @endif
-                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
-                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                        <span class="btn-inner--text">Certificación bancaria.</span>
-                                    </a>
-                                <p>
-                                    <br>
-                                    <strong>Banco:</strong> {{ $orden->naturalInfo->tercero->banco }}<br>
-                                    <strong>Tipo de cuenta:</strong> {{ $orden->naturalInfo->tercero->tipo_cuenta }}<br>
-                                    <strong>N&uacute;mero de cuenta:</strong> {{ $orden->naturalInfo->tercero->num_cuenta }}<br>
-                                </p>
-                            @endif
+                <div class="form-group">
+                    <h6 style="margin: 0">N&uacute;mero de causaci&oacute;n:</h6>
+                    <input value="{{ $anticipo->cod_causal }}" class="form-control" disabled>
+                </div>
+                @if ($anticipo->observacion_causal)
+                    <div class="form-group">
+                        <h6 style="margin: 0">Observaciones de Contabilidad:</h6>
+                        <textarea class="form-control" disabled>{{ $anticipo->observacion_causal }}</textarea>
+                    </div>
+                @endif
+                @if ($anticipo->comprobante_pago)
+                    <p class="text-sm mb-2"><b>Pagado</b> el {{ $fecha($anticipo->fecha_comprobante_pago) }}. <a href="{{ $archivo($anticipo->comprobante_pago) }}" target="_blank">Ver comprobante</a></p>
+                @else
+                    <div class="form-group">
+                        <h6 style="margin: 0">Comprobante:</h6>
+                        <div style="font-size: 9px;">Adjunta el comprobante de pago (PDF) para el productor {{ optional($anticipo->productor_info)->name }}.</div>
+                        <input id="comprobante" wire:model="comprobante" type="file" class="form-control" accept=".pdf">
+                        @error('comprobante')
+                            <div class="text-invalid">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <h6 style="margin: 0">Observaciones (opcional):</h6>
+                        <div style="font-size: 9px;">Notif&iacute;ca si existe alguna novedad en el pago.</div>
+                        <textarea id="observacion_anticipo" wire:model="observacion_anticipo" class="form-control"></textarea>
+                        @error('observacion_anticipo')
+                            <div class="text-invalid">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-12 p-0">
+                        <button wire:click="store" wire:loading.attr="disabled" class="btn bg-gradient-warning mb-1">Marcar como pagado</button>
+                        <div class="spinner-border text-warning ms-1" role="status" wire:loading>
+                            <span class="sr-only">Cargando...</span>
+                        </div>
+                        @error('error')
+                            <div class="text-invalid">{{ $message }}</div>
+                        @enderror
+                        <div style="font-size: 9px;">
+                            Se env&iacute;a un correo al productor, a compras y a contabilidad con el comprobante y las observaciones del pago.
                         </div>
                     </div>
+                @endif
+            </div>
+            <div class="col-md-7">
+                <h6>Documentos</h6>
+                <p class="text-sm mb-2">
+                    @if ($anticipo->firma_productor)
+                        <a href="{{ $archivo($anticipo->firma_productor) }}" target="_blank"><span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span> Firma del productor</a>
+                    @else
+                        Sin firma registrada.
+                    @endif
+                </p>
+                <h6>Evidencias ({{ $evidencias->count() }})</h6>
+                @if ($evidencias->isEmpty())
+                    <p class="text-sm text-secondary">Sin evidencias cargadas.</p>
+                @else
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">&Iacute;tem</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaci&oacute;n</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($evidencias as $e)
+                                    <tr>
+                                        <td class="text-xs">{{ optional($e->itemPresupuesto)->descripcion }}</td>
+                                        <td class="text-xs">{{ $fecha($e->fecha_evidencia) }}</td>
+                                        <td><a href="{{ $archivo($e->foto_evidencia) }}" target="_blank"><img src="{{ $archivo($e->foto_evidencia) }}" height="48" alt=""></a></td>
+                                        <td class="text-xs">{{ $e->observacion_evidencia }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+            <div class="col-12 mt-3">
+                <h6>&Iacute;tems del anticipo</h6>
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">&Iacute;tem</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Descripci&oacute;n</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">Cantidad</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">V. unitario</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">V. total</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">Anticipo</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($items as $it)
+                                <tr>
+                                    <td class="text-xs">{{ $it->display_item ?: optional($it->itemPresupuesto)->num_item }}</td>
+                                    <td class="text-xs">{{ $it->desc }}</td>
+                                    <td class="text-xs text-end">{{ $it->cant }}</td>
+                                    <td class="text-xs text-end">{{ $pesos($it->vunit) }}</td>
+                                    <td class="text-xs text-end">{{ $pesos($it->vtotal) }}</td>
+                                    <td class="text-xs text-end font-weight-bold">{{ $pesos($it->vanticipo) }}</td>
+                                    <td class="text-xs text-end">{{ $pesos($it->saldo) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="5" class="text-end text-xs">Total del anticipo</th>
+                                <th class="text-end text-xs">{{ $pesos($anticipo->total_anticipo) }}</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

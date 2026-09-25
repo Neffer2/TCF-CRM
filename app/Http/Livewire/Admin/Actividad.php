@@ -53,13 +53,20 @@ class Actividad extends Component
     public function render()
     {
         $hoy = now()->toDateString();
-        $resumen = [
-            'usuarios_hoy' => ActividadLog::where('created_at', '>=', $hoy)->whereNotNull('user_id')->distinct('user_id')->count('user_id'),
-            'sesiones_hoy' => ActividadLog::where('created_at', '>=', $hoy)->where('tipo', 'sesion')->where('accion', 'login')->count(),
-            'acciones_hoy' => ActividadLog::where('created_at', '>=', $hoy)->where('tipo', 'accion')->count(),
-            'cambios_hoy' => ActividadLog::where('created_at', '>=', $hoy)->where('tipo', 'datos')->count(),
-            'fallidos_hoy' => ActividadLog::where('created_at', '>=', $hoy)->where('accion', 'login fallido')->count(),
-        ];
+        // Un solo recorrido del día (antes eran 5 conteos sobre una tabla que crece), cacheado un minuto
+        $resumen = \Illuminate\Support\Facades\Cache::remember('actividad.resumen.'.$hoy, 60, function () use ($hoy) {
+            $r = ActividadLog::where('created_at', '>=', $hoy)->selectRaw(
+                "COUNT(DISTINCT user_id) usuarios_hoy,
+                 SUM(tipo = 'sesion' AND accion = 'login') sesiones_hoy,
+                 SUM(tipo = 'accion') acciones_hoy,
+                 SUM(tipo = 'datos') cambios_hoy,
+                 SUM(accion = 'login fallido') fallidos_hoy"
+            )->first();
+            return [
+                'usuarios_hoy' => (int) $r->usuarios_hoy, 'sesiones_hoy' => (int) $r->sesiones_hoy, 'acciones_hoy' => (int) $r->acciones_hoy,
+                'cambios_hoy' => (int) $r->cambios_hoy, 'fallidos_hoy' => (int) $r->fallidos_hoy,
+            ];
+        });
         $porUsuario = ActividadLog::selectRaw('usuario, COUNT(*) n, MAX(created_at) ultimo')->whereNotNull('user_id')
             ->when($this->desde, fn($q) => $q->where('created_at', '>=', $this->desde.' 00:00:00'))
             ->when($this->hasta, fn($q) => $q->where('created_at', '<=', $this->hasta.' 23:59:59'))

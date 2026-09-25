@@ -7,6 +7,8 @@ use App\Models\Tercero;
 use App\Models\PresupuestoProyecto;
 use App\Models\OrdenCompra;
 use App\Models\OcItem;
+use App\Models\ItemPresupuesto;
+use Illuminate\Support\Facades\DB;
 use App\Models\NaturalInfo;
 use App\Traits\SMS;
 use App\Traits\Email;
@@ -35,6 +37,53 @@ class Natural extends Component
     // Variables para identificar el productor y la orden actual
     public $productor, $orden_id;
 
+    // Las fija el servidor (orden, productor, listas y topes): el navegador no puede cambiarlas.
+    protected $propiedadesBloqueadas = ['productor', 'orden_id', 'queriedOrden', 'items', 'presupuestos', 'items_presupuesto', 'terceros',
+        'limiteCantidad', 'limiteDias', 'limiteOtros', 'limiteValorUnitario', 'limiteValorTotal', 'selected_item'];
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array(explode('.', $name)[0], $this->propiedadesBloqueadas, true), 403);
+    }
+
+    /**
+     * Revalida en el servidor los ítems de la lista antes de guardar: cada ítem debe ser de un proyecto aprobado
+     * del productor, y la suma pedida por ítem no puede pasar el saldo (sin contar esta orden ni las anuladas).
+     */
+    private function itemsDentroDelPresupuesto(): bool
+    {
+        $porItem = [];
+        foreach ($this->items as $fila) {
+            $id = (int) $fila['item']['id'];
+            $porItem[$id]['cant'] = ($porItem[$id]['cant'] ?? 0) + (float) $fila['cant'];
+            $porItem[$id]['valor'] = ($porItem[$id]['valor'] ?? 0) + (float) $fila['valor_total'];
+        }
+        foreach ($porItem as $id => $pedido) {
+            $item = ItemPresupuesto::find($id);
+            $presto = optional($item)->presto;
+            if (!$item || !$presto || (int) $presto->estado_id !== 1 || (int) $presto->productor !== (int) $this->productor->id) {
+                $this->addError('items-error', 'Uno de los ítems ya no está disponible en un proyecto aprobado a tu cargo.');
+                return false;
+            }
+            [$cant, $valor] = $this->saldoItem($item);
+            if ($pedido['cant'] > $cant || $pedido['valor'] > $valor + 0.01) {
+                $this->addError('items-error', 'El ítem '.$item->num_item.' de '.$presto->cod_cc.' supera lo disponible en el presupuesto.');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Saldo del ítem: lo presupuestado menos lo pedido en otras órdenes no anuladas (sin contar esta). */
+    private function saldoItem($item_info): array
+    {
+        $consumidos = $item_info->consumidos()
+            ->whereHas('OrdenCompra', function ($q) { $q->where('estado_id', '!=', 6); })
+            ->when($this->queriedOrden, function ($q) { $q->where('oc_id', '!=', $this->queriedOrden->id); })
+            ->get();
+        return [($item_info->cantidad * $item_info->dia * $item_info->otros) - $consumidos->sum('cant_oc'), $item_info->v_total - $consumidos->sum('vtotal_oc')];
+    }
+
     /*
         * EVIDENCIAS
     */
@@ -55,7 +104,12 @@ class Natural extends Component
         $this->bancos = app('bancos');
 
         if ($this->orden_id){
-            $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
+            // Solo órdenes naturales; el productor solo abre las suyas (tienen cédula, RUT y cuenta del tercero).
+            $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->where('tipo_oc', 2)->first();
+            abort_unless($this->queriedOrden && $this->queriedOrden->naturalInfo, 404);
+            if ((int) Auth::user()->rol !== 1) {
+                abort_unless((int) $this->queriedOrden->naturalInfo->productor_id === (int) Auth::id(), 403);
+            }
             $this->getData();
         }
     }
@@ -96,8 +150,10 @@ class Natural extends Component
     **/
     // Agrega un nuevo item a la orden de compra
     public function newItem(){
-        // El valor total se deriva en servidor (cantidad x valor unitario),
-        // nunca del valor sincronizado desde el navegador.
+        // Los topes y el valor total se derivan en servidor, nunca de lo que manda el navegador.
+        if ($this->items_presupuesto && $this->items_presupuesto->where('id', $this->item_presupuesto)->first()) {
+            $this->getItemLimite();
+        }
         $this->getValorTotal();
 
         $this->validate([
@@ -245,10 +301,15 @@ class Natural extends Component
         }
 
         $this->validate([
-            'tercero' => 'required'
+            'tercero' => 'required|exists:terceros,id'
         ]);
+        abort_unless($this->productor, 403);
+        if (!$this->itemsDentroDelPresupuesto()) {
+            return back();
+        }
 
         $tercero = Tercero::where('id', $this->tercero)->first();
+        DB::beginTransaction();
         $tercero->update([
             'nombre' => $this->nombre,
             'apellido' => $this->apellido,
@@ -290,6 +351,7 @@ class Natural extends Component
                 'tipo_contrato' => $item['tipo_contrato'],
             ]);
         }
+        DB::commit();
 
         // Envía mensaje al tercero si tiene teléfono
         if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
@@ -343,6 +405,14 @@ class Natural extends Component
         $this->validate([
             'tercero' => 'required'
         ]);
+        if (!in_array((int) $this->queriedOrden->fresh()->estado_id, [3, 7], true)) {
+            $this->addError('items-error', 'Solo se corrige una orden editable o pendiente de evidencias.');
+            return back();
+        }
+        if (!$this->itemsDentroDelPresupuesto()) {
+            return back();
+        }
+        DB::beginTransaction();
 
         // Si la orden tiene contrato, cambia el estado y envía mensaje
         if ($this->queriedOrden->naturalInfo->contrato && $this->queriedOrden->evidencias->isEmpty()){
@@ -384,6 +454,7 @@ class Natural extends Component
                 'tipo_contrato' => $item['tipo_contrato'],
             ]);
         }
+        DB::commit();
 
         // Limpia los campos y colecciones
         $this->resetFields([
@@ -488,14 +559,8 @@ class Natural extends Component
         // Trae información del item seleccionado
         $item_info = $this->items_presupuesto->where('id', $this->item_presupuesto)->first();
 
-        /* LIMITES: LOS LIMITES OMITEN LOS ITEMS DE LA OC ACTUAL SI ES ACTUALIZACIÓN */
-        if($this->queriedOrden){
-            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('cant_oc'));
-            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->where('oc_id', '!=', $this->queriedOrden->id)->get()->sum('vtotal_oc'));
-        }else {
-            $this->limiteCantidad = (($item_info->cantidad * $item_info->dia * $item_info->otros) - $item_info->consumidos()->get()->sum('cant_oc'));
-            $this->limiteValorTotal = ($item_info->v_total - $item_info->consumidos()->get()->sum('vtotal_oc'));
-        }
+        /* LIMITES: omiten los ítems de la OC actual si es actualización, y las órdenes anuladas */
+        [$this->limiteCantidad, $this->limiteValorTotal] = $this->saldoItem($item_info);
 
         $this->limiteDias = $item_info->dia;
         $this->limiteOtros = $item_info->otros;

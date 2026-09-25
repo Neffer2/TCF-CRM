@@ -36,7 +36,8 @@
             default:                   $frase = 'Estado: '.$chip.'.'; $tono = 'tone-neutral';
         }
     }
-    $decisiones = array_values(array_diff($acciones, ['reenviar']));
+    $decisiones = array_values(array_diff($acciones, ['reenviar', 'anular', 'retirar']));
+    $accionAnular = in_array('anular', $acciones, true) ? 'anular' : (in_array('retirar', $acciones, true) ? 'retirar' : null);
 @endphp
 
 <div class="aj" data-crm-quieto x-data x-on:aj-hecho.window="$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))">
@@ -185,7 +186,19 @@
                                 <h3>¿Cuánto se anticipa?</h3>
                             </div>
                             <div class="aj-fila">
-                                @if ($modo === 'borrador')
+                                @if ($modo === 'borrador' && $ordenesVinculables->isNotEmpty())
+                                    <div class="aj-campo">
+                                        <label for="aj_vincular">Esta compra ya tiene orden de compra: vincúlala (opcional)</label>
+                                        <select id="aj_vincular" class="form-control @error('oc_vincular') is-mal @enderror" wire:model="oc_vincular">
+                                            <option value="">Seguir sin orden de compra</option>
+                                            @foreach ($ordenesVinculables as $ov)
+                                                <option value="{{ $ov->id }}">{{ $ov->cod_oc ?: 'Orden #'.$ov->id }} · {{ $pesos($ov->valor_orden) }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('oc_vincular')<span class="aj-error">{{ $message }}</span>@else<span class="aj-ayuda">Al vincularla, el anticipo se calcula sobre el valor de la orden y esta queda con su anticipo.</span>@enderror
+                                    </div>
+                                @endif
+                                @if ($modo === 'borrador' && !$oc_vincular)
                                     <div class="aj-campo">
                                         <label for="aj_base">Valor base (el de la cotización)</label>
                                         <input id="aj_base" type="text" inputmode="numeric" class="form-control @error('valor_base') is-mal @enderror" placeholder="Ej. 12.500.000" wire:model.debounce.400ms="valor_base">
@@ -430,6 +443,33 @@
                 </section>
             @endif
 
+            @if ($a && $similares->isNotEmpty() && (int) auth()->user()->rol !== 7)
+                <section class="aj-panel">
+                    <h2 class="aj-titulo">Otros anticipos a este proveedor en este proyecto</h2>
+                    <p class="aj-sub">Revisa que no sea la misma compra pedida dos veces.</p>
+                    <ul class="aj-historia">
+                        @foreach ($similares as $s)
+                            <li class="tone-neutral"><span class="aj-historia__punto"></span><b>#{{ $s->id }}</b> · {{ $pesos($s->total_anticipo) }} · {{ optional($s->estado)->description }}{{ $s->oc_id ? ' · con orden de compra' : ' · sin orden de compra' }}</li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
+            @if ($accionAnular)
+                <section class="aj-panel">
+                    <h2 class="aj-titulo">{{ $accionAnular === 'anular' ? 'Anular el anticipo' : 'Retirar la solicitud' }}</h2>
+                    <p class="aj-sub">Sale del flujo y queda anulado{{ $a->oc_id ? '; su orden de compra queda libre para otro anticipo' : '' }}. Escribe el motivo: se le avisa al productor y al Controller.</p>
+                    <div class="aj-campo">
+                        <textarea rows="2" maxlength="1000" class="form-control @error('observacion') is-mal @enderror" wire:model.defer="obs_anulacion" placeholder="Ej. El proveedor ya no va a prestar el servicio."></textarea>
+                        @error('observacion')<span class="aj-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="aj-botones">
+                        <button type="button" class="crm-btn crm-btn--ghost aj-devolver" wire:click="anular" wire:loading.attr="disabled" wire:target="anular"
+                                onclick="return confirm('¿Anular este anticipo? No se puede deshacer.')">{{ $accionAnular === 'anular' ? 'Anular el anticipo' : 'Retirar mi solicitud' }}</button>
+                    </div>
+                </section>
+            @endif
+
             @if ($a)
                 <section class="aj-panel">
                     <h2 class="aj-titulo">Recorrido</h2>
@@ -437,7 +477,7 @@
                     <ol class="aj-historia">
                         @foreach ($a->pasos as $p)
                             @php
-                                $tonoPaso = str_starts_with($p->accion, 'rechazar_') || $p->accion === 'devolver_contabilidad' ? 'tone-bad' : (str_starts_with($p->accion, 'aprobar_') || in_array($p->accion, ['causar', 'pagar'], true) ? 'tone-ok' : 'tone-neutral');
+                                $tonoPaso = str_starts_with($p->accion, 'rechazar_') || in_array($p->accion, ['devolver_contabilidad', 'anular', 'retirar', 'anular_por_oc'], true) ? 'tone-bad' : (str_starts_with($p->accion, 'aprobar_') || in_array($p->accion, ['causar', 'pagar'], true) ? 'tone-ok' : 'tone-neutral');
                                 $rolTxt = [7 => 'Productor', 6 => 'Líder de producción', 11 => 'Controller', 9 => 'Contabilidad', 8 => 'Tesorería'][$p->rol] ?? (str_ends_with($p->accion, '_gerencia') ? 'Gerencia' : 'CRM');
                             @endphp
                             <li class="{{ $tonoPaso }}">

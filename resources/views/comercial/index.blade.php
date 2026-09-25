@@ -11,7 +11,7 @@
         <div class="card mb-4 crm-page-card">
             <div class="crm-page-head">
                 <div class="crm-page-head__title crm-perfil">
-                    @php $avatar = Auth::user()->avatar ? asset('storage/'.str_replace('public/', '', Auth::user()->avatar)) : null; @endphp
+                    @php $avatar = Auth::user()->avatarSrc(); @endphp
                     <span class="crm-perfil__avatar">
                         @if ($avatar)<img src="{{ $avatar }}" alt="" onerror="this.remove()">@endif
                         <b>{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</b>

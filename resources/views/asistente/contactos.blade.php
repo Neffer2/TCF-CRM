@@ -35,9 +35,9 @@
           <div class="col-auto"> 
             <div class="avatar avatar-xl position-relative">
               @php
-                $aux = str_replace('public/', '', Auth::user()->avatar);
+                $aux = Auth::user()->avatarSrc();
               @endphp
-              <img src="{{ asset("storage/$aux") }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+              <img src="{{ $aux }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
             </div>
           </div>
           <div class="col-auto my-auto">

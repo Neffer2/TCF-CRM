@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\PresupuestoProyecto;
 use App\Models\EstadosPresupuesto;
 use App\Models\GestionComercial;
+use App\Services\AprobacionPresupuesto;
 use App\Traits\Email;
 use Livewire\WithPagination;
 use Auth;
@@ -47,7 +48,8 @@ class GestionPresupuestos extends Component
         }
 
         if ($this->margen == '<'){
-            array_push($filtros, ['margen_proy', '<=', 35]);
+            // "Menor a 35" excluye el 35 exacto (antes salía en los dos filtros)
+            array_push($filtros, ['margen_proy', '<', 35]);
         } elseif ($this->margen == '>'){
             array_push($filtros, ['margen_proy', '>=', 35]);
         }
@@ -122,25 +124,10 @@ class GestionPresupuestos extends Component
     public function cambioEstado($id = null, $estado = null)
     {
         $presupuesto = PresupuestoProyecto::find($id);
-        $presupuesto->estado_id = $estado;
-
-        if ($estado == 1) {
-            $gestion = GestionComercial::find($presupuesto->id_gestion);
-            $gestion->id_estado = 4;
-            $gestion->update();
-
-            $presupuesto->justificacion_compras = null;
-            $presupuesto->justificacion_lider = null;
-            $presupuesto->justificacion = null;
-        }
-        $presupuesto->update();
-
-        if ($presupuesto->estado_id == 1) {
-            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
-        } elseif ($presupuesto->estado_id == 3) {
-            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
-        }
-
+        // Página de Admin, Controller y Líder comercial; el selector solo ofrece Aprobado o Rechazar.
+        abort_unless($presupuesto && Auth::user()->espacioAdmin(), 403);
+        abort_unless(in_array((int) $estado, [1, 3], true), 422);
+        AprobacionPresupuesto::cambiarEstadoDesdeLista($presupuesto, $estado, $this);
         return redirect()->route('presupuesto-proyecto')->with('success', 'Cambios guardados exitosamente');
     }
 

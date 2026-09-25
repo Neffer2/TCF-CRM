@@ -229,10 +229,11 @@ class Conf extends Component
      */
     public function updatedAñomodel(){
         // Obtiene todos los meses del año seleccionado
-        $this->storedAñoData = Mes::where('ano_id', $this->añoModel)->get();
+        // En orden de mes (identifier): sin orden la posición 0 no siempre era enero
+        $this->storedAñoData = Mes::where('ano_id', $this->añoModel)->orderByRaw('CAST(identifier AS UNSIGNED)')->get();
 
-        // Si existen datos de meses para el año seleccionado
-        if (!$this->storedAñoData->isEmpty()){
+        // Si existen los 12 meses del año seleccionado (con menos, las posiciones de abajo no existen)
+        if ($this->storedAñoData->count() === 12){
             // Asigna las fechas de cada mes a las propiedades correspondientes
             // (asume que los meses están ordenados: enero=0, febrero=1, etc.)
 
@@ -355,8 +356,34 @@ class Conf extends Component
             $this->diciembreFin, // 23 - Diciembre fin
         ];
 
-        // Obtiene todos los meses del año seleccionado
-        $meses = Mes::where('ano_id', $this->añoModel)->get();
+        // Cada mes termina después de empezar, empieza después de que termine el anterior, y el año no se
+        // monta sobre el anterior ni el siguiente: un solape contaba las mismas ventas dos veces
+        // (enero de 2026 empezaba el 15 de diciembre de 2025).
+        $nombres = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        for ($i = 0; $i < 12; $i++) {
+            if ($dates[2 * $i] > $dates[2 * $i + 1]) {
+                $this->addError($nombres[$i].'Fin', ucfirst($nombres[$i]).': la fecha final es anterior a la inicial.');
+                return;
+            }
+            if ($i > 0 && $dates[2 * $i] <= $dates[2 * $i - 1]) {
+                $this->addError($nombres[$i].'In', ucfirst($nombres[$i]).' empieza antes de que termine '.$nombres[$i - 1].'.');
+                return;
+            }
+        }
+        $anio = Año::find($this->añoModel);
+        $anterior = $anio ? Mes::whereIn('ano_id', Año::where('description', (int) $anio->description - 1)->pluck('id'))->max('f_fin') : null;
+        if ($anterior && $dates[0] <= $anterior) {
+            $this->addError('eneroIn', 'Enero empieza antes de que termine diciembre de '.((int) $anio->description - 1).' ('.$anterior.'): las ventas de esos días se contarían en los dos años.');
+            return;
+        }
+        $siguiente = $anio ? Mes::whereIn('ano_id', Año::where('description', (int) $anio->description + 1)->pluck('id'))->min('f_inicio') : null;
+        if ($siguiente && $dates[23] >= $siguiente) {
+            $this->addError('diciembreFin', 'Diciembre termina después de que empiece enero de '.((int) $anio->description + 1).' ('.$siguiente.').');
+            return;
+        }
+
+        // Obtiene todos los meses del año seleccionado, en orden de mes
+        $meses = Mes::where('ano_id', $this->añoModel)->orderByRaw('CAST(identifier AS UNSIGNED)')->get();
 
         // Itera sobre cada mes y actualiza sus fechas
         $key = 0; // Índice para el array de fechas

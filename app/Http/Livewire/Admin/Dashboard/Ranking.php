@@ -34,7 +34,13 @@ class Ranking extends Component
     {
         $año = Año::orderBy('created_at', 'desc')->first();
         $this->año_id = $año ? $año->id : null;
+        $this->comerciales = auth()->user()->limitarAEquipo(null); // el líder comercial arranca viendo solo su equipo
         $this->calcular();
+    }
+
+    public function updating($name, $value)
+    {
+        abort_if($name === 'comerciales', 403); // lo fija el servidor
     }
 
     public function actualizar($filtros = null)
@@ -44,7 +50,7 @@ class Ranking extends Component
             $this->mes_id = $filtros['mes'] ?: null;
             $this->comercial = $filtros['comercial'] ?: null;
             $this->lider = $filtros['lider'] ?: null;
-            $this->comerciales = $filtros['comerciales'] ?? null;
+            $this->comerciales = auth()->user()->limitarAEquipo($filtros['comerciales'] ?? null);
             $this->alcance = $filtros['alcance'] ?? '';
         } else {
             $año = Año::orderBy('created_at', 'desc')->first();
@@ -52,7 +58,7 @@ class Ranking extends Component
             $this->mes_id = null;
             $this->comercial = null;
             $this->lider = null;
-            $this->comerciales = null;
+            $this->comerciales = auth()->user()->limitarAEquipo(null);
             $this->alcance = '';
         }
         $this->calcular();

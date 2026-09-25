@@ -48,6 +48,11 @@ class HelisaGeneral extends Component
     public $porTipo = [];      // [tipo => ['n' => .., 'base' => ..]]
     public $equipo = null;     // rol Líder comercial: ids de su equipo
 
+    public function updating($name, $value)
+    {
+        abort_if($name === 'equipo', 403); // lo fija el servidor (con null el líder veía toda la empresa)
+    }
+
     protected $columnasOrdenables = ['fecha', 'tipo_doc', 'nom_tercero', 'centro', 'debito', 'credito', 'base_factura', 'comision'];
 
     public function mount()

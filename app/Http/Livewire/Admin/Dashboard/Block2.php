@@ -82,6 +82,11 @@ class Block2 extends Component
      *
      * @param array|null $filters Array con filtros: año, mes, comercial
      */
+    public function updating($name, $value)
+    {
+        abort_if($name === 'comerciales', 403); // lo fija el servidor
+    }
+
     public function getData($filters = null){
         // Si no hay filtros, usa los valores por defecto
         if ($filters == null){
@@ -104,6 +109,8 @@ class Block2 extends Component
         } else {
             $ids = !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
         }
+        // El líder comercial solo ve a su equipo, aunque el evento pida otra cosa
+        $ids = auth()->user()->limitarAEquipo($ids);
         $this->comerciales = $ids;
 
         // Calcula cada tipo de venta según su estado en Base_comercial

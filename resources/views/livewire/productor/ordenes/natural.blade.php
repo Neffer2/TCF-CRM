@@ -712,7 +712,7 @@
                                         </thead>
                                         <tbody>
                                             {{-- 1. Fila de la Cuenta de Cobro / Contrato (si existe) --}}
-                                            @if ($queriedOrden->cuenta_cobro)
+                                            @if ($queriedOrden->archivo_cuenta_cobro)
                                                 <tr class="bg-light">
                                                     <td>
                                                         <p class="text-xs font-weight-bold mb-0 text-primary">
@@ -722,8 +722,8 @@
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             @php
-                                                                $extension = pathinfo($queriedOrden->cuenta_cobro, PATHINFO_EXTENSION);
-                                                                $urlCuenta = asset(str_replace('public', 'storage', $queriedOrden->cuenta_cobro));
+                                                                $extension = pathinfo($queriedOrden->archivo_cuenta_cobro, PATHINFO_EXTENSION);
+                                                                $urlCuenta = $queriedOrden->cuenta_cobro_url;
                                                             @endphp
 
                                                             @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp']))
@@ -959,7 +959,7 @@
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
                                     <a href="{{ asset(str_replace('public', 'storage', $queriedOrden->archivo_comprobante_pago)) }}" target="_blank">Comprobante de pago</a><br>
-                                    <a href="{{ $queriedOrden->cuenta_cobro_url }}" target="_blank">Ver cuenta de cobro</a>
+                                    @if ($queriedOrden->archivo_cuenta_cobro)<a href="{{ $queriedOrden->cuenta_cobro_url }}" target="_blank">Ver cuenta de cobro</a>@endif
                                 </p>
                             </td>
                         </tr>

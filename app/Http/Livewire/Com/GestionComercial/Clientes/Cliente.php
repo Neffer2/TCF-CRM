@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Com\GestionComercial\Clientes;
 
-use App\Http\Livewire\Com\GestionComercial\Clientes\CrearSolicitudContacto;
 use App\Models\SolicitudCliente;
 use App\Models\cliente_parametros_cc;
 use App\Models\User;

@@ -41,6 +41,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // En producción el modo de depuración nunca queda encendido (mostraría trazas y variables de entorno);
+        // si el .env lo trae en true, se apaga y se deja constancia.
+        if ($this->app->environment('production') && config('app.debug')) {
+            config(['app.debug' => false]);
+            \Illuminate\Support\Facades\Log::warning('APP_DEBUG=true en producción: se apagó automáticamente. Corrige el .env.');
+        }
         // Auditoría: cambios en los registros principales (antes -> después)
         foreach ([
             \App\Models\OrdenCompra::class, \App\Models\Anticipo::class, \App\Models\PresupuestoProyecto::class, \App\Models\ItemPresupuesto::class,

@@ -57,6 +57,9 @@ class Block1 extends Component
         if ($filters == null){
             return $this->default();
         }
+        // Tablero propio: el comercial es quien inició sesión, no el que mande el evento (que llega del navegador
+        // y además se usaba dentro de SQL crudo: con un texto en vez de un id era inyección SQL).
+        $filters['comercial'] = Auth::id();
 
         $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
@@ -169,6 +172,7 @@ class Block1 extends Component
 
     /* Obtiene el presupuesto mensual según los filtros */
     public function getPresupuesto($mes, $comercial, $año) {
+        $comercial = $comercial ? (int) $comercial : null; // va dentro de SQL crudo: solo un entero
         $filters_array = [];
 
         if ($año){
@@ -200,6 +204,7 @@ class Block1 extends Component
 
     /* Obtiene el presupuesto acumulado hasta el mes seleccionado */
     public function getPresupuestoAcumulado ($año_id, $mes, $comercial){
+        $comercial = $comercial ? (int) $comercial : null; // va dentro de SQL crudo: solo un entero
         // Si hay mes, suma hasta ese mes; si no, suma todo el año
         if ($mes) {
             if ($comercial){

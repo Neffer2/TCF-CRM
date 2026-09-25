@@ -18,17 +18,38 @@ class AsignarProyecto extends Component
     // ID del productor seleccionado
     public $id_productor;
 
+    // Aviso de la última acción (se muestra sin recargar la página)
+    public $mensaje = null;
+
+    // Un solo componente para todos los productores: el inicio del líder emite el productor elegido
+    // (antes se montaban 44 componentes a la vez, cada uno con la lista completa de proyectos: 4 s y 2,6 MB).
+    protected $listeners = ['productorElegido' => 'elegirProductor'];
+
     // Renderiza la vista y actualiza los datos de usuarios y proyectos
     public function render()
     { 
-        $this->getUsers();
-        $this->getProyectos();
+        if ($this->id_productor) {
+            $this->getUsers();
+            $this->getProyectos();
+        }
         return view('livewire.lider-produccion.asignar-proyecto');
     }
 
     // Al montar el componente, carga los proyectos asignados al productor
     public function mount(){
-        $this->getAsigandos();
+        if ($this->id_productor) {
+            $this->getAsigandos();
+        }
+    }
+
+    public function elegirProductor($id){
+        $productor = User::where('rol', 7)->find($id);
+        $this->id_productor = $productor ? $productor->id : null;
+        $this->reset(['proyecto', 'asignado', 'comercial', 'mensaje']);
+        $this->resetErrorBag();
+        if ($this->id_productor) {
+            $this->getAsigandos();
+        }
     }
 
     // Obtiene los datos del productor y la lista de comerciales
@@ -85,12 +106,18 @@ class AsignarProyecto extends Component
             'proyecto' => ['required', 'string']
         ]);
 
-        $presupuesto = PresupuestoProyecto::find($this->proyecto);
+        // Solo un proyecto aprobado y sin productor (la lista puede estar desactualizada)
+        $presupuesto = PresupuestoProyecto::where('estado_id', 1)->whereNull('productor')->find($this->proyecto);
+        if (!$presupuesto || !$this->id_productor) {
+            $this->addError('proyecto', 'Ese proyecto ya no está disponible: recarga la lista.');
+            return;
+        }
         $presupuesto->productor = $this->id_productor;
         $presupuesto->update();
 
         $this->ResetView();
-        return redirect()->back()->with('success', 'Proyecto asignado exitosamente.');
+        $this->mensaje = 'Proyecto asignado exitosamente.';
+        $this->dispatchBrowserEvent('crm-aviso', ['texto' => $this->mensaje]);
     }
 
     // Libera el proyecto seleccionado, quitando el productor asignado
@@ -99,12 +126,18 @@ class AsignarProyecto extends Component
             'asignado' => ['required', 'string'],
         ]);
 
-        $presupuesto = PresupuestoProyecto::find($this->asignado);
+        // Solo un proyecto de este productor
+        $presupuesto = PresupuestoProyecto::where('productor', $this->id_productor)->find($this->asignado);
+        if (!$presupuesto) {
+            $this->addError('asignado', 'Ese proyecto no está asignado a este productor.');
+            return;
+        }
         $presupuesto->productor = null;
         $presupuesto->update();
 
         $this->ResetView();
-        return redirect()->back()->with('success', 'Proyecto liberado exitosamente.');
+        $this->mensaje = 'Proyecto liberado exitosamente.';
+        $this->dispatchBrowserEvent('crm-aviso', ['texto' => $this->mensaje]);
     }
 
     // Validaciones automáticas al actualizar los campos del formulario

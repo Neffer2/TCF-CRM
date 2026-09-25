@@ -8,7 +8,7 @@
 </head> 
 <body>
     <p>
-        Hola <b>{{ $orden->presupuesto->productor_info->name }}</b>,<br><br>
+        Hola <b>{{ optional(optional($orden->presupuesto)->productor_info)->name ?? "equipo de producción" }}</b>,<br><br>
 
         De acuerdo con tu solicitud se gener&oacute; la <b>Orden de compra: {{ $orden->cod_oc }}</b> para el proveedor <b>{{ $orden->proveedor->tercero }}</b>.<br>
         Por favor validar y una vez est&eacute; recibido a satisfacci&oacute;n, enviar al &aacute;rea de compras firmada para radicar a proveedor <br>

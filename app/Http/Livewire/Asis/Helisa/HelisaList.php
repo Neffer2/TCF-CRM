@@ -10,15 +10,24 @@ use App\Models\Mes;
 use App\Models\Cuenta;
 use App\Models\Asistente;
 use Illuminate\Support\Facades\Auth;
+use Livewire\WithPagination;
 
 class HelisaList extends Component 
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
     //USEFUL VARS
-    public $comerciales = [], $cuentas = [], $años = [], $meses = [], $list = []; 
+    public $comerciales = [], $cuentas = [], $años = [], $meses = [];
 
     public function render()
     {
-        return view('livewire.asis.helisa.helisa-list');
+        // Paginado y con sus relaciones: antes traía todos los registros del comercial (cientos) y montaba
+        // un componente de edición por cada fila, lo que colgaba la página.
+        $comercialId = optional(Asistente::where('asistente_id', Auth::id())->first())->comercial_id;
+        $list = Helisa::with(['comercial_user', 'cuenta'])->where('comercial', $comercialId)
+            ->orderByDesc('fecha')->orderByDesc('id')->paginate(25);
+        return view('livewire.asis.helisa.helisa-list', ['list' => $list]);
     }
 
     public function getComerciales(){
@@ -42,8 +51,5 @@ class HelisaList extends Component
         $this->getAños();
         $this->getMeses();
         $this->getCuentas(); 
-
-        $asistente = Asistente::where('asistente_id', Auth::user()->id)->first();
-        $this->list = Helisa::where('comercial', $asistente->comercial_id)->get();
     }
 }

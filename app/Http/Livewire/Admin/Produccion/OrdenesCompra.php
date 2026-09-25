@@ -73,7 +73,10 @@ class OrdenesCompra extends Component
 
         // Filtro por código de orden de compra
         if ($this->cod_oc){
-            $query->where('cod_oc', 'LIKE', "%$this->cod_oc%")->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            // Agrupado: sin paréntesis el OR se saltaba los demás filtros (estado, tipo, año, productor).
+            $query->where(function ($q) {
+                $q->where('cod_oc', 'LIKE', "%$this->cod_oc%")->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            });
         }
 
         // Filtro por documento

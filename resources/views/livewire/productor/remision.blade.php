@@ -65,7 +65,7 @@
                     <div class="col-md-12">
                         <h6>Firma: </h6>
                         <canvas id="signature-pad" class="signature-pad" width="400" height="210"></canvas>
-                        <input id="firma_hidden" type="text" wire:model="firma" style="display: none">
+                        <input id="firma_hidden" type="text" data-firma style="display: none">
                     </div>
                     <div class="col-md-12 mt-1">
                         <div>

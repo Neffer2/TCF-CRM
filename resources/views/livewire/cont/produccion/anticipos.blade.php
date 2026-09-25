@@ -135,7 +135,9 @@
                                 <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
-                                @if (!$orden->cod_causal)
+                                @if ($orden->estado_id == 6)
+                                    <button class="btn bg-gradient-secondary m-0 me-1 mb-1" disabled>ANULADA</button>
+                                @elseif (!$orden->cod_causal)
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a>
                                 @else
                                     <button class="btn bg-gradient-secondary m-0 me-1 mb-1">CAUSADO</button>
@@ -196,7 +198,9 @@
                                 <p class="text-xs text-secondary mb-0">{{ $orden->fecha_aprobacion }}</p>
                             </td>
                             <td class="d-flex align-items-center justify-content-center">
-                                @if (!$orden->cod_causal)
+                                @if ($orden->estado_id == 6)
+                                    <button class="btn bg-gradient-secondary m-0 me-1 mb-1" disabled>ANULADA</button>
+                                @elseif (!$orden->cod_causal)
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('anticipo-contabilidad', ['orden' => $orden->id]) }}">Causar</a>
                                 @else
                                     <button class="btn bg-gradient-secondary m-0 me-1 mb-1">CAUSADO</button>

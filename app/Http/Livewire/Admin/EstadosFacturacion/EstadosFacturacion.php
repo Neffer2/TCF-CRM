@@ -76,6 +76,17 @@ class EstadosFacturacion extends Component
         // Obtiene objetos completos del mes y año para usar en las consultas
         $mes = $this->getMes($filters['mes']);
         $año = $this->getAño($filters['año']);
+        // Sin año (o con uno que no existe) se usa el más reciente: antes daba error 500.
+        if (!$año) {
+            $año = Año::select('id', 'description')->orderBy('created_at', 'DESC')->first();
+            if (!$año) {
+                return;
+            }
+        }
+        // Un mes de otro año no aplica al año elegido
+        if ($mes && (int) $mes->ano_id !== (int) $año->id) {
+            $mes = null;
+        }
 
         // Carga los datos para cada estado de facturación
         $this->xfacturar = $this->getXfacturar($filters['comercial'], $mes, $año);
@@ -89,7 +100,7 @@ class EstadosFacturacion extends Component
      * @return \App\Models\Mes|null Objeto del mes con fechas de inicio y fin
      */
     public function getMes ($mes){
-        $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('id', $mes)->first();
+        $mes = Mes::select('id', 'ano_id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('id', $mes)->first();
         return $mes;
     }
 

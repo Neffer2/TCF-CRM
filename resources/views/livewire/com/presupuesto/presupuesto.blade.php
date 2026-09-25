@@ -46,7 +46,7 @@
                                     <td class="font-weight-bold font-table">MARGEN DEL PROYECTO</td>
                                     <td class="font-table">{{ number_format($margenProyecto, 2) }} %
                                         <details class="crm-info crm-info--fila"><summary aria-label="¿Cómo se calcula el margen del proyecto?" title="¿Cómo se calcula?">?</summary>
-                                            <div class="crm-info__pop"><b>Margen del proyecto</b><p>El margen bruto como porcentaje de la venta. Si queda por debajo del 30 %, el presupuesto pasa a validación de gerencia.</p><span>({{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}) ÷ {{ $pesos($ventaProyecto) }} × 100</span><em>= {{ $pct($margenProyecto) }}</em></div>
+                                            <div class="crm-info__pop"><b>Margen del proyecto</b><p>El margen bruto como porcentaje de la venta. Si queda en 35 % o menos, el presupuesto pasa a validación de gerencia.</p><span>({{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}) ÷ {{ $pesos($ventaProyecto) }} × 100</span><em>= {{ $pct($margenProyecto) }}</em></div>
                                         </details>
                                     </td>
                                 </tr>
@@ -213,7 +213,7 @@
                             </div>
                             <div class="card-body p-2">
                                 <div class="form-group">
-                                    <textarea name="justificacion_gerencia" @if(Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
+                                    <textarea name="justificacion_gerencia" @if(!(Auth::user()->espacioAdmin() && Auth::user()->can('aprobar-presupuestos')) || $presupuesto->estado_id != 5) disabled @endif
                                     id="justificacion_gerencia" cols="10" rows="2" class="form-control" wire:model="justificacion_gerencia"
                                               class="form-control @error('justificacion_gerencia') is-invalid @elseif(strlen($justificacion_gerencia) > 0) is-valid @enderror"></textarea>
                                     @error('justificacion_gerencia')
@@ -224,7 +224,7 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn bg-gradient-warning m-0"
-                                            @if (Auth::user()->rol != 1 || $presupuesto->estado_id != 5 || (Auth::user()->id != 8 && Auth::user()->id != 10)) disabled @endif
+                                            @if(!(Auth::user()->espacioAdmin() && Auth::user()->can('aprobar-presupuestos')) || $presupuesto->estado_id != 5) disabled @endif
                                             wire:click="rechazar" wire:loading.attr="disabled">Rechazar</button>
                                 </div>
                             </div>

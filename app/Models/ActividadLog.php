@@ -48,7 +48,9 @@ class ActividadLog extends Model
         if ($nivel > 4) { return '[…]'; }
         $out = [];
         foreach ($datos as $k => $v) {
-            if (in_array((string) $k, self::OCULTAR, true) || preg_match('/pass|token|secret|clave/i', (string) $k)) { $out[$k] = '••••'; continue; }
+            // Credenciales y datos personales de terceros (cédula, RUT, cuenta bancaria, contacto) no quedan en claro
+            if (in_array((string) $k, self::OCULTAR, true)
+                || preg_match('/pass|token|secret|clave|cedula|num_rut|num_cuenta|cert_bancaria|copia_cedula|telefono|celular|correo/i', (string) $k)) { $out[$k] = '••••'; continue; }
             $out[$k] = self::limpiar($v, $nivel + 1);
         }
         return $out;

@@ -105,7 +105,19 @@ class Proveedores extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteProveedor($proveedor_id){
+        // Igual que el botón: solo el administrador (el componente también lo montan comercial y productor).
+        abort_unless((int) auth()->user()->rol === 1, 403);
         $proveedor = Proveedor::find($proveedor_id);
+        if (!$proveedor) {
+            return redirect()->back();
+        }
+        // Un proveedor con órdenes, anticipos o ítems de presupuesto no se borra (antes daba error 500).
+        $enUso = \DB::table('ordenes_compra')->where('proveedor_id', $proveedor->id)->exists()
+            || \DB::table('anticipos')->where('proveedor_id', $proveedor->id)->exists()
+            || \DB::table('item_presupuesto_proveedor')->where('proveedor_id', $proveedor->id)->exists();
+        if ($enUso) {
+            return redirect()->back()->with('error', 'No se puede eliminar a '.$proveedor->tercero.': tiene órdenes de compra, anticipos o ítems de presupuesto.');
+        }
         $proveedor->delete();
 
         // Refresca la lista después de eliminar

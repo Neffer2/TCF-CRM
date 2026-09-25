@@ -138,21 +138,23 @@
                                             <span class="font-weight-bold me-1">Estado: <br></span>{{ $orden->estado_oc->description }}.
                                         </div>
                                         <div class="col-sm-1">
-                                            <div @if ($orden->estado_id != 2) x-on:click="collapseOC(event.delegateTarget)" data-bs-toggle="collapse" href="#collapseOrden{{ $orden->id }}" role="button" aria-expanded="false"
-                                                aria-controls="collapseOrden" @endif class="m-0 p-0 d-flex justify-content-center"
-                                                style="width: 100%; color: #825ee4;">
+                                            <div class="m-0 p-0 d-flex justify-content-center" style="width: 100%; color: #825ee4;">
                                                 @if ($orden->estado_id == 2)
-                                                    <button class="fa-solid fa-ban">ver</button>
+                                                    <button type="button" class="fa-solid fa-ban" title="En revisión de compras: se abre cuando la aprueben">ver</button>
                                                 @else
-                                                    <button class="fa-solid fa-caret-down">ver</button>
+                                                    {{-- Cada orden se carga al abrirla (antes se montaban todas al entrar: más de 100 componentes) --}}
+                                                    <button type="button" wire:click="abrirOrden({{ $orden->id }})" wire:loading.attr="disabled"
+                                                        class="fa-solid {{ $ordenAbierta == $orden->id ? 'fa-caret-up' : 'fa-caret-down' }}" style="background: none; border: 0; color: inherit;">ver</button>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="collapse mt-2" id="collapseOrden{{ $orden->id }}">
-                                    @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))
-                                </div>
+                                @if ($ordenAbierta == $orden->id)
+                                    <div class="mt-2">
+                                        @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach

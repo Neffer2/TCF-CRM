@@ -286,7 +286,7 @@
                                             <div class="col-12 col-md-8">
                                                 <h6>Firma: </h6>
                                                 <canvas id="signature-pad" class="signature-pad" width="500" height="210"></canvas>
-                                                <input id="firma_hidden" type="text" wire:model="firma" style="display: none">
+                                                <input id="firma_hidden" type="text" data-firma style="display: none">
                                             </div>
                                             <div class="col-12 col-md-4">
                                                 <button id="save" class="btn bg-gradient-primary mt-md-2 mb-0">Guardar firma</button>
@@ -351,8 +351,25 @@
                                 Livewire.emit('store-anticipo', firma);
                             }
                         </script>
-                    @elseif ($queriedAnticipo && $queriedAnticipo->estado_id == 7)
+                    @elseif ($queriedAnticipo && in_array($queriedAnticipo->estado_id, [7, 13]))
+                        @php
+                            $conEvidencia = $evidencias->pluck('item_id')->map(fn ($i) => (int) $i);
+                            $faltantes = collect($items)->filter(fn ($it) => !$conEvidencia->contains((int) $it['item_id']));
+                        @endphp
                         <div class="row m-0">
+                            @if ($queriedAnticipo->estado_id == 13)
+                                <div class="col-12">
+                                    <div class="alert alert-danger text-white" role="alert">
+                                        <b>Contabilidad devolvió el anticipo.</b> Motivo: {{ $queriedAnticipo->observacion_causal ?: '—' }}. Corrige las evidencias y vuelve a enviarlas.
+                                    </div>
+                                </div>
+                            @elseif ($queriedAnticipo->rechazo_revision_evidencias)
+                                <div class="col-12">
+                                    <div class="alert alert-warning text-white" role="alert">
+                                        <b>El líder de producción devolvió las evidencias.</b> Motivo: {{ $queriedAnticipo->rechazo_revision_evidencias }}.
+                                    </div>
+                                </div>
+                            @endif
                             <div class="col-12">
                                 <h4>Adjuntar evidencias</h4>
                                 <p>Debes subir <strong style="font-size: 1.2rem">{{ count($items) }}</strong> evidencia(s) para continuar con el proceso de legalización.</p>
@@ -391,15 +408,15 @@
                                 </div>
                             </div>
 
-                            @if ($evidencias->count() < $items->count())
+                            @if ($faltantes->isNotEmpty())
                                 <div class="col-12">
                                     <div class="row m-0">
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="item_evidencia">Item:</label>
+                                                <label for="item_evidencia">Item (faltan {{ $faltantes->count() }}):</label>
                                                 <select name="item_evidencia" id="item_evidencia" class="form-control" wire:model="item_evidencia">
                                                     <option value="">Seleccione un item</option>
-                                                    @foreach ($items as $item)
+                                                    @foreach ($faltantes as $item)
                                                         <option value="{{ $item['item_id'] }}">
                                                             {{ $item['desc'] }}
                                                         </option>
@@ -453,10 +470,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($evidencias->count() == $items->count())
+                            @else
                                 <div class="col-12 mt-3">
                                     <button wire:click="enviarEvidencias" wire:loading.attr="disabled"
-                                        class="btn bg-gradient-info mb-0">Enviar evidencias</button>
+                                        class="btn bg-gradient-info mb-0">{{ $queriedAnticipo->estado_id == 13 ? 'Reenviar evidencias' : 'Enviar evidencias' }}</button>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="spinner-border text-warning ms-1" role="status" wire:loading>
@@ -465,7 +482,7 @@
                                 </div>
                             @endif
                         </div>
-                    @elseif ($queriedAnticipo && ( $queriedAnticipo->estado_id == 8 || $queriedAnticipo->estado_id == 9 || $queriedAnticipo->estado_id == 10 ))
+                    @elseif ($queriedAnticipo && in_array($queriedAnticipo->estado_id, [8, 9, 10, 1, 5, 14]))
                         <div class="row m-0">
                             <div class="col-12">
                                 <h4 class="text-center">
@@ -478,6 +495,15 @@
                                             @break
                                         @case (10)
                                             {{ 'Tu anticipo se encuentra en revisión de evidencias por el lider de producción.' }}
+                                            @break
+                                        @case (1)
+                                            {{ 'Evidencias aprobadas. Contabilidad está causando tu anticipo.' }}
+                                            @break
+                                        @case (5)
+                                            {{ 'Causado por Contabilidad (n.° '.$queriedAnticipo->cod_causal.'). Tesorería está tramitando el pago.' }}
+                                            @break
+                                        @case (14)
+                                            {{ 'Pagado el '.($queriedAnticipo->fecha_comprobante_pago ? \Carbon\Carbon::parse($queriedAnticipo->fecha_comprobante_pago)->format('d/m/Y') : '').'. El anticipo quedó cerrado.' }}
                                             @break
                                     @endswitch
                                 </h4>
@@ -551,7 +577,54 @@
                         </div>
                     {{-- Revisión de evidencias --}}
                     @elseif ($queriedAnticipo->estado_id == 10)
-                        <div class="row m-0"></div>
+                        <div class="row m-0">
+                            <div class="col-12">
+                                <h5>Evidencias cargadas por el productor</h5>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="bg-gradient-success font-weight-bold text-white">ITEM</th>
+                                                <th class="bg-gradient-success font-weight-bold text-white">Fecha</th>
+                                                <th class="bg-gradient-success font-weight-bold text-white">Foto</th>
+                                                <th class="bg-gradient-success font-weight-bold text-white">Observaciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($evidencias as $evidencia)
+                                                <tr>
+                                                    <td class="text-center">{{ optional($evidencia->itemPresupuesto)->descripcion }} - ITEM {{ optional($evidencia->itemPresupuesto)->num_item }}</td>
+                                                    <td class="text-center">{{ $evidencia->fecha_evidencia }}</td>
+                                                    <td class="text-center">
+                                                        <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
+                                                            <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="70" alt="">
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-center">{{ $evidencia->observacion_evidencia }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="observaciones_revision_evidencias">Observaciones de aprobaci&oacute;n (opcional):</label>
+                                    <textarea id="observaciones_revision_evidencias" class="form-control" wire:model="observaciones_revision_evidencias" rows="2"></textarea>
+                                    @error('observaciones_revision_evidencias')<div class="text-invalid">{{ $message }}</div>@enderror
+                                </div>
+                                <button wire:click="revisionEvidencias(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Aprobar evidencias</button>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="rechazo_revision_evidencias">Motivo para devolverlas:</label>
+                                    <textarea id="rechazo_revision_evidencias" class="form-control" wire:model="rechazo_revision_evidencias" rows="2"></textarea>
+                                    @error('rechazo_revision_evidencias')<div class="text-invalid">{{ $message }}</div>@enderror
+                                </div>
+                                <button wire:click="revisionEvidencias(0)" wire:loading.attr="disabled" class="btn bg-gradient-danger">Devolver al productor</button>
+                            </div>
+                            @error('items-error')<div class="col-12 text-invalid mt-2">{{ $message }}</div>@enderror
+                        </div>
                     @endif
 
                 {{-- Gerencia --}}

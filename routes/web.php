@@ -5,6 +5,7 @@ use App\Models\Anticipo;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComercialController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ArchivoController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\HomeController;
@@ -212,3 +213,7 @@ Route::get('/', function () {
 /* --- */
 
 require __DIR__.'/auth.php';
+
+// Archivos subidos: pasan por Laravel y exigen sesión (o el enlace firmado del portal). En producción,
+// public/.htaccess manda /storage/* aquí aunque exista el enlace simbólico; en local lo hace server.php.
+Route::get('/storage/{ruta}', [ArchivoController::class, 'ver'])->where('ruta', '.*')->name('archivo');

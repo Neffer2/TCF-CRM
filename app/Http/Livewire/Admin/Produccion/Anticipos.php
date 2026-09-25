@@ -9,7 +9,7 @@ class Anticipos extends Component
 {
     public function render()
     {
-        $anticipos = Anticipo::whereIn('estado_id', [2, 9])->paginate(15);
+        $anticipos = Anticipo::whereIn('estado_id', [2, 9])->with(['estado', 'proveedor', 'ordenCompra.presupuesto.gestion', 'presupuesto.gestion', 'productor_info'])->paginate(15);
         return view('livewire.admin.produccion.anticipos', compact('anticipos'));
     }
 }

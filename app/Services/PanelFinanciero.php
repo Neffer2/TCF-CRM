@@ -24,7 +24,8 @@ class PanelFinanciero
         $inicioMes = now()->startOfMonth();
         $inicioAnio = now()->startOfYear();
 
-        $pendientes = OrdenCompra::whereNotNull('cod_causal')->whereNull('archivo_comprobante_pago');
+        // Causadas sin pagar, sin las anuladas (una orden anulada no se paga)
+        $pendientes = OrdenCompra::whereNotNull('cod_causal')->whereNull('archivo_comprobante_pago')->where('estado_id', '!=', 6);
         $valorPendiente = (clone $pendientes)->where('ordenes_compra.created_at', '>=', $inicioAnio)
             ->join('oc_items', 'oc_items.oc_id', '=', 'ordenes_compra.id')->sum('oc_items.vtotal_oc');
 
@@ -41,7 +42,7 @@ class PanelFinanciero
                 'ant_pagados_mes' => Anticipo::where('estado_id', 14)->where('fecha_comprobante_pago', '>=', $inicioMes)->count(),
             ],
             'ordenes' => self::conTotal((clone $pendientes))->orderByDesc('updated_at')->limit(8)->get(),
-            'anticipos' => (clone $anticiposPend)->with(['ordenCompra.presupuesto.gestion', 'productor_info'])->orderByDesc('fecha_causal')->limit(6)->get(),
+            'anticipos' => (clone $anticiposPend)->with(['ordenCompra.presupuesto.gestion', 'presupuesto.gestion', 'productor_info'])->orderByDesc('fecha_causal')->limit(6)->get(),
             'pagosMes' => self::pagosPorMes('fecha_comprobante_pago', 'archivo_comprobante_pago'),
         ];
     }
@@ -51,8 +52,9 @@ class PanelFinanciero
         $inicioMes = now()->startOfMonth();
         $inicioAnio = now()->startOfYear();
 
-        // Aprobadas (estado 1) que todavía no tienen causal
-        $porCausar = OrdenCompra::where('estado_id', 1)->whereNull('cod_causal');
+        // Comprobadas (estado 5: recibidas con GR o evidencias aprobadas) que todavía no tienen causal:
+        // el mismo criterio con que la lista de Contabilidad marca "pendiente" (antes contaba las aprobadas)
+        $porCausar = OrdenCompra::where('estado_id', 5)->whereNull('cod_causal');
         $valorPorCausar = (clone $porCausar)->where('ordenes_compra.created_at', '>=', $inicioAnio)
             ->join('oc_items', 'oc_items.oc_id', '=', 'ordenes_compra.id')->sum('oc_items.vtotal_oc');
 
@@ -69,7 +71,7 @@ class PanelFinanciero
                 'ant_causados_mes' => Anticipo::whereIn('estado_id', [5, 14])->where('fecha_causal', '>=', $inicioMes)->count(),
             ],
             'ordenes' => self::conTotal((clone $porCausar))->orderByDesc('fecha_aprobacion')->orderByDesc('id')->limit(8)->get(),
-            'anticipos' => (clone $anticiposPorCausar)->with(['ordenCompra.presupuesto.gestion', 'productor_info'])->orderByDesc('fecha_aprobacion')->limit(6)->get(),
+            'anticipos' => (clone $anticiposPorCausar)->with(['ordenCompra.presupuesto.gestion', 'presupuesto.gestion', 'productor_info'])->orderByDesc('fecha_aprobacion')->limit(6)->get(),
             'pagosMes' => self::pagosPorMes('fecha_causal', 'cod_causal'),
         ];
     }

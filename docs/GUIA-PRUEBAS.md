@@ -331,7 +331,7 @@ La pantalla del presupuesto se mantiene **igual a la que la gente ya conoce** (c
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 8f.1 | Nada cambió de sitio | Como `crm.Alejandra.Ortiz@…` abre un presupuesto (p. ej. `/presupuesto/8573`) | Arriba: MARGEN ITEMS, VENTA PROYECTO, COSTOS DEL PROYECTO, MARGEN DEL PROYECTO, MARGEN BRUTO (PESOS) · CONTACTO, CLIENTE, PROYECTO, CENTRO DE COSTOS, CIUDAD · IMPREVISTOS, ADMINISTRACIÓN, FEE AGENCIA, TIEMPO · NOTAS. Mismo orden y mismos nombres de siempre |
+| 8f.1 | Nada cambió de sitio | Como `crm.Alejandra.Ortiz@…` abre uno de sus presupuestos (p. ej. `/presupuesto/6733`; desde la auditoría del 24-sep un comercial ya no abre presupuestos ajenos) | Arriba: MARGEN ITEMS, VENTA PROYECTO, COSTOS DEL PROYECTO, MARGEN DEL PROYECTO, MARGEN BRUTO (PESOS) · CONTACTO, CLIENTE, PROYECTO, CENTRO DE COSTOS, CIUDAD · IMPREVISTOS, ADMINISTRACIÓN, FEE AGENCIA, TIEMPO · NOTAS. Mismo orden y mismos nombres de siempre |
 | 8f.2 | Ayuda de una cifra | Pulsa el "?" de MARGEN DEL PROYECTO | Se abre un recuadro oscuro **por encima de todo** (nunca detrás de la tabla) con la explicación, la fórmula con los valores reales y el resultado; solo puede haber un recuadro abierto a la vez |
 | 8f.3 | Cerrar la ayuda | Pulsa fuera del recuadro, o Esc, o de nuevo el "?" | Se cierra |
 | 8f.4 | Recargos | Pulsa el "?" al lado de IMPREVISTOS | Explica imprevistos, administración, fee y tiempo, y cuánto suman hoy en pesos |
@@ -412,6 +412,51 @@ Local: `MAIL_MAILER=log` y `SMS_MODO=log` → nada sale de verdad; cada envío q
 | 8g.12 | Botones de ítems | `prueba.productor` → Orden natural / nómina / jurídica; `prueba.ejecutivo` → nuevo proyecto / Helisa | Los botones dicen "Agregar ítem" / "Guardar cambios" / "Nuevo" con el signo dibujado; ya no hay círculos naranjas sin icono |
 | 8g.13 | Inicio de Tesorería | `prueba.tesoreria` → Inicio | Saludo, 4 tarjetas (órdenes por pagar del año y total histórico, valor, pagadas este mes, anticipos por pagar), tabla de las 8 órdenes más recientes con botón "Pagar", barras de 6 meses y anticipos de producción; el menú tiene "Ordenes de compra" y "Anticipos" |
 | 8g.14 | Inicio de Contabilidad | `prueba.contabilidad` → Inicio | Igual que 8g.13 pero con "por causar" / "causadas" y botón "Causar"; las barras muestran las órdenes causadas por mes (las órdenes viejas no tienen fecha de causal: se usa su última actualización) |
+
+## B8i. Auditoría 360 (24-sep-2026): permisos y correcciones
+
+Todo esto antes se podía hacer desde la consola del navegador (en Livewire cualquier método o propiedad pública se puede llamar o cambiar). Ahora el servidor aplica las mismas reglas que muestran los botones. Para los casos "desde la consola", abre las herramientas del navegador y usa `Livewire.first().call('metodo')` o `Livewire.first().set('propiedad', valor)`.
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8i.1 | Presupuesto ajeno | Como `prueba.comercial` abre `/presupuesto/6733` (de Alejandra Ortiz) | 403. Como admin o controller sí abre; como `prueba.lidercom`, solo los de su equipo (`/presupuesto/8575` sí, `/presupuesto/6733` no) |
+| 8i.2 | Aprobar sin permiso | Como comercial dueño de un presupuesto, desde la consola: `call('validacionGerencia')` o `call('updateCentro')` | 403; el estado no cambia |
+| 8i.3 | Flujo < 30 % | Comercial envía → líder aprueba con centro de costos (margen < 30 %) → Gerencia aprueba | Pasa a Validación Gerencia y **llega el correo a Gerencia**; al aprobar Gerencia, el comercial recibe "PRESUPUESTO … APROBADO" y el valor llega a la gestión y a la base comercial |
+| 8i.4 | Rechazo de Gerencia | Con `prueba.gerencia` (no es el usuario 8 ni el 10) en un presupuesto en Validación Gerencia | El botón Rechazar está habilitado y funciona |
+| 8i.5 | Utilidad con coma | En un ítem escribe utilidad `0,7` | Queda 0.7 (precio = costo ÷ 0,7). Con `70` sale el aviso de que va de 0 a 2 |
+| 8i.6 | Recargos en uno aprobado | En un presupuesto aprobado cambia el fee | Vuelve a Editable y hay que enviarlo otra vez (antes cambiaba la venta aprobada sin pasar por nadie) |
+| 8i.7 | Listas de validación | Como `prueba.lidercom` en Validaciones, elige "Aprobado" en uno con margen < 30 % | Queda en Validación Gerencia, no aprobado |
+| 8i.8 | Cotización ajena | Como `prueba.tesoreria` abre `/cotizacion/8573/x/0` | 403 (antes cualquiera bajaba la versión interna con costos) |
+| 8i.9 | Orden jurídica | Como productor, desde la consola en una orden aprobada: `call('enviarAprobacion')` | 403; la orden sigue aprobada. `call('deleteItems', 123)` ya no existe desde el navegador |
+| 8i.10 | Nómina | `prueba.productor` abre `/ordenes-nomina-prod/11432` (es una orden natural) | 404 (antes error 500). En una nómina rechazada, el botón Eliminar funciona |
+| 8i.11 | PDF de la orden | Admin → Órdenes de compra → Ver PDF de una orden con ítems | Subtotal y total con el valor real (antes 0) |
+| 8i.12 | Portal del tercero | Abre el enlace firmado de una orden natural, completa los datos y guarda | Vuelve al portal sin error 403 |
+| 8i.13 | Anticipo jurídico: anular | Como `prueba.controller` en un anticipo en revisión → "Anular el anticipo" con motivo | Queda Anulado, la orden de compra queda libre y llega el aviso. El productor puede "Retirar mi solicitud" mientras está con el líder o devuelta |
+| 8i.14 | Orden anulada con anticipo | Anula (Compras) una orden jurídica que tiene un anticipo aprobado | El anticipo queda anulado con ella; si ya estaba causado o pagado, no se toca y Contabilidad y Tesorería reciben el aviso |
+| 8i.15 | Pago de una orden | `prueba.tesoreria` → Anticipos → registra el pago de una orden causada | Llega el correo "OC: …" con el comprobante (antes no avisaba a nadie). Una orden anulada ya no aparece para pagar |
+| 8i.16 | Anticipo de productor | Crea un anticipo, corrígelo tras un rechazo cambiando ítems | El total que ve el líder es la suma de los ítems nuevos. "Borrar firma" ya no borra la firma de los anticipos anteriores |
+| 8i.17 | Tablero del líder comercial | Como `prueba.lidercom` en el tablero | Solo su equipo, aunque se cambien los filtros desde la consola |
+| 8i.18 | Estado de facturación | `/estado-facturacion?año=2099` como admin | Carga con el año más reciente (antes error 500) |
+| 8i.19 | Validación de clientes | Aprueba una solicitud de un cliente cuyo nombre empiece por F | Se aprueba con el código **FA** (después del 9 siguen las letras, siempre 2 caracteres). Antes la pantalla se caía con un volcado de error. Un NIT repetido se avisa |
+
+## B8j. Segunda ronda de la auditoría (25-sep-2026): decisiones aplicadas y pendientes cerrados
+
+| # | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| 8j.1 | Umbral de Gerencia 35 % | Presupuesto con margen entre 30 y 35 % (p. ej. 33 %): el líder lo aprueba con centro de costos | Pasa a Validación Gerencia (antes, con 30 % en el código, quedaba aprobado sin Gerencia). Con 35 % exacto también; con 36 % queda aprobado |
+| 8j.2 | Gerencia rechaza y libera el código | Presupuesto nuevo en Validación Gerencia → Gerencia lo rechaza | Vuelve a Editable **sin** centro de costos (el código queda libre); si el presupuesto ya había sido aprobado antes, conserva su código |
+| 8j.3 | "Otros (meses)" multiplica | En un ítem pon cantidad 2, día 1, otros 3, unitario 10.000 | Total 60.000 (antes 20.000: "otros" se capturaba pero no entraba en la cuenta) |
+| 8j.4 | Archivos solo con sesión | Sin iniciar sesión abre `/storage/ordenes_juridicas_helisa/<archivo>.pdf` (copia la dirección de cualquier PDF del CRM) | 403. Con sesión abre. Como `prueba.comercial`, un archivo de `/storage/ruts/…` (documentos de terceros) da 403; como productor o admin abre |
+| 8j.5 | Enlace del portal vencido | Cambia la fecha del enlace firmado de un tercero (o usa uno de hace más de 30 días) | Página "Este enlace ya no sirve" en vez del error 403 genérico. "Copiar enlace" en Órdenes de compra genera uno nuevo |
+| 8j.6 | Anticipo jurídico repetido | Con un borrador vigente a un proveedor en un proyecto, pide otro anticipo sobre la orden de compra de ese proveedor | Se rechaza: "Ya hay un anticipo sin orden de compra (#N)…". Al corregir el borrador aparece "vincúlala" con esa orden: al vincular, el anticipo se calcula sobre el valor de la orden |
+| 8j.7 | Anticipo de productor completo | `prueba.productor` crea anticipo → `prueba.lider` aprueba → (≥ $500.000) `prueba.gerencia` aprueba → productor sube evidencias y envía → **`prueba.lider` revisa las evidencias** (nuevo) → `prueba.contabilidad` causa → `prueba.tesoreria` paga | Cada paso cambia el estado y avisa por correo. Contabilidad y Tesorería tienen pantalla propia para este anticipo (antes error 500). Si Contabilidad lo devuelve, el productor ve el motivo, corrige evidencias y reenvía |
+| 8j.8 | Inicio del líder de producción | Entra como `prueba.lider` y elige un productor | Carga en menos de un segundo; los proyectos del productor aparecen al elegirlo (antes cargaba los 44 productores a la vez) |
+| 8j.9 | Inicio del productor | Entra como `prueba.productor` → elige un proyecto → pestaña GENERADAS → "ver" en una orden | La orden se abre al pedirla (antes se cargaban todas las órdenes de todos los proyectos al entrar) |
+| 8j.10 | Meses sin solape | Admin → Configuración de meses: pon enero de 2026 empezando el 15-dic-2025 | Aviso: enero empieza antes de que termine diciembre del año anterior; no guarda |
+| 8j.11 | Tablero de Gerencia, año pasado | Tablero con año 2025 sin mes | Venta acumulada de enero a diciembre contra presupuesto de enero a diciembre (antes 12 meses de venta contra 9 de presupuesto) |
+| 8j.12 | Registro Helisa con fecha imposible | Nuevo registro con fecha del año 0026 | Aviso "Revisa el año de la fecha" |
+| 8j.13 | Pruebas automáticas | `./crear-bd-testing.sh` y luego `php artisan test` | Corre los escenarios de la auditoría (más de 280 casos) sobre `tfc_crm_testing`; sin esa base se omiten y **no tocan** la base del .env |
+
 
 ## B9. Regresión general (nada se rompió)
 

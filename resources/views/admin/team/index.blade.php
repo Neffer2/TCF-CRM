@@ -9,10 +9,10 @@
                 <div class="row gx-4">
                     <div class="col-auto">
                         @php
-                            $aux = str_replace('public/', '', Auth::user()->avatar);    
+                            $aux = Auth::user()->avatarSrc();    
                         @endphp
                         <div class="avatar avatar-xl position-relative">
-                            <img src="{{ asset("storage/$aux") }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+                            <img src="{{ $aux }}" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
                         </div>
                     </div>
                     <div class="col-auto my-auto">
@@ -38,9 +38,9 @@
                         @foreach ($listUsers as $user)
                             <div x-on:click="Toggle('user-item', {{ $user->id }})" class="col-lg-1 col-md-2 col-sm-3 col-4 text-center">
                                 @php
-                                    $aux = str_replace('public/', '', $user->avatar);
+                                    $aux = $user->avatarSrc();
                                 @endphp
-                                <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="{{ asset("storage/$aux") }}"></a>
+                                <a href="javascript:;" class="avatar avatar-lg rounded-circle border border-primary"><img alt="Image placeholder" class="p-1" src="{{ $aux }}"></a>
                                 <p class="mb-0 text-sm">{!! strtok($user->name, ' ') !!}</p>
                             </div>
                         @endforeach  

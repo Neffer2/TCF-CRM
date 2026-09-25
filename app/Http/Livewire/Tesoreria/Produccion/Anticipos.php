@@ -19,8 +19,8 @@ class Anticipos extends Component
     public function render()
     {
         $anticipos = $this->vista === 'pagados'
-            ? Anticipo::where('estado_id', 14)->orderByDesc('fecha_comprobante_pago')->paginate(15)
-            : Anticipo::where('estado_id', 5)->whereNull('comprobante_pago')->orderByDesc('id')->paginate(15);
+            ? Anticipo::where('estado_id', 14)->with(['estado', 'proveedor', 'ordenCompra.presupuesto.gestion', 'presupuesto.gestion', 'productor_info'])->orderByDesc('fecha_comprobante_pago')->paginate(15)
+            : Anticipo::where('estado_id', 5)->whereNull('comprobante_pago')->with(['estado', 'proveedor', 'ordenCompra.presupuesto.gestion', 'presupuesto.gestion', 'productor_info'])->orderByDesc('id')->paginate(15);
 
         return view('livewire.tesoreria.produccion.anticipos', compact('anticipos'));
     }

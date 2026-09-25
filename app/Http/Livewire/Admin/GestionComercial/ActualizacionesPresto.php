@@ -11,6 +11,7 @@ use App\Models\ItemPresupuesto;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AprobacionPresupuesto;
 use App\Traits\Email;
 use App\Models\User;
 
@@ -45,6 +46,9 @@ class ActualizacionesPresto extends Component
      */
     public function render()
     {
+        // El rol sale de la sesión, no de la propiedad pública (el navegador podría cambiarla).
+        $this->rol = (int) Auth::user()->rol;
+
         // Filtros base: solo presupuestos con código de centro de costo
         $filtros = [['cod_cc', '<>', null]];
 
@@ -138,70 +142,11 @@ class ActualizacionesPresto extends Component
      */
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id);
-        $presupuesto->estado_id = $estado;
-
-        // Si el estado es 1 (aprobado)
-        if ($presupuesto->estado_id == 1){
-            // Limpia las justificaciones
-            $presupuesto->justificacion_compras = null;
-            $presupuesto->justificacion = null;
-
-            // Re-calcula los valores de la base y gestión comercial
-            $this->reCalculate($presupuesto);
-
-            // Envía notificación de aprobación
-            $this->presupuestoAprobado($presupuesto->gestion->comercial, $presupuesto->gestion, null, $presupuesto->cod_cc);
-
-            // Marca todos los ítems como no actualizados por defecto
-            ItemPresupuesto::where('presupuesto_id', $id)->get()->map(function ($item){
-                $item->actualizado = false;
-                $item->update();
-            });
-        }elseif ($presupuesto->estado_id == 3){
-            // Si el estado es 3 (rechazado), envía notificación de rechazo
-            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
-        }
-
-        $presupuesto->update();
+        // El selector solo lo ven Admin, Gerencia y Controller, y solo ofrece Aprobado o Rechazar.
+        abort_unless($presupuesto && Auth::user()->revisaPresupuestos(), 403);
+        abort_unless(in_array((int) $estado, [1, 3], true), 422);
+        AprobacionPresupuesto::cambiarEstadoDesdeLista($presupuesto, $estado, $this);
         return redirect()->route('actualizaciones')->with('success', 'Cambios guardados exitosamente');
-    }
-
-    /**
-     * Recalcula los valores del presupuesto en la gestión comercial y base comercial
-     * Actualiza los montos distribuidos entre los comerciales participantes
-     * @param PresupuestoProyecto $presupuesto El presupuesto a recalcular
-     */
-    public function reCalculate($presupuesto){
-        $prestosCom = [];
-
-        // Actualiza el valor de cotización en la gestión
-        $presupuesto->gestion->presto_cot = $presupuesto->venta_proy;
-        $presupuesto->gestion->update();
-
-        // Calcula el presupuesto del comercial principal (creador de la gestión)
-        // Un reparto por cada participante (posición 1 = responsable)
-        foreach ($presupuesto->gestion->participantes as $participante) {
-            array_push($prestosCom, [
-                'comercial_id' => $participante->user_id,
-                'presupuesto' => ($presupuesto->gestion->presto_cot * $participante->porcentaje)/100,
-            ]);
-        }
-
-        // Actualiza los valores en la base comercial emparejando por id_user.
-        // El emparejamiento por posición del arreglo fallaba en silencio si el
-        // orden de las filas no coincidía (el valor aprobado nunca llegaba al
-        // dashboard) y crasheaba con más de 4 filas de base.
-        $prestosPorComercial = collect($prestosCom)
-            ->filter(function ($p) { return !empty($p['comercial_id']); })
-            ->keyBy('comercial_id');
-
-        foreach ($presupuesto->gestion->baseComercial as $base){
-            if ($prestosPorComercial->has($base->id_user)){
-                $base->valor_original = $presupuesto->venta_proy;
-                $base->valor_proyecto = $prestosPorComercial[$base->id_user]['presupuesto'];
-                $base->update();
-            }
-        }
     }
 
     /**

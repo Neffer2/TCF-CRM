@@ -138,5 +138,10 @@
                 );
             </script>
         @endif
+        @if (session('error'))
+            <script>
+                Swal.fire('No se pudo', `{{ session('error') }}`, 'error');
+            </script>
+        @endif
     </div> 
 </div>

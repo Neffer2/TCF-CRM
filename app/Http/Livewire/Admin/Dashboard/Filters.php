@@ -39,6 +39,12 @@ class Filters extends Component
         return view('livewire.admin.dashboard.filters');
     }
 
+    public function updating($name, $value)
+    {
+        // Listas y candado del líder los fija el servidor
+        abort_if(in_array($name, ['liderFijo', 'StdLider', 'StdComercial'], true), 403);
+    }
+
     public function mount()
     {
         $this->StdAño = Año::select('id', 'description')->get();
@@ -142,6 +148,10 @@ class Filters extends Component
 
     public function elegirComercial($id = null)
     {
+        // El líder comercial solo elige a alguien de su equipo
+        if ($id && auth()->user()->esLiderComercial() && !in_array((int) $id, auth()->user()->limitarAEquipo(null), true)) {
+            $id = null;
+        }
         $this->comercial = $id ?: null;
         $this->asegurarAño();
         $nombre = collect($this->StdComercial)->firstWhere('id', (int) $id);

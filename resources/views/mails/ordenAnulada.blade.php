@@ -8,7 +8,7 @@
 </head> 
 <body>
     <p>
-        Hola <b>{{ $orden->presupuesto->productor_info->name }}</b>,<br><br>
+        Hola <b>{{ optional(optional($orden->presupuesto)->productor_info)->name ?? "equipo de producción" }}</b>,<br><br>
 
         Debido a inconsitencias en la <b>Orden de compra: {{ $orden->cod_oc }}</b> para el proveedor <b>{{ $orden->proveedor->tercero }}</b>,<br>
         El equipo de compras ha decidido anularla con las siguientes obervaciones: <br><br>

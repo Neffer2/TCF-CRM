@@ -12,6 +12,9 @@ class SolicitarRecursos extends Component
     // Variables útiles para el formulario y lógica
     public $presupuesto, $proveedores = [], $verifyPresupuesto = false, $id_presupuesto, $num_item;
 
+    // Orden generada que está abierta (su componente se monta solo al abrirla)
+    public $ordenAbierta = null;
+
     // Escucha el evento 'ordenCreada' y ejecuta el método mount cuando ocurre
     protected $listeners = ['ordenCreada' => 'mount'];
 
@@ -26,9 +29,11 @@ class SolicitarRecursos extends Component
     public function mount()
     {
         // Cargamos el presupuesto ordenando la relación presupuestoItems por num_item
-        $this->presupuesto = PresupuestoProyecto::with(['presupuestoItems' => function ($query) {
+        // Con lo que la vista recorre (ítems con proveedores, órdenes con proveedor y estado): sin esto eran
+        // cientos de consultas por proyecto
+        $this->presupuesto = PresupuestoProyecto::with(['gestion', 'presupuestoItems' => function ($query) {
             $query->orderBy('num_item', 'asc');
-        }])->find($this->id_presupuesto);
+        }, 'presupuestoItems.proveedores', 'ordenesCompra.proveedor', 'ordenesCompra.estado_oc'])->find($this->id_presupuesto);
 
         $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
@@ -37,7 +42,7 @@ class SolicitarRecursos extends Component
     public function internoPdf(){
         return redirect()->route('cotizacion', [
             'prespuesto' => $this->presupuesto->id_gestion,
-            'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot,
+            'nom_proyecto' => trim(str_replace(['/', '\\', '#', '?', '%'], '-', (string) $this->presupuesto->gestion->nom_proyecto_cot)) ?: 'cotizacion',
             'tipo' => 0
         ]);
     }
@@ -46,9 +51,18 @@ class SolicitarRecursos extends Component
     public function internoExcel(){
         return redirect()->route('cotizacionExcel', [
             'prespuesto' => $this->presupuesto->id_gestion,
-            'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot,
+            'nom_proyecto' => trim(str_replace(['/', '\\', '#', '?', '%'], '-', (string) $this->presupuesto->gestion->nom_proyecto_cot)) ?: 'cotizacion',
             'tipo' => 0
         ]);
+    }
+
+    // Abre (o cierra) una orden generada; solo órdenes de este proyecto y que no estén en revisión de compras
+    public function abrirOrden($id){
+        $orden = $this->presupuesto->ordenesCompra()->find($id);
+        if (!$orden || (int) $orden->estado_id === 2) {
+            return;
+        }
+        $this->ordenAbierta = ($this->ordenAbierta == $orden->id) ? null : (int) $orden->id;
     }
 
     // Verifica si el presupuesto está aprobado (estado_id == 1)

@@ -29,6 +29,7 @@ class Edit extends Component
     public $comercial2; // Comercial secundario 2
     public $comercial3; // Comercial secundario 3
 
+    public $testigoPorcentaje = 0; // Suma de los porcentajes (debe dar 100)
     public $porcentaje0 = 100; // Porcentaje del comercial principal
     public $porcentaje1; // Porcentaje del comercial 1
     public $porcentaje2; // Porcentaje del comercial 2

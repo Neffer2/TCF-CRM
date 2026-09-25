@@ -35,6 +35,11 @@ class Anticipo extends Component
             $this->addError('error', 'Este anticipo ya fué pagado');
             return redirect()->back();
         }
+        // Una orden anulada no se causa
+        if ((int) $this->orden->fresh()->estado_id === 6){
+            $this->addError('error', 'La orden está anulada: no se puede causar.');
+            return redirect()->back();
+        }
 
         // Valida los campos requeridos
         $this->validate([
@@ -55,6 +60,13 @@ class Anticipo extends Component
 
     // Rechaza la causación del anticipo y actualiza el estado
     public function rechazar(){
+        // Rechazar devuelve la orden a revisión: nunca sobre una anulada (la revivía) ni sobre una ya pagada.
+        $actual = $this->orden->fresh();
+        if ((int) $actual->estado_id === 6 || $actual->archivo_comprobante_pago){
+            $this->addError('error', 'La orden está anulada o ya fue pagada: no se puede rechazar.');
+            return redirect()->back();
+        }
+
         // Valida que la observación sea obligatoria
         $this->validate([
             'observacion_causacion' => 'required|string'

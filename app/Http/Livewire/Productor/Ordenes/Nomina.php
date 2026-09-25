@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
 
 class Nomina extends Component
 {
@@ -33,6 +34,34 @@ class Nomina extends Component
 
     public $edit = false;
 
+    // Las fija el servidor (orden, proyecto, topes y lista de ítems): el navegador no puede cambiarlas.
+    protected $propiedadesBloqueadas = ['presupuesto', 'orden_nomina', 'orden_id', 'nominaItems', 'selectedItem', 'maxCant', 'maxValor', 'maxDias', 'maxOtros', 'items', 'proveedores', 'centros_costo'];
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array(explode('.', $name)[0], $this->propiedadesBloqueadas, true), 403);
+    }
+
+    /** Saldo del ítem: lo presupuestado menos lo pedido en otras órdenes no anuladas (sin contar esta). */
+    private function saldoItem($dbItemPresto): array
+    {
+        $cant = 0;
+        $valor = 0;
+        foreach ($dbItemPresto->consumidos as $consumido) {
+            $esOtraOrden = !$this->orden_nomina || $consumido->oc_id != $this->orden_nomina->id;
+            if ($esOtraOrden && optional($consumido->OrdenCompra)->estado_id != 6) {
+                $cant += $consumido->cant_oc;
+                $valor += $consumido->vtotal_oc;
+            }
+        }
+        return [($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $cant, $dbItemPresto->v_total - $valor];
+    }
+
+    private function esProductorDelProyecto($presupuesto): bool
+    {
+        return $presupuesto && (int) Auth::user()->rol === 7 && (int) $presupuesto->productor === (int) Auth::id();
+    }
+
     public function render()
     {
         $this->getCentrosCosto();
@@ -41,7 +70,10 @@ class Nomina extends Component
 
     public function mount() {
         if ($this->orden_id) {
-            $this->orden_nomina = OrdenCompra::where('id', $this->orden_id)->first();
+            // Por URL solo se abre una orden de nómina del propio productor (antes cualquiera, y una natural daba 500).
+            $this->orden_nomina = OrdenCompra::where('id', $this->orden_id)->where('tipo_oc', 3)->first();
+            abort_unless($this->orden_nomina && $this->orden_nomina->presupuesto, 404);
+            abort_unless($this->esProductorDelProyecto($this->orden_nomina->presupuesto), 403);
             $this->presupuesto = $this->orden_nomina->presupuesto;
         }
 
@@ -55,6 +87,15 @@ class Nomina extends Component
         * Añade una nueva fila a la lista de items en la nomina.
     */
     public function newItem(){
+        // El ítem debe ser del proyecto y los topes salen del presupuesto, no del navegador.
+        $this->validate(['item' => 'required']);
+        $dbItemPresto = optional($this->presupuesto)->presupuestoItems ? $this->presupuesto->presupuestoItems->find($this->item) : null;
+        if (!$dbItemPresto) {
+            $this->addError('customError', 'El ítem seleccionado no es válido.');
+            return;
+        }
+        [$this->maxCant, $this->maxValor] = $this->saldoItem($dbItemPresto);
+
         // Valida los datos del formulario antes de agregar el item
         $this->validate([
             'item' => 'required',
@@ -104,6 +145,11 @@ class Nomina extends Component
     // Elimina un item de la lista de items de la OC
     public function delete($id){
         unset($this->nominaItems[$id]);
+        // La vista pasa la posición en la lista: se reenumera para que editar/borrar otra fila apunte a la correcta.
+        $this->nominaItems = array_values($this->nominaItems);
+        foreach ($this->nominaItems as $i => $fila) {
+            $this->nominaItems[$i]['id'] = $i;
+        }
         $this->resetFields();
     }
 
@@ -144,37 +190,20 @@ class Nomina extends Component
         // (total - consumido en otras órdenes no anuladas), no los valores brutos.
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
         if ($dbItemPresto) {
-            $contCant = 0;
-            $acumVTotal = 0;
-            foreach ($dbItemPresto->consumidos as $consumido) {
-                $esOtraOrden = !$this->orden_nomina || $consumido->oc_id != $this->orden_nomina->id;
-                if ($esOtraOrden && $consumido->OrdenCompra->estado_id != 6) {
-                    $contCant += $consumido->cant_oc;
-                    $acumVTotal += $consumido->vtotal_oc;
-                }
-            }
-            $this->maxCant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
+            [$this->maxCant, $this->maxValor] = $this->saldoItem($dbItemPresto);
             $this->maxDias = $dbItemPresto->dia;
             $this->maxOtros = $dbItemPresto->otros;
-            $this->maxValor = ($dbItemPresto->v_total - $acumVTotal);
         }
     }
 
     // Obtiene los proveedores disponibles para el presupuesto
     public function getProveedores() {
-        $proveedores_presupuesto = [];
-        $proveedores_db = Proveedor::select('id', 'tercero')
-            ->where('categoria_id', 1)
-            ->get();
-
-        // Recorre los items únicos del presupuesto para obtener proveedores
-        foreach ($this->presupuesto->presupuestoItems as $item){
-            foreach ($item->proveedorIds() as $proveedor_id) {
-                array_push($proveedores_presupuesto, $proveedores_db->find($proveedor_id));
-            }
-        }
-
-        $this->proveedores = collect($proveedores_presupuesto)->filter()->unique('id')->values();
+        // Proveedores de nómina (categoría 1) de los ítems del presupuesto, en una consulta
+        $this->proveedores = $this->presupuesto ? Proveedor::select('proveedores.id', 'proveedores.tercero')
+            ->join('item_presupuesto_proveedor as ipp', 'ipp.proveedor_id', '=', 'proveedores.id')
+            ->join('items_presupuesto as ip', 'ip.id', '=', 'ipp.item_presupuesto_id')
+            ->where('ip.presupuesto_id', $this->presupuesto->id)->where('proveedores.categoria_id', 1)
+            ->distinct()->orderBy('proveedores.tercero')->get() : collect();
     }
 
     // Valida que el item no esté repetido en la OC
@@ -257,7 +286,9 @@ class Nomina extends Component
 
     // Al actualizar el centro de costo seleccionado
     public function updatedCentroCosto() {
-        $this->presupuesto = PresupuestoProyecto::find($this->centro_costo);
+        // Solo uno de sus proyectos aprobados (el id llega del navegador).
+        $this->presupuesto = PresupuestoProyecto::where('productor', Auth::id())->where('estado_id', 1)->find($this->centro_costo);
+        abort_unless($this->presupuesto, 403);
         $this->getProveedores();
         $this->resetOcInfo();
     }
@@ -271,24 +302,14 @@ class Nomina extends Component
         $dbItemPresto = $this->presupuesto->presupuestoItems->find($this->item);
 
         // Valida disponibilidad
-        if (!$dbItemPresto->disponible){
+        if (!$dbItemPresto || !$dbItemPresto->disponible){
             $this->addError('customError', 'Este item no está disponible para ser consumido.');
             $this->resetFields();
             return redirect()->back();
         }
 
         // Calcula cantidades y valores disponibles
-        $contCant = 0;
-        $acumVTotal = 0;
-        foreach ($dbItemPresto->consumidos as $item) {
-            if (!($item->OrdenCompra->estado_id == 6)){
-                $contCant += $item->cant_oc;
-                $acumVTotal += $item->vtotal_oc;
-            }
-        }
-
-        $this->cant = (($dbItemPresto->cantidad * $dbItemPresto->dia * $dbItemPresto->otros) - $contCant);
-        $this->vTotal = ($dbItemPresto->v_total - $acumVTotal);
+        [$this->cant, $this->vTotal] = $this->saldoItem($dbItemPresto);
 
         if ($this->cant == 0 || $this->vTotal == 0){
             $this->addError('customError', 'Este item ya fué consumido.');
@@ -447,6 +468,12 @@ class Nomina extends Component
 
     // Envía la orden de nomina para aprobación de controller (crea o actualiza)
     public function enviarAprobacion() {
+        // Solo el productor del proyecto (o un admin); una nómina nueva, sobre un presupuesto aprobado.
+        abort_unless($this->esProductorDelProyecto($this->presupuesto) || (int) Auth::user()->rol === 1, 403);
+        if (!$this->orden_nomina) {
+            abort_unless((int) $this->presupuesto->estado_id === 1, 403);
+        }
+
         $this->validate([
             'proveedor' => 'required',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
@@ -455,6 +482,19 @@ class Nomina extends Component
         if (count($this->nominaItems) == 0){
             $this->addError('customError', 'No puedes enviar una orden de nómina vacía.');
             return redirect()->back();
+        }
+
+        // Cada ítem se revalida contra el presupuesto: otra orden pudo consumir el saldo mientras tanto.
+        $vistos = [];
+        foreach ($this->nominaItems as $fila) {
+            $dbItemPresto = $this->presupuesto->presupuestoItems->find($fila['item']);
+            [$maxCant, $maxValor] = $dbItemPresto ? $this->saldoItem($dbItemPresto) : [0, 0];
+            if (!$dbItemPresto || isset($vistos[$dbItemPresto->id])
+                || (float) $fila['cant'] > $maxCant || (float) $fila['vTotal'] > $maxValor + 0.01) {
+                $this->addError('customError', 'El ítem '.optional($dbItemPresto)->num_item.' supera lo disponible en el presupuesto o no es válido: revísalo antes de enviar.');
+                return;
+            }
+            $vistos[$dbItemPresto->id] = true;
         }
 
         // Si la orden está creada, actualiza
@@ -481,14 +521,17 @@ class Nomina extends Component
                 return redirect()->back();
             }
 
-            $this->orden_nomina->estado_id = $estado_id;
-            $this->orden_nomina->fecha_envio_produccion = now();
-            $this->orden_nomina->proveedor_id = $this->proveedor;
-            $this->orden_nomina->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
-            $this->orden_nomina->update();
+            $archivoCot = $this->file_cot->store('public/ordenes_juridicas');
+            DB::transaction(function () use ($estado_id, $archivoCot) {
+                $this->orden_nomina->estado_id = $estado_id;
+                $this->orden_nomina->fecha_envio_produccion = now();
+                $this->orden_nomina->proveedor_id = $this->proveedor;
+                $this->orden_nomina->archivo_cot = $archivoCot;
+                $this->orden_nomina->update();
 
-            $this->deleteItems($this->orden_nomina->id);
-            $this->storeItems($this->orden_nomina->id);
+                $this->deleteItems($this->orden_nomina->id);
+                $this->storeItems($this->orden_nomina->id);
+            });
         }
         else{
             // Si no existe, crea una nueva OC (estado Revisión lider producción)
@@ -501,8 +544,10 @@ class Nomina extends Component
             $orden->proveedor_id = $this->proveedor;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
 
-            $orden->save();
-            $this->storeItems($orden->id);
+            DB::transaction(function () use ($orden) {
+                $orden->save();
+                $this->storeItems($orden->id);
+            });
 
             // Se envia notificación a Lideres de producción
             $this->ocJuridicaRevisionLiderProd($orden);
@@ -514,7 +559,7 @@ class Nomina extends Component
     }
 
     // Guarda los items de la OC en la base de datos
-    public function storeItems($orden_id){
+    private function storeItems($orden_id){
         foreach ($this->nominaItems as $item) {
             $itemsOrden = new OcItem;
             $itemsOrden->oc_id = $orden_id;
@@ -531,12 +576,31 @@ class Nomina extends Component
     }
 
     // Elimina los items de la OC en la base de datos
-    public function deleteItems($orden_id){
+    private function deleteItems($orden_id){
         $items = OcItem::where('oc_id', $orden_id)->get();
 
         $items->map(function ($item){
             $item->delete();
         });
+    }
+
+    // Elimina una nómina rechazada (el botón aparece en Editable); solo su productor o un admin.
+    public function deleteOrden(){
+        $orden = $this->orden_nomina ? $this->orden_nomina->fresh() : null;
+        abort_unless($orden, 404);
+        if (!((int) Auth::user()->rol === 1 || $this->esProductorDelProyecto($orden->presupuesto))) {
+            $this->addError('customError', 'No tienes permisos para eliminar esta orden.');
+            return redirect()->back();
+        }
+        if (!in_array((int) $orden->estado_id, [3, 11, 12], true)) {
+            $this->addError('customError', 'Solo se elimina una nómina rechazada; una aprobada o en ejecución se anula.');
+            return redirect()->back();
+        }
+        DB::transaction(function () use ($orden) {
+            $this->deleteItems($orden->id);
+            $orden->delete();
+        });
+        return redirect()->route('ordenes-nomina-prod')->with('success', 'Orden de nómina eliminada.');
     }
 
     // Cambia el estado de la orden de compra (aprobada, rechazada, GR, anulada)

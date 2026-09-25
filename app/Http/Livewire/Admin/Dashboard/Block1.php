@@ -99,7 +99,6 @@ class Block1 extends Component
         // Actualiza los porcentajes de cumplimiento
         $this->updateCumpli_venta_men();
         $this->updateCumpli_acum_venta_men();
-        $this->updateCumpli_acum_venta_men(); // Nota: Esta línea parece duplicada
         $this->updatePresto_x_cumplir();
     }
 
@@ -111,9 +110,12 @@ class Block1 extends Component
     private function listaComerciales($filters)
     {
         if (isset($filters['comerciales']) && is_array($filters['comerciales'])) {
-            return array_map('intval', $filters['comerciales']);
+            $ids = array_map('intval', $filters['comerciales']);
+        } else {
+            $ids = !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
         }
-        return !empty($filters['comercial']) ? [(int) $filters['comercial']] : null;
+        // El líder comercial solo ve a su equipo, aunque el evento pida otra cosa
+        return auth()->user()->limitarAEquipo($ids);
     }
 
     /** Fragmento SQL " AND col IN (...)" para las consultas crudas; vacío si no hay filtro. */
@@ -130,6 +132,18 @@ class Block1 extends Component
      * @param object $latest_year Objeto del último año
      * @return object Objeto del mes actual
      */
+    /**
+     * Mes hasta el que se acumula cuando no se elige mes: el actual en el año en curso y diciembre en un año pasado
+     * (antes se usaba siempre el mes actual del último año: en 2025 sumaba 12 meses de venta contra 9 de presupuesto).
+     */
+    private function mesTope($año_id)
+    {
+        $anio = (int) optional(Año::find($año_id))->description;
+        $identificador = $anio < (int) date('Y') ? 12 : ($anio === (int) date('Y') ? (int) date('m') : 1);
+        return Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')->where('ano_id', $año_id)
+            ->whereRaw('CAST(identifier AS UNSIGNED) = ?', [$identificador])->first() ?? $this->latest_month;
+    }
+
     public function getCurrentMes ($latest_year){
         $mes = Mes::select('id', 'description', 'identifier', 'f_inicio', 'f_fin')
                   ->where('identifier', number_format(date("m")))
@@ -192,7 +206,7 @@ class Block1 extends Component
                             ->where('ano_id', $año_id)
                             ->where('identifier', 1)
                             ->first();
-            array_push($date_filters_array, [$primerMes->f_inicio, $this->latest_month->f_fin]);
+            array_push($date_filters_array, [$primerMes->f_inicio, $this->mesTope($año_id)->f_fin]);
         }
 
         // El filtro por comerciales ($comercial es una lista de ids o null) se aplica con whereIn en la consulta
@@ -289,7 +303,7 @@ class Block1 extends Component
         // los 12 meses y subestimaba el cumplimiento sistematicamente.
         if (is_null($mes)){
             $sqlComercial = $this->sqlIn($comercial, 'presupuestos.id_user');
-            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año".$sqlComercial." AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->latest_month->identifier."'"));
+            $presupuestos = DB::select(DB::raw("SELECT valor, description FROM presupuestos, meses WHERE presupuestos.ano_id = $año".$sqlComercial." AND presupuestos.mes_id = meses.id AND meses.identifier BETWEEN 1 AND '".$this->mesTope($año)->identifier."'"));
         }else {
             // Para casos normales, usa el query builder de Eloquent
             $presupuestos = Presupuesto::select('id', 'valor')

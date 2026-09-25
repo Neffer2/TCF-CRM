@@ -239,8 +239,13 @@ trait Email
     }
 
     public function ocNaturalRevisionTesoreria($orden){
-        $tercero = $this->nombreTercero($orden);
-        $productor = optional(optional($orden->naturalInfo)->productor)->name ?: 'PRODUCTOR DESCONOCIDO';
+        // Contabilidad causa órdenes de todo tipo: en las jurídicas y de nómina el nombre es el del proveedor
+        // y el productor el del proyecto (antes salía "TERCERO/PRODUCTOR DESCONOCIDO").
+        $esNatural = (int) $orden->tipo_oc === 2;
+        $tercero = $esNatural ? $this->nombreTercero($orden) : (optional($orden->proveedor)->tercero ?: 'PROVEEDOR DESCONOCIDO');
+        $productor = ($esNatural
+            ? optional(optional($orden->naturalInfo)->productor)->name
+            : optional(optional($orden->presupuesto)->productor_info)->name) ?: 'PRODUCTOR DESCONOCIDO';
         $subject = "NOTIFICACIÓN BULLCRM - TIENES UNA ORDEN DE COMPRA DE {$productor} POR REVISAR";
         $body = "<p>La orden de compra del tercero <b>{$tercero}</b> ha sido causada por contabilidad.<br>Revisa y confirma que la información esté correctamente diligenciada.</p>";
         $recipients = NotificacionDestinatario::area('tesoreria');
@@ -290,9 +295,31 @@ trait Email
     }
 
     /** Compatibilidad: antes recibía la orden; ahora el aviso de pago se hace por anticipo (anticipoPagado). */
+    /**
+     * Tesorería registró el pago de una orden de compra: compras, el comercial y el productor, con copia a
+     * contabilidad y al proveedor (o al tercero en una orden natural), con el comprobante adjunto.
+     * (Se había cambiado por el aviso del anticipo jurídico y el pago de órdenes dejó de avisar a nadie.)
+     */
     public function mailAnticipoPagado($orden, $observaciones){
-        $anticipo = $orden->anticipos()->latest()->first();
-        if ($anticipo) { $this->anticipoPagado($anticipo, $observaciones); }
+        $c = $this->ctxOrden($orden);
+        $productor = $c['productor'];
+        $destinoProveedor = [];
+        if ((int) $orden->tipo_oc === 2 && $orden->naturalInfo) {
+            $productor = optional($orden->naturalInfo->productor);
+            $tercero = $orden->naturalInfo->tercero;
+            if ($tercero && !empty($tercero->correo)) { $destinoProveedor[] = ['name' => trim($tercero->nombre.' '.$tercero->apellido), 'email' => $tercero->correo]; }
+        } elseif (!empty($c['proveedor']->correo)) {
+            $destinoProveedor[] = ['name' => $c['proveedor']->contacto ?? '', 'email' => $c['proveedor']->correo];
+        }
+        $para = array_merge(NotificacionDestinatario::area('compras'), $this->destUsuario($c['comercial']), $this->destUsuario($productor));
+        $cc = array_merge(NotificacionDestinatario::area('compras_cc'), NotificacionDestinatario::area('contabilidad_pagos'), $destinoProveedor);
+        $nombreProveedor = $c['proveedor']->tercero ?: 'proveedor';
+        $adj = $orden->archivo_comprobante_pago
+            ? [['ruta' => $orden->archivo_comprobante_pago, 'nombre' => "COMPROBANTE_PAGO {$c['codigo']} {$nombreProveedor}.pdf"]] : [];
+        $html = view('mails.anticipoPagado', ['orden' => $orden, 'observaciones' => $observaciones])->render();
+        $this->sendMail("OC: ".($orden->cod_oc ?: '#'.$orden->id)." ".$nombreProveedor, $html,
+            "Se registró el pago de la {$c['codigo']} para {$nombreProveedor}", null, $para, $cc, $adj,
+            ['ref' => 'orden:'.$orden->id, 'html_completo' => true]);
     }
 
     /* ==================================================================== */
@@ -405,6 +432,25 @@ trait Email
             null, null, $this->destUsuario($c['productor']), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 
+    /** El líder aprobó las evidencias: queda aprobado y Contabilidad debe causarlo. */
+    public function anticipoProdEvidenciasAprobadas($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $obs = $anticipo->observaciones_revision_evidencias;
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo de productor con evidencias aprobadas: pendiente de causar",
+            $this->cuerpoAnticipo($anticipo, 'tiene las evidencias <b>aprobadas</b> por el líder de producción'.($obs ? ' (observación: '.e($obs).')' : '').' y está pendiente de causar.')
+                .$this->enlacesAnticipo(['detalle-anticipo-contabilidad' => 'Contabilidad', 'anticipo-prod' => 'Productor'], $anticipo),
+            null, null, NotificacionDestinatario::area('contabilidad'), array_merge($this->destUsuario($c['productor']), NotificacionDestinatario::area('produccion')), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** El líder devolvió las evidencias: el productor debe corregirlas. */
+    public function anticipoProdRechazoEvidencias($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $this->sendMail("NOTIFICACIÓN CRM - Tus evidencias fueron devueltas por el líder de producción",
+            $this->cuerpoAnticipo($anticipo, 'tiene las evidencias <b>devueltas</b> por el líder de producción. Motivo: '.e($anticipo->rechazo_revision_evidencias ?: '—').'. Corrígelas y vuelve a enviarlas.')
+                .$this->enlaceAnticipo('anticipo-prod', $anticipo),
+            null, null, $this->destUsuario($c['productor']), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
     /** Contabilidad causó el anticipo: tesorería debe pagarlo. */
     public function anticipoCausado($anticipo){
         $c = $this->ctxAnticipo($anticipo);
@@ -415,7 +461,7 @@ trait Email
     /** Contabilidad rechazó la causación. */
     public function anticipoRechazoContabilidad($anticipo){
         $c = $this->ctxAnticipo($anticipo);
-        $this->sendMail("NOTIFICACIÓN CRM - Anticipo rechazado por contabilidad", $this->cuerpoAnticipo($anticipo, 'fue <b>rechazado</b> por contabilidad. Motivo: '.e($anticipo->observacion_causal ?: '—').'.'),
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo rechazado por contabilidad", $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por Contabilidad. Motivo: '.e($anticipo->observacion_causal ?: '—').'. Revisa las evidencias, corrige lo que haga falta y vuelve a enviarlas.').$this->enlaceAnticipo('anticipo-prod', $anticipo),
             null, null, array_merge($this->destUsuario($c['productor']), NotificacionDestinatario::area('compras')), NotificacionDestinatario::area('produccion'), null, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 
@@ -432,6 +478,16 @@ trait Email
     private function enlaceAnticipo(string $ruta, $anticipo): string
     {
         return '<p><a href="'.route($ruta, ['anticipo_id' => $anticipo->id]).'">Abrir el anticipo en el CRM</a></p>';
+    }
+
+    /** Un enlace por destinatario: cada rol solo abre el anticipo por su propia ruta. */
+    private function enlacesAnticipo(array $rutas, $anticipo): string
+    {
+        $links = [];
+        foreach ($rutas as $ruta => $quien) {
+            $links[] = '<a href="'.route($ruta, ['anticipo_id' => $anticipo->id]).'">'.$quien.'</a>';
+        }
+        return '<p>Abrir el anticipo en el CRM: '.implode(' · ', $links).'</p>';
     }
 
     /** Productor lo solicita o lo reenvía corregido: revisa el líder de producción. */
@@ -462,7 +518,8 @@ trait Email
         $c = $this->ctxAnticipo($anticipo);
         $adj = $anticipo->archivo_orden_anticipo ? [['ruta' => $anticipo->archivo_orden_anticipo, 'nombre' => "ORDEN_DE_ANTICIPO_{$anticipo->cod_orden_anticipo}.pdf"]] : [];
         $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico aprobado".($anticipo->cod_orden_anticipo ? " ({$anticipo->cod_orden_anticipo})" : '').": pendiente de causar",
-            $this->cuerpoAnticipo($anticipo, 'fue <b>aprobado</b> y está pendiente de causar. Se adjunta la orden de anticipo.').$this->enlaceAnticipo('detalle-anticipo-contabilidad', $anticipo),
+            $this->cuerpoAnticipo($anticipo, 'fue <b>aprobado</b> y está pendiente de causar. Se adjunta la orden de anticipo.')
+                .$this->enlacesAnticipo(['detalle-anticipo-contabilidad' => 'Contabilidad', 'anticipo-prod' => 'Productor', 'anticipo-controller' => 'Controller'], $anticipo),
             null, null, array_merge(NotificacionDestinatario::area('contabilidad'), $this->destUsuario($c['productor'])), NotificacionDestinatario::area('controller'), $adj, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 
@@ -491,8 +548,28 @@ trait Email
     public function ajRechazoContabilidad($anticipo){
         $c = $this->ctxAnticipo($anticipo);
         $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico devuelto por Contabilidad",
-            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por Contabilidad al Controller. Motivo: '.e($anticipo->observaciones_contabilidad ?: '—').'.').$this->enlaceAnticipo('anticipo-controller', $anticipo),
+            $this->cuerpoAnticipo($anticipo, 'fue <b>devuelto</b> por Contabilidad al Controller. Motivo: '.e($anticipo->observaciones_contabilidad ?: '—').'.')
+                .$this->enlacesAnticipo(['anticipo-controller' => 'Controller', 'anticipo-prod' => 'Productor'], $anticipo),
             null, null, NotificacionDestinatario::area('controller'), $this->destUsuario($c['productor']), null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Anulado por el Controller, retirado por el productor o porque se anuló su orden de compra. */
+    public function ajAnulado($anticipo){
+        $c = $this->ctxAnticipo($anticipo);
+        $cc = NotificacionDestinatario::area('produccion');
+        // Si ya estaba aprobado, Contabilidad lo tenía en su bandeja
+        if ($anticipo->fecha_aprobacion) { $cc = array_merge($cc, NotificacionDestinatario::area('contabilidad')); }
+        $this->sendMail("NOTIFICACIÓN CRM - Anticipo jurídico anulado".($anticipo->cod_orden_anticipo ? " ({$anticipo->cod_orden_anticipo})" : ''),
+            $this->cuerpoAnticipo($anticipo, 'fue <b>anulado</b>. Motivo: '.$this->obsAnticipo($anticipo).'.')
+                .$this->enlacesAnticipo(['anticipo-prod' => 'Productor', 'anticipo-controller' => 'Controller'], $anticipo),
+            null, null, array_merge($this->destUsuario($c['productor']), NotificacionDestinatario::area('controller')), $cc, null, ['ref' => 'anticipo:'.$anticipo->id]);
+    }
+
+    /** Se anuló la orden de compra de un anticipo ya causado o pagado: Contabilidad y Tesorería deben revisarlo. */
+    public function ajOrdenAnuladaConAnticipo($anticipo){
+        $this->sendMail("NOTIFICACIÓN CRM - Se anuló la orden de compra de un anticipo ya ".((int) $anticipo->estado_id === 14 ? 'pagado' : 'causado'),
+            $this->cuerpoAnticipo($anticipo, 'ya estaba <b>'.((int) $anticipo->estado_id === 14 ? 'pagado' : 'causado').'</b> y su orden de compra fue anulada. Revisen si hay que reversar la causación o recuperar el pago.'),
+            null, null, array_merge(NotificacionDestinatario::area('contabilidad'), NotificacionDestinatario::area('tesoreria')), NotificacionDestinatario::area('controller'), null, ['ref' => 'anticipo:'.$anticipo->id]);
     }
 
     /** Tesorería subió el comprobante: el anticipo está pagado. */

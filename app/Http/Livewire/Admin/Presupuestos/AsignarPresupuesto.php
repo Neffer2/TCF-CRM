@@ -186,10 +186,13 @@ class AsignarPresupuesto extends Component
         ]);
 
         // Busca presupuestos existentes para el comercial y año seleccionados
-        $presupuestoStored = Presupuesto::select('id', 'valor', 'ano_id', 'id_user')
-                                    ->where('ano_id', $this->añosModel)
-                                    ->where('id_user', $this->comercialesModel)
-                                    ->get();
+        // Por mes (identifier 1..12), no por posición: sin orden la consulta podía traer los meses cruzados.
+        $presupuestoStored = Presupuesto::join('meses', 'meses.id', '=', 'presupuestos.mes_id')
+                                    ->select('presupuestos.id', 'presupuestos.valor', 'presupuestos.ano_id', 'presupuestos.id_user', 'meses.identifier')
+                                    ->where('presupuestos.ano_id', $this->añosModel)
+                                    ->where('presupuestos.id_user', $this->comercialesModel)
+                                    ->get()
+                                    ->keyBy(function ($p) { return (int) $p->identifier; });
 
         // Obtiene el nombre del comercial y descripción del año para mostrar
         $this->comercialName = User::select('name')->where('id', $this->comercialesModel)->first()->name;
@@ -198,18 +201,18 @@ class AsignarPresupuesto extends Component
         // Si existen presupuestos, los carga en las propiedades correspondientes
         if (!$presupuestoStored->isEmpty()){
             // Asigna cada valor del presupuesto al mes correspondiente (orden: enero-diciembre)
-            $this->eneroModel = $presupuestoStored[0]->valor;
-            $this->febreroModel = $presupuestoStored[1]->valor;
-            $this->marzoModel = $presupuestoStored[2]->valor;
-            $this->abrilModel = $presupuestoStored[3]->valor;
-            $this->mayoModel = $presupuestoStored[4]->valor;
-            $this->junioModel = $presupuestoStored[5]->valor;
-            $this->julioModel = $presupuestoStored[6]->valor;
-            $this->agostoModel = $presupuestoStored[7]->valor;
-            $this->septiembreModel = $presupuestoStored[8]->valor;
-            $this->octubreModel = $presupuestoStored[9]->valor;
-            $this->noviembreModel = $presupuestoStored[10]->valor;
-            $this->diciembreModel = $presupuestoStored[11]->valor;
+            $this->eneroModel = optional($presupuestoStored->get(1))->valor;
+            $this->febreroModel = optional($presupuestoStored->get(2))->valor;
+            $this->marzoModel = optional($presupuestoStored->get(3))->valor;
+            $this->abrilModel = optional($presupuestoStored->get(4))->valor;
+            $this->mayoModel = optional($presupuestoStored->get(5))->valor;
+            $this->junioModel = optional($presupuestoStored->get(6))->valor;
+            $this->julioModel = optional($presupuestoStored->get(7))->valor;
+            $this->agostoModel = optional($presupuestoStored->get(8))->valor;
+            $this->septiembreModel = optional($presupuestoStored->get(9))->valor;
+            $this->octubreModel = optional($presupuestoStored->get(10))->valor;
+            $this->noviembreModel = optional($presupuestoStored->get(11))->valor;
+            $this->diciembreModel = optional($presupuestoStored->get(12))->valor;
         }else {
             // Si no existen presupuestos, limpia los campos mensuales
             $this->limpiar(true);
@@ -241,6 +244,9 @@ class AsignarPresupuesto extends Component
             'añosModel' => ['required'],
             'comercialesModel' => ['required']
         ]);
+
+        // Todo o nada: un fallo a mitad dejaba el año del comercial con solo algunos meses
+        \Illuminate\Support\Facades\DB::beginTransaction();
 
         // Busca presupuestos existentes para el comercial y año seleccionados
         $presupuestosXmes = Presupuesto::where('ano_id', $this->añosModel)->where('id_user', $this->comercialesModel)->get();
@@ -343,6 +349,7 @@ class AsignarPresupuesto extends Component
                 $newPresupuesto->save();
             }
         }
+        \Illuminate\Support\Facades\DB::commit();
 
         // Limpia todos los campos después de guardar
         $this->limpiar();

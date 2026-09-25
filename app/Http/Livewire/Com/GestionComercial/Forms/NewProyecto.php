@@ -66,10 +66,11 @@ class NewProyecto extends Component
 
     public $listaClientes = [];
 
-    public $mostrarModalDocumentos = false;
-    public $clientePendienteDocumentos;
-    public $rutArchivo;
-    public $camaraArchivo;
+
+    public function updating($name, $value)
+    {
+        abort_if($name === 'lead_id', 403); // la gestión la fija la lista, no el navegador
+    }
 
     // Renderiza la vista principal del formulario de nuevo proyecto
     public function render()
@@ -130,7 +131,6 @@ class NewProyecto extends Component
         $this->getTotalPorcentaje();
 
         // 2. Verifica documentos AL FINAL, ya con cliente_id asignado
-        //$this->verificarDocumentosCliente();
     }
 
     // Validaciones para los campos del formulario
@@ -195,49 +195,6 @@ class NewProyecto extends Component
 
         return;        
     }
-    /*
-    public function guardarDocumentosCliente()
-    {
-        $this->validate([
-            'rutArchivo' => 'required|file|mimes:pdf|max:10240',
-            'camaraArchivo' => 'required|file|mimes:pdf|max:10240',
-        ]);
-
-        $cliente = clientes::findOrFail($this->clientePendienteDocumentos);
-
-        $rut = $this->rutArchivo->store('public/clientes/rut');
-        $camara = $this->camaraArchivo->store('public/clientes/camara');
-
-        $cliente->update([
-            'adjuntar_archivos' => json_encode([
-                'rut' => $rut,
-                'camara' => $camara
-            ])
-        ]);
-
-        $this->reset(['rutArchivo', 'camaraArchivo']);
-        $this->mostrarModalDocumentos = false; // Ya no hace falta, oculta el bloque
-        session()->flash('success', 'Documentación cargada correctamente.');
-    }
-    */
-    /*
-    public function verificarDocumentosCliente()
-    {
-        if (!$this->cliente_id) {
-            $this->mostrarModalDocumentos = false;
-            return;
-        }
-
-        $cliente = clientes::find($this->cliente_id);
-
-        $this->mostrarModalDocumentos = $cliente && empty($cliente->adjuntar_archivos);
-
-        if ($this->mostrarModalDocumentos) {
-            $this->clientePendienteDocumentos = $cliente->id;
-        }
-    }
-    */
-
     /****** PARTICIPACIONES ******/
     // Valida y actualiza el número de participaciones
     public function updatedParticipaciones(){
@@ -432,7 +389,19 @@ class NewProyecto extends Component
             'valor2' => 'nullable|numeric',
             'valor3' => 'nullable|numeric',
         ]);
-        // Crea un registro en base_comercial por cada participante
+        // Solo sobre una gestión del usuario, y una sola vez: reenviar el formulario duplicaba las filas de la base
+        // (y el valor en tableros y reportes). Si hay que corregirla, se edita desde la base comercial.
+        $lead = GestionComercial::find($this->lead_id);
+        abort_unless($lead && Auth::user()->puedeVerGestion($lead), 403);
+        if (Base_comercial::where('id_gestion', $this->lead_id)->exists()) {
+            // (hay gestiones que ya tenían base y volvieron a Propuesta): se pasa a Venta sin crear filas nuevas
+            $this->storeVenta();
+            $ruta = Auth::user()->rol == 5 ? 'asis-gestion-comercial' : 'gestion-comercial';
+            return redirect()->route($ruta)->with('success', 'La gestión ya estaba en la base comercial: quedó en Venta sin duplicar sus filas. Si hay que corregir valores, hazlo desde la base.');
+        }
+
+        // Crea un registro en base_comercial por cada participante (todos o ninguno)
+        \Illuminate\Support\Facades\DB::beginTransaction();
         $i  = 0;
         while($i < $this->participaciones){
             $base_comercial = new Base_comercial;
@@ -457,6 +426,7 @@ class NewProyecto extends Component
         }
 
         $this->storeVenta(); // Actualiza el estado de la gestión comercial
+        \Illuminate\Support\Facades\DB::commit();
 
         // Redirige según el rol del usuario
         if (Auth::user()->rol == 2){

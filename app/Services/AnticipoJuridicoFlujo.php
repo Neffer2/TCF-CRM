@@ -46,6 +46,7 @@ class AnticipoJuridicoFlujo
     const PAGADO = 14;
     const REV_CONTROLLER = 15;
     const RECH_CONTROLLER = 16;
+    const ANULADO = 6;
 
     /** Devueltos al productor: los puede corregir y reenviar. */
     const CORREGIBLES = [self::RECH_LIDER, self::RECH_GERENCIA, self::RECH_CONTROLLER];
@@ -62,6 +63,10 @@ class AnticipoJuridicoFlujo
         'causar'                => ['contabilidad', [self::APROBADO]],
         'devolver_contabilidad' => ['contabilidad', [self::APROBADO]],
         'pagar'                 => ['tesoreria',    [self::CAUSADO]],
+        // Salida del flujo (queda Anulado y libera la orden de compra). Causado o pagado ya no: hay dinero de por medio.
+        'anular'                => ['controller',   [self::REV_LIDER, self::REV_CONTROLLER, self::REV_GERENCIA, self::RECH_LIDER,
+                                                     self::RECH_GERENCIA, self::RECH_CONTROLLER, self::APROBADO, self::RECH_CONTABILIDAD]],
+        'retirar'               => ['productor',    [self::REV_LIDER, self::RECH_LIDER, self::RECH_GERENCIA, self::RECH_CONTROLLER]],
     ];
 
     /** Texto de cada acción en el recorrido. */
@@ -77,6 +82,9 @@ class AnticipoJuridicoFlujo
         'causar'                => 'Lo causó',
         'devolver_contabilidad' => 'Lo devolvió al Controller',
         'pagar'                 => 'Registró el pago',
+        'anular'                => 'Lo anuló',
+        'retirar'               => 'Retiró la solicitud',
+        'anular_por_oc'         => 'Quedó anulado porque se anuló su orden de compra',
     ];
 
     /** Quién hace cada paso, en palabras. */
@@ -142,7 +150,11 @@ class AnticipoJuridicoFlujo
             return 'Este paso le corresponde a '.self::ACTORES[$actor].'.';
         }
         if ($actor === 'productor' && (int) $a->productor_id !== (int) $u->id) {
-            return 'Solo el productor que lo solicitó puede corregirlo.';
+            return 'Solo el productor que lo solicitó puede corregirlo o retirarlo.';
+        }
+        // Con la orden de compra anulada ya no se aprueba, causa, paga ni reenvía: solo se anula o se retira.
+        if ($a->oc_id && !in_array($accion, ['anular', 'retirar'], true) && (int) optional($a->ordenCompra)->estado_id === 6) {
+            return 'La orden de compra de este anticipo fue anulada: el anticipo solo se puede anular.';
         }
         // Nadie revisa su propia solicitud (una cuenta con varios roles podría hacerlo)
         if (in_array($actor, ['lider', 'controller', 'gerencia'], true) && (int) $a->productor_id === (int) $u->id) {
@@ -237,6 +249,9 @@ class AnticipoJuridicoFlujo
                 $errores['oc_id'] = 'Esa orden no está disponible: debe ser jurídica, aprobada y de un proyecto tuyo.';
             } elseif (Anticipo::where('oc_id', $orden->id)->where('estado_id', '!=', 6)->exists()) {
                 $errores['oc_id'] = 'Esa orden ya tiene un anticipo.';
+            } elseif ($borrador = self::borradorVigente($orden->proveedor_id, $orden->presupuesto_id, $actual)) {
+                // La misma compra pudo pedirse como borrador antes de que existiera la orden: se vincula, no se repite
+                $errores['oc_id'] = "Ya hay un anticipo sin orden de compra (#{$borrador->id}) a este proveedor en este proyecto. Corrígelo y vincúlalo a esta orden, o anúlalo, antes de pedir otro.";
             }
             if ($errores) { throw ValidationException::withMessages($errores); }
 
@@ -269,6 +284,10 @@ class AnticipoJuridicoFlujo
         } elseif ($presupuesto && $base > (float) $presupuesto->costos_proy) {
             $errores['valor_base'] = 'El valor base no puede superar el costo total del proyecto ($'.number_format((float) $presupuesto->costos_proy, 0, ',', '.').').';
         }
+        // Otro anticipo vigente al mismo proveedor en el mismo proyecto: se puede, pero explicando por qué
+        if (!$errores && ($otro = self::otroVigente($proveedor->id, $presupuesto->id, $actual)) && !trim((string) ($d['observacion'] ?? ''))) {
+            $errores['observacion'] = "Ya existe el anticipo #{$otro->id} a este proveedor en este proyecto (".optional($otro->estado)->description."). Explica por qué se necesita otro.";
+        }
         if ($errores) { throw ValidationException::withMessages($errores); }
 
         return [
@@ -279,6 +298,33 @@ class AnticipoJuridicoFlujo
             'porcentaje_anticipo' => round((float) $pct, 2),
             'total_anticipo' => round($base * $pct / 100, 2),
         ];
+    }
+
+    /** Borrador (sin orden de compra) abierto al mismo proveedor en el mismo proyecto, distinto de $actual (uno pagado ya cerró). */
+    public static function borradorVigente($proveedorId, $presupuestoId, ?Anticipo $actual = null): ?Anticipo
+    {
+        return Anticipo::where('tipo', Anticipo::TIPO_JURIDICO)->whereNull('oc_id')
+            ->where('proveedor_id', $proveedorId)->where('presupuesto_id', $presupuestoId)
+            ->whereNotIn('estado_id', [self::ANULADO, self::PAGADO])
+            ->when($actual, fn ($q) => $q->where('id', '!=', $actual->id))
+            ->orderByDesc('id')->first();
+    }
+
+    /** Cualquier anticipo jurídico vigente (no anulado) al mismo proveedor en el mismo proyecto, distinto de $actual. */
+    public static function otroVigente($proveedorId, $presupuestoId, ?Anticipo $actual = null): ?Anticipo
+    {
+        return Anticipo::with('estado')->where('tipo', Anticipo::TIPO_JURIDICO)
+            ->where('proveedor_id', $proveedorId)->where('presupuesto_id', $presupuestoId)
+            ->where('estado_id', '!=', self::ANULADO)
+            ->when($actual, fn ($q) => $q->where('id', '!=', $actual->id))
+            ->orderByDesc('id')->first();
+    }
+
+    /** Órdenes aprobadas del productor, sin anticipo, del mismo proveedor y proyecto que un borrador: para vincularlo. */
+    public static function ordenesVinculables(Anticipo $a, User $u)
+    {
+        if ($a->oc_id) { return collect(); }
+        return self::ordenesDisponibles($u)->where('proveedor_id', $a->proveedor_id)->where('presupuesto_id', $a->presupuesto_id)->values();
     }
 
     private function validarArchivos(array $archivos): void
@@ -320,6 +366,12 @@ class AnticipoJuridicoFlujo
         $this->validarArchivos($soportes);
 
         $a = DB::transaction(function () use ($u, $d, $datos, $soportes) {
+            if ($datos['oc_id']) {
+                OrdenCompra::lockForUpdate()->find($datos['oc_id']);
+                if (Anticipo::where('oc_id', $datos['oc_id'])->where('estado_id', '!=', self::ANULADO)->exists()) {
+                    throw ValidationException::withMessages(['oc_id' => 'Esa orden ya tiene un anticipo.']);
+                }
+            }
             $a = Anticipo::create($datos + [
                 'tipo' => Anticipo::TIPO_JURIDICO,
                 'estado_id' => self::REV_LIDER,
@@ -339,8 +391,14 @@ class AnticipoJuridicoFlujo
     public function reenviar(Anticipo $a, User $u, array $d, array $soportes = []): Anticipo
     {
         $this->exigir($a, $u, 'reenviar');
-        $d['modo'] = $a->oc_id ? 'oc' : 'borrador';
+        // Un borrador se puede vincular a la orden de compra que ya existe para esa misma compra
+        $vincular = (!$a->oc_id && !empty($d['oc_vincular'])) ? (int) $d['oc_vincular'] : null;
+        if ($vincular && !self::ordenesVinculables($a, $u)->pluck('id')->contains($vincular)) {
+            throw ValidationException::withMessages(['oc_vincular' => 'Esa orden no es de este proveedor y proyecto, o ya tiene anticipo.']);
+        }
+        $d['modo'] = ($a->oc_id || $vincular) ? 'oc' : 'borrador';
         if ($a->oc_id) { $d['oc_id'] = $a->oc_id; }
+        elseif ($vincular) { $d['oc_id'] = $vincular; }
         else { $d['presupuesto_id'] = $a->presupuesto_id; }
         // Todos los errores de una vez: los de los datos y los de la corrección
         $errores = [];
@@ -362,6 +420,12 @@ class AnticipoJuridicoFlujo
             $a->fill($datos);
             $a->estado_id = self::REV_LIDER;
             $a->fecha_solicitud = now();
+            // La orden de anticipo anterior (con el valor y las firmas viejas) deja de mostrarse; se genera otra al aprobar.
+            if ($a->archivo_orden_anticipo) {
+                Storage::delete($a->archivo_orden_anticipo);
+                $a->archivo_orden_anticipo = null;
+                $a->fecha_orden_anticipo = null;
+            }
             $a->save();
             $this->guardarSoportes($a, $soportes);
             $this->registrarPaso($a, $u, 'reenviar', $desde, self::REV_LIDER, $d['observacion']);
@@ -437,6 +501,45 @@ class AnticipoJuridicoFlujo
         $a = $this->mover($a, $u, 'rechazar_gerencia', self::RECH_GERENCIA, $obs, true);
         $this->ajRechazoGerencia($a);
         return $a;
+    }
+
+    /** El Controller anula el anticipo (motivo obligatorio): sale del flujo y libera la orden de compra. */
+    public function anular(Anticipo $a, User $u, ?string $obs): Anticipo
+    {
+        $a = $this->mover($a, $u, 'anular', self::ANULADO, $obs, true);
+        $this->ajAnulado($a);
+        return $a;
+    }
+
+    /** El productor retira su solicitud mientras está con el líder o devuelta a él. */
+    public function retirar(Anticipo $a, User $u, ?string $obs): Anticipo
+    {
+        $a = $this->mover($a, $u, 'retirar', self::ANULADO, $obs, true);
+        $this->ajAnulado($a);
+        return $a;
+    }
+
+    /**
+     * Se anuló una orden de compra: sus anticipos abiertos quedan anulados. Si alguno ya estaba causado o pagado
+     * no se toca (hay dinero de por medio) y se avisa a Contabilidad y Tesorería para que lo revisen.
+     */
+    public function anularPorOrdenAnulada(OrdenCompra $orden, User $u): void
+    {
+        foreach (Anticipo::where('oc_id', $orden->id)->where('tipo', Anticipo::TIPO_JURIDICO)->whereNotIn('estado_id', [self::ANULADO])->get() as $a) {
+            if (in_array((int) $a->estado_id, [self::CAUSADO, self::PAGADO], true)) {
+                $this->ajOrdenAnuladaConAnticipo($a);
+                continue;
+            }
+            $a = DB::transaction(function () use ($a, $u) {
+                $a = Anticipo::lockForUpdate()->findOrFail($a->id);
+                $desde = (int) $a->estado_id;
+                $a->estado_id = self::ANULADO;
+                $this->registrarPaso($a, $u, 'anular_por_oc', $desde, self::ANULADO, 'Se anuló la orden de compra '.($a->ordenCompra->cod_oc ?? '#'.$a->oc_id).'.');
+                $a->save();
+                return $a->fresh();
+            });
+            $this->ajAnulado($a);
+        }
     }
 
     /* ==================================================================== */

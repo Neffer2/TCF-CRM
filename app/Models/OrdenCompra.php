@@ -18,6 +18,12 @@ class OrdenCompra extends Model
         'fecha_envio_produccion'
     ];
 
+    /** URL pública de la cuenta de cobro (archivo_cuenta_cobro vive en el disco public, con o sin prefijo). */
+    public function getCuentaCobroUrlAttribute(): ?string
+    {
+        return $this->archivo_cuenta_cobro ? asset('storage/'.preg_replace('#^public/#', '', $this->archivo_cuenta_cobro)) : null;
+    }
+
     public function ordenItems(){
         return $this->hasMany(OcItem::class, 'oc_id', 'id');
     }

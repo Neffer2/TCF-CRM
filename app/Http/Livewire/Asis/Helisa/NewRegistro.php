@@ -91,7 +91,7 @@ class NewRegistro extends Component
     }
 
     public function updatedFecha(){
-        $this->validate(['fecha' => ['required']]); 
+        $this->validate(['fecha' => 'required|date|after_or_equal:2015-01-01|before_or_equal:2099-12-31'], ['fecha.after_or_equal' => 'Revisa el año de la fecha.', 'fecha.before_or_equal' => 'Revisa el año de la fecha.']); 
     }
     
     public function updatedTipoDoc(){
@@ -339,7 +339,7 @@ class NewRegistro extends Component
 
     public function store(){  
         $this->validate([
-            'fecha' => 'required',
+            'fecha' => 'required|date|after_or_equal:2015-01-01|before_or_equal:2099-12-31', // con año real (había fechas del año 0026)
             'tipo_doc' => 'required|string',
             'num_doc' => 'required|string',
             'identidad' => 'required|string',
@@ -371,6 +371,8 @@ class NewRegistro extends Component
             'base_factura3' => 'nullable|numeric',
         ]);
         
+        // Una fila por participante, todas o ninguna (antes un fallo a mitad dejaba el documento incompleto)
+        \Illuminate\Support\Facades\DB::beginTransaction();
         $i  = 0;
         while($i < $this->participaciones){
             $helisa = new Helisa;
@@ -400,8 +402,9 @@ class NewRegistro extends Component
             $helisa->save(); 
             $i++;
         }
+        \Illuminate\Support\Facades\DB::commit();
         
-        return redirect()->route('gestion-helisa')->with('success', 'Registro creado exitosamente!');
+        return redirect()->route('asis-gestion-helisa')->with('success', 'Registro creado exitosamente!'); // antes: ruta del comercial, que al ejecutivo lo sacaba a su inicio
     }
 }
  

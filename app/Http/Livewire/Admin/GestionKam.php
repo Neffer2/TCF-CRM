@@ -48,6 +48,8 @@ class GestionKam extends Component
 
     private function comercialesDelFiltro(): ?array
     {
+        // El líder comercial siempre ve su equipo: el selector deshabilitado no impide cambiar $lider desde el navegador
+        if (Auth::user()->esLiderComercial()) { $this->lider = (string) Auth::id(); }
         if (!$this->lider) { return null; }
         $lider = User::find($this->lider);
         if (!$lider) { return null; }

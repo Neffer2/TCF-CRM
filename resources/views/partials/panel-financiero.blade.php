@@ -138,7 +138,7 @@
                     @forelse ($anticipos as $a)
                         <a class="crm-fin__ant" href="{{ route($rutaAnt, ['anticipo_id' => $a->id]) }}">
                             <div>
-                                <b>{{ optional(optional($a->ordenCompra)->presupuesto)->cod_cc ?: 'Anticipo #'.$a->id }}</b>
+                                <b>{{ optional(optional($a->ordenCompra)->presupuesto)->cod_cc ?: (optional($a->presupuesto)->cod_cc ?: 'Anticipo #'.$a->id) }}</b>
                                 <span>{{ optional($a->productor_info)->name ?: 'Sin productor' }} · {{ number_format($a->porcentaje_anticipo, 0) }}%</span>
                             </div>
                             <strong>{{ $cop($a->total_anticipo) }}</strong>

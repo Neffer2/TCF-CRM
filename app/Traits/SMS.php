@@ -21,7 +21,7 @@ trait SMS
     /** Al crear una orden natural: enlace firmado del portal para completar datos y aceptar términos. */
     public function oc_natura_creada($tercero, $orden_id){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre ¡Bienvenido a Bull Marketing! \nCon este enlace: \n\n".
-        URL::signedRoute('consulta-terceros', ['orden' => $orden_id])
+        URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => $orden_id])
         ."\n \nPuedes completar tu información y aceptar los términos de tu contratación. \n \nBull Marketing la agencia del ¡Siempre se puede!";
         $this->sendAction($tercero->telefono, $body, 'oc:'.$orden_id);
     }
@@ -29,7 +29,7 @@ trait SMS
     /** La orden pasó a "Evidencias": enlace para adjuntarlas. */
     public function oc_evidencias($tercero, $orden_id){
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola $tercero->nombre. \nUtiliza este enlace: \n\n".
-        URL::signedRoute('consulta-terceros', ['orden' => $orden_id])
+        URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => $orden_id])
         ."\n \nPara adjuntar las evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
         $this->sendAction($tercero->telefono, $body, 'oc:'.$orden_id);
     }
@@ -38,7 +38,7 @@ trait SMS
     public function oc_evidencias_rechazadas($orden){
         $tercero = optional(optional($orden->naturalInfo)->tercero);
         $body = "BULLCRM - ".date('d/m/Y - h:i a', time())." \nHola ".$tercero->nombre.". \nTus evidencias fueron rechazadas. Utiliza este enlace: \n\n".
-        URL::signedRoute('consulta-terceros', ['orden' => $orden->id])
+        URL::temporarySignedRoute('consulta-terceros', now()->addDays((int) config('crm.portal_terceros.dias_enlace', 30)), ['orden' => $orden->id])
         ."\n \nPara revisar los comentarios de tus evidencias anteriores y adjuntar las nuevas evidencias del trabajo que realizaste. \n \nBull Marketing la agencia del ¡Siempre se puede!";
         $this->sendAction($tercero->telefono, $body, 'oc:'.$orden->id);
     }

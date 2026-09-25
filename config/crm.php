@@ -18,6 +18,12 @@ return [
         'juridico_umbral_gerencia' => (float) env('CRM_AJ_UMBRAL_GERENCIA', 10000000),
     ],
 
+    'portal_terceros' => [
+        // Días de vigencia de los enlaces firmados que se envían al tercero (SMS / "Copiar enlace");
+        // vencidos, se genera uno nuevo desde Órdenes de compra.
+        'dias_enlace' => (int) env('CRM_PORTAL_ENLACE_DIAS', 30),
+    ],
+
     'sms' => [
         // 'api' envía por Hablame; 'log' solo escribe en el log (entorno local / pruebas)
         'modo' => env('SMS_MODO', 'api'),

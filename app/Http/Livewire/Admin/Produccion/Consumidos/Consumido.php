@@ -22,6 +22,7 @@ class Consumido extends Component
     
     public function mount(){
         $this->presupuesto = PresupuestoProyecto::find($this->presupuesto_id);
+        abort_unless($this->presupuesto && auth()->user()->puedeVerPresupuesto($this->presupuesto), 403);
         $this->proveedores = Proveedor::select('id', 'tercero')->get();
     }
 } 

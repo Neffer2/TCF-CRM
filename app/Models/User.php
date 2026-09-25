@@ -105,6 +105,12 @@ class User extends Authenticatable
         return optional($this->user_rol)->description ?: 'Usuario';
     }
 
+    /** Imagen para mostrar siempre: la foto del usuario o la silueta por defecto (antes /storage/photos/avatar.jpg daba 404). */
+    public function avatarSrc(): string
+    {
+        return $this->avatarUrl() ?: asset('assets/img/avatar-default.svg');
+    }
+
     /** URL pública del avatar (o null si es el genérico / no existe). */
     public function avatarUrl(): ?string
     {
@@ -116,6 +122,54 @@ class User extends Authenticatable
     public function revisaPresupuestos(): bool
     {
         return in_array((int) $this->rol, [self::ROL_ADMIN, self::ROL_GERENCIA, self::ROL_CONTROLLER], true);
+    }
+
+    /**
+     * Puede abrir el presupuesto o el consumo de la gestión. Administración, Gerencia y Controller: todas.
+     * Líder comercial: las de su equipo (todas si no tiene equipo, igual que sus listas). Comercial: las suyas
+     * y donde participa. Ejecutivo: las del comercial al que está asignado.
+     */
+    public function puedeVerGestion(?GestionComercial $gestion): bool
+    {
+        if (!$gestion) { return false; }
+        $rol = (int) $this->rol;
+        if (in_array($rol, [self::ROL_ADMIN, self::ROL_GERENCIA, self::ROL_CONTROLLER], true)) { return true; }
+
+        $personas = $gestion->participantes()->pluck('user_id')->push($gestion->id_user)
+            ->filter()->map(function ($id) { return (int) $id; });
+        if ($rol === self::ROL_LIDER_COMERCIAL) {
+            $equipo = $this->comerciales()->pluck('users.id')->map(function ($id) { return (int) $id; });
+            return $equipo->isEmpty() || $personas->intersect($equipo)->isNotEmpty();
+        }
+        if ($rol === 2) { return $personas->contains((int) $this->id); }
+        if ($rol === 5) {
+            $comerciales = Asistente::where('asistente_id', $this->id)->pluck('comercial_id')->map(function ($id) { return (int) $id; });
+            return $personas->intersect($comerciales)->isNotEmpty();
+        }
+        return false;
+    }
+
+    /** Presupuesto (cotización, consumo): quien ve la gestión, o el productor al que se le asignó el proyecto. */
+    public function puedeVerPresupuesto(?PresupuestoProyecto $presupuesto): bool
+    {
+        if (!$presupuesto) { return false; }
+        if ((int) $this->rol === 7 && (int) $presupuesto->productor === (int) $this->id) { return true; }
+        return $this->puedeVerGestion($presupuesto->gestion);
+    }
+
+    /**
+     * Comerciales que puede ver en tableros y reportes. Líder comercial: solo su equipo (lo pedido se recorta a su
+     * equipo; sin equipo no ve a nadie). Los demás roles con acceso a esas pantallas: lo pedido (null = todos).
+     * Se aplica en el servidor: los filtros de las pantallas llegan del navegador y se pueden cambiar.
+     */
+    public function limitarAEquipo($pedido): ?array
+    {
+        $pedido = $pedido === null ? null : array_map('intval', (array) $pedido);
+        if (!$this->esLiderComercial()) { return $pedido; }
+        $equipo = $this->comerciales()->pluck('users.id')->map(function ($id) { return (int) $id; })->all();
+        if (!$equipo) { return [0]; }
+        if ($pedido === null) { return $equipo; }
+        return array_values(array_intersect($pedido, $equipo)) ?: [0];
     }
 
     public function asistente(){

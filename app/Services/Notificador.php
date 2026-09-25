@@ -87,6 +87,11 @@ class Notificador
 
     public static function procesar(NotificacionLog $log): bool
     {
+        // Candado: corriendo pruebas (php artisan test / PHPUnit) nunca sale nada real, diga lo que diga la
+        // configuración. El 25-sep-2026 una corrida de pruebas envió correos reales a usuarios del CRM.
+        if (app()->runningUnitTests() || app()->environment('testing')) {
+            config(['crm.notificaciones.correo_modo' => 'log', 'crm.sms.modo' => 'log', 'crm.notificaciones.alertas.siempre' => false]);
+        }
         $max = max(1, (int) config('crm.notificaciones.reintentos', 3));
         $esperas = config('crm.notificaciones.espera_segundos', [2, 5]);
         $ultimoError = null;

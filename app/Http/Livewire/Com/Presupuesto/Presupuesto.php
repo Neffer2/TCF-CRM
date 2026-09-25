@@ -23,6 +23,7 @@ use App\Models\cliente_parametros_cc;
 use App\Models\PresupuestoProyecto;
 use App\Traits\Email;
 use App\Models\HistorialItemPresupuesto;
+use App\Services\AprobacionPresupuesto;
 
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
@@ -101,6 +102,49 @@ class Presupuesto extends Component
 
     public $listeners = ['itemsReordered' => 'updateOrden'];
 
+    // Utilidad = costo ÷ precio (0,7 → precio con 30 % de margen; 0 = ítem sin precio al cliente).
+    // Por encima de 2 es casi siempre un error de digitación (70 en vez de 0,7).
+    const REGLA_UTILIDAD = ['required', 'numeric', 'min:0', 'max:2'];
+
+    protected $messages = [
+        'utilidad.max' => 'La utilidad (costo ÷ precio) va de 0 a 2: 0,7 es un precio con 30 % de margen. Revisa si escribiste 70 en vez de 0,7 o el precio al cliente.',
+        'utilidad.min' => 'La utilidad no puede ser negativa.',
+    ];
+
+    // Las fija el servidor: el navegador no puede cambiarlas (en Livewire toda propiedad pública
+    // se puede modificar desde la consola).
+    protected $propiedadesBloqueadas = [
+        'id_gestion', 'presupuesto', 'presupuesto_id', 'estadoValidator', 'selected_item', 'items',
+        'ciudades', 'meses', 'categorias_proveedor', 'proveedores', 'tarifario',
+        'margenItems', 'costosProyecto', 'ventaProyecto', 'margenProyecto', 'margenBruto',
+    ];
+
+    public function updating($name, $value)
+    {
+        abort_if(in_array(explode('.', $name)[0], $this->propiedadesBloqueadas, true), 403);
+    }
+
+    // Las acciones se autorizan en el servidor con las mismas condiciones con que la vista
+    // muestra cada botón; el estado se lee de la base, no del componente.
+    private function prestoActual(): PresupuestoProyecto
+    {
+        return PresupuestoProyecto::findOrFail($this->presupuesto_id);
+    }
+
+    // Comercial o ejecutivo arman el presupuesto; mientras está en revisión (2) o con el líder (4) no se toca.
+    private function autorizarEdicion(): void
+    {
+        abort_unless(in_array((int) Auth::user()->rol, [2, 5], true), 403);
+        abort_if(in_array((int) $this->prestoActual()->estado_id, [2, 4], true), 403, 'El presupuesto está en revisión.');
+    }
+
+    private function itemDelPresupuesto($id): ItemPresupuesto
+    {
+        $item = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->find($id);
+        abort_unless($item, 404);
+        return $item;
+    }
+
     // Renderiza la vista principal del presupuesto
     public function render()
     {
@@ -117,6 +161,11 @@ class Presupuesto extends Component
 
     // Inicializa el componente y carga datos principales
     public function mount(){
+        // Solo quien trabaja la gestión (o administración) abre su presupuesto; una gestión inexistente no crea uno.
+        $gestion = GestionComercial::find($this->id_gestion);
+        abort_unless($gestion, 404);
+        abort_unless(Auth::user()->puedeVerGestion($gestion), 403);
+
         $validator = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         if (is_null($validator)){
             // Si no existe presupuesto, lo crea
@@ -143,7 +192,7 @@ class Presupuesto extends Component
         //     $this->showJustificacion = true;
         // }
 
-        $this->refresh();
+        $this->refresh((int) $this->presupuesto->estado_id === 3);
         $this->getCiudades();
         $this->getProveedores();
         $this->getMeses();
@@ -161,6 +210,7 @@ class Presupuesto extends Component
 
     // Agrega un nuevo ítem al presupuesto
     public function new_item(){
+        $this->autorizarEdicion();
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
         $this->validate([
@@ -172,7 +222,7 @@ class Presupuesto extends Component
             'valor_total' => ['required'],
             'proveedor' => ['required'],
             'valor_total_cliente' => ['numeric', 'required'],
-            'utilidad' => ['required', 'numeric'],
+            'utilidad' => self::REGLA_UTILIDAD,
             'imprevistos' => ['required', 'numeric'],
             'administracion' => ['required', 'numeric'],
             'fee' => ['required', 'numeric'],
@@ -195,7 +245,7 @@ class Presupuesto extends Component
             $item->presupuesto_id = $this->presupuesto_id;
             $item->cantidad = $this->cantidad;
             $item->dia = $this->dia;
-            $item->otros = $this->otros ?? 1;
+            $item->otros = (int) $this->factorOtros();
             $item->descripcion = $this->descripcion;
             $item->v_unitario = $this->valor_unitario;
             $item->v_total = $this->valor_total;
@@ -217,7 +267,7 @@ class Presupuesto extends Component
             }
 
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
+            $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $this->factorOtros() * $item->v_unitario_cot) : 0;
             $item->rentabilidad = ($this->utilidad > 0) ? ($item->v_total_cot - $item->v_total) : 0;
 
             $item->save();
@@ -229,6 +279,7 @@ class Presupuesto extends Component
 
     // Agrega un nuevo evento al presupuesto (ítem especial)
     public function new_event(){
+        $this->autorizarEdicion();
         $this->validate([
             'descripcion' => ['required']
         ]);
@@ -254,20 +305,22 @@ class Presupuesto extends Component
             // Un evento no tiene proveedor. La columna 'proveedor' ya no existe:
             // los proveedores de un ítem viven en item_presupuesto_proveedor.
             $item->margen_utilidad = 0;
-            $item->mes = 0;
+            $item->mes = '';
             $item->dias = 0;
-            $item->ciudad = 0;
+            $item->ciudad = '';
             $item->v_unitario_cot = 0;
             $item->v_total_cot = 0;
             $item->rentabilidad = 0;
             $item->save();
         });
 
-        $this->getMetricas();
+        $this->refresh();
         $this->limpiar();
     }
 
-    public function getMetricas() {
+    // $guardar: las cifras se guardan al editar (y al abrir uno editable); abrir uno aprobado o en revisión
+    // ya no las reescribe con lo que den los ítems en ese momento.
+    private function getMetricas(bool $guardar = true) {
         $this->getInfoFacturas();
 
         $sumTotalConMargen = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
@@ -307,12 +360,14 @@ class Presupuesto extends Component
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
         if ($presto) {
-            $presto->margen_general = $this->margenItems;
-            $presto->venta_proy     = $this->ventaProyecto;
-            $presto->costos_proy    = $this->costosProyecto;
-            $presto->margen_proy    = $this->margenProyecto;
-            $presto->margen_bruto   = $this->margenBruto;
-            $presto->save();
+            if ($guardar) {
+                $presto->margen_general = $this->margenItems;
+                $presto->venta_proy     = $this->ventaProyecto;
+                $presto->costos_proy    = $this->costosProyecto;
+                $presto->margen_proy    = $this->margenProyecto;
+                $presto->margen_bruto   = $this->margenBruto;
+                $presto->save();
+            }
 
             $this->centroCostos  = optional($this->presupuesto)->cod_cc;
             $this->imprevistos   = $presto->imprevistos;
@@ -335,13 +390,22 @@ class Presupuesto extends Component
 
     // Actualiza la información de facturación y recarga métricas
     public function updateInfoFactura(){
+        $this->autorizarEdicion();
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        // Cambiar un recargo cambia la venta: en uno ya aprobado vuelve a Editable para re-aprobarlo
+        // (antes se reescribía la venta aprobada sin pasar por nadie).
+        $cambianValores = (float) $presto->imprevistos != (float) $this->imprevistos
+            || (float) $presto->administracion != (float) $this->administracion
+            || (float) $presto->fee != (float) $this->fee;
         $presto->imprevistos = $this->imprevistos;
         $presto->administracion = $this->administracion;
         $presto->fee = $this->fee;
         $presto->tiempo_factura = $this->tiempoFactura;
         $presto->notas = $this->notas;
         $presto->update();
+        if ($cambianValores && $presto->cod_cc) {
+            $this->setEnEdicion($presto);
+        }
 
         $this->refresh();
     }
@@ -379,15 +443,17 @@ class Presupuesto extends Component
 
     // Cambia la disponibilidad de un ítem
     public function changeDisponibilidad($id){
-        $item = ItemPresupuesto::find($id);
+        $this->autorizarEdicion();
+        $item = $this->itemDelPresupuesto($id);
         $item->disponible = !$item->disponible;
         $item->update();
         $this->refresh();
     }
 
     public function updateOrden($orderedIds) {
+        $this->autorizarEdicion();
 
-        $orderedIds = array_filter($orderedIds, function ($id) {
+        $orderedIds = array_filter((array) $orderedIds, function ($id) {
             return !is_null($id) && $id !== '';
         });
 
@@ -397,6 +463,13 @@ class Presupuesto extends Component
         }
 
         $orderedIds = array_map('intval', array_values($orderedIds));
+
+        // Solo se reordenan ítems de este presupuesto (el arreglo llega del navegador).
+        $propios = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->pluck('id')->all();
+        $orderedIds = array_values(array_unique(array_intersect($orderedIds, $propios)));
+        if (empty($orderedIds)) {
+            return;
+        }
 
         DB::transaction(function () use ($orderedIds) {
             // 1. Trae TODOS los ids del presupuesto (incluye eventos y cualquier item
@@ -450,25 +523,31 @@ class Presupuesto extends Component
 
     // Elimina un ítem del presupuesto
     public function deleteItem($id){
-        ItemPresupuesto::destroy($id);
+        $this->autorizarEdicion();
+        $item = $this->itemDelPresupuesto($id);
+        // Igual que la vista: un ítem normal solo se borra antes de tener centro de costos, y nunca si ya tiene órdenes.
+        if (!$item->evento) {
+            abort_if((bool) $this->prestoActual()->cod_cc, 403);
+            if ($item->consumidos()->exists()) {
+                return redirect()->back()->withErrors('Este ítem ya tiene órdenes de compra: no se puede borrar.');
+            }
+        }
+        $item->delete();
         $this->refresh();
     }
 
     // Refresca métricas e ítems del presupuesto
-    public function refresh(){
-        $this->getMetricas();
+    // Sin indicar, las cifras solo se guardan si el presupuesto está Editable (3): en uno aprobado o en revisión
+    // (marcar visto, disponibilidad) no se tocan las cifras con las que se aprobó.
+    private function refresh(?bool $guardar = null){
+        $this->getMetricas($guardar ?? ((int) $this->prestoActual()->estado_id === 3));
         //$this->getItems();
     }
 
     // Carga los datos de un ítem para edición
     public function getDataEdit($id){
-        $this->selected_item = [];
-        foreach ($this->items as $item) {
-            if ($item->id == $id) {
-                $this->selected_item = $item;
-                break;
-            }
-        }
+        $this->autorizarEdicion();
+        $this->selected_item = $this->itemDelPresupuesto($id);
 
         $this->cod = $this->selected_item->cod;
         $this->presupuesto_id = $this->selected_item->presupuesto_id;
@@ -492,9 +571,9 @@ class Presupuesto extends Component
         return $this->hasMany(ItemPresupuesto::class, 'presupuesto_id');
     }
 
-    public function actualizarItem($id, array $nuevosDatos)
+    private function actualizarItem($id, array $nuevosDatos)
     {
-        $item = ItemPresupuesto::findOrFail($id);
+        $item = $this->itemDelPresupuesto($id);
 
         HistorialItemPresupuesto::create([
             'item_presupuesto_id' => $item->id,
@@ -507,13 +586,14 @@ class Presupuesto extends Component
 
     // Guarda los cambios al editar un ítem
     public function actionEdit(){
+        $this->autorizarEdicion();
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
 
-        if (is_null($this->selected_item)){
+        if (!($this->selected_item instanceof ItemPresupuesto)){
             return redirect()->back()->withErrors('Ningún elemento seleccionado')->withInput();
         }
 
-        $itemOriginal = ItemPresupuesto::find($this->selected_item->id);
+        $itemOriginal = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)->find($this->selected_item->id);
 
         if (!$itemOriginal) {
             return redirect()->back()->withErrors('El elemento no existe.');
@@ -542,9 +622,9 @@ class Presupuesto extends Component
             $itemOriginal->v_total_cliente = 0;
             $itemOriginal->proveedoresPendientes = [];
             $itemOriginal->margen_utilidad = 0;
-            $itemOriginal->mes = 1;
+            $itemOriginal->mes = '';
             $itemOriginal->dias = 0;
-            $itemOriginal->ciudad = 0;
+            $itemOriginal->ciudad = '';
             $itemOriginal->update();
         }
         else{
@@ -555,7 +635,7 @@ class Presupuesto extends Component
                 'otros' => ['required'],
                 'descripcion' => ['required'],
                 'proveedor' => ['required'],
-                'utilidad' => ['required'],
+                'utilidad' => self::REGLA_UTILIDAD,
                 'mes' => ['required'],
                 'dias' => ['required'],
                 'ciudad' => ['required']
@@ -613,7 +693,7 @@ class Presupuesto extends Component
             $itemOriginal->presupuesto_id = $this->presupuesto_id;
             $itemOriginal->cantidad = $this->cantidad;
             $itemOriginal->dia = $this->dia;
-            $itemOriginal->otros = $this->otros;
+            $itemOriginal->otros = (int) $this->factorOtros();
             $itemOriginal->descripcion = $this->descripcion;
             $itemOriginal->v_unitario = $this->valor_unitario;
             $itemOriginal->v_total = $this->valor_total;
@@ -626,7 +706,7 @@ class Presupuesto extends Component
             $itemOriginal->ciudad = $this->ciudad;
 
             $itemOriginal->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $itemOriginal->v_unitario_cot : 0;
+            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $this->factorOtros() * $itemOriginal->v_unitario_cot : 0;
             $itemOriginal->rentabilidad = ($this->utilidad > 0) ? $itemOriginal->v_total_cot - $itemOriginal->v_total : 0;
             $itemOriginal->update();
         }
@@ -646,10 +726,12 @@ class Presupuesto extends Component
         $itemsActuales = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
         $proveedores = Proveedor::select('id', 'categoria_id', 'tercero')->get();
 
-        $costosProyecto = $itemsActuales->sum('v_total');
-        $ventaProyecto = $itemsActuales->sum('v_total_cliente');
-        $margenBruto = $ventaProyecto - $costosProyecto;
-        $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
+        // Las mismas cifras de la pantalla (venta = ítems a precio cliente + recargos). Antes se sumaba
+        // v_total_cliente, que no cuadra con la venta del proyecto (a veces en 0, a veces inflado).
+        $costosProyecto = (float) $presto->costos_proy;
+        $ventaProyecto = (float) $presto->venta_proy;
+        $margenBruto = (float) $presto->margen_bruto;
+        $margenProyecto = (float) $presto->margen_proy;
         // Protegido contra división por cero (presupuestos con utilidad 0
         // o solo eventos tienen v_total_cot en 0), igual que getMetricas().
         $sumVTotalCot = ItemPresupuesto::where('presupuesto_id', $this->presupuesto_id)
@@ -678,7 +760,9 @@ class Presupuesto extends Component
         // 2. OBTENER LAS VERSIONES HISTÓRICAS DE APROBACIONES
         // Para no perder ningún histórico (incluso si eliminas o creas ítems nuevos),
         // buscaremos TODOS los registros del historial que tengan el JSON con tipo_registro = 'snapshot_aprobacion'
-        $aprobacionesHistoricas = HistorialItemPresupuesto::orderBy('created_at', 'asc')
+        $aprobacionesHistoricas = HistorialItemPresupuesto::where('valores_anteriores', 'like', '%snapshot_aprobacion%')
+            ->where('valores_anteriores', 'like', '%'.$presto->id.'%')
+            ->orderBy('created_at', 'asc')
             ->get()
             ->filter(function($historial) use ($presto) {
                 $datos = is_array($historial->valores_anteriores)
@@ -713,12 +797,16 @@ class Presupuesto extends Component
 
             $fechaAprobacion = $datosSello['fecha_aprobacion'] ?? $aprobacion->created_at->format('Y-m-d H:i:s');
 
-            // Totales de la versión histórica
-            $costosHistorial = $itemsHistoricosDeEstaVersion->sum('v_total');
-            $ventaHistorial = $itemsHistoricosDeEstaVersion->sum('v_total_cliente');
+            // Totales de la versión histórica, con la fórmula de la pantalla (los recargos no quedan en la foto:
+            // se usan los actuales del presupuesto)
+            $itemsSinEventos = $itemsHistoricosDeEstaVersion->where('evento', 0);
+            $costosHistorial = $itemsSinEventos->sum('v_total');
+            $ventaBaseHistorial = $itemsSinEventos->sum('v_total_cot');
+            $recargos = ((float) $presto->imprevistos + (float) $presto->administracion + (float) $presto->fee) / 100;
+            $ventaHistorial = $ventaBaseHistorial * (1 + $recargos);
             $margenBrutoHistorial = $ventaHistorial - $costosHistorial;
             $margenProyectoHistorial = $ventaHistorial > 0 ? ($margenBrutoHistorial / $ventaHistorial) * 100 : 0;
-            $margenItemsHistorial = $itemsHistoricosDeEstaVersion->avg('margen_utilidad') ?? 0;
+            $margenItemsHistorial = $ventaBaseHistorial > 0 ? $itemsSinEventos->where('margen_utilidad', '>', 0)->sum('v_total') / $ventaBaseHistorial : 0;
 
             $payloadHistoricos[] = [
                 'titulo_pestana' => "V{$version} (" . date('d-M-Y', strtotime($fechaAprobacion)) . ")",
@@ -756,25 +844,32 @@ class Presupuesto extends Component
         return Excel::download(new HistorialSheetsExports($payloadActual, $payloadHistoricos), $nombreArchivo);
     }
 
+    // El nombre del proyecto va en la dirección (solo nombra el archivo): "/", "#", "?" o "%" la rompían (404)
+    private function nombreParaRuta(): string
+    {
+        return trim(str_replace(['/', '\\', '#', '?', '%'], '-', (string) $this->presupuesto->gestion->nom_proyecto_cot)) ?: 'cotizacion';
+    }
+
     // Redirecciones para exportar cotizaciones y presupuestos
     public function cotizacionPdf(){
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 1]);
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nombreParaRuta(), 'tipo' => 1]);
     }
 
     public function internoPdf(){
-        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
+        return redirect()->route('cotizacion', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nombreParaRuta(), 'tipo' => 0]);
     }
 
     public function cotizacionExcel(){
-        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 1]);
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nombreParaRuta(), 'tipo' => 1]);
     }
 
     public function internoExcel(){
-        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->presupuesto->gestion->nom_proyecto_cot, 'tipo' => 0]);
+        return redirect()->route('cotizacionExcel', ['prespuesto' => $this->id_gestion, 'nom_proyecto' => $this->nombreParaRuta(), 'tipo' => 0]);
     }
 
     // Envía el presupuesto a Validación del lider comercial
     public function aprobacion(){
+        $this->autorizarEdicion();
         // Si es actualización, justificación es obligatoria
         if ($this->presupuesto->cod_cc){
             $this->validate([
@@ -782,6 +877,8 @@ class Presupuesto extends Component
             ]);
         }
 
+        // Las cifras que verán el líder y Gerencia se recalculan justo antes de enviarlo
+        $this->getMetricas(true);
         $presto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
         $presto->estado_id = 4;
         $presto->justificacion = $this->justificacion;
@@ -801,10 +898,12 @@ class Presupuesto extends Component
         if (!$presto) {
             return redirect()->back()->with('error', 'Presupuesto no encontrado.');
         }
+        // Mismo permiso que el bloque del líder en la vista: estado 4 y rol Admin o Líder comercial.
+        abort_unless((int) $presto->estado_id === 4 && in_array((int) Auth::user()->rol, [1, 12], true), 403);
 
-        // Si el margen es menor al 30%, va a validación de gerencia (estado_id = 5)
-        // De lo contrario se aprueba directamente (estado_id = 1)
-        if ($presto->margen_proy < 30.00) {
+        // Con margen de 35 % o menos va a validación de Gerencia (estado_id = 5);
+        // de lo contrario se aprueba directamente (estado_id = 1)
+        if (AprobacionPresupuesto::requiereGerencia($presto)) {
             $presto->estado_id = 5;
         } else {
             $presto->estado_id = 1;
@@ -827,30 +926,35 @@ class Presupuesto extends Component
         if (!$presto) {
             return redirect()->back()->with('error', 'Presupuesto no encontrado.');
         }
+        // Mismo permiso que el botón de la vista: estado 5 y permiso aprobar-presupuestos.
+        abort_unless((int) $presto->estado_id === 5 && Auth::user()->espacioAdmin() && Auth::user()->can('aprobar-presupuestos'), 403);
 
         $presto->estado_id = 1; // Se aprueba directamente
         $presto->justificacion_lider = null;
-
-        $gestion = GestionComercial::find($this->id_gestion);
-        if ($gestion) {
-            $gestion->id_estado = 4;
-            $gestion->update();
+        $presto->justificacion_compras = null;
+        $presto->justificacion = null;
+        if (!$presto->fecha_cc) {
+            $presto->fecha_cc = date('Y-m-d');
         }
+
+        AprobacionPresupuesto::avanzarGestion($presto);
 
         ItemPresupuesto::where('presupuesto_id', $presto->id)->update(['actualizado' => false]);
 
 
         $presto->update();
 
-        // Envía notificación de revisión
-        $this->presupuestoAprobacion($presto, Auth::user());
+        // Igual que la aprobación del líder: el valor aprobado llega a la gestión y a la base comercial,
+        // y el comercial recibe el correo de aprobado (antes salía el de "solicita aprobación").
+        $this->reCalculate($presto);
+        $this->presupuestoAprobado($presto->gestion->comercial, $presto->gestion, null, $presto->cod_cc);
         $this->marcarConCambiosPendientes();
 
         return redirect()->route('validaciones')->with('success', 'Presupuesto validado.');
     }
 
     // Marca el presupuesto como editable
-    public function setEnEdicion($presto){
+    private function setEnEdicion($presto){
         if ($presto->estado_id != 3){
             $presto->estado_id = 3;
             $presto->update();
@@ -859,6 +963,12 @@ class Presupuesto extends Component
 
     // Actualiza el centro de costos y recalcula valores
     public function updateCentro(){
+        // Mismo permiso que la vista: Controller/Admin en revisión (2) o Admin/Líder comercial en su validación (4).
+        $estadoActual = (int) $this->prestoActual()->estado_id;
+        $rol = (int) Auth::user()->rol;
+        abort_unless(($estadoActual === 2 && Auth::user()->revisaPresupuestos())
+            || ($estadoActual === 4 && in_array($rol, [1, 12], true)), 403);
+
         if (!$this->presupuesto->cod_cc) {
             $this->calcularCentroCostos();
         }
@@ -892,22 +1002,18 @@ class Presupuesto extends Component
             ]);
         }
 
-        // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 30%,
-        // se envia a validación de gerencia (estado_id = 5),
-        // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
-        if ($presupuesto->margen_proy < 30.00) {
+        // Con margen de 35 % o menos se envía a validación de Gerencia (estado_id = 5)
+        if (AprobacionPresupuesto::requiereGerencia($presupuesto)) {
             $presupuesto->estado_id = 5;
             $presupuesto->cod_cc = $this->centroCostos;
             $presupuesto->update();
+            // Gerencia se entera de que tiene un presupuesto por validar.
+            $this->presupuestoAprobacion($presupuesto, $presupuesto->gestion->comercial);
             return redirect()->route('presupuesto-proyecto')->with('success', 'Presupuesto aprobado y enviado a validación de gerencia');
         }
 
-        // Si es la primera vez que se asigna centro de costos, cambia el estado de la gestión comercial
-        if (is_null($presupuesto->cod_cc)){
-            $gestion = GestionComercial::find($this->id_gestion);
-            $gestion->id_estado = 4;
-            $gestion->update();
-        }
+        // La gestión pasa a Propuesta (sin devolver una que ya está en Venta o Perdido)
+        AprobacionPresupuesto::avanzarGestion($presupuesto);
 
         // Marca todos los ítems como no actualizados
         ItemPresupuesto::where('presupuesto_id', $presupuesto->id)->get()->map(function ($item){
@@ -935,42 +1041,19 @@ class Presupuesto extends Component
     }
 
     // Recalcula los valores de la base comercial y gestión comercial
-    public function reCalculate($presupuesto){
-        $prestosCom = [];
-
-        // Actualiza el valor de la gestión comercial
-        $presupuesto->gestion->presto_cot = $presupuesto->venta_proy;
-        $presupuesto->gestion->update();
-
-        // Calcula el presupuesto para el usuario creador de la gestión
-        // Un reparto por cada participante (posición 1 = responsable)
-        foreach ($presupuesto->gestion->participantes as $participante) {
-            array_push($prestosCom, [
-                'comercial_id' => $participante->user_id,
-                'presupuesto' => ($presupuesto->gestion->presto_cot * $participante->porcentaje)/100,
-            ]);
-        }
-
-        // Actualiza los valores en la base comercial emparejando por id_user.
-        // El emparejamiento por posición del arreglo fallaba en silencio si el
-        // orden de las filas no coincidía (el valor aprobado nunca llegaba al
-        // dashboard) y crasheaba con más de 4 filas de base.
-        $prestosPorComercial = collect($prestosCom)
-            ->filter(function ($p) { return !empty($p['comercial_id']); })
-            ->keyBy('comercial_id');
-
-        foreach ($presupuesto->gestion->baseComercial as $base){
-            if ($prestosPorComercial->has($base->id_user)){
-                $base->valor_original = $presupuesto->venta_proy;
-                $base->valor_proyecto = $prestosPorComercial[$base->id_user]['presupuesto'];
-                $base->update();
-            }
-        }
+    private function reCalculate($presupuesto){
+        AprobacionPresupuesto::propagarValores($presupuesto);
     }
 
     // Rechaza el presupuesto y guarda la justificación
     public function rechazar(){
         $presupuesto = PresupuestoProyecto::where('id_gestion', $this->id_gestion)->first();
+        // Mismas condiciones que los dos botones Rechazar de la vista (líder comercial y Gerencia).
+        $user = Auth::user();
+        $estadoActual = (int) $presupuesto->estado_id;
+        $puedeLider = in_array((int) $user->rol, [1, 12], true) && ($estadoActual === 4 || !$user->comerciales()->exists());
+        $puedeGerencia = $estadoActual === 5 && $user->espacioAdmin() && $user->can('aprobar-presupuestos');
+        abort_unless($puedeLider || $puedeGerencia, 403);
 
         if ($presupuesto->estado_id == 4) {
             $this->validate([
@@ -985,6 +1068,11 @@ class Presupuesto extends Component
             ]);
 
             $presupuesto->justificacion_gerencia = $this->justificacion_gerencia;
+            // El centro de costos se asignó al pasar a Gerencia; si nunca se aprobó, se libera para otro proyecto
+            // (antes quedaba ocupado por un presupuesto rechazado).
+            if (!$presupuesto->fecha_cc) {
+                $presupuesto->cod_cc = null;
+            }
         }
         else {
             $this->validate([
@@ -1033,11 +1121,12 @@ class Presupuesto extends Component
     }
 
     public function updatedOtros(){
-        $this->otros = trim($this->otros);
+        $this->otros = trim((string) $this->otros);
         $this->validate([
-            'otros' => ['required']
-        ]);
+            'otros' => ['nullable', 'numeric', 'min:1']
+        ], ['otros.min' => 'Otros (meses) es el número de meses: mínimo 1.']);
         $this->getValorTotal();
+        $this->getValorTotalCliente();
     }
 
     public function updatedDescripcion(){
@@ -1093,7 +1182,7 @@ class Presupuesto extends Component
     public function getValorTotalCliente()
     {
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario_cliente)) {
-            $this->valor_total_cliente = $this->cantidad * $this->dia * $this->valor_unitario_cliente;
+            $this->valor_total_cliente = $this->cantidad * $this->dia * $this->factorOtros() * $this->valor_unitario_cliente;
             $this->getUtilidad();
         }
     }
@@ -1118,10 +1207,10 @@ class Presupuesto extends Component
     }
 
     public function updatedUtilidad(){
-        $this->utilidad = trim($this->utilidad);
-        $this->utilidad = str_replace(",",'', $this->utilidad);
+        // La utilidad es un factor decimal: la coma es separador decimal ("0,7" era 7 y el precio salía 10 veces menor).
+        $this->utilidad = str_replace(',', '.', trim((string) $this->utilidad));
         $this->validate([
-            'utilidad' => ['required', 'numeric']
+            'utilidad' => self::REGLA_UTILIDAD
         ]);
 
         $this->calcularPorUtilidad();
@@ -1188,10 +1277,16 @@ class Presupuesto extends Component
         $this->updateInfoFactura();
     }
 
+    /** "Otros (meses)" multiplica el total; vacío o 0 cuenta como 1 (un solo mes). */
+    private function factorOtros(): float
+    {
+        return is_numeric($this->otros) && (float) $this->otros > 0 ? (float) $this->otros : 1.0;
+    }
+
     // Calcula el valor total del ítem
     public function getValorTotal(){
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario)){
-            $this->valor_total = $this->cantidad * $this->dia * $this->valor_unitario;
+            $this->valor_total = $this->cantidad * $this->dia * $this->factorOtros() * $this->valor_unitario;
         }
         if ($this->valor_total_cliente != 0){
             $this->getUtilidad();
@@ -1323,7 +1418,9 @@ class Presupuesto extends Component
     
     public function marcarComoVisto($id_gestion = null)
     {
-        $id = $id_gestion ?? $this->id_gestion;
+        abort_unless(Auth::user()->can('gestionar-presupuestos-especiales'), 403);
+        // El id que manda la vista siempre es el de este presupuesto: no se acepta otro.
+        $id = $this->id_gestion;
 
         if ($id) {
             $presto = PresupuestoProyecto::where('id_gestion', $id)->first();

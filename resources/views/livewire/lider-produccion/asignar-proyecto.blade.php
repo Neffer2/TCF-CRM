@@ -1,10 +1,12 @@
+<div>
+@if ($id_productor && $productor)
 <div class="card">
     <div class="card-body pb-0">
         @php
-            $aux = str_replace('public/', '', $productor->avatar);
+            $aux = $productor->avatarSrc();
         @endphp
         <div class="d-flex justify-content-center">
-            <img src="{{ asset("storage/$aux") }}" alt="Foto de perfil" class="avatar shadow" style="height: 100px; width: 100px; border-radius: 3rem;">
+            <img src="{{ $aux }}" alt="Foto de perfil" class="avatar shadow" style="height: 100px; width: 100px; border-radius: 3rem;">
         </div>
     </div>         
     <div class="row p-3 pt-0">
@@ -19,6 +21,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
+                        @error('asignado')<div class="text-danger text-xs mb-1">{{ $message }}</div>@enderror
                         <select wire:model.lazy="asignado" id="asignado" class="form-control" size="10">
                             @foreach ($asignados as $asignado)
                                 <option value="{{ $asignado->id }}">{{ $asignado->cod_cc }} - {{ $asignado->gestion->nom_proyecto_cot }} - {{ $asignado->id_gestion }}</option>
@@ -54,6 +57,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
+                        @error('proyecto')<div class="text-danger text-xs mb-1">{{ $message }}</div>@enderror
                         <select wire:model.lazy="proyecto" id="proyecto" class="form-control" size="10">
                             @foreach ($proyectos as $proyecto)
                                 <option value="{{ $proyecto->id }}">{{ $proyecto->cod_cc }} - {{ $proyecto->gestion->nom_proyecto_cot }} - {{ $proyecto->id_gestion }}</option>
@@ -88,4 +92,12 @@
             </script>
         @endif
     </div>         
+</div>
+@else
+    <div class="card">
+        <div class="card-body text-center text-secondary py-5">
+            Elige un productor en la lista para ver y asignar sus proyectos.
+        </div>
+    </div>
+@endif
 </div>

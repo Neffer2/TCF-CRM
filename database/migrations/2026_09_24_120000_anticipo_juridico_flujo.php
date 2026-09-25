@@ -110,7 +110,11 @@ class AnticipoJuridicoFlujo extends Migration
 
     public function down()
     {
-        DB::table('anticipos')->where('tipo', 'juridico')->whereIn('estado_id', [8, 11, 15, 16])->whereNotNull('oc_id')->update(['estado_id' => 2]);
+        // Los borradores (sin orden de compra) no existían: el código anterior los tomaría por anticipos de productor
+        // sin ítems. Se anulan, salvo los ya pagados (el pago queda registrado).
+        DB::table('anticipos')->where('tipo', 'juridico')->whereNull('oc_id')->whereNotIn('estado_id', [6, 14])->update(['estado_id' => 6]);
+        // Todo lo que está en revisión o devuelto (incluidos Gerencia 9, 12 y Contabilidad 13) vuelve al paso único anterior
+        DB::table('anticipos')->where('tipo', 'juridico')->whereNotNull('oc_id')->whereIn('estado_id', [8, 9, 11, 12, 13, 15, 16])->update(['estado_id' => 2]);
         // Antes el A.J. no guardaba presupuesto (lo tomaba de la orden)
         DB::table('anticipos')->where('tipo', 'juridico')->whereNotNull('oc_id')->update(['presupuesto_id' => null]);
         Schema::dropIfExists('anticipo_pasos');

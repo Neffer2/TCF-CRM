@@ -90,7 +90,7 @@
                                     <select @if($presupuesto->estado_id == 1) disabled @endif class="form-control w-auto mb-1" wire:change="cambioEstado({{ $presupuesto->id }}, event.currentTarget.value)" wire:loading.attr="disabled">
                                         <option value selected>Cambiar estado</option>
                                         @foreach ($estados as $estado)
-                                            @if ( $estado->id != 3 )
+                                            @if ( $estado->id != 3 && ($estado->id != 1 || $presupuesto->cod_cc) )
                                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
                                             @endif
                                         @endforeach

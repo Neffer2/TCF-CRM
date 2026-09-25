@@ -6,6 +6,7 @@ use App\Models\Año;
 use App\Models\EstadosPresupuesto;
 use App\Models\PresupuestoProyecto;
 use App\Models\User;
+use App\Services\AprobacionPresupuesto;
 use App\Traits\Email;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -127,28 +128,9 @@ class ValidacionesPresto extends Component
      */
     public function cambioEstado($id = null, $estado = null){
         $presupuesto = PresupuestoProyecto::find($id);
-
-        // Si el estado es 2 (revisión)
-        if ($estado == 2) {
-            // Si el presupuesto esta en validación lider comercial y el margen del proyecto es menor al 30%,
-            // se envia a validación de gerencia (estado_id = 5),
-            // de lo contrario se envia a revisión por parte de Controller (estado_id = 2)
-            if ($presupuesto->estado_id == 4 && $presupuesto->margen_proy < 30.00) {
-                $estado = 5;
-            }
-            else {
-                // Envía notificación de revisión
-                $this->presupuestoAprobacion($presupuesto, Auth::user());
-            }
-        }
-        // Si el estado es 3 (rechazado)
-        elseif ($estado == 3) {
-            // Envía notificación de rechazo
-            $this->presupuestoRechazado($presupuesto->gestion->comercial, $presupuesto->gestion, null);
-        }
-
-        $presupuesto->estado_id = $estado;
-        $presupuesto->update();
+        // El selector de esta lista es de Admin y Líder comercial; las reglas del cambio están en el servicio.
+        abort_unless($presupuesto && in_array((int) Auth::user()->rol, [1, 12], true), 403);
+        AprobacionPresupuesto::cambiarEstadoDesdeLista($presupuesto, $estado, $this);
         return redirect()->route('validaciones')->with('success', 'Cambios guardados exitosamente');
     }
 }

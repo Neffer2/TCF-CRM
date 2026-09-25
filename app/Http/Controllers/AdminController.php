@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\OrdenCompra;
+use App\Models\PresupuestoProyecto;
 use App\Models\Proveedor;
 use App\Models\Helisa;
 use Maatwebsite\Excel\Facades\Excel;
@@ -171,13 +172,13 @@ class AdminController extends Controller
      * @return \Illuminate\View\View
      */
     public function showConsumido($presupuesto_id){
-        // Determinar el rol del usuario autenticado
-        if (Auth::user()->rol == 1){
-            $rol = 'admin';
-        }else {
-            // Si el rol es 2 es comercial, si no es productor
-            $rol = (Auth::user()->rol == 2) ? 'comercial' : 'productor';
-        }
+        // Solo quien trabaja el proyecto (o su productor) ve costos, proveedores y órdenes.
+        $presupuesto = PresupuestoProyecto::find($presupuesto_id);
+        abort_unless($presupuesto, 404);
+        abort_unless(Auth::user()->puedeVerPresupuesto($presupuesto), 403);
+
+        // El menú lateral del rol activo (antes Ejecutivo y Controller veían el del productor)
+        $rol = str_replace(['layouts.', '.main'], '', Auth::user()->layoutRol());
 
         return view('admin.produccion.consumidos.index', ['presupuesto_id' => $presupuesto_id, 'rol' => $rol]);
     }
@@ -209,8 +210,15 @@ class AdminController extends Controller
             array_push($filtros, ['centro', 'LIKE', "%{$centro}%"]);
         }
 
+        // El líder comercial con equipo solo exporta lo de su equipo (como en la pantalla Helisa general);
+        // antes bajaba la facturación de toda la empresa.
+        // (sin equipo asignado no ve nada, igual que en esa pantalla)
+        $equipo = Auth::user()->esLiderComercial() ? (Auth::user()->comerciales()->pluck('users.id')->all() ?: [0]) : null;
+
         // Obtener registros de Helisa aplicando los filtros
-        $registros_helisa = Helisa::where($filtros)->get();
+        $registros_helisa = Helisa::where($filtros)
+            ->when($equipo !== null, function ($q) use ($equipo) { $q->whereIn('comercial', $equipo); })
+            ->get();
 
         // Generar y descargar el archivo Excel usando la clase HelisaExport
         return Excel::download(new HelisaExport(['registros_helisa' => $registros_helisa]), $title);

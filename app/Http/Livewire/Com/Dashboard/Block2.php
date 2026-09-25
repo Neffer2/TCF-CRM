@@ -68,6 +68,9 @@ class Block2 extends Component
         if ($filters == null){
             return $this->default();
         }
+        // Tablero propio: el comercial es quien inició sesión, no el que mande el evento (que llega del navegador
+        // y además se usaba dentro de SQL crudo: con un texto en vez de un id era inyección SQL).
+        $filters['comercial'] = Auth::id();
 
         /* Filstros para enviar a la vista (estados facturacion) */
             $this->año = $filters['año'];

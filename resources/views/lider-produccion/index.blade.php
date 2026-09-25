@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col-md-2 mb-3">
                             <div class="list-group">
-                                <select x-on:change="Open" x-model="productor" id="productor" class="form-control" size="20">
+                                <select x-on:change="Livewire.emit('productorElegido', $event.target.value)" x-model="productor" id="productor" class="form-control" size="20">
                                     @foreach ($productores as $productor)
                                         <option value="{{ $productor->id }}">{{ $productor->name }}</option>
                                     @endforeach
@@ -19,11 +19,8 @@
                             </div>
                         </div>
                         <div class="col-md-10">
-                            @foreach ($productores as $productor)
-                                <div id="show{{ $productor->id }}" x-show="false" x-cloak>
-                                    @livewire('lider-produccion.asignar-proyecto', ['id_productor' => $productor->id])                             
-                                </div>
-                            @endforeach
+                            {{-- Un solo componente: muestra al productor elegido en la lista --}}
+                            @livewire('lider-produccion.asignar-proyecto')
                         </div>
                     </div>
                 </div>
@@ -36,21 +33,10 @@
     @section('scripts')
         <script>
             function asignarProyecto (){ 
-                return {
-                    productor,
-                    prevComponente: null,
-                    Open(){
-                        this.Close(this.prevComponente);
-                        let componente = document.getElementById('show'+productor.value);
-                        this.prevComponente = (componente != this.prevComponente) ? componente : this.prevComponente;
-                        componente.style.display = 'block';                        
-                    },
-                    Close(compoente){
-                        if (compoente){
-                            compoente.style.display = 'none';
-                        }
-                    }
-                }
+                return { productor: '' }
             }
+            window.addEventListener('crm-aviso', function (e) {
+                if (window.Swal) { Swal.fire('Hecho', e.detail.texto, 'success'); }
+            });
         </script>
     @endsection

@@ -3,11 +3,14 @@
 namespace App\Http\Livewire\Contabilidad\Produccion;
 
 use Livewire\Component;
+use App\Traits\Email;
 use App\Models\OrdenCompra;
 use App\Models\Anticipo as AnticipoModel;
  
 class Anticipo extends Component
 {
+    use Email;
+
     // Variables para el formulario
     public $causa_cod, $observacion_causacion;
 
@@ -48,10 +51,11 @@ class Anticipo extends Component
         $this->anticipo->estado_id = 5; // Comprobado
         $this->anticipo->update();
 
-        // $this->ocNaturalRevisionTesoreria($this->orden);   
+        // Tesorería recibe el aviso (con copia a contabilidad y al productor)
+        $this->anticipoCausado($this->anticipo);
 
         // Redirige con mensaje de éxito
-        return redirect()->route('lista-anticipos-contabilidad')->with('success', 'Orden de compra causada exitósamente.');
+        return redirect()->route('lista-anticipos-contabilidad')->with('success', 'Anticipo causado exitósamente.');
     }
 
     // Rechaza la causación del anticipo y actualiza el estado
@@ -74,10 +78,11 @@ class Anticipo extends Component
         $this->anticipo->estado_id = 13;
         $this->anticipo->update();
 
-        // $this->ocNaturalContabilidadRechazo($this->orden);
+        // El productor recibe el motivo y vuelve a enviar las evidencias
+        $this->anticipoRechazoContabilidad($this->anticipo);
 
         // Redirige con mensaje de éxito
-        return redirect()->route('lista-anticipos-contabilidad')->with('success', 'Orden de compra rechazada exitósamente.');
+        return redirect()->route('lista-anticipos-contabilidad')->with('success', 'Anticipo devuelto al productor.');
     }
 
     // Al montar el componente, carga la orden de compra correspondiente

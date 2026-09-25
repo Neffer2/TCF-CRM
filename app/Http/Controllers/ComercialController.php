@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 // Importación de clases para manejo de archivos Excel
-use App\Imports\BaseSheetHandler;
 use App\Exports\CotExport;
 use App\Exports\BaseExport;
 use App\Models\HistorialItemPresupuesto;
@@ -166,6 +165,8 @@ class ComercialController extends Controller
         if (!$presto) {
             abort(404, 'Presupuesto no encontrado.');
         }
+        // Solo quien trabaja el proyecto (o su productor): la versión interna muestra costos y proveedores.
+        abort_unless(Auth::user()->puedeVerPresupuesto($presto), 403);
 
         // Obtener sus items relacionados ORDENADOS por el campo 'orden'
         $items = ItemPresupuesto::where('presupuesto_id', $presto->id)
@@ -198,18 +199,16 @@ class ComercialController extends Controller
         if (!$presto) {
             return redirect()->back()->with('error', 'El presupuesto no existe.');
         }
+        abort_unless(Auth::user()->puedeVerPresupuesto($presto), 403);
 
         $allItems = ItemPresupuesto::where('presupuesto_id', $presto->id)->get();
 
-        $costosProyecto = $allItems->sum('v_total');
-
-        $ventaProyecto = $allItems->sum('v_total_cliente');
-
-        // Margen Bruto en Pesos (Venta menos Costos)
-        $margenBruto = $ventaProyecto - $costosProyecto;
-
-        // Margen del Proyecto en Porcentaje
-        $margenProyecto = $ventaProyecto > 0 ? ($margenBruto / $ventaProyecto) * 100 : 0;
+        // Las mismas cifras de la pantalla del presupuesto (venta = ítems a precio cliente + recargos).
+        // Antes se sumaba v_total_cliente, que no cuadra con la venta del proyecto.
+        $costosProyecto = (float) $presto->costos_proy;
+        $ventaProyecto = (float) $presto->venta_proy;
+        $margenBruto = (float) $presto->margen_bruto;
+        $margenProyecto = (float) $presto->margen_proy;
 
         // Margen Items con la MISMA fórmula que usa la pantalla (getMetricas):
         // sum(v_total con margen>0) / sum(v_total_cot). El promedio simple
@@ -246,19 +245,6 @@ class ComercialController extends Controller
         return Excel::download(new CotExport($payload), $nom_proyecto.".xlsx");
     }
 
-    /**
-     * Función deprecada para generar PDF
-     * @deprecated Esta función ya no se utiliza
-     * @return \Illuminate\Http\Response
-     */
-    // DEPRECATED
-    public function pdf(){
-        $dompdf = new Dompdf(array('enable_remote' => true));
-        $html = View::make('pdf.index')->render();
-        $dompdf->loadHtml($html);
-        $dompdf->render();
-        $dompdf->stream();
-    }
 
     /**
      * Elimina un proyecto de la base comercial
@@ -266,8 +252,30 @@ class ComercialController extends Controller
      * @param int $user_id ID del proyecto a eliminar
      * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito
      */
+    /** Comerciales cuyos datos puede tocar el usuario: null = todos (administración); el ejecutivo, los de su comercial. */
+    private function comercialesDelUsuario(): ?array
+    {
+        $user = Auth::user();
+        if ((int) $user->rol === 1) {
+            return null;
+        }
+        if ((int) $user->rol === 5) {
+            return Asistente::where('asistente_id', $user->id)->pluck('comercial_id')->map(function ($id) { return (int) $id; })->all();
+        }
+        return [(int) $user->id];
+    }
+
+    private function esDelUsuario($idComercial): bool
+    {
+        $propios = $this->comercialesDelUsuario();
+        return $propios === null || in_array((int) $idComercial, $propios, true);
+    }
+
     public function delete_proyecto($user_id){
-        Base_comercial::destroy($user_id);
+        // El parámetro es el id de la fila de base comercial: solo se borra si es del usuario (o de su comercial).
+        $base = Base_comercial::find($user_id);
+        abort_unless($base && $this->esDelUsuario($base->id_user), 403);
+        $base->delete();
         return redirect()->back()->with('success', 'Proyecto eliminado exitosamente.');
     }
 
@@ -279,7 +287,11 @@ class ComercialController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito
      */
     public function delete_registro($centro, $num_doc){
-        Helisa::where('centro', $centro)->where('num_doc', $num_doc)->delete();
+        // Antes borraba el documento de todos los participantes; ahora solo las filas del usuario (o de su comercial).
+        $propios = $this->comercialesDelUsuario();
+        Helisa::where('centro', $centro)->where('num_doc', $num_doc)
+            ->when($propios !== null, function ($q) use ($propios) { $q->whereIn('comercial', $propios); })
+            ->delete();
         return redirect()->back()->with('success', 'Registro eliminado exitosamente.');
     }
 
@@ -290,17 +302,8 @@ class ComercialController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de error
      */
     public function upload_base (Request $request){
-        // Función descontinuada - retorna mensaje de error
+        // Función descontinuada: la base comercial se registra desde la gestión comercial
         return redirect()->route('dashboard-base')->with('error', '¡Ésta función fué descontinuada.!');
-
-        // Código original comentado (descontinuado)
-        $request->validate([
-            'base_xls' => 'required|mimes:xlsx, csv, xls'
-        ]);
-
-        Base_comercial::where('id_user', Auth::user()->id)->delete();
-        Excel::import(new BaseSheetHandler, $request->base_xls);
-        return redirect()->route('dashboard-base')->with('success', '¡Base comercial cargada exitosamente!');
     }
 
     /**
@@ -313,6 +316,9 @@ class ComercialController extends Controller
         // Si el usuario es asistente (rol 5), obtener el nombre del comercial asociado
         if (Auth::user()->rol == 5){
             $name = Asistente::where('asistente_id', Auth::user()->id)->first();
+            if (!$name || !$name->comercial) {
+                return redirect()->back()->with('error', 'No tienes un comercial asignado.');
+            }
             return Excel::download(new BaseExport(), $name->comercial->name." Base.xlsx");
         }
 
@@ -331,6 +337,9 @@ class ComercialController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
      */
     public function delete_contacto($id){
+        $contacto = Contacto::find($id);
+        abort_unless($contacto && $this->esDelUsuario($contacto->id_user), 403);
+
         // Verificar si el contacto está vinculado a alguna gestión comercial
         $gestionComercial = GestionComercial::where('id_contacto', $id)->first();
 
@@ -361,8 +370,9 @@ class ComercialController extends Controller
             "direccion_edit" => 'required|string'
         ]);
 
-        // Buscar y actualizar el contacto
+        // Buscar y actualizar el contacto (solo si es del usuario o de su comercial)
         $contacto = Contacto::find($id);
+        abort_unless($contacto && $this->esDelUsuario($contacto->id_user), 403);
         $contacto->cargo = $request->cargo_edit;
         $contacto->celular = $request->celular_edit;
         $contacto->correo = $request->correo_edit;

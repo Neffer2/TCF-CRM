@@ -33,6 +33,12 @@ class Anticipo extends Component
             $this->addError('error', 'Este anticipo ya fué pagado');
             return redirect()->back();
         }
+        // Solo se paga lo causado por Contabilidad y nunca una orden anulada.
+        $this->orden->refresh();
+        if ((int) $this->orden->estado_id === 6 || !$this->orden->cod_causal) {
+            $this->addError('error', 'La orden está anulada o aún no la causa Contabilidad: no se puede pagar.');
+            return redirect()->back();
+        }
 
         // Valida los campos requeridos
         $this->validate([
