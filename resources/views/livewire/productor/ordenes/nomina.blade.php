@@ -57,7 +57,7 @@
                                     <td>
                                         <div class="form-group m-0">
                                             <label for="proveedor"><b>Proveedor:</b> @if ($proveedor)
-                                                {{ $proveedores->where('id', $proveedor)->first()['tercero'] }}
+                                                {{ optional($proveedores->firstWhere('id', $proveedor))->tercero ?: optional(\App\Models\Proveedor::find($proveedor))->tercero }}
                                                 @endif </label>
                                             <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                                 @foreach ($proveedores as $proveedor_info)

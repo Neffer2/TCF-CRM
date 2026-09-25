@@ -646,7 +646,7 @@
 
                             <div class="col-12">
                                 <p class="text-dark font-weight-bold mt-3">
-                                    Observaciones lider de producción: {{ $orden_compra->observaciones_revision_lider }}
+                                    Observaciones lider de producción: {{ $queriedAnticipo->observaciones_revision_lider }}
                                 </p>
                             </div>
 

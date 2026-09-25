@@ -1,7 +1,7 @@
 # Guía de pruebas — TCF-CRM (rama `correcciones`)
 **Para:** desarrollador/tester que valida la reestructuración antes del paso a producción.
 **Rama a probar:** `correcciones` · **NUNCA toques la rama `main`** (subir a main despliega a producción automáticamente).
-**Versión de esta guía:** 24 de septiembre de 2026 (commit más reciente de `correcciones`).
+**Versión de esta guía:** 25 de septiembre de 2026 (commit más reciente de `correcciones`).
 
 > **Actualización del 24-sep (anticipo jurídico):** si ya tenías el entorno montado, corre esto en la raíz del proyecto y pasa a **B6b**. Todo es solo para tu base local; no lo corras en ningún servidor.
 >
@@ -455,7 +455,9 @@ Todo esto antes se podía hacer desde la consola del navegador (en Livewire cual
 | 8j.10 | Meses sin solape | Admin → Configuración de meses: pon enero de 2026 empezando el 15-dic-2025 | Aviso: enero empieza antes de que termine diciembre del año anterior; no guarda |
 | 8j.11 | Tablero de Gerencia, año pasado | Tablero con año 2025 sin mes | Venta acumulada de enero a diciembre contra presupuesto de enero a diciembre (antes 12 meses de venta contra 9 de presupuesto) |
 | 8j.12 | Registro Helisa con fecha imposible | Nuevo registro con fecha del año 0026 | Aviso "Revisa el año de la fecha" |
-| 8j.13 | Pruebas automáticas | `./crear-bd-testing.sh` y luego `php artisan test` | Corre los escenarios de la auditoría (más de 280 casos) sobre `tfc_crm_testing`; sin esa base se omiten y **no tocan** la base del .env |
+| 8j.13 | Pruebas automáticas | `./crear-bd-testing.sh` y luego `php artisan test` | Corre los escenarios de la auditoría (10 escenarios, más de 320 casos) sobre `tfc_crm_testing`; sin esa base se omiten y **no tocan** la base del .env. El correo y los SMS quedan simulados (solo en el log), pase lo que pase con el .env |
+| 8j.14 | Gerencia abre un anticipo de productor | Como `prueba.gerencia`, abre desde Anticipos uno de productor en "Revisión Gerencia" (estado 9) | La ficha abre (antes error 500), muestra la observación del líder y Gerencia puede aprobarlo o rechazarlo |
+| 8j.15 | Nómina con proveedor fuera de la lista | Como `prueba.productor`, abre una nómina cuyo proveedor no es de la categoría Nómina | Abre y muestra el nombre del proveedor (antes error 500) |
 
 
 ## B9. Regresión general (nada se rompió)

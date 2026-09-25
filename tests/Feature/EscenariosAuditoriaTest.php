@@ -18,7 +18,11 @@ class EscenariosAuditoriaTest extends TestCase
         $base = env('DB_TESTING_DATABASE', 'tfc_crm_testing');
         $this->assertTrue(str_ends_with($base, '_testing'), 'La base de escenarios debe terminar en _testing');
         config(['database.default' => 'mysql', 'database.connections.mysql.database' => $base, 'mail.default' => 'log',
-            'crm.notificaciones.correo_modo' => 'log', 'crm.sms.modo' => 'log', 'crm.notificaciones.alertas.siempre' => false]);
+            'crm.notificaciones.correo_modo' => 'log', 'crm.sms.modo' => 'log', 'crm.notificaciones.alertas.siempre' => false,
+            // Con APP_ENV=testing Livewire deja las cargas de archivos en un disco propio ("tmp-for-tests", falso y vacío)
+            // y ->store() también escribe ahí. Se apunta al disco del CRM para que los archivos queden donde quedan en
+            // producción y los escenarios los encuentren con Storage::exists().
+            'filesystems.disks.tmp-for-tests' => config('filesystems.disks.'.config('filesystems.default'))]);
         $this->assertSame('log', config('crm.notificaciones.correo_modo'), 'El correo debe estar simulado');
         DB::purge('mysql');
         try {
