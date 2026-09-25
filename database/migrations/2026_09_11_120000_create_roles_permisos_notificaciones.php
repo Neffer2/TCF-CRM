@@ -96,7 +96,7 @@ class CreateRolesPermisosNotificaciones extends Migration
 
             $permisos = [
                 'aprobar-presupuestos' => 'Aprobar/rechazar presupuestos en validación (estado 5)',
-                'aprobador-margen' => 'Recibir y decidir las aprobaciones de margen (regla del 35%)',
+                'aprobador-margen' => 'Recibir y decidir las aprobaciones de margen (margen del proyecto menor al 30 %)',
                 'gerente-comercial' => 'Actuar como gerente en validaciones y actualizaciones de presupuesto',
                 'validar-nomina' => 'Validar órdenes de nómina (gerencia/remisión)',
                 'revisar-anticipos-gerencia' => 'Revisión de gerencia sobre anticipos de productor',
