@@ -22,8 +22,8 @@
                 <label for="comercial">Margen:</label>
                 <select id="comercial" class="form-control" wire:model="margen">
                     <option value="">Seleccionar</option>
-                    <option value=">">Mayor a 35</option>
-                    <option value="<">Menor a 35</option>
+                    <option value=">">30 % o más</option>
+                    <option value="<">Menor a 30 (Gerencia)</option>
                 </select>
             </div>
             <div class="form-group col-md-2 mb-0">

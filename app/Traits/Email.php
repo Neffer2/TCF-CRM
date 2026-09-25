@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\NotificacionDestinatario;
 use App\Models\Permiso;
+use App\Services\AprobacionPresupuesto;
 use App\Services\Notificador;
 
 /**
@@ -143,8 +144,8 @@ trait Email
                 $cc[] = ['name' => $asistenteRel->ejecutivo->name, 'email' => $asistenteRel->ejecutivo->email];
             }
         }
-        // Los aprobadores de margen (Gerencia) reciben copia cuando el margen estuvo en la frontera (<= 35 %)
-        if (optional($gestion->presupuesto)->margen_proy <= 35){
+        // Los aprobadores de margen (Gerencia) reciben copia cuando el margen exigía su aprobación (menor al 30 %)
+        if ($gestion->presupuesto && AprobacionPresupuesto::requiereGerencia($gestion->presupuesto)){
             array_push($recipients, ...Permiso::usuariosCon('aprobador-margen'));
         }
         array_push($recipients, ...$this->destUsuario($user));

@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Auth;
 class AprobacionPresupuesto
 {
     /**
-     * Con margen del proyecto (%) hasta este valor, inclusive, la aprobación es de Gerencia (estado 5).
-     * Regla de negocio del 11-sep-2026 ("solo Gerencia aprueba el margen 35 %"), la misma que usan los
-     * correos y el filtro de gestión. El código tenía 30 % y dejó pasar 1.293 presupuestos entre 30 y 35.
+     * Con margen del proyecto (%) por debajo de este valor, la aprobación es de Gerencia (estado 5).
+     * Regla confirmada por Gerencia el 25-sep-2026 ("Gerencia debe estar al 30 %"): el mismo 30 % que traía
+     * la pantalla del presupuesto. Los correos y el filtro de gestión decían 35 %; ahora todos usan esta constante.
      */
-    const MARGEN_GERENCIA = 35.00;
+    const MARGEN_GERENCIA = 30.00;
 
     public static function requiereGerencia(PresupuestoProyecto $presupuesto): bool
     {
-        return (float) $presupuesto->margen_proy <= self::MARGEN_GERENCIA;
+        return (float) $presupuesto->margen_proy < self::MARGEN_GERENCIA;
     }
 
     /** Lleva el valor aprobado a la gestión y reparte el presupuesto de cada participante en la base comercial. */

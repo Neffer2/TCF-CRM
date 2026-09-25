@@ -48,10 +48,10 @@ class GestionPresupuestos extends Component
         }
 
         if ($this->margen == '<'){
-            // "Menor a 35" excluye el 35 exacto (antes salía en los dos filtros)
-            array_push($filtros, ['margen_proy', '<', 35]);
+            // Los que decide Gerencia (menor al 30 %); el 30 exacto va en el otro filtro (antes salía en los dos)
+            array_push($filtros, ['margen_proy', '<', AprobacionPresupuesto::MARGEN_GERENCIA]);
         } elseif ($this->margen == '>'){
-            array_push($filtros, ['margen_proy', '>=', 35]);
+            array_push($filtros, ['margen_proy', '>=', AprobacionPresupuesto::MARGEN_GERENCIA]);
         }
 
         array_push($filtros, ['cod_cc', null]);

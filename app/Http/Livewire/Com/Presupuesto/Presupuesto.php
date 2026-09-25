@@ -901,7 +901,7 @@ class Presupuesto extends Component
         // Mismo permiso que el bloque del líder en la vista: estado 4 y rol Admin o Líder comercial.
         abort_unless((int) $presto->estado_id === 4 && in_array((int) Auth::user()->rol, [1, 12], true), 403);
 
-        // Con margen de 35 % o menos va a validación de Gerencia (estado_id = 5);
+        // Con margen menor al 30 % (AprobacionPresupuesto::MARGEN_GERENCIA) va a validación de Gerencia (estado_id = 5);
         // de lo contrario se aprueba directamente (estado_id = 1)
         if (AprobacionPresupuesto::requiereGerencia($presto)) {
             $presto->estado_id = 5;
@@ -1002,7 +1002,7 @@ class Presupuesto extends Component
             ]);
         }
 
-        // Con margen de 35 % o menos se envía a validación de Gerencia (estado_id = 5)
+        // Con margen menor al 30 % (AprobacionPresupuesto::MARGEN_GERENCIA) se envía a validación de Gerencia (estado_id = 5)
         if (AprobacionPresupuesto::requiereGerencia($presupuesto)) {
             $presupuesto->estado_id = 5;
             $presupuesto->cod_cc = $this->centroCostos;

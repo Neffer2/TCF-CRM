@@ -30,10 +30,10 @@ try {
     $check($st(Livewire::actingAs($admin)->test(GestionPresupuestos::class, ['rol' => 1])->call('cambioEstado', 5227, 3)) === 422 && $estado(5227) === 1, 'Un presupuesto aprobado no se cambia desde la lista');
 
     echo "\nMARGEN BAJO: solo Gerencia aprueba\n";
-    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['margen_proy' => 33]);
+    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['margen_proy' => 25]);
     $desde = (int) NotificacionLog::max('id');
     Livewire::actingAs($lidercom)->test(ValidacionesPresto::class)->call('cambioEstado', 5386, 1);
-    $check($estado(5386) === 5, 'El líder elige "Aprobado" con margen 33 %: queda en Validación Gerencia (antes, con el 30 % del código, quedaba aprobado)');
+    $check($estado(5386) === 5, 'El líder elige "Aprobado" con margen 25 %: queda en Validación Gerencia (regla: menor al 30 %)');
     $check($correo('presupuestoAprobacion', $desde) === 1, 'Gerencia recibe el aviso');
     $check($st(Livewire::actingAs($controller)->test(ActualizacionesPresto::class, ['rol' => 11])->call('cambioEstado', 5386, 1)) === 403 && $estado(5386) === 5, 'Controller no aprueba lo que está en validación de Gerencia');
     $desde = (int) NotificacionLog::max('id');
@@ -46,12 +46,12 @@ try {
     $check($correo('presupuestoAprobado', $desde) === 1, 'Sale el correo de aprobado');
 
     echo "\nMARGEN SUFICIENTE\n";
-    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['estado_id' => 4, 'margen_proy' => 35]);
+    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['estado_id' => 4, 'margen_proy' => 30]);
     Livewire::actingAs($controller)->test(GestionPresupuestos::class, ['rol' => 11])->call('cambioEstado', 5386, 1);
-    $check($estado(5386) === 5, 'Con margen de 35 % exacto también decide Gerencia (regla ≤ 35 %)');
-    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['estado_id' => 4, 'margen_proy' => 40]);
+    $check($estado(5386) === 1, 'Con margen de 30 % exacto no hace falta Gerencia (la regla es menor al 30 %)');
+    DB::table('presupuesto_proyecto')->where('id', 5386)->update(['estado_id' => 4, 'margen_proy' => 33]);
     Livewire::actingAs($controller)->test(GestionPresupuestos::class, ['rol' => 11])->call('cambioEstado', 5386, 1);
-    $check($estado(5386) === 1, 'Controller aprueba desde Gestión de presupuestos con margen 40 %');
+    $check($estado(5386) === 1, 'Controller aprueba desde Gestión de presupuestos con margen 33 % sin pasar por Gerencia');
     DB::table('presupuesto_proyecto')->where('id', 5386)->update(['estado_id' => 4, 'cod_cc' => null]);
     $check($st(Livewire::actingAs($lidercom)->test(ValidacionesPresto::class)->call('cambioEstado', 5386, 1)) === 422 && $estado(5386) === 4, 'Sin centro de costos no se aprueba');
     $desde = (int) NotificacionLog::max('id');

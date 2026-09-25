@@ -443,7 +443,7 @@ Todo esto antes se podía hacer desde la consola del navegador (en Livewire cual
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 8j.1 | Umbral de Gerencia 35 % | Presupuesto con margen entre 30 y 35 % (p. ej. 33 %): el líder lo aprueba con centro de costos | Pasa a Validación Gerencia (antes, con 30 % en el código, quedaba aprobado sin Gerencia). Con 35 % exacto también; con 36 % queda aprobado |
+| 8j.1 | Umbral de Gerencia 30 % | Presupuesto con margen menor al 30 % (p. ej. 25 %): el líder lo aprueba con centro de costos | Pasa a Validación Gerencia y llega el correo a Gerencia. Con 30 % exacto o más (p. ej. 33 %) queda aprobado sin Gerencia. El mismo 30 % manda en las listas, en el filtro de Gestión de presupuestos y en la copia del correo a Gerencia (antes decían 35 %) |
 | 8j.2 | Gerencia rechaza y libera el código | Presupuesto nuevo en Validación Gerencia → Gerencia lo rechaza | Vuelve a Editable **sin** centro de costos (el código queda libre); si el presupuesto ya había sido aprobado antes, conserva su código |
 | 8j.3 | "Otros (meses)" multiplica | En un ítem pon cantidad 2, día 1, otros 3, unitario 10.000 | Total 60.000 (antes 20.000: "otros" se capturaba pero no entraba en la cuenta) |
 | 8j.4 | Archivos solo con sesión | Sin iniciar sesión abre `/storage/ordenes_juridicas_helisa/<archivo>.pdf` (copia la dirección de cualquier PDF del CRM) | 403. Con sesión abre. Como `prueba.comercial`, un archivo de `/storage/ruts/…` (documentos de terceros) da 403; como productor o admin abre |

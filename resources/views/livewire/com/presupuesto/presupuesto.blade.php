@@ -46,7 +46,7 @@
                                     <td class="font-weight-bold font-table">MARGEN DEL PROYECTO</td>
                                     <td class="font-table">{{ number_format($margenProyecto, 2) }} %
                                         <details class="crm-info crm-info--fila"><summary aria-label="¿Cómo se calcula el margen del proyecto?" title="¿Cómo se calcula?">?</summary>
-                                            <div class="crm-info__pop"><b>Margen del proyecto</b><p>El margen bruto como porcentaje de la venta. Si queda en 35 % o menos, el presupuesto pasa a validación de gerencia.</p><span>({{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}) ÷ {{ $pesos($ventaProyecto) }} × 100</span><em>= {{ $pct($margenProyecto) }}</em></div>
+                                            <div class="crm-info__pop"><b>Margen del proyecto</b><p>El margen bruto como porcentaje de la venta. Si queda por debajo del 30 %, el presupuesto pasa a validación de gerencia.</p><span>({{ $pesos($ventaProyecto) }} − {{ $pesos($costosProyecto) }}) ÷ {{ $pesos($ventaProyecto) }} × 100</span><em>= {{ $pct($margenProyecto) }}</em></div>
                                         </details>
                                     </td>
                                 </tr>
