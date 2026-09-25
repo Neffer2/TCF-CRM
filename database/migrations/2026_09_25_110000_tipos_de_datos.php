@@ -24,7 +24,8 @@ class TiposDeDatos extends Migration
             $largos = DB::selectOne("SELECT COUNT(*) n FROM `{$t}` WHERE porcentaje LIKE '%.%' AND LENGTH(SUBSTRING_INDEX(porcentaje, '.', -1)) > 4")->n;
             if ($largos > 0) { throw new RuntimeException("{$t}.porcentaje tiene {$largos} valores con más de 4 decimales; se perderían al convertir."); }
             DB::statement("UPDATE `{$t}` SET porcentaje = NULL WHERE porcentaje = ''");
-            DB::statement("ALTER TABLE `{$t}` MODIFY COLUMN `porcentaje` DECIMAL(9,4) NULL COMMENT 'Participación del comercial en el proyecto (%)'");
+            $que = $t === 'helisa' ? 'Participación del comercial en la factura (%)' : 'Participación del comercial en el proyecto (%)';
+            DB::statement("ALTER TABLE `{$t}` MODIFY COLUMN `porcentaje` DECIMAL(9,4) NULL COMMENT '{$que}'");
         }
 
         if (EsquemaBd::columna('historial_items_presupuesto', 'valores_anteriores') && strpos((string) EsquemaBd::tipoColumna('historial_items_presupuesto', 'valores_anteriores'), 'json') !== 0) {

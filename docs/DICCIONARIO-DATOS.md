@@ -1,6 +1,6 @@
 # Diccionario de datos — TCF-CRM (BULLCRM)
 
-Generado automáticamente desde el esquema de la base `tfc_crm` el 2026-09-25 10:15 con `php artisan tinker docs/generar-diccionario.php`.
+Generado automáticamente desde el esquema de la base `tfc_crm` el 2026-09-25 12:17 con `php artisan tinker docs/generar-diccionario.php`.
 Los comentarios provienen de los COMMENT del esquema (migración `2026_09_14_140000_documentar_esquema`).
 
 ## Mapa rápido del flujo
@@ -478,7 +478,7 @@ Asientos de facturación exportados/registrados para el contable Helisa. Un docu
 | nom_centro_costo | `varchar(255)` | no |  |  | Nombre del centro de costos |
 | debito | `decimal(12,2)` | sí |  |  | Valor débito |
 | credito | `decimal(12,2)` | sí |  |  | Valor crédito |
-| porcentaje | `decimal(9,4)` | sí |  |  | Participación del comercial en el proyecto (%) |
+| porcentaje | `decimal(9,4)` | sí |  |  | Participación del comercial en la factura (%) |
 | comercial | `bigint unsigned` | no |  | → `users.id` | Comercial al que se atribuye -> users.id |
 | id_cuenta | `bigint unsigned` | no | `1` | → `cuentas.id` | Cuenta/marca -> cuentas.id |
 | participacion | `varchar(255)` | no |  |  | Número de comerciales que participan en la factura |
@@ -571,7 +571,7 @@ Proveedores asignados a cada ítem de presupuesto (N:M)
 | v_total | `decimal(15,2)` | no | `0.00` |  | Costo total interno (cantidad * dia * otros * v_unitario) |
 | v_total_cliente | `decimal(15,2)` | no | `0.00` |  | Valor total al cliente (variante usada en cotización) |
 | proveedor_legacy | `varchar(255)` | sí |  |  | OBSOLETO: valor original del proveedor. Usar item_presupuesto_proveedor |
-| margen_utilidad | `double(15,10)` | no | `0.0000000000` |  | Margen de utilidad del ítem (fracción; 0.35 = 35 %) |
+| margen_utilidad | `double(15,10)` | no | `0.0000000000` |  | Factor costo ÷ precio del ítem (p. ej. 0,70): el precio al cliente es el costo ÷ este factor y el margen del ítem es 1 − factor (0,70 → 30 %) |
 | mes_id | `bigint unsigned` | sí |  | → `meses.id` | Periodo (meses.id) en que se ejecuta el ítem; NULL = sin mes (eventos) |
 | dias | `int` | no |  |  | Días de ejecución (dato informativo) |
 | ciudad | `varchar(255)` | no |  |  | Ciudad de ejecución |
@@ -808,7 +808,7 @@ Presupuesto de un proyecto (centro de costos): totales, margen, aprobación y pr
 | margen_general | `double(15,10)` | no | `0.0000000000` |  | Margen general (%) calculado a partir de los ítems |
 | venta_proy | `decimal(15,2)` | no | `0.00` |  | Valor de venta del proyecto (total al cliente) |
 | costos_proy | `decimal(15,2)` | no | `0.00` |  | Costos totales del proyecto (suma de los ítems) |
-| margen_proy | `decimal(15,2)` | no | `0.00` |  | Margen % del proyecto. La aprobación exige >= 35 % (regla de Gerencia) |
+| margen_proy | `decimal(15,2)` | no | `0.00` |  | Margen % del proyecto. Con menos del 30 % la aprobación es de Gerencia (AprobacionPresupuesto::MARGEN_GERENCIA) |
 | margen_bruto | `decimal(15,2)` | no | `0.00` |  | Margen bruto en pesos (venta − costos) |
 | cod_cot | `int` | no |  |  | Consecutivo de la cotización |
 | cod_cc | `varchar(255)` | sí |  |  | Código de centro de costos asignado al aprobar |

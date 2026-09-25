@@ -1,7 +1,8 @@
 -- 07 · Centros de costo repetidos (solo lectura: lista para decidir).
 -- Con la mejora de base de datos del 25-sep, presupuesto_proyecto.centro_costos guarda el código puro del
--- centro de costos (el que usa Helisa). Diez códigos están asignados a más de un proyecto, todos anteriores a la
--- validación del CRM. Mientras existan no se puede poner la restricción UNIQUE en la base; la regla de la
+-- centro de costos (el que usa Helisa). 62 códigos están asignados a más de un proyecto (134 presupuestos; 58 de ellos
+-- de 2023). En 54 el texto de cod_cc era distinto (mismo código con otro nombre pegado), por eso antes no se veían.
+-- Todos son anteriores a la validación del CRM. Mientras existan no se puede poner la restricción UNIQUE en la base; la regla de la
 -- aplicación ya impide que se repitan de aquí en adelante (también contra lo que está en la papelera).
 -- Decisión que toca a Contabilidad/Comercial: cuál de los proyectos conserva el código y qué código llevan los demás.
 SELECT p.centro_costos AS codigo, COUNT(*) AS proyectos,

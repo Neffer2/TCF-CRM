@@ -473,14 +473,14 @@ Siete migraciones (`2026_09_25_*`) que copian datos y no borran nada; el respald
 | 8k.3 | Proveedor en la papelera | Elimina un proveedor sin órdenes; intenta crear otro con el mismo documento | Aviso "está en la papelera: restáuralo"; al restaurarlo vuelve a la lista |
 | 8k.4 | Papelera: quién puede | Como `prueba.comercial` abre `/papelera` | 403; solo Administración |
 | 8k.5 | Historial de estados | Aprueba o rechaza una orden de compra y ábrela desde **Administración → Órdenes de compra**; lo mismo con un anticipo de productor | Bloque "Historial de estados": cada cambio con estado anterior → nuevo, quién y la observación que dejó. En la base, tabla `historial_estados` |
-| 8k.6 | Centro de costos puro | Asigna a un presupuesto el centro "44260901 - Proyecto X"; en otro intenta "44260901 OTRO NOMBRE" | El segundo se rechaza ("ya fue asignado") aunque el nombre pegado sea otro (antes se colaba). En la base, `centro_costos` = 44260901 y `cod_cc` conserva lo digitado |
+| 8k.6 | Centro de costos puro | Asigna a un presupuesto el centro "44260901 - Proyecto X"; en otro intenta "44260901 OTRO NOMBRE" | El segundo se rechaza ("ya fue asignado") aunque el nombre pegado sea otro (así se colaron 54 de los 62 códigos repetidos que hay). En la base, `centro_costos` = 44260901 y `cod_cc` conserva lo digitado |
 | 8k.7 | Ciudades desde el catálogo | En un ítem del presupuesto abre el desplegable de ciudad; en la base, tabla `ciudades` | La lista sale de la tabla (activas, NACIONAL primero); el ítem queda con `ciudad_id`. Una ciudad escrita distinto ("Bogotá, D.C.") enlaza con BOGOTA D.C |
 | 8k.8 | Mes del ítem | Crea un ítem con mes y mira `items_presupuesto` | Queda `mes_id` con llave al catálogo `meses` (antes el id del mes iba como texto en `mes`); la pantalla muestra el nombre del mes |
 | 8k.9 | Roles | Entra con cualquier usuario y usa el selector de rol; **Mi perfil** | Funciona igual: el catálogo se llama ahora `roles` (antes `roles_user`) |
 | 8k.10 | Base desde cero | En una base vacía: `php artisan migrate` | Carga `database/schema/mysql-schema.dump` (53 tablas, 77 llaves, sin datos) y `migrate:status` no deja nada pendiente |
 | 8k.11 | Pruebas automáticas | `./crear-bd-testing.sh` y `php artisan test` | Incluye `base_datos.php` (38 casos: roles, código puro, catálogos, historial y papelera) |
-| 8k.12 | Diccionario y comentarios | `docs/DICCIONARIO-DATOS.md` o cualquier cliente SQL | 53 tablas y las 555 columnas con descripción (antes 178 de 525) |
-| 8k.13 | Datos por decidir | `database/correcciones-datos/07_*.sql` y `08_*.sql` | Listan los 10 centros de costo repetidos y las 6 cédulas repetidas; solo lectura |
+| 8k.12 | Diccionario y comentarios | `docs/DICCIONARIO-DATOS.md` o cualquier cliente SQL | 53 tablas y las 556 columnas con descripción (antes 178 de 525) |
+| 8k.13 | Datos por decidir | `database/correcciones-datos/07_*.sql` y `08_*.sql` | Listan los 62 centros de costo repetidos (134 presupuestos, casi todos de 2023) y las 6 cédulas repetidas; solo lectura |
 
 ## B9. Regresión general (nada se rompió)
 

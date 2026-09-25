@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
  * se añade centro_costos con solo el código (6 a 12 caracteres alfanuméricos con al menos 4 dígitos),
  * con índice, en presupuesto_proyecto y base_comerciales. cod_cc se conserva tal cual (no se pierde nada)
  * y los modelos llenan centro_costos automáticamente al guardar cod_cc.
- * La unicidad sigue siendo regla de la aplicación: hay 10 códigos históricos repetidos
- * (database/correcciones-datos/07_centros_costo_repetidos.sql) que deben resolverse antes de poner UNIQUE.
+ * La unicidad sigue siendo regla de la aplicación: hay 62 códigos históricos (casi todos de 2023) compartidos por
+ * 134 presupuestos (database/correcciones-datos/07_centros_costo_repetidos.sql); deben resolverse antes de poner UNIQUE.
  */
 class CentroCostosPuro extends Migration
 {

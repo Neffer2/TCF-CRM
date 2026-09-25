@@ -168,7 +168,11 @@ class DocumentarEsquemaCompleto extends Migration
                 'dias' => 'Días',
                 'otros' => 'Otros (meses u otro multiplicador)',
             ],
-            'items_presupuesto' => $ts + ['descripcion' => 'Descripción del ítem o del evento'],
+            'items_presupuesto' => $ts + [
+                'descripcion' => 'Descripción del ítem o del evento',
+                // Corrige la descripción del 14-sep ("0.35 = 35 %"): el precio al cliente es el costo dividido por este factor
+                'margen_utilidad' => 'Factor costo ÷ precio del ítem (p. ej. 0,70): el precio al cliente es el costo ÷ este factor y el margen del ítem es 1 − factor (0,70 → 30 %)',
+            ],
             'lider_comercial_user' => $ts + ['lider_id' => 'Líder comercial (users.id)', 'comercial_id' => 'Comercial de su equipo (users.id)'],
             'meses' => $ts + ['description' => 'Nombre del periodo (p. ej. Enero)'],
             'migrations' => ['id' => $id, 'migration' => 'Nombre del archivo de migración', 'batch' => 'Lote en que se aplicó'],
@@ -211,6 +215,8 @@ class DocumentarEsquemaCompleto extends Migration
                 'notas' => 'Notas del presupuesto',
                 'justificacion_gerencia' => 'Justificación de Gerencia al rechazar (histórico; ver historial_estados)',
                 'requiere_revalidacion' => '1 = hubo cambios después de aprobarse y debe volver a validarse',
+                // Corrige la descripción del 14-sep, que hablaba de 35 %: la regla confirmada es 30 %
+                'margen_proy' => 'Margen % del proyecto. Con menos del 30 % la aprobación es de Gerencia (AprobacionPresupuesto::MARGEN_GERENCIA)',
             ],
             'presupuestos' => $ts + ['id_user' => 'Comercial (users.id) al que corresponde la meta'],
             'proveedores' => $ts + [

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  * - Clave primaria en password_resets; se quita presupuesto_proyecto.comercial_id (vacía en todas las filas
  *   y sin uso en el código; se comprueba antes de quitarla).
  * - Índices para búsquedas frecuentes: cédula de terceros y código de la orden de compra.
- * - Una sola collation (utf8mb4_unicode_ci) y el enum de solicitud_contactos con la tilde bien codificada.
+ * - Una sola collation (utf8mb4_unicode_ci).
  * - CHECK en los dominios cortos que fija el código (tipo de anticipo, estado de notificación, tipo de actividad).
  * No borra datos.
  */
@@ -73,14 +73,9 @@ class RolesEIntegridad extends Migration
             DB::statement('ALTER TABLE `cliente_parametros_cc` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
         }
 
-        // El enum traía la tilde con bytes rotos ("En revisi�n"); se redefine si ningún dato usa ese valor.
+        // Descripción del estado de la solicitud (los valores del enum no cambian)
         if (EsquemaBd::columna('solicitud_contactos', 'estado')) {
-            $def = EsquemaBd::definicionColumna('solicitud_contactos', 'estado');
-            $raros = DB::selectOne("SELECT COUNT(*) n FROM solicitud_contactos WHERE estado NOT IN ('Pendiente','Aprobado','Rechazado')")->n;
-            if ($def && $raros == 0 && stripos($def, 'enum(') !== false) {
-                $def = preg_replace('/enum\([^)]*\)/i', "ENUM('Pendiente','En revisión','Aprobado','Rechazado')", $def);
-                DB::statement("ALTER TABLE `solicitud_contactos` MODIFY COLUMN {$def} COMMENT 'Pendiente, En revisión, Aprobado o Rechazado'");
-            }
+            EsquemaBd::comentarColumna('solicitud_contactos', 'estado', 'Pendiente, En revisión, Aprobado o Rechazado');
         }
 
         foreach (self::CHECKS as [$t, $nombre, $cond]) {
