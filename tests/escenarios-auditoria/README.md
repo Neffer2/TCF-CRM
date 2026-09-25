@@ -23,5 +23,6 @@ También corren todos juntos con `php artisan test` sobre una copia de la base l
 | correos.php | todas las funciones de correo generan su mensaje | 44 |
 | anticipo_productor_flujo.php | anticipo de productor de punta a punta: líder, Gerencia, evidencias, revisión de evidencias, Contabilidad, Tesorería | 31 |
 | anticipo_juridico_repetidos.php | la misma compra no se anticipa dos veces; vincular un borrador a su orden | 9 |
+| base_datos.php | mejoras de base de datos (25-sep): roles, código puro del centro de costos, meses y ciudades por catálogo, historial de estados, papelera | 36 |
 
 Usan IDs reales de la base de pruebas (gestiones 6733, 8563, 8575; órdenes 11426, 11427, 11433): con otro volcado hay que ajustarlos.

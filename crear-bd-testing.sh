@@ -8,6 +8,7 @@ CONN=(-h127.0.0.1 -P3325 -uroot)
 ORIGEN="${1:-tfc_crm}"
 DESTINO="${2:-tfc_crm_testing}"
 case "$DESTINO" in *_testing) ;; *) echo "El destino debe terminar en _testing"; exit 1;; esac
-"$MYSQL" "${CONN[@]}" -e "CREATE DATABASE IF NOT EXISTS \`$DESTINO\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+# Se recrea desde cero: si no, las tablas que ya no existen en el origen (p. ej. roles_user, renombrada a roles) quedarían de la copia anterior.
+"$MYSQL" "${CONN[@]}" -e "DROP DATABASE IF EXISTS \`$DESTINO\`; CREATE DATABASE \`$DESTINO\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 "$MYSQLDUMP" "${CONN[@]}" --single-transaction --routines --no-tablespaces --set-gtid-purged=OFF "$ORIGEN" | sed -E 's/DEFINER=`[^`]+`@`[^`]+`//g' | "$MYSQL" "${CONN[@]}" "$DESTINO"
 echo "Lista: $DESTINO es copia de $ORIGEN. Ahora: php artisan test"

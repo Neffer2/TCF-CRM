@@ -56,7 +56,7 @@ class User extends Authenticatable
 
     public function puedeUsarRol($rolId): bool
     {
-        return $this->roles()->where('roles_user.id', $rolId)->exists();
+        return $this->roles()->where('roles.id', $rolId)->exists();
     }
 
     /* Roles del espacio administrativo (comparten el layout de admin) */

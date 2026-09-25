@@ -153,6 +153,11 @@ class NuevoProveedor extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(){
+        // Un proveedor con ese documento que esté en la papelera se restaura (Administración → Papelera), no se crea otro.
+        if ($this->documento && \App\Models\Proveedor::onlyTrashed()->where('documento', $this->documento)->exists()) {
+            $this->addError('documento', 'Este proveedor está en la papelera: restáuralo desde Administración → Papelera.');
+            return;
+        }
         if ($this->proveedor_id){
             return $this->update();
         }

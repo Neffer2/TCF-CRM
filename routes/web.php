@@ -187,6 +187,9 @@ Route::get('/', function () {
 /* Salud de las notificaciones (correo y SMS): registro, reintentos y alertas a desarrollo */
     Route::view('/notificaciones', 'admin.notificaciones.index')->middleware(['auth', 'admin'])->name('notificaciones');
 
+/* Papelera: lo eliminado desde las pantallas (borrado lógico) se ve y se restaura aquí */
+    Route::view('/papelera', 'admin.papelera.index')->middleware(['auth', 'admin'])->name('papelera');
+
 /* Mi perfil (solo lectura): foto, cargo y datos de la cuenta, para todos los roles */
     Route::get('/mi-perfil', [PerfilController::class, 'show'])->middleware(['auth'])->name('mi-perfil');
 

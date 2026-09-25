@@ -596,10 +596,8 @@ class Nomina extends Component
             $this->addError('customError', 'Solo se elimina una nómina rechazada; una aprobada o en ejecución se anula.');
             return redirect()->back();
         }
-        DB::transaction(function () use ($orden) {
-            $this->deleteItems($orden->id);
-            $orden->delete();
-        });
+        // Papelera (borrado lógico): la nómina se oculta con sus líneas y se restaura desde Administración.
+        $orden->delete();
         return redirect()->route('ordenes-nomina-prod')->with('success', 'Orden de nómina eliminada.');
     }
 

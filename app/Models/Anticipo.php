@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\TieneHistorialEstados;
 use Illuminate\Database\Eloquent\Model;
 
 class Anticipo extends Model
 {
-    use HasFactory;
+    use HasFactory, TieneHistorialEstados;
 
     protected $table = 'anticipos';
 

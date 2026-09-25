@@ -35,6 +35,10 @@ class ValidacionesCliente extends Component
             $this->addError('error_aprobacion', "Ya existe un cliente con el NIT {$solicitud->nit}.");
             return;
         }
+        if (clientes::onlyTrashed()->where('nit', $solicitud->nit)->exists()) {
+            $this->addError('error_aprobacion', "El cliente con NIT {$solicitud->nit} está en la papelera: restáuralo desde Administración → Papelera en vez de crearlo de nuevo.");
+            return;
+        }
         $codigoCC = $this->generarCodigoCC($solicitud->nombre);
         if (mb_strlen($codigoCC) > 2) {
             // La columna admite 2 caracteres (letra + dígito) y esa letra ya llegó a 9: hay que definir el formato con Contabilidad.

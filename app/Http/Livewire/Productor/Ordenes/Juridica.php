@@ -423,9 +423,7 @@ class Juridica extends Component
             return redirect()->back();
         }
 
-        $this->orden_compra->ordenItems->map(function ($item){
-            $item->delete();
-        });
+        // Papelera (borrado lógico): la orden se oculta con sus líneas y se puede restaurar desde Administración.
         $this->orden_compra->delete();
 
         $this->emit('ordenCreada');

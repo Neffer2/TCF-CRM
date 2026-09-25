@@ -4,10 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Base_comercial extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    /** Al guardar cod_cc se llena centro_costos (código puro, el que usa Helisa). */
+    public function setCodCcAttribute($valor)
+    {
+        $this->attributes['cod_cc'] = $valor;
+        $this->attributes['centro_costos'] = PresupuestoProyecto::codigoPuro($valor);
+    }
     protected $table = 'base_comerciales';
 
     protected $fillable = [

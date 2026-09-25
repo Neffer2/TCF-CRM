@@ -149,7 +149,7 @@ class EstadosFacturacion extends Component
         }
 
         // Consulta SQL equivalente: SELECT nom_cliente, SUM(valor_proyecto) FROM base_comerciales WHERE id_estado = 3 GROUP BY nom_cliente
-        $Base_results = DB::table('base_comerciales')
+        $Base_results = DB::table('base_comerciales')->whereNull('deleted_at')
                         ->select(DB::raw('nom_cliente, SUM(valor_proyecto) as valor'))
                         ->where($filters_array)
                         ->whereBetween('fecha', $date_filters_array)
@@ -193,7 +193,7 @@ class EstadosFacturacion extends Component
         }
 
         // Consulta que agrupa por cliente y suma los valores de proyectos en ejecución
-        $Base_results = DB::table('base_comerciales')
+        $Base_results = DB::table('base_comerciales')->whereNull('deleted_at')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
                             ->whereBetween('fecha', $date_filters_array)
@@ -237,7 +237,7 @@ class EstadosFacturacion extends Component
         }
 
         // Consulta que agrupa por cliente y suma los valores de proyectos vendidos
-        $Base_results = DB::table('base_comerciales')
+        $Base_results = DB::table('base_comerciales')->whereNull('deleted_at')
                             ->select(DB::raw("nom_cliente, SUM(valor_proyecto) as valor"))
                             ->where($filters_array)
                             ->whereBetween('fecha', $date_filters_array)

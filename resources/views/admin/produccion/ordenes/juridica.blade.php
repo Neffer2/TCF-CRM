@@ -88,6 +88,9 @@
             </div>
             <div class="col-md-12">
                 @livewire('productor.ordenes.juridica', ['presupuesto' => $presupuesto, 'orden_compra' => $orden], key("juridica{{ $presupuesto->id }}".$orden->id))
+            <div class="col-md-12">
+                @include('components.historial-estados', ['registro' => $orden])
+            </div>
             </div>
         </div>
     @endsection  

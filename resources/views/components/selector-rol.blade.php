@@ -6,8 +6,8 @@
         // Gerencia (20) es un rol de permisos, no un espacio de trabajo: quien lo
         // tiene trabaja con el dashboard de Admin y no debe "cambiarse" a él.
         $rolesDisponibles = Auth::user()->roles()
-            ->where('roles_user.id', '!=', 20)
-            ->get(['roles_user.id', 'roles_user.description']);
+            ->where('roles.id', '!=', 20)
+            ->get(['roles.id', 'roles.description']);
     @endphp
     @if($rolesDisponibles->count() > 1)
         <li class="nav-item dropdown d-flex align-items-center pe-3">

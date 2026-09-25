@@ -13,3 +13,12 @@ primero en la base de pruebas y, con el visto bueno de negocio, en producción (
 | 04_utilidad_mal_digitada.sql | Ítems con utilidad 7, 65, 70, 75, 100… (era 0,7, 0,65…) | Comercial y Controller (cambia venta de presupuestos) |
 | 05_helisa_fechas_imposibles.sql | 2 registros Helisa con año 0026 y 0204 | Contabilidad (confirmar la fecha real) |
 | 06_ordenes_anuladas_causadas.sql | 6 órdenes anuladas con causación (solo listado) | Contabilidad |
+
+## Añadidos el 25-sep (mejoras de base de datos)
+
+| Script | Qué lista | Decide |
+|---|---|---|
+| `07_centros_costo_repetidos.sql` | 10 códigos de centro de costos asignados a más de un proyecto | Contabilidad / Comercial: cuál proyecto conserva el código; después se pone UNIQUE |
+| `08_terceros_cedula_repetida.sql` | 6 cédulas repetidas en terceros (algunas con nombres distintos) | Producción: cuál fila se conserva; las evidencias de la otra se pasan a ella y la sobrante va a la papelera |
+
+Ambos son de solo lectura; la instrucción para aplicar la decisión está comentada al final de cada uno.

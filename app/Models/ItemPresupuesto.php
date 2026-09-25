@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\ResuelveCiudad;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemPresupuesto extends Model
 {
-    use HasFactory;
+    use HasFactory, ResuelveCiudad;
 
     protected $table = "items_presupuesto";
 
@@ -58,11 +59,12 @@ class ItemPresupuesto extends Model
     }
 
     public function mesDescription (){
-        return $this->hasOne(Mes::class, 'id', 'mes');
+        return $this->hasOne(Mes::class, 'id', 'mes_id');
     }
 
+    /** Líneas de orden de compra que consumen este ítem (sin las órdenes que están en la papelera). */
     public function consumidos(){
-        return $this->hasMany(OcItem::class, 'item_id', 'id');
+        return $this->hasMany(OcItem::class, 'item_id', 'id')->whereHas('OrdenCompra');
     }
 
     public function consumidos_anticipo(){

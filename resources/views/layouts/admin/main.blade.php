@@ -222,6 +222,12 @@
                   <span class="sidenav-normal"> Registro de actividad </span>
                 </a>
               </li>
+              <li @class(['active' => request()->is('papelera'), 'nav-item' => true])>
+                <a @class(['active' => request()->is('papelera'), 'nav-link' => true]) href="{{ route('papelera') }}">
+                  <span class="sidenav-mini-icon"> P </span>
+                  <span class="sidenav-normal"> Papelera </span>
+                </a>
+              </li>
             </ul>
           </div>
         </li>

@@ -102,16 +102,18 @@ class GestionKamDatos
     public static function gestiones(int $anio, ?array $comerciales = null, ?int $soloComercial = null): Collection
     {
         $q = DB::table('gestion_comercial as g')
+            ->whereNull('g.deleted_at')
             ->join('gestion_participantes as gp', function ($j) {
                 $j->on('gp.gestion_id', '=', 'g.id')->where('gp.posicion', 1);
             })
             ->leftJoin('contactos as c', 'c.id', '=', 'g.id_contacto')
-            ->leftJoin('presupuesto_proyecto as pp', 'pp.id_gestion', '=', 'g.id')
+            ->leftJoin('presupuesto_proyecto as pp', function ($j) { $j->on('pp.id_gestion', '=', 'g.id')->whereNull('pp.deleted_at'); })
             // estado de la venta en la base comercial: el registro más reciente de la gestión
             ->leftJoin(DB::raw('(SELECT b.id_gestion, ec.description estado_base
                                   FROM base_comerciales b
                                   JOIN estados_cuenta ec ON ec.id = b.id_estado
-                                  WHERE b.id IN (SELECT MAX(id) FROM base_comerciales GROUP BY id_gestion)) bc'),
+                                  WHERE b.deleted_at IS NULL
+                                    AND b.id IN (SELECT MAX(id) FROM base_comerciales WHERE deleted_at IS NULL GROUP BY id_gestion)) bc'),
                        'bc.id_gestion', '=', 'g.id')
             ->whereYear('g.created_at', $anio)
             ->selectRaw('g.id, gp.user_id, g.id_estado, g.presto_cot valor, g.nom_proyecto_cot proyecto, g.causa,
@@ -129,6 +131,7 @@ class GestionKamDatos
         // Facturación real, en una sola consulta para todos los centros de la lista
         $centros = $filas->pluck('centro')->filter()->unique()->values();
         $facturado = $centros->isEmpty() ? collect() : DB::table('helisa')
+            ->whereNull('deleted_at')
             ->selectRaw(self::sqlCentro('centro').' c, SUM(base_factura) total')
             ->whereIn(DB::raw(self::sqlCentro('centro')), $centros->all())
             ->groupBy('c')->pluck('total', 'c');

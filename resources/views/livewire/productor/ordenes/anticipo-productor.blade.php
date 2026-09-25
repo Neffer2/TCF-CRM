@@ -693,4 +693,7 @@
             </div>
         </div>
     </div>
+    @if ($queriedAnticipo)
+        @include('components.historial-estados', ['registro' => $queriedAnticipo])
+    @endif
 </div>

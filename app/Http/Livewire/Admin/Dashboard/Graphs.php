@@ -29,7 +29,7 @@ class Graphs extends Component
     }
  
     public function graph1 ($filters){
-        $estados_count = DB::table('base_comerciales')
+        $estados_count = DB::table('base_comerciales')->whereNull('deleted_at')
                 ->select('id_estado', DB::raw('COUNT(id_estado) AS count_estados'))
                 ->groupBy('id_estado')
                 ->havingRaw('COUNT(id_estado) > 1')

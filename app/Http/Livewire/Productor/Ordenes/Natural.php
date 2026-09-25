@@ -546,9 +546,7 @@ class Natural extends Component
             return back();
         }
 
-        $this->queriedOrden->ordenItems()->delete();
-        $this->queriedOrden->naturalInfo()->delete();
-        $this->queriedOrden->evidencias()->delete();
+        // Papelera (borrado lógico): la orden se oculta con sus líneas, datos de la persona y evidencias; se restaura desde Administración.
         $this->queriedOrden->delete();
 
         return redirect()->route('ordenes-prod')->with('success', 'Orden de compra eliminada correctamente');

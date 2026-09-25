@@ -18,7 +18,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // registra la variable global
         $this->app->singleton('ciudades', function () {
-            return config('ciudades');
+            // Catálogo en la base (tabla ciudades); si aún no existe (antes de migrar), la lista fija de config
+            try { $lista = \App\Models\Ciudad::listaActiva(); } catch (\Throwable $e) { $lista = []; }
+            return $lista ?: config('ciudades');
         });
 
         $this->app->singleton('departamentos', function () {
@@ -54,6 +56,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Models\Tercero::class, \App\Models\Proveedor::class, \App\Models\NotificacionDestinatario::class, \App\Models\Permiso::class,
         ] as $modelo) {
             if (class_exists($modelo)) { $modelo::observe(AuditoriaObserver::class); }
+        }
+        // Historial de estados fila a fila (tabla historial_estados)
+        foreach ([\App\Models\OrdenCompra::class, \App\Models\Anticipo::class, \App\Models\PresupuestoProyecto::class, \App\Models\GestionComercial::class, \App\Models\Tercero::class] as $modelo) {
+            $modelo::observe(\App\Observers\HistorialEstadoObserver::class);
         }
         // Auditoría: sesiones
         Event::listen(\Illuminate\Auth\Events\Login::class, function ($e) { ActividadLog::registrar('sesion', 'login', ['user_id' => $e->user->id, 'usuario' => $e->user->name, 'rol' => $e->user->rol, 'detalle' => ['recordar' => (bool) $e->remember]]); });

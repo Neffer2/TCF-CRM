@@ -19,7 +19,7 @@ class PerfilController extends Controller
     {
         $u = Auth::user();
 
-        $roles = $u->roles()->get(['roles_user.id', 'roles_user.description']);
+        $roles = $u->roles()->get(['roles.id', 'roles.description']);
         $permisos = Permiso::whereIn('id', DB::table('permiso_user')->where('user_id', $u->id)->pluck('permiso_id'))
             ->orWhereIn('id', DB::table('permiso_rol')->whereIn('rol_id', $roles->pluck('id'))->pluck('permiso_id'))
             ->get(['clave', 'descripcion']);

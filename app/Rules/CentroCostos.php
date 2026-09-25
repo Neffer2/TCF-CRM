@@ -26,11 +26,12 @@ class CentroCostos implements Rule
      */
     public function passes($attribute, $value)
     {
-        $centroValidator = PresupuestoProyecto::where('cod_cc', $value)->get();        
-        if ($centroValidator->count() >= 1){
-            return false;
-        }
-        return true;
+        // Se compara el código puro (sin el nombre del proyecto) y se cuenta también lo que está en la papelera:
+        // un centro de costos de Helisa no se reutiliza nunca.
+        $codigo = PresupuestoProyecto::codigoPuro($value);
+        $q = PresupuestoProyecto::withTrashed();
+        $codigo ? $q->where('centro_costos', $codigo) : $q->where('cod_cc', $value);
+        return !$q->exists();
     }
 
     /**

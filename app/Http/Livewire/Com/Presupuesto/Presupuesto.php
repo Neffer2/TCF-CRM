@@ -251,7 +251,7 @@ class Presupuesto extends Component
             $item->v_total = $this->valor_total;
             $item->proveedoresPendientes = (array) $this->proveedor;
             $item->margen_utilidad = $this->utilidad;
-            $item->mes = !empty($this->mes) ? $this->mes : null;
+            $item->mes_id = !empty($this->mes) ? (int) $this->mes : null;
             $item->dias = !empty($this->dias) ? (int)$this->dias : 0;
             $item->ciudad = !empty($this->ciudad) ? $this->ciudad : null;
             $item->v_total_cliente = $this->valor_total_cliente;
@@ -305,7 +305,7 @@ class Presupuesto extends Component
             // Un evento no tiene proveedor. La columna 'proveedor' ya no existe:
             // los proveedores de un ítem viven en item_presupuesto_proveedor.
             $item->margen_utilidad = 0;
-            $item->mes = '';
+            $item->mes_id = null;
             $item->dias = 0;
             $item->ciudad = '';
             $item->v_unitario_cot = 0;
@@ -561,7 +561,7 @@ class Presupuesto extends Component
         $this->valor_total_cliente = $this->selected_item->v_total_cliente;
         $this->proveedor = $this->selected_item->proveedorIds();
         $this->utilidad = $this->selected_item->margen_utilidad;
-        $this->mes = $this->selected_item->mes;
+        $this->mes = $this->selected_item->mes_id;
         $this->dias = $this->selected_item->dias;
         $this->ciudad = $this->selected_item->ciudad;
     }
@@ -622,7 +622,7 @@ class Presupuesto extends Component
             $itemOriginal->v_total_cliente = 0;
             $itemOriginal->proveedoresPendientes = [];
             $itemOriginal->margen_utilidad = 0;
-            $itemOriginal->mes = '';
+            $itemOriginal->mes_id = null;
             $itemOriginal->dias = 0;
             $itemOriginal->ciudad = '';
             $itemOriginal->update();
@@ -701,7 +701,7 @@ class Presupuesto extends Component
             $itemOriginal->v_unitario_cot = $this->valor_unitario_cliente;
             $itemOriginal->proveedoresPendientes = (array) $this->proveedor;
             $itemOriginal->margen_utilidad = $this->utilidad;
-            $itemOriginal->mes = $this->mes;
+            $itemOriginal->mes_id = !empty($this->mes) ? (int) $this->mes : null;
             $itemOriginal->dias = $this->dias;
             $itemOriginal->ciudad = $this->ciudad;
 
@@ -1378,15 +1378,16 @@ class Presupuesto extends Component
         $prefijoBusqueda = "{$codigoCC}{$anio}{$mesFormateado}";
 
         // 4. Consultamos el último consecutivo en presupuestos_proyecto
-        $ultimoPresupuesto = PresupuestoProyecto::where('cod_cc', 'LIKE', "{$prefijoBusqueda}%")
-            ->orderBy('cod_cc', 'desc')
+        // Se mira el código puro (centro_costos), también en la papelera: un código de Helisa no se reutiliza.
+        $ultimoPresupuesto = PresupuestoProyecto::withTrashed()->where('centro_costos', 'LIKE', "{$prefijoBusqueda}%")
+            ->orderBy('centro_costos', 'desc')
             ->first();
 
         $nuevoConsecutivo = 1;
 
         if ($ultimoPresupuesto) {
             // Extrae los 2 dígitos del consecutivo que vienen inmediatamente después del prefijo
-            $sinPrefijo = substr($ultimoPresupuesto->cod_cc, strlen($prefijoBusqueda));
+            $sinPrefijo = substr($ultimoPresupuesto->centro_costos, strlen($prefijoBusqueda));
             if (preg_match('/^(\d{2})/', $sinPrefijo, $coincidencias)) {
                 $nuevoConsecutivo = (int) $coincidencias[1] + 1;
             }

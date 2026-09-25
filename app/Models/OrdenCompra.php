@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\TieneHistorialEstados;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrdenCompra extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, TieneHistorialEstados;
     protected $table = "ordenes_compra";
     protected $fillable = [
         'tipo_oc',

@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\TieneHistorialEstados;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GestionComercial extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, TieneHistorialEstados;
 
     protected $table = 'gestion_comercial';
 
@@ -25,6 +27,16 @@ class GestionComercial extends Model
                 $gestion->guardarParticipantes($gestion->participantesPendientes);
                 $gestion->participantesPendientes = null;
             }
+        });
+        // Papelera: el presupuesto y el registro de base comercial acompañan a la gestión al borrarla y al restaurarla.
+        static::deleting(function (GestionComercial $gestion) {
+            if ($gestion->isForceDeleting()) { return; }
+            PresupuestoProyecto::where('id_gestion', $gestion->id)->delete();
+            Base_comercial::where('id_gestion', $gestion->id)->delete();
+        });
+        static::restoring(function (GestionComercial $gestion) {
+            PresupuestoProyecto::onlyTrashed()->where('id_gestion', $gestion->id)->restore();
+            Base_comercial::onlyTrashed()->where('id_gestion', $gestion->id)->restore();
         });
     }
 

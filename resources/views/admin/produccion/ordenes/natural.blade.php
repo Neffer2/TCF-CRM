@@ -5,4 +5,5 @@
 
     @section('content') 
         @livewire('productor.ordenes.natural', ['productor' => Auth()->user(), 'orden_id' => $orden_id])
+        @include('components.historial-estados', ['registro' => \App\Models\OrdenCompra::find($orden_id)])
     @endsection 

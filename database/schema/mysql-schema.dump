@@ -1,0 +1,1273 @@
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `actividad_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `actividad_log` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Usuario que hizo la acción (users.id); NULL en intentos de acceso fallidos',
+  `usuario` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre en el momento (por si la cuenta cambia)',
+  `rol` bigint unsigned DEFAULT NULL COMMENT 'Rol activo del usuario en ese momento (roles.id)',
+  `tipo` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'sesion | pagina | accion | datos',
+  `accion` varchar(160) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Qué hizo: ruta, componente.metodo, modelo:evento, login/logout',
+  `objeto` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Registro afectado, p. ej. ordenes_compra:123',
+  `detalle` json DEFAULT NULL COMMENT 'Datos enviados o cambios (antes -> después), sin claves',
+  `metodo` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Método HTTP (GET, POST…)',
+  `ruta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ruta visitada o acción ejecutada',
+  `estado_http` smallint unsigned DEFAULT NULL COMMENT 'Código de respuesta HTTP (200, 403, 500…)',
+  `duracion_ms` int unsigned DEFAULT NULL COMMENT 'Tiempo de respuesta en milisegundos',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Dirección IP del navegador',
+  `navegador` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Identificación del navegador (User-Agent)',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Creación del registro',
+  PRIMARY KEY (`id`),
+  KEY `actividad_log_user_id_index` (`user_id`),
+  KEY `actividad_log_tipo_index` (`tipo`),
+  KEY `actividad_log_created_at_index` (`created_at`),
+  KEY `actividad_log_rol_foreign` (`rol`),
+  CONSTRAINT `actividad_log_rol_foreign` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `actividad_log_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `chk_actividad_log_tipo` CHECK ((`tipo` in (_utf8mb4'accion',_utf8mb4'datos',_utf8mb4'pagina',_utf8mb4'sesion')))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Auditoría: páginas, acciones, sesiones y cambios de datos por usuario';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `anos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `anos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Año (texto, p. ej. 2026)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `anos_description_unique` (`description`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Años fiscales';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `anticipo_pasos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `anticipo_pasos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `anticipo_id` bigint unsigned NOT NULL COMMENT 'Anticipo (anticipos.id)',
+  `accion` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Acción ejecutada: solicitar, aprobar, rechazar, causar, pagar, anular, retirar…',
+  `estado_desde` bigint unsigned DEFAULT NULL COMMENT 'Estado antes de la acción (estados_anticipo.id)',
+  `estado_hasta` bigint unsigned NOT NULL COMMENT 'Estado después de la acción (estados_anticipo.id)',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Quién ejecutó la acción (users.id)',
+  `rol` bigint unsigned DEFAULT NULL COMMENT 'Rol activo con el que la ejecutó (roles.id)',
+  `observacion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Observación o justificación escrita en ese paso',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  PRIMARY KEY (`id`),
+  KEY `anticipo_pasos_user_id_foreign` (`user_id`),
+  KEY `anticipo_pasos_anticipo_id_created_at_index` (`anticipo_id`,`created_at`),
+  KEY `anticipo_pasos_rol_foreign` (`rol`),
+  CONSTRAINT `anticipo_pasos_anticipo_id_foreign` FOREIGN KEY (`anticipo_id`) REFERENCES `anticipos` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `anticipo_pasos_rol_foreign` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `anticipo_pasos_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Recorrido del anticipo jurídico: cada acción (solicitar, revisar, aprobar, rechazar, causar, pagar, anular, retirar) con quién, cuándo y con qué observación';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `anticipos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `anticipos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `tipo` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'productor' COMMENT 'juridico (a un proveedor, sobre una orden de compra) o productor (caja del productor, con evidencias)',
+  `oc_id` bigint unsigned DEFAULT NULL COMMENT 'Orden de compra (anticipo JURÍDICO). NULL en anticipos de productor',
+  `presupuesto_id` bigint unsigned DEFAULT NULL COMMENT 'Presupuesto/centro de costos (anticipo de PRODUCTOR). NULL en jurídicos',
+  `proveedor_id` bigint unsigned DEFAULT NULL COMMENT 'Proveedor beneficiario (proveedores.id), en el anticipo jurídico',
+  `porcentaje_anticipo` decimal(5,2) DEFAULT NULL COMMENT 'Porcentaje de la orden que se anticipa (jurídico)',
+  `valor_base` decimal(15,2) DEFAULT NULL COMMENT 'Valor sobre el que se calcula el porcentaje: la orden de compra vinculada o el valor digitado (borrador)',
+  `total_anticipo` decimal(15,2) NOT NULL COMMENT 'Valor total a anticipar',
+  `cod_orden_anticipo` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código de la orden de anticipo (OA-…), único',
+  `archivo_orden_anticipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PDF de la orden de anticipo (ruta en storage)',
+  `fecha_orden_anticipo` datetime DEFAULT NULL COMMENT 'Fecha de emisión del PDF de la orden de anticipo',
+  `fecha_solicitud` datetime DEFAULT NULL COMMENT 'Cuándo lo pidió el productor',
+  `fecha_aprobacion` datetime DEFAULT NULL COMMENT 'Cuándo quedó aprobado',
+  `justificacion_rechazo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo del último rechazo (el historial completo está en historial_estados)',
+  `productor_id` bigint unsigned NOT NULL COMMENT 'Productor que solicita -> users.id',
+  `firma_productor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Imagen de la firma del productor',
+  `cod_causal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código de causación asignado por contabilidad',
+  `observacion_causal` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Observación de Contabilidad al causar',
+  `observaciones_contabilidad` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Observaciones de Contabilidad al devolver el anticipo',
+  `fecha_causal` datetime DEFAULT NULL COMMENT 'Cuándo se causó',
+  `comprobante_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Comprobante de pago registrado por tesorería (si existe, ya fue pagado)',
+  `fecha_comprobante_pago` datetime DEFAULT NULL COMMENT 'Fecha del pago',
+  `observaciones_revision_lider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones del líder al aprobar',
+  `rechazo_revision_lider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo del líder',
+  `observaciones_revision_gerencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones de gerencia al aprobar',
+  `rechazo_revision_gerencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo de gerencia',
+  `observaciones_revision_evidencias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones al revisar evidencias',
+  `rechazo_revision_evidencias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo de evidencias',
+  `estado_id` bigint unsigned NOT NULL DEFAULT '2' COMMENT '-> estados_anticipo.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `anticipos_cod_orden_anticipo_unique` (`cod_orden_anticipo`),
+  KEY `anticipos_oc_id_foreign` (`oc_id`),
+  KEY `anticipos_productor_id_foreign` (`productor_id`),
+  KEY `anticipos_estado_id_foreign` (`estado_id`),
+  KEY `anticipos_presupuesto_id_foreign` (`presupuesto_id`),
+  KEY `anticipos_proveedor_id_foreign` (`proveedor_id`),
+  KEY `anticipos_tipo_index` (`tipo`),
+  CONSTRAINT `anticipos_estado_id_fk_estados_anticipo` FOREIGN KEY (`estado_id`) REFERENCES `estados_anticipo` (`id`),
+  CONSTRAINT `anticipos_oc_id_foreign` FOREIGN KEY (`oc_id`) REFERENCES `ordenes_compra` (`id`),
+  CONSTRAINT `anticipos_presupuesto_id_foreign` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuesto_proyecto` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `anticipos_productor_id_foreign` FOREIGN KEY (`productor_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `anticipos_proveedor_id_foreign` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `chk_anticipos_tipo` CHECK ((`tipo` in (_utf8mb4'juridico',_utf8mb4'productor')))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Anticipos de dinero: jurídicos (oc_id) o de productor (presupuesto_id). estado_id -> estados_anticipo';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `asistentes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `asistentes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `asistente_id` bigint unsigned NOT NULL COMMENT 'Cuenta del ejecutivo de cuenta -> users.id',
+  `comercial_id` bigint unsigned NOT NULL COMMENT 'Comercial al que apoya -> users.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `asistentes_asistente_id_foreign` (`asistente_id`),
+  KEY `asistentes_comercial_id_foreign` (`comercial_id`),
+  CONSTRAINT `asistentes_asistente_id_foreign` FOREIGN KEY (`asistente_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `asistentes_comercial_id_foreign` FOREIGN KEY (`comercial_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relación ejecutivo de cuenta (asistente_id) -> comercial al que apoya (comercial_id)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `base_comerciales`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `base_comerciales` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `fecha` date NOT NULL COMMENT 'Fecha del registro (base de los dashboards por periodo)',
+  `nom_cliente` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del cliente tal como se digitó',
+  `nom_proyecto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del proyecto',
+  `cod_cc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Centro de costos tal como se digitó (puede traer el nombre del proyecto); el código puro está en centro_costos',
+  `centro_costos` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código puro del centro de costos (el que usa Helisa), sin el nombre del proyecto; se llena solo al guardar cod_cc',
+  `valor_original` decimal(15,2) DEFAULT '0.00' COMMENT 'Valor total del proyecto',
+  `cotizacion_file_actualizacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archivo de la cotización actualizada (ruta en storage)',
+  `porcentaje` decimal(9,4) DEFAULT NULL COMMENT 'Participación del comercial en el proyecto (%)',
+  `valor_proyecto` decimal(15,2) DEFAULT '0.00' COMMENT 'Valor atribuido al comercial (su porcentaje del proyecto)',
+  `com_1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Participación (%) del primer comercial (histórico; hoy en gestion_participantes)',
+  `com_2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Participación (%) del segundo comercial (histórico)',
+  `com_3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Participación (%) del tercer comercial (histórico)',
+  `id_estado` bigint unsigned NOT NULL COMMENT 'Estado de la venta -> estados_cuenta.id',
+  `fecha_inicio` date DEFAULT NULL COMMENT 'Inicio del proyecto',
+  `dura_mes` date DEFAULT NULL COMMENT 'Duración en meses',
+  `fecha_facturacion` date DEFAULT NULL COMMENT 'Fecha prevista de facturación',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial al que se atribuye la venta -> users.id',
+  `id_asistente` bigint unsigned DEFAULT NULL COMMENT 'Ejecutivo de cuenta que registró la venta (users.id)',
+  `id_cuenta` bigint unsigned NOT NULL DEFAULT '1' COMMENT 'Cuenta/marca -> cuentas.id',
+  `id_gestion` bigint unsigned DEFAULT NULL COMMENT '-> gestion_comercial.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `base_comerciales_id_estado_foreign` (`id_estado`),
+  KEY `base_comerciales_id_user_foreign` (`id_user`),
+  KEY `base_comerciales_id_asistente_foreign` (`id_asistente`),
+  KEY `base_comerciales_id_cuenta_foreign` (`id_cuenta`),
+  KEY `base_comerciales_id_gestion_foreign` (`id_gestion`),
+  KEY `base_comerciales_user_fecha_idx` (`id_user`,`fecha`),
+  KEY `base_comerciales_centro_costos_index` (`centro_costos`),
+  CONSTRAINT `base_comerciales_id_asistente_foreign` FOREIGN KEY (`id_asistente`) REFERENCES `users` (`id`),
+  CONSTRAINT `base_comerciales_id_cuenta_foreign` FOREIGN KEY (`id_cuenta`) REFERENCES `cuentas` (`id`),
+  CONSTRAINT `base_comerciales_id_estado_foreign` FOREIGN KEY (`id_estado`) REFERENCES `estados_cuenta` (`id`),
+  CONSTRAINT `base_comerciales_id_gestion_foreign` FOREIGN KEY (`id_gestion`) REFERENCES `gestion_comercial` (`id`),
+  CONSTRAINT `base_comerciales_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Base comercial: valor de venta de cada proyecto por comercial. Alimenta los dashboards de venta';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `categorias_proveedor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categorias_proveedor` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre de la categoría (Nómina, Logística, Impresión…)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Categorías de proveedor';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ciudades`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ciudades` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `nombre` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar (mayúsculas, como en los formularios)',
+  `clave` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre normalizado (sin tildes, puntos ni espacios dobles): une variantes como BOGOTA D.C, BOGOTÁ D.C. y BOGOTA DC',
+  `orden` smallint unsigned NOT NULL DEFAULT '999' COMMENT 'Posición en los desplegables (la lista oficial primero)',
+  `activa` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 = se ofrece en los desplegables; 0 = variante vieja de los datos, solo para enlazar filas antiguas',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'CreaciÃ³n del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Ãšltima modificaciÃ³n',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ciudades_clave_unique` (`clave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Catálogo de ciudades: reemplaza la lista fija del código y unifica el texto libre de ítems, proveedores, terceros y contactos';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cliente_parametros_cc`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cliente_parametros_cc` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `nombre_empresa` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del cliente tal como va en el centro de costos',
+  `cliente_id` bigint unsigned DEFAULT NULL COMMENT 'Cliente (clientes.id)',
+  `codigo_cc` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Prefijo de 2 caracteres del centro de costos del cliente (p. ej. C3, 44), único',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `codigo_cc` (`codigo_cc`),
+  UNIQUE KEY `codigo_cc_2` (`codigo_cc`),
+  KEY `fk_cliente_parametros_cc_cliente` (`cliente_id`),
+  CONSTRAINT `fk_cliente_parametros_cc_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Parámetros por cliente para la asignación de centros de costos';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `clientes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `clientes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial dueño del cliente (users.id)',
+  `estado_id` bigint unsigned NOT NULL COMMENT 'Estado (estados_cuenta.id)',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre comercial',
+  `razon_social` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Razón social',
+  `nit` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'NIT (único)',
+  `direccion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Dirección',
+  `telefono` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Teléfono principal',
+  `numero_telefono` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Otro teléfono',
+  `cargo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cargo del contacto principal',
+  `correo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo principal',
+  `pagina_web` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Página web',
+  `correo_recpcion_facturas` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo donde el cliente recibe facturas',
+  `adjuntar_archivos` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Documentos adjuntos del cliente (ruta en storage)',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `clientes_nit_unique` (`nit`),
+  KEY `id_user` (`id_user`),
+  KEY `clientes_estado_id_foreign` (`estado_id`),
+  CONSTRAINT `clientes_estado_id_foreign` FOREIGN KEY (`estado_id`) REFERENCES `estados_cuenta` (`id`),
+  CONSTRAINT `clientes_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Clientes (empresas) y sus parámetros';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `contactos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `contactos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre',
+  `apellido` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Apellido',
+  `empresa` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Empresa/cliente al que pertenece',
+  `cargo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Cargo en la empresa',
+  `celular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Celular',
+  `correo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Correo',
+  `web` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Sitio web',
+  `pbx` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Teléfono fijo/PBX',
+  `direccion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Dirección',
+  `ciudad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ciudad (texto); el enlace al catálogo está en ciudad_id',
+  `ciudad_id` bigint unsigned DEFAULT NULL COMMENT 'Ciudad del catálogo (ciudades.id) que corresponde al texto de la columna ciudad',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial que lo registró (users.id)',
+  `id_cliente` bigint unsigned DEFAULT NULL COMMENT 'Cliente al que pertenece (clientes.id)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `contactos_id_user_foreign` (`id_user`),
+  KEY `clientes_id_foreign` (`id_cliente`),
+  KEY `contactos_ciudad_id_foreign` (`ciudad_id`),
+  CONSTRAINT `clientes_id_foreign` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`),
+  CONSTRAINT `contactos_ciudad_id_foreign` FOREIGN KEY (`ciudad_id`) REFERENCES `ciudades` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `contactos_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Personas de contacto en los clientes (origen de los leads)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cuentas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cuentas` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre de la cuenta o línea de negocio (Bull, V2V…)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Cuentas/marcas de cliente asociadas a la base comercial';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_anticipo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_anticipo` (
+  `id` bigint unsigned NOT NULL COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar',
+  `flujo` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Flujo al que aplica el estado: juridico, productor o ambos',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Estados del ciclo de vida de un anticipo';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_cuenta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_cuenta` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Estados de un registro de la base comercial (ejecución por facturar, venta, facturado, ...)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_gestion_comercial`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_gestion_comercial` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Etapas del embudo comercial (prospecto, oportunidad, propuesta, decisión, ...)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_ordenes_compra`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_ordenes_compra` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Estados de una orden de compra (1 aprobado, 2 revisión, 3 editable, 4 recibido, 5 comprobado, 6 anulada, 7 evidencias, 8-14 flujo nómina)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_presupuesto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_presupuesto` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre para mostrar',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Estados del presupuesto de proyecto (en revisión, aprobado, rechazado, ...)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_proveedor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_proveedor` (
+  `id` bigint unsigned NOT NULL COMMENT 'Identificador',
+  `nombre` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del estado',
+  `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Qué significa',
+  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 = se ofrece en el formulario de proveedores',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `estados_proveedor_nombre_unique` (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Catálogo de estados del acuerdo con el proveedor (activo, suspendido, etc.)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `estados_tercero`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estados_tercero` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `descripcion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del estado',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Estados de un tercero';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `evidencias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `evidencias` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `oc_id` bigint unsigned NOT NULL COMMENT 'Orden de compra (ordenes_compra.id)',
+  `tercero_id` bigint unsigned NOT NULL COMMENT 'Persona (terceros.id) a la que corresponde la evidencia',
+  `fecha_evidencia` date DEFAULT NULL COMMENT 'Fecha de la evidencia',
+  `foto_evidencia` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Foto de la evidencia (ruta en storage)',
+  `observacion_evidencia` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Observación escrita con la evidencia',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `evidencias_oc_id_foreign` (`oc_id`),
+  KEY `evidencias_tercero_id_foreign` (`tercero_id`),
+  CONSTRAINT `evidencias_oc_id_foreign` FOREIGN KEY (`oc_id`) REFERENCES `ordenes_compra` (`id`),
+  CONSTRAINT `evidencias_tercero_id_foreign` FOREIGN KEY (`tercero_id`) REFERENCES `terceros` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Evidencias (archivos) del trabajo de un tercero para una orden natural';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `evidencias_anticipo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `evidencias_anticipo` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `anticipo_id` bigint unsigned NOT NULL COMMENT 'Anticipo de productor (anticipos.id)',
+  `item_id` bigint unsigned DEFAULT NULL COMMENT 'Ítem del presupuesto (items_presupuesto.id) que respalda',
+  `fecha_evidencia` date DEFAULT NULL COMMENT 'Fecha de la evidencia',
+  `foto_evidencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Foto o soporte (ruta en storage)',
+  `observacion_evidencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación escrita con la evidencia',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `evidencias_anticipo_anticipo_id_foreign` (`anticipo_id`),
+  KEY `evidencias_anticipo_item_id_foreign` (`item_id`),
+  CONSTRAINT `evidencias_anticipo_anticipo_id_foreign` FOREIGN KEY (`anticipo_id`) REFERENCES `anticipos` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `evidencias_anticipo_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items_presupuesto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Evidencias del productor para cerrar un anticipo';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Identificador único del trabajo',
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Conexión de cola',
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cola',
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Trabajo serializado',
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Error con el que falló',
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Cuándo falló',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Laravel: trabajos en cola que fallaron (p. ej. envíos de notificaciones)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `gestion_comercial`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gestion_comercial` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `id_contacto` bigint unsigned NOT NULL COMMENT 'Contacto (persona) que origina el lead -> contactos.id',
+  `tipo_contacto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Canal por el que llegó el contacto',
+  `desc_contacto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Descripción del primer contacto',
+  `presto_cot` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor cotizado (presupuesto de la cotización)',
+  `participaciones` decimal(8,2) NOT NULL DEFAULT '1.00' COMMENT 'Número de comerciales que participan (1 a 4). El detalle está en gestion_participantes',
+  `nom_proyecto_cot` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre del proyecto en la cotización',
+  `fecha_estimada_cot` date DEFAULT NULL COMMENT 'Fecha estimada de ejecución (cotización)',
+  `cotizacion_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archivo de la cotización',
+  `claro` tinyint(1) DEFAULT NULL COMMENT '1 si el cliente es Claro (tenía reglas de aprobación propias)',
+  `presto_prop` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor de la propuesta',
+  `nom_proyecto_prop` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre del proyecto en la propuesta',
+  `fecha_estimada_prop` date DEFAULT NULL COMMENT 'Fecha estimada (propuesta)',
+  `propuesta_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Enlace a la propuesta enviada al cliente',
+  `causa` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Causa de pérdida/cierre cuando la decisión es negativa',
+  `id_estado` bigint unsigned NOT NULL DEFAULT '1' COMMENT 'Etapa del embudo -> estados_gestion_comercial.id',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial responsable (dueño) de la gestión -> users.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Apertura de la gestión',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Último movimiento',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `gestion_comercial_id_contacto_foreign` (`id_contacto`),
+  KEY `gestion_comercial_id_estado_foreign` (`id_estado`),
+  KEY `gestion_comercial_id_user_foreign` (`id_user`),
+  KEY `gestion_comercial_user_estado_idx` (`id_user`,`id_estado`),
+  CONSTRAINT `gestion_comercial_id_contacto_foreign` FOREIGN KEY (`id_contacto`) REFERENCES `contactos` (`id`),
+  CONSTRAINT `gestion_comercial_id_estado_foreign` FOREIGN KEY (`id_estado`) REFERENCES `estados_gestion_comercial` (`id`),
+  CONSTRAINT `gestion_comercial_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Gestión comercial (lead/oportunidad/proyecto). Un registro por proyecto en el embudo; los participantes están en gestion_participantes';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `gestion_participantes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `gestion_participantes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `gestion_id` bigint unsigned NOT NULL COMMENT '-> gestion_comercial.id',
+  `user_id` bigint unsigned NOT NULL COMMENT 'Comercial participante -> users.id',
+  `posicion` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1 = responsable de la gestión; 2..4 = participantes adicionales',
+  `porcentaje` decimal(5,2) NOT NULL DEFAULT '0.00' COMMENT 'Porcentaje de la venta que se le atribuye (la suma debería ser 100)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `gestion_usuario_unico` (`gestion_id`,`user_id`),
+  KEY `gestion_participantes_user_id_foreign` (`user_id`),
+  CONSTRAINT `gestion_participantes_gestion_id_foreign` FOREIGN KEY (`gestion_id`) REFERENCES `gestion_comercial` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `gestion_participantes_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Comerciales que participan en una gestión (posición 1 = responsable) con su porcentaje';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `helisa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `helisa` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `fecha` date NOT NULL COMMENT 'Fecha del movimiento contable',
+  `tipo_doc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tipo de documento contable',
+  `num_doc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Número de documento/factura',
+  `concepto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Concepto del asiento',
+  `identidad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'NIT/cédula del tercero',
+  `nom_tercero` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del tercero facturado',
+  `centro` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Centro de costos',
+  `nom_centro_costo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del centro de costos',
+  `debito` decimal(12,2) DEFAULT NULL COMMENT 'Valor débito',
+  `credito` decimal(12,2) DEFAULT NULL COMMENT 'Valor crédito',
+  `porcentaje` decimal(9,4) DEFAULT NULL COMMENT 'Participación del comercial en el proyecto (%)',
+  `comercial` bigint unsigned NOT NULL COMMENT 'Comercial al que se atribuye -> users.id',
+  `id_cuenta` bigint unsigned NOT NULL DEFAULT '1' COMMENT 'Cuenta/marca -> cuentas.id',
+  `participacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Número de comerciales que participan en la factura',
+  `base_factura` decimal(12,2) NOT NULL COMMENT 'Base de la factura: valor sobre el que se liquida la venta y la comisión',
+  `mes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Mes contable -> meses.id',
+  `año` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Año contable',
+  `comision` decimal(12,2) NOT NULL COMMENT 'Comisión calculada para el comercial (puede ser negativa en ajustes)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `helisa_comercial_foreign` (`comercial`),
+  KEY `helisa_id_cuenta_foreign` (`id_cuenta`),
+  KEY `helisa_centro_num_doc_idx` (`centro`,`num_doc`),
+  KEY `helisa_comercial_fecha_idx` (`comercial`,`fecha`),
+  CONSTRAINT `helisa_comercial_foreign` FOREIGN KEY (`comercial`) REFERENCES `users` (`id`),
+  CONSTRAINT `helisa_id_cuenta_foreign` FOREIGN KEY (`id_cuenta`) REFERENCES `cuentas` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Asientos de facturación exportados/registrados para el contable Helisa. Un documento puede tener varias filas (una por comercial y ajustes)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `historial_estados`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `historial_estados` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `tabla` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tabla del registro: ordenes_compra, anticipos, presupuesto_proyecto, gestion_comercial o terceros',
+  `registro_id` bigint unsigned NOT NULL COMMENT 'id del registro en esa tabla',
+  `estado_anterior` bigint unsigned DEFAULT NULL COMMENT 'Estado antes del cambio (NULL al crear el registro o en la carga inicial)',
+  `estado_nuevo` bigint unsigned NOT NULL COMMENT 'Estado después del cambio (id del catálogo de estados de esa tabla)',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Quién hizo el cambio (users.id); NULL = proceso automático o carga inicial',
+  `rol` bigint unsigned DEFAULT NULL COMMENT 'Rol activo de quien hizo el cambio (roles.id)',
+  `observacion` text COLLATE utf8mb4_unicode_ci COMMENT 'Justificación u observación escrita en ese paso, si la hubo',
+  `origen` varchar(160) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ruta de la pantalla desde la que se hizo, "consola" o "carga inicial"',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Momento del cambio',
+  PRIMARY KEY (`id`),
+  KEY `historial_estados_registro_idx` (`tabla`,`registro_id`),
+  KEY `historial_estados_created_at_index` (`created_at`),
+  KEY `historial_estados_user_id_foreign` (`user_id`),
+  KEY `historial_estados_rol_foreign` (`rol`),
+  CONSTRAINT `historial_estados_rol_foreign` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `historial_estados_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Historial de cambios de estado (una fila por cambio) de órdenes, anticipos, presupuestos, gestiones y terceros; lo escribe HistorialEstadoObserver';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `historial_items_presupuesto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `historial_items_presupuesto` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `item_presupuesto_id` bigint unsigned NOT NULL COMMENT 'Ítem al que pertenece la copia (items_presupuesto.id)',
+  `valores_anteriores` json NOT NULL COMMENT 'Copia del ítem antes del cambio (JSON); con tipo_registro = snapshot_aprobacion guarda todos los ítems al aprobar',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Quién hizo el cambio (users.id)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `historial_item_presupuesto_foreign` (`item_presupuesto_id`),
+  KEY `historial_user_foreign` (`user_id`),
+  CONSTRAINT `historial_item_presupuesto_foreign` FOREIGN KEY (`item_presupuesto_id`) REFERENCES `items_presupuesto` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `historial_user_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `historial_items_presupuesto_chk_1` CHECK (json_valid(`valores_anteriores`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Snapshot JSON de un ítem antes de cada modificación (auditoría de cambios)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `item_presupuesto_proveedor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `item_presupuesto_proveedor` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `item_presupuesto_id` bigint unsigned NOT NULL COMMENT 'Ítem del presupuesto',
+  `proveedor_id` bigint unsigned NOT NULL COMMENT 'Proveedor asignado al ítem',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_proveedor_unico` (`item_presupuesto_id`,`proveedor_id`),
+  KEY `item_presupuesto_proveedor_proveedor_id_foreign` (`proveedor_id`),
+  CONSTRAINT `item_presupuesto_proveedor_item_presupuesto_id_foreign` FOREIGN KEY (`item_presupuesto_id`) REFERENCES `items_presupuesto` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `item_presupuesto_proveedor_proveedor_id_foreign` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Proveedores asignados a cada ítem de presupuesto (N:M)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `items_anticipo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `items_anticipo` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `anticipo_id` bigint unsigned NOT NULL COMMENT '-> anticipos.id',
+  `item_id` bigint unsigned NOT NULL COMMENT 'Ítem de presupuesto -> items_presupuesto.id',
+  `display_item` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Número del ítem tal como se muestra en el presupuesto',
+  `desc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Descripción del ítem',
+  `cant` int NOT NULL COMMENT 'Cantidad',
+  `dias` int NOT NULL COMMENT 'Días',
+  `otros` int NOT NULL COMMENT 'Otros (meses u otro multiplicador)',
+  `vunit` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor unitario',
+  `vtotal` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor total del ítem',
+  `vanticipo` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor anticipado (<= vtotal)',
+  `saldo` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'vtotal - vanticipo',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `items_anticipo_anticipo_id_foreign` (`anticipo_id`),
+  KEY `items_anticipo_item_id_foreign` (`item_id`),
+  CONSTRAINT `items_anticipo_anticipo_id_foreign` FOREIGN KEY (`anticipo_id`) REFERENCES `anticipos` (`id`),
+  CONSTRAINT `items_anticipo_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items_presupuesto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Ítems de presupuesto incluidos en un anticipo de productor, con valor anticipado y saldo';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `items_presupuesto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `items_presupuesto` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `presupuesto_id` bigint unsigned NOT NULL COMMENT '-> presupuesto_proyecto.id',
+  `num_item` int DEFAULT NULL COMMENT 'Número de ítem visible al usuario (secuencial dentro del presupuesto)',
+  `orden` int DEFAULT NULL COMMENT 'Orden de presentación',
+  `cod` int NOT NULL COMMENT 'Código/categoría del ítem',
+  `evento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '1 = fila de evento (agrupador sin valores), 0 = ítem normal',
+  `cantidad` int NOT NULL COMMENT 'Cantidad de unidades',
+  `dia` int NOT NULL COMMENT 'Número de días',
+  `otros` int NOT NULL COMMENT 'Otro multiplicador (p.ej. personas). Cantidad total = cantidad * dia * otros',
+  `descripcion` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Descripción del ítem o del evento',
+  `v_unitario` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Costo unitario interno',
+  `v_total` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Costo total interno (cantidad * dia * otros * v_unitario)',
+  `v_total_cliente` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor total al cliente (variante usada en cotización)',
+  `proveedor_legacy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'OBSOLETO: valor original del proveedor. Usar item_presupuesto_proveedor',
+  `margen_utilidad` double(15,10) NOT NULL DEFAULT '0.0000000000' COMMENT 'Margen de utilidad del ítem (fracción; 0.35 = 35 %)',
+  `mes_id` bigint unsigned DEFAULT NULL COMMENT 'Periodo (meses.id) en que se ejecuta el ítem; NULL = sin mes (eventos)',
+  `dias` int NOT NULL COMMENT 'Días de ejecución (dato informativo)',
+  `ciudad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Ciudad de ejecución',
+  `ciudad_id` bigint unsigned DEFAULT NULL COMMENT 'Ciudad del catálogo (ciudades.id) que corresponde al texto de la columna ciudad',
+  `v_unitario_cot` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Precio unitario al cliente',
+  `v_total_cot` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Precio total al cliente (base del margen)',
+  `rentabilidad` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Rentabilidad calculada del ítem',
+  `actualizado` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Marca de actualización tras asignado el centro de costos (0..3, ver código)',
+  `actualizado_con` tinyint NOT NULL DEFAULT '0' COMMENT 'Marca de actualización vista por contabilidad',
+  `disponible` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 = el ítem puede consumirse en órdenes/anticipos',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `items_presupuesto_presto_disponible_idx` (`presupuesto_id`,`disponible`),
+  KEY `items_presupuesto_mes_id_foreign` (`mes_id`),
+  KEY `items_presupuesto_ciudad_id_foreign` (`ciudad_id`),
+  CONSTRAINT `items_presupuesto_ciudad_id_foreign` FOREIGN KEY (`ciudad_id`) REFERENCES `ciudades` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `items_presupuesto_mes_id_foreign` FOREIGN KEY (`mes_id`) REFERENCES `meses` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `items_presupuesto_presupuesto_id_foreign` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuesto_proyecto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Ítems (líneas) de un presupuesto de proyecto. Sus proveedores están en item_presupuesto_proveedor';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `lider_comercial_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lider_comercial_user` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `lider_id` bigint unsigned NOT NULL COMMENT 'Líder comercial (users.id)',
+  `comercial_id` bigint unsigned NOT NULL COMMENT 'Comercial de su equipo (users.id)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `lider_comercial_user_lider_id_foreign` (`lider_id`),
+  KEY `lider_comercial_user_comercial_id_foreign` (`comercial_id`),
+  CONSTRAINT `lider_comercial_user_comercial_id_foreign` FOREIGN KEY (`comercial_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `lider_comercial_user_lider_id_foreign` FOREIGN KEY (`lider_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relación líder comercial -> comerciales a su cargo';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `meses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `meses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del periodo (p. ej. Enero)',
+  `identifier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Número del mes (1..12)',
+  `ano_id` bigint unsigned NOT NULL COMMENT '-> anos.id',
+  `f_inicio` date DEFAULT NULL COMMENT 'Primer día del mes',
+  `f_fin` date DEFAULT NULL COMMENT 'Último día del mes',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `meses_ano_id_foreign` (`ano_id`),
+  CONSTRAINT `meses_ano_id_foreign` FOREIGN KEY (`ano_id`) REFERENCES `anos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Meses de cada año fiscal con su rango de fechas (f_inicio, f_fin)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del archivo de migración',
+  `batch` int NOT NULL COMMENT 'Lote en que se aplicó',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Laravel: migraciones aplicadas a esta base';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `natural_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `natural_info` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `oc_id` bigint unsigned NOT NULL COMMENT '-> ordenes_compra.id',
+  `tercero_id` bigint unsigned NOT NULL COMMENT 'Persona contratada -> terceros.id',
+  `productor_id` bigint unsigned NOT NULL COMMENT 'Productor que contrata -> users.id',
+  `contrato` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archivo del contrato firmado',
+  `terminos` tinyint(1) DEFAULT NULL COMMENT '1 = la persona aceptó los términos',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `natural_info_oc_id_foreign` (`oc_id`),
+  KEY `natural_info_tercero_id_foreign` (`tercero_id`),
+  KEY `natural_info_productor_id_foreign` (`productor_id`),
+  CONSTRAINT `natural_info_oc_id_foreign` FOREIGN KEY (`oc_id`) REFERENCES `ordenes_compra` (`id`),
+  CONSTRAINT `natural_info_productor_id_foreign` FOREIGN KEY (`productor_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `natural_info_tercero_id_foreign` FOREIGN KEY (`tercero_id`) REFERENCES `terceros` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Datos adicionales de una orden natural: tercero contratado, productor, contrato';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `notificacion_destinatarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notificacion_destinatarios` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `area` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Área/evento que notifica',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Usuario de la plataforma (si está suspendido no recibe)',
+  `email_externo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Buzón externo cuando no es usuario de la plataforma',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre visible del destinatario',
+  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 = recibe las notificaciones de su área',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `notificacion_destinatarios_user_id_foreign` (`user_id`),
+  KEY `notificacion_destinatarios_area_index` (`area`),
+  CONSTRAINT `notificacion_destinatarios_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A quién se notifica por área (controller, produccion, contabilidad, tesoreria, lider_comercial, compras, compras_cc, contabilidad_pagos)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `notificaciones_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notificaciones_log` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `canal` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'correo | sms',
+  `evento` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Función que originó el aviso (p. ej. mailOrdenAprobada)',
+  `referencia` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Objeto relacionado, p. ej. oc:123, anticipo:4',
+  `destinatarios` json NOT NULL COMMENT 'Correos/teléfonos a los que iba dirigido',
+  `copias` json DEFAULT NULL COMMENT 'Destinatarios en copia (JSON)',
+  `asunto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Asunto del correo o texto del SMS',
+  `cuerpo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'HTML del correo o texto del SMS',
+  `adjuntos` json DEFAULT NULL COMMENT 'Rutas en storage de los adjuntos',
+  `estado` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendiente' COMMENT 'pendiente | enviado | fallido',
+  `intentos` tinyint unsigned NOT NULL DEFAULT '0' COMMENT 'Intentos de envío realizados',
+  `error` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Último error de envío',
+  `enviado_at` timestamp NULL DEFAULT NULL COMMENT 'Cuándo se envió',
+  `alertado_at` timestamp NULL DEFAULT NULL COMMENT 'Cuándo se avisó a desarrollo del fallo',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `notificaciones_log_estado_created_at_index` (`estado`,`created_at`),
+  KEY `notificaciones_log_canal_created_at_index` (`canal`,`created_at`),
+  CONSTRAINT `chk_notificaciones_log_estado` CHECK ((`estado` in (_utf8mb4'pendiente',_utf8mb4'enviado',_utf8mb4'fallido')))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Registro de correos y SMS enviados por el CRM, con resultado y reintentos';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `oc_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `oc_items` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `oc_id` bigint unsigned NOT NULL COMMENT '-> ordenes_compra.id',
+  `item_id` bigint unsigned NOT NULL COMMENT 'Ítem de presupuesto consumido -> items_presupuesto.id',
+  `num_item` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Número del ítem en el presupuesto',
+  `desc_oc` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Descripción en la orden',
+  `cant_oc` int NOT NULL COMMENT 'Cantidad consumida',
+  `dias_oc` int NOT NULL COMMENT 'Días',
+  `otros_oc` int NOT NULL COMMENT 'Otro multiplicador',
+  `vunit_oc` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor unitario',
+  `vtotal_oc` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor total de la línea (descuenta del saldo del ítem)',
+  `tipo_servicio` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Tipo de servicio (órdenes naturales)',
+  `tipo_contrato` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Tipo de contrato (órdenes naturales)',
+  `cantidad_horas` int DEFAULT NULL COMMENT 'Horas (órdenes de nómina)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `oc_items_oc_id_foreign` (`oc_id`),
+  KEY `oc_items_item_id_foreign` (`item_id`),
+  CONSTRAINT `oc_items_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items_presupuesto` (`id`),
+  CONSTRAINT `oc_items_oc_id_foreign` FOREIGN KEY (`oc_id`) REFERENCES `ordenes_compra` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Líneas de una orden de compra (consumo de un ítem de presupuesto)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ordenes_compra`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ordenes_compra` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `tipo_oc` bigint unsigned NOT NULL COMMENT '1 jurídica (proveedor), 2 natural (persona), 3 nómina -> tipo_ordenes_compra.id',
+  `estado_id` bigint unsigned NOT NULL DEFAULT '2' COMMENT '-> estados_ordenes_compra.id',
+  `fecha_aprobacion` datetime DEFAULT NULL COMMENT 'Fecha de aprobación',
+  `fecha_envio_produccion` datetime DEFAULT NULL COMMENT 'Fecha en que el productor la envió a aprobación',
+  `presupuesto_id` bigint unsigned DEFAULT NULL COMMENT 'Presupuesto que consume (NULL en órdenes naturales; ver natural_info) -> presupuesto_proyecto.id',
+  `proveedor_id` bigint unsigned NOT NULL COMMENT '-> proveedores.id (3 = cuenta de cobro/persona natural)',
+  `justificacion_rechazo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo del rechazo',
+  `observaciones_negociacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones del controller al aprobar',
+  `archivo_cot` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Cotización del proveedor adjunta por el productor',
+  `archivo_orden_helisa` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PDF de la orden generado al aprobar (para Helisa)',
+  `cod_causal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código de causación contable (flujo viejo)',
+  `observacion_causal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación de contabilidad al causar',
+  `archivo_comprobante_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Comprobante de pago (flujo viejo de anticipos sobre la orden)',
+  `archivo_remision` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PDF de la remisión firmada',
+  `archivo_cuenta_cobro` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PDF de la cuenta de cobro (persona natural), ruta en storage',
+  `observacion_remision` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones al firmar la remisión',
+  `archivo_firma` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Imagen de la firma del productor en la remisión',
+  `cod_oc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código de la orden asignado al aprobar (OC{id})',
+  `gr` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código del Good Receive (GR{id}) cuando se comprueba',
+  `actualizado` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Marca de orden actualizada tras aprobación',
+  `observaciones_anulacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de anulación',
+  `observaciones_revision_lider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación del líder de producción en su revisión (histórico; el historial completo está en historial_estados)',
+  `rechazo_revision_lider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo del líder de producción (histórico)',
+  `observaciones_revision_gerencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación de Gerencia en su revisión (histórico)',
+  `rechazo_revision_gerencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo de Gerencia (histórico)',
+  `observaciones_revision_evidencias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación en la revisión de evidencias (histórico)',
+  `rechazo_revision_evidencias` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Motivo de rechazo de las evidencias (histórico)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `fecha_causal` datetime DEFAULT NULL COMMENT 'Cuándo se causó',
+  `fecha_comprobante_pago` datetime DEFAULT NULL COMMENT 'Cuándo se registró el comprobante de pago',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Observaciones generales de la orden',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `ordenes_compra_tipo_oc_foreign` (`tipo_oc`),
+  KEY `ordenes_compra_estado_id_foreign` (`estado_id`),
+  KEY `ordenes_compra_presupuesto_id_foreign` (`presupuesto_id`),
+  KEY `ordenes_compra_proveedor_id_foreign` (`proveedor_id`),
+  KEY `ordenes_compra_presto_estado_idx` (`presupuesto_id`,`estado_id`),
+  KEY `ordenes_compra_cod_oc_index` (`cod_oc`),
+  CONSTRAINT `ordenes_compra_estado_id_foreign` FOREIGN KEY (`estado_id`) REFERENCES `estados_ordenes_compra` (`id`),
+  CONSTRAINT `ordenes_compra_presupuesto_id_foreign` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuesto_proyecto` (`id`),
+  CONSTRAINT `ordenes_compra_proveedor_id_foreign` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`),
+  CONSTRAINT `ordenes_compra_tipo_oc_foreign` FOREIGN KEY (`tipo_oc`) REFERENCES `tipo_ordenes_compra` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Órdenes de compra: tipo_oc 1 jurídica, 2 natural (persona), 3 nómina. estado_id -> estados_ordenes_compra';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `password_resets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_resets` (
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo del usuario',
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Token de restablecimiento',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Cuándo se pidió',
+  PRIMARY KEY (`email`),
+  KEY `password_resets_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Laravel: tokens de restablecimiento de contraseña (el flujo público se retiró; la tabla queda por compatibilidad)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `permiso_rol`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `permiso_rol` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `permiso_id` bigint unsigned NOT NULL COMMENT 'Permiso (permisos.id)',
+  `rol_id` bigint unsigned NOT NULL COMMENT 'Rol que lo tiene (roles.id)',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permiso_rol_permiso_id_rol_id_unique` (`permiso_id`,`rol_id`),
+  KEY `permiso_rol_rol_id_foreign` (`rol_id`),
+  CONSTRAINT `permiso_rol_permiso_id_foreign` FOREIGN KEY (`permiso_id`) REFERENCES `permisos` (`id`),
+  CONSTRAINT `permiso_rol_rol_id_foreign` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Permisos otorgados a un rol';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `permiso_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `permiso_user` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `permiso_id` bigint unsigned NOT NULL COMMENT 'Permiso (permisos.id)',
+  `user_id` bigint unsigned NOT NULL COMMENT 'Usuario que lo tiene además de los de su rol (users.id)',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permiso_user_permiso_id_user_id_unique` (`permiso_id`,`user_id`),
+  KEY `permiso_user_user_id_foreign` (`user_id`),
+  CONSTRAINT `permiso_user_permiso_id_foreign` FOREIGN KEY (`permiso_id`) REFERENCES `permisos` (`id`),
+  CONSTRAINT `permiso_user_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Permisos otorgados directamente a una cuenta';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `permisos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `permisos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `clave` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave que usa el código (p. ej. aprobar-presupuestos)',
+  `descripcion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Qué permite',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permisos_clave_unique` (`clave`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Permisos con nombre (Gates). Reemplazan los ids de usuario que estaban quemados en el código';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `personal_access_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Modelo dueño del token',
+  `tokenable_id` bigint unsigned NOT NULL COMMENT 'id del dueño',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del token',
+  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Token cifrado',
+  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Permisos del token',
+  `last_used_at` timestamp NULL DEFAULT NULL COMMENT 'Último uso',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Laravel Sanctum: tokens de API (no se usan en el CRM)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `presupuesto_proyecto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `presupuesto_proyecto` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `id_gestion` bigint unsigned NOT NULL COMMENT 'Gestión comercial a la que pertenece -> gestion_comercial.id',
+  `estado_id` bigint unsigned NOT NULL DEFAULT '3' COMMENT '-> estados_presupuesto.id (1 = aprobado)',
+  `margen_general` double(15,10) NOT NULL DEFAULT '0.0000000000' COMMENT 'Margen general (%) calculado a partir de los ítems',
+  `venta_proy` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor de venta del proyecto (total al cliente)',
+  `costos_proy` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Costos totales del proyecto (suma de los ítems)',
+  `margen_proy` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Margen % del proyecto. La aprobación exige >= 35 % (regla de Gerencia)',
+  `margen_bruto` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Margen bruto en pesos (venta − costos)',
+  `cod_cot` int NOT NULL COMMENT 'Consecutivo de la cotización',
+  `cod_cc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código de centro de costos asignado al aprobar',
+  `centro_costos` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Código puro del centro de costos (el que usa Helisa), sin el nombre del proyecto; se llena solo al guardar cod_cc',
+  `fecha_cc` date DEFAULT NULL COMMENT 'Fecha de asignación del centro de costos',
+  `imprevistos` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Imprevistos (%) que se suman a la venta',
+  `administracion` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Administración (%) que se suma a la venta',
+  `fee` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Fee (%) que se suma a la venta',
+  `tiempo_factura` int NOT NULL DEFAULT '30' COMMENT 'Días para facturar',
+  `notas` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Notas del presupuesto',
+  `justificacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones del comercial al enviar a aprobación',
+  `justificacion_compras` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones de compras/gerencia al aprobar o rechazar',
+  `justificacion_lider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones del líder comercial',
+  `justificacion_gerencia` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Justificación de Gerencia al rechazar (histórico; ver historial_estados)',
+  `productor` bigint unsigned DEFAULT NULL COMMENT 'Productor asignado a ejecutar el proyecto -> users.id',
+  `notificacion_actualizacion` tinyint(1) DEFAULT NULL COMMENT 'Marca de notificación pendiente por actualización del presupuesto',
+  `requiere_revalidacion` bigint DEFAULT '0' COMMENT '1 = hubo cambios después de aprobarse y debe volver a validarse',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `presupuesto_proyecto_id_gestion_foreign` (`id_gestion`),
+  KEY `presupuesto_proyecto_estado_id_foreign` (`estado_id`),
+  KEY `presupuesto_proyecto_productor_foreign` (`productor`),
+  KEY `presupuesto_proyecto_centro_costos_index` (`centro_costos`),
+  CONSTRAINT `presupuesto_proyecto_estado_id_foreign` FOREIGN KEY (`estado_id`) REFERENCES `estados_presupuesto` (`id`),
+  CONSTRAINT `presupuesto_proyecto_id_gestion_foreign` FOREIGN KEY (`id_gestion`) REFERENCES `gestion_comercial` (`id`),
+  CONSTRAINT `presupuesto_proyecto_productor_foreign` FOREIGN KEY (`productor`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Presupuesto de un proyecto (centro de costos): totales, margen, aprobación y productor asignado';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `presupuestos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `presupuestos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `ano_id` bigint unsigned NOT NULL COMMENT '-> anos.id',
+  `mes_id` bigint unsigned NOT NULL COMMENT '-> meses.id',
+  `valor` decimal(15,2) NOT NULL COMMENT 'Meta de venta del comercial en el mes',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial (users.id) al que corresponde la meta',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `presupuestos_ano_id_foreign` (`ano_id`),
+  KEY `presupuestos_mes_id_foreign` (`mes_id`),
+  KEY `presupuestos_id_user_foreign` (`id_user`),
+  CONSTRAINT `presupuestos_ano_id_foreign` FOREIGN KEY (`ano_id`) REFERENCES `anos` (`id`),
+  CONSTRAINT `presupuestos_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`),
+  CONSTRAINT `presupuestos_mes_id_foreign` FOREIGN KEY (`mes_id`) REFERENCES `meses` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Presupuesto (meta) comercial por año/mes/comercial';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `proveedores`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `proveedores` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `categoria_id` bigint unsigned NOT NULL COMMENT 'Categoría (categorias_proveedor.id)',
+  `tercero` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre o razón social del proveedor',
+  `tipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'juridica, natural u Otros',
+  `tipo_doc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tipo de documento: NIT, CEDULA o RUC',
+  `documento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Número de documento (único)',
+  `dv` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Dígito de verificación del NIT',
+  `direccion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Dirección',
+  `departamento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Departamento',
+  `ciudad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Ciudad (texto); el enlace al catálogo está en ciudad_id',
+  `ciudad_id` bigint unsigned DEFAULT NULL COMMENT 'Ciudad del catálogo (ciudades.id) que corresponde al texto de la columna ciudad',
+  `servicio` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Servicio que presta',
+  `anticipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Porcentaje de anticipo pactado',
+  `celular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Celular',
+  `fijo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Teléfono fijo',
+  `correo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo (único)',
+  `plazo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Plazo de pago pactado',
+  `contacto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Persona de contacto',
+  `web` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Página web',
+  `observaciones` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observaciones',
+  `estado_legacy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Estado en texto, antes del catálogo estados_proveedor (histórico)',
+  `estado_id` bigint unsigned NOT NULL COMMENT 'Estado del acuerdo (estados_proveedor.id)',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `proveedores_documento_unique` (`documento`),
+  UNIQUE KEY `proveedores_correo_unique` (`correo`),
+  KEY `proveedores_categoria_id_foreign` (`categoria_id`),
+  KEY `proveedores_estado_id_foreign` (`estado_id`),
+  KEY `proveedores_ciudad_id_foreign` (`ciudad_id`),
+  CONSTRAINT `proveedores_categoria_id_foreign` FOREIGN KEY (`categoria_id`) REFERENCES `categorias_proveedor` (`id`),
+  CONSTRAINT `proveedores_ciudad_id_foreign` FOREIGN KEY (`ciudad_id`) REFERENCES `ciudades` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `proveedores_estado_id_foreign` FOREIGN KEY (`estado_id`) REFERENCES `estados_proveedor` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Proveedores (terceros jurídicos). Los ids 1 y 2 son nómina y el 3 es "cuenta de cobro" (persona natural)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `role_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `role_user` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `user_id` bigint unsigned NOT NULL COMMENT 'Cuenta (users.id)',
+  `rol_id` bigint unsigned NOT NULL COMMENT '-> roles_user.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `role_user_user_id_rol_id_unique` (`user_id`,`rol_id`),
+  KEY `role_user_rol_id_foreign` (`rol_id`),
+  CONSTRAINT `role_user_rol_id_foreign` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `role_user_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Roles que cada cuenta puede usar (multi-rol). El rol activo está en users.rol';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `roles` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del rol',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Catálogo de roles (antes roles_user). users.rol es el rol activo; role_user, los roles que cada cuenta puede usar';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `solicitud_contactos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `solicitud_contactos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `id_user` bigint unsigned NOT NULL COMMENT 'Comercial que pidió el cliente (users.id)',
+  `estado` enum('Pendiente','En revisión','Aprobado','Rechazado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Pendiente' COMMENT 'Pendiente, En revisión, Aprobado o Rechazado',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre comercial',
+  `razon_social` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Razón social',
+  `nit` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'NIT',
+  `direccion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Dirección',
+  `telefono` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Teléfono principal',
+  `numero_telefono` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Otro teléfono',
+  `cargo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cargo del contacto',
+  `correo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo',
+  `pagina_web` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Página web',
+  `correo_recpcion_facturas` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo para facturas',
+  `adjuntar_archivos` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Documentos adjuntos (ruta en storage)',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  KEY `id_user` (`id_user`),
+  CONSTRAINT `solicitud_contactos_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Solicitudes de creación/actualización de contactos hechas por comerciales';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tarifario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tarifario` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `concepto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Concepto',
+  `caso` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Caso o uso',
+  `caracteristicas` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Características',
+  `v_unidad` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Valor unitario de referencia',
+  `observacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observación',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tarifas de referencia para cotizar';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `terceros`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `terceros` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre',
+  `apellido` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Apellido',
+  `cedula` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Documento de identidad',
+  `correo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Correo',
+  `telefono` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Teléfono',
+  `servicio` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Servicio que presta',
+  `ciudad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ciudad (texto); el enlace al catálogo está en ciudad_id',
+  `ciudad_id` bigint unsigned DEFAULT NULL COMMENT 'Ciudad del catálogo (ciudades.id) que corresponde al texto de la columna ciudad',
+  `banco` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Banco para el pago',
+  `tipo_cuenta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Tipo de cuenta bancaria',
+  `num_cuenta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Número de cuenta bancaria',
+  `num_rut` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Número de RUT',
+  `rut` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Archivo RUT',
+  `cert_bancaria` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Certificación bancaria (archivo)',
+  `copia_cedula` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Copia de la cédula (archivo)',
+  `art383` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Formato artículo 383 (archivo)',
+  `planilla_aportes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Planilla de aportes (archivo)',
+  `firma` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Imagen de la firma capturada en el portal',
+  `estado` bigint unsigned NOT NULL DEFAULT '1' COMMENT '-> estados_tercero.id',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Borrado lógico: cuándo se envió a la papelera (NULL = vigente); se restaura desde Administración → Papelera',
+  PRIMARY KEY (`id`),
+  KEY `terceros_estado_foreign` (`estado`),
+  KEY `terceros_cedula_index` (`cedula`),
+  KEY `terceros_ciudad_id_foreign` (`ciudad_id`),
+  CONSTRAINT `terceros_ciudad_id_foreign` FOREIGN KEY (`ciudad_id`) REFERENCES `ciudades` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `terceros_estado_foreign` FOREIGN KEY (`estado`) REFERENCES `estados_tercero` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Personas naturales contratadas por producción (datos bancarios, RUT, firma)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tipo_ordenes_compra`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipo_ordenes_compra` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Jurídica, Natural o Nómina',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tipos de orden de compra (jurídica, natural, nómina)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'Identificador',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre completo',
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correo (único): es el usuario de acceso',
+  `telefono` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Celular (se usa para SMS de notificación)',
+  `email_verified_at` timestamp NULL DEFAULT NULL COMMENT 'Cuándo verificó el correo (no se usa)',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Contraseña cifrada',
+  `rol` bigint unsigned NOT NULL DEFAULT '2' COMMENT 'Rol ACTIVO (FK lógica a roles_user). Los demás roles de la cuenta están en role_user',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'public/photos/avatar.jpg' COMMENT 'Ruta de la foto de perfil en storage',
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Token de "recordarme"',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT 'Creación del registro',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT 'Última modificación',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  KEY `users_rol_foreign` (`rol`),
+  CONSTRAINT `users_rol_foreign` FOREIGN KEY (`rol`) REFERENCES `roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Cuentas de la plataforma. rol = rol ACTIVO (los roles asignables están en role_user)';
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 DROP FUNCTION IF EXISTS `CapitalizeWords` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE FUNCTION `CapitalizeWords`(texto VARCHAR(255)) RETURNS varchar(255) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+    DETERMINISTIC
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE longitud INT DEFAULT LENGTH(texto);
+    DECLARE resultado VARCHAR(255) DEFAULT '';
+    DECLARE char_actual CHAR(1);
+    DECLARE char_prev CHAR(1) DEFAULT ' ';
+
+    WHILE i <= longitud DO
+        SET char_actual = SUBSTRING(texto, i, 1);
+        IF char_prev = ' ' THEN
+            SET resultado = CONCAT(resultado, UPPER(char_actual));
+        ELSE
+            SET resultado = CONCAT(resultado, LOWER(char_actual));
+        END IF;
+        SET char_prev = char_actual;
+        SET i = i + 1;
+    END WHILE;
+
+    RETURN resultado;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_ordenes_compra_pendientes_anio` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE PROCEDURE `sp_ordenes_compra_pendientes_anio`(
+    IN p_anio SMALLINT   -- puede ser NULL
+)
+BEGIN
+    DECLARE v_anio SMALLINT;
+    DECLARE v_start_date DATETIME;
+    DECLARE v_end_date   DATETIME;
+
+    -- Si no viene el año, se usa el año actual
+    SET v_anio = IFNULL(p_anio, YEAR(CURDATE()));
+
+    -- Primer día del año, 00:00:00
+    SET v_start_date = STR_TO_DATE(CONCAT(v_anio, '-01-01 00:00:00'), '%Y-%m-%d %H:%i:%s');
+
+    -- Si es el año actual, corta hasta "ahora" (como Carbon::now())
+    -- si es un año distinto al actual, toma hasta el 31 de diciembre 23:59:59
+    IF v_anio = YEAR(CURDATE()) THEN
+        SET v_end_date = NOW();
+    ELSE
+        SET v_end_date = STR_TO_DATE(CONCAT(v_anio, '-12-31 23:59:59'), '%Y-%m-%d %H:%i:%s');
+    END IF;
+
+    SELECT *
+    FROM ordenes_compra
+    WHERE cod_causal IS NULL
+      AND created_at BETWEEN v_start_date AND v_end_date
+    ORDER BY created_at DESC;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+INSERT INTO `migrations` VALUES (2,'2019_12_14_000001_create_personal_access_tokens_table',1);
+INSERT INTO `migrations` VALUES (3,'2022_11_28_141640_create_estados_cuenta_table',1);
+INSERT INTO `migrations` VALUES (4,'2022_11_29_214201_create_roles_user_table',1);
+INSERT INTO `migrations` VALUES (5,'2014_10_12_000000_create_users_table',2);
+INSERT INTO `migrations` VALUES (6,'2014_10_12_100000_create_password_resets_table',2);
+INSERT INTO `migrations` VALUES (7,'2019_08_19_000000_create_failed_jobs_table',2);
+INSERT INTO `migrations` VALUES (9,'2022_12_16_234442_create_anos_table',2);
+INSERT INTO `migrations` VALUES (10,'2022_12_17_232130_create_meses_table',2);
+INSERT INTO `migrations` VALUES (11,'2022_12_17_232135_create_presupuestos_table',3);
+INSERT INTO `migrations` VALUES (14,'2023_03_22_143801_create_asistentes_table',4);
+INSERT INTO `migrations` VALUES (15,'2023_03_27_202002_create_estados_gestion_comercial',5);
+INSERT INTO `migrations` VALUES (17,'2023_03_24_151700_create_cuentas_table',6);
+INSERT INTO `migrations` VALUES (24,'2022_12_27_152055_create_helisa_table',13);
+INSERT INTO `migrations` VALUES (26,'2023_03_28_143631_create_gestion_comercial_table',15);
+INSERT INTO `migrations` VALUES (28,'2022_11_29_214200_create_base_comerciales_table',17);
+INSERT INTO `migrations` VALUES (29,'2023_04_03_214843_create_contactos_table',18);
+INSERT INTO `migrations` VALUES (30,'2023_05_08_154437_create_estados_presupuesto_table',19);
+INSERT INTO `migrations` VALUES (37,'2023_05_09_154216_create_presupuesto_proyecto_table',20);
+INSERT INTO `migrations` VALUES (41,'2022_03_28_143631_create_gestion_comercial_table',21);
+INSERT INTO `migrations` VALUES (43,'2023_10_03_112513_create_categorias_proveedor',21);
+INSERT INTO `migrations` VALUES (44,'2023_10_03_112557_create_proveedores',21);
+INSERT INTO `migrations` VALUES (45,'2023_10_02_104334_create_estados_ordenes_compra',22);
+INSERT INTO `migrations` VALUES (46,'2023_10_03_102645_create_tipo_ordenes_compra',22);
+INSERT INTO `migrations` VALUES (51,'2023_05_09_160041_items_presupuesto_table',24);
+INSERT INTO `migrations` VALUES (53,'2023_10_04_103534_create_oc_items',25);
+INSERT INTO `migrations` VALUES (54,'2024_07_02_102827_create_table_estados_tercero',25);
+INSERT INTO `migrations` VALUES (56,'2024_07_18_150134_create_natural_info',25);
+INSERT INTO `migrations` VALUES (57,'2025_05_06_101039_create_evidencias',25);
+INSERT INTO `migrations` VALUES (63,'2023_10_04_102027_create_ordenes_compra',27);
+INSERT INTO `migrations` VALUES (64,'2024_07_02_102828_create_table_terceros',28);
+INSERT INTO `migrations` VALUES (65,'2025_09_16_220055_create_anticipos_table',29);
+INSERT INTO `migrations` VALUES (66,'2026_01_30_102946_add_column_observaciones_to_ordenes_compra_table',30);
+INSERT INTO `migrations` VALUES (67,'2026_02_24_093435_add_column_firma_to_terceros_table',30);
+INSERT INTO `migrations` VALUES (68,'2026_02_25_150215_add_column_justificacion_lider_to_presupuesto_proyecto_table',31);
+INSERT INTO `migrations` VALUES (69,'2026_04_10_095206_create_lider_comercial_user_table',31);
+INSERT INTO `migrations` VALUES (70,'2026_05_07_180055_add_column_num_item_and_orden_to_items_presupuesto_table',31);
+INSERT INTO `migrations` VALUES (71,'2026_03_20_171124_create_items_anticipo_table',32);
+INSERT INTO `migrations` VALUES (72,'2026_03_24_084950_add_column_presupuesto_id_and_firma_productor_to_anticipos_table',32);
+INSERT INTO `migrations` VALUES (73,'2026_03_24_114006_change_columns_oc_id_and_porcentaje_anticipo',32);
+INSERT INTO `migrations` VALUES (74,'2026_03_24_155751_add_columns_observaciones_and_justificaciones_to_anticipos_table',32);
+INSERT INTO `migrations` VALUES (75,'2026_03_25_113523_create_evidencias_anticipo_table',32);
+INSERT INTO `migrations` VALUES (76,'2026_04_09_092926_add_column_actualizado_to_ordenes_compra_table',32);
+INSERT INTO `migrations` VALUES (77,'2026_09_11_120000_create_roles_permisos_notificaciones',32);
+INSERT INTO `migrations` VALUES (78,'2026_09_13_100000_add_estados_flujo_produccion',32);
+INSERT INTO `migrations` VALUES (79,'2026_09_14_100000_normalizar_proveedores_items_presupuesto',32);
+INSERT INTO `migrations` VALUES (80,'2026_09_14_110000_normalizar_participantes_gestion',32);
+INSERT INTO `migrations` VALUES (81,'2026_09_14_120000_crear_estados_anticipo',32);
+INSERT INTO `migrations` VALUES (82,'2026_09_14_130000_integridad_indices_y_limpieza',32);
+INSERT INTO `migrations` VALUES (83,'2026_09_14_140000_documentar_esquema',32);
+INSERT INTO `migrations` VALUES (84,'2026_09_14_160000_roles_controller_lider_comercial',33);
+INSERT INTO `migrations` VALUES (85,'2026_09_14_170000_notificaciones_log_y_estado_pagado',34);
+INSERT INTO `migrations` VALUES (86,'2026_09_14_171000_tipo_orden_nomina',35);
+INSERT INTO `migrations` VALUES (87,'2026_09_14_172000_actividad_log',36);
+INSERT INTO `migrations` VALUES (88,'2026_09_14_180000_estados_proveedor',37);
+INSERT INTO `migrations` VALUES (89,'2026_09_24_120000_anticipo_juridico_flujo',38);
+INSERT INTO `migrations` VALUES (90,'2026_09_25_100000_roles_e_integridad',39);
+INSERT INTO `migrations` VALUES (91,'2026_09_25_110000_tipos_de_datos',39);
+INSERT INTO `migrations` VALUES (92,'2026_09_25_120000_centro_costos_puro',39);
+INSERT INTO `migrations` VALUES (93,'2026_09_25_130000_catalogo_ciudades',39);
+INSERT INTO `migrations` VALUES (94,'2026_09_25_140000_historial_estados',39);
+INSERT INTO `migrations` VALUES (95,'2026_09_25_150000_borrado_logico',39);
+INSERT INTO `migrations` VALUES (96,'2026_09_25_160000_documentar_esquema_completo',39);

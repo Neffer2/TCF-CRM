@@ -88,5 +88,8 @@
         <div class="col-md-12">
             @livewire('productor.ordenes.nomina', ['presupuesto' => $presupuesto, 'orden_nomina' => $orden])
         </div>
+        <div class="col-md-12">
+            @include('components.historial-estados', ['registro' => $orden])
+        </div>
     </div>
 @endsection

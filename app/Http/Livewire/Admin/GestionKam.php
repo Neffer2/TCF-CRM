@@ -29,7 +29,7 @@ class GestionKam extends Component
 
     public function mount()
     {
-        $this->anios = DB::table('gestion_comercial')->selectRaw('DISTINCT YEAR(created_at) a')
+        $this->anios = DB::table('gestion_comercial')->whereNull('deleted_at')->selectRaw('DISTINCT YEAR(created_at) a')
             ->whereNotNull('created_at')->orderByDesc('a')->pluck('a')->filter()->values()->all();
         $this->anio = $this->anios[0] ?? (int) now()->year;
 
