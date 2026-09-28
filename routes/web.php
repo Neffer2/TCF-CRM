@@ -176,6 +176,8 @@ Route::get('/', function () {
 
     // Controller: revisa los anticipos jurídicos después del líder (matriz de flujos de Gerencia, sep-2026)
     Route::view('/lista-anticipos-controller', 'controller.anticipos.index')->middleware(['auth', 'rol:11'])->name('lista-anticipos-controller');
+    // Gerencia: los anticipos jurídicos que superan el umbral y esperan su aprobación (misma bandeja, en su modo)
+    Route::view('/anticipos-juridicos-gerencia', 'admin.produccion.anticipos.juridicos')->middleware(['auth', 'admin', 'can:revisar-anticipos-gerencia'])->name('anticipos-juridicos-gerencia');
     Route::get('/anticipo-controller/{anticipo_id}', function ($anticipo_id){
         return view('controller.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
     })->middleware(['auth', 'rol:11'])->name('anticipo-controller');

@@ -8,8 +8,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Bandeja del Controller: anticipos jurídicos que le toca revisar (después del líder de
- * producción, o devueltos por Contabilidad) y el histórico completo para consultar.
+ * Bandeja de anticipos jurídicos. Para el Controller: los que le toca revisar (después del líder de
+ * producción, o devueltos por Contabilidad). Para Gerencia (permiso revisar-anticipos-gerencia): los que
+ * superan el umbral y esperan su aprobación. En los dos casos, el histórico completo para consultar.
  */
 class AnticiposJuridicos extends Component
 {
@@ -18,6 +19,19 @@ class AnticiposJuridicos extends Component
 
     public $vista = 'pendientes'; // pendientes | todos
     public $buscar = '';
+    /** 'controller' o 'gerencia': lo fija el servidor según quién abre la bandeja. */
+    public $bandeja = 'controller';
+
+    public static function bandejaDe($user): string
+    {
+        if ($user && !$user->esControl() && $user->can('revisar-anticipos-gerencia')) { return 'gerencia'; }
+        return 'controller';
+    }
+
+    public function updating($name, $value)
+    {
+        abort_if($name === 'bandeja', 403); // la fija el servidor
+    }
 
     public function updatedVista() { $this->resetPage(); }
     public function updatedBuscar() { $this->resetPage(); }
@@ -36,10 +50,16 @@ class AnticiposJuridicos extends Component
                 });
             });
 
-        $pendientes = (clone $base)->whereIn('estado_id', [F::REV_CONTROLLER, F::RECH_CONTABILIDAD]);
+        $this->bandeja = self::bandejaDe(auth()->user());
+        $gerencia = $this->bandeja === 'gerencia';
+        $estadosPendientes = $gerencia ? [F::REV_GERENCIA] : [F::REV_CONTROLLER, F::RECH_CONTABILIDAD];
+        $pendientes = (clone $base)->whereIn('estado_id', $estadosPendientes);
         $conteo = (clone $pendientes)->count();
         $anticipos = ($this->vista === 'todos' ? $base->orderByDesc('id') : $pendientes->orderBy('fecha_solicitud'))->paginate(15);
 
-        return view('livewire.produccion.anticipos-juridicos', compact('anticipos', 'conteo'));
+        return view('livewire.produccion.anticipos-juridicos', [
+            'anticipos' => $anticipos, 'conteo' => $conteo, 'gerencia' => $gerencia,
+            'ruta' => $gerencia ? 'anticipo-admin' : 'anticipo-controller', 'estadosPendientes' => $estadosPendientes,
+        ]);
     }
 }

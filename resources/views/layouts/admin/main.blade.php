@@ -35,7 +35,7 @@
     'actualizaciones' => 'Actualizaciones', 'validaciones' => 'Validaciones', 'validacionesCliente' => 'Solicitudes',
     'ordenes-compra' => 'Órdenes de compra', 'orden-juridica' => 'Orden jurídica', 'orden-natural' => 'Orden natural', 'orden-nomina' => 'Orden de nómina', 'orden-compra_anticipate' => 'Anticipo',
     'consumidos' => 'Consumidos', 'consumido' => 'Consumido', 'reporte-consumidos' => 'Reporte de consumidos', 'proveedores' => 'Proveedores', 'personal' => 'Personal',
-    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipo-admin' => 'Anticipo', 'lista-anticipos-controller' => 'Anticipos jurídicos', 'anticipo-controller' => 'Anticipo jurídico', 'mi-equpo' => 'Mi equipo', 'notificaciones' => 'Notificaciones', 'actividad' => 'Registro de actividad', 
+    'lista-anticipos-admin' => 'Anticipos', 'anticipos-admin' => 'Anticipos', 'anticipos-juridicos-gerencia' => 'Anticipos jurídicos', 'anticipo-admin' => 'Anticipo', 'lista-anticipos-controller' => 'Anticipos jurídicos', 'anticipo-controller' => 'Anticipo jurídico', 'mi-equpo' => 'Mi equipo', 'notificaciones' => 'Notificaciones', 'actividad' => 'Registro de actividad', 
     'dashboard-com' => 'Dashboard', 'dashboard-base' => 'Base comercial', 'gestion-helisa' => 'Helisa', 'gestion-comercial' => 'Prospectos', 'contactos' => 'Contactos', 'clientes' => 'Clientes',
     'consumidos-com' => 'Consumidos', 'update-gestion-comercial' => 'Gestión comercial',
   ];
@@ -160,7 +160,7 @@
             <span class="nav-link-text ms-1">Producci&oacute;n</span>
           </a>
           <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal') || request()->is('lista-anticipos-admin') || request()->is('anticipo-admin/*')),
+            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal') || request()->is('lista-anticipos-admin') || request()->is('anticipo-admin/*') || request()->is('anticipos-juridicos-gerencia')),
             'collapse' => true
             ]) id="dashboardsProduccion">
             <ul class="nav ms-4">
@@ -182,6 +182,14 @@
                         <span class="sidenav-normal"> Anticipos </span>
                     </a>
                 </li>
+                @can('revisar-anticipos-gerencia')
+                <li @class(['active' => request()->is('anticipos-juridicos-gerencia'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('anticipos-juridicos-gerencia'), 'nav-link' => true]) href="{{ route('anticipos-juridicos-gerencia') }}">
+                        <span class="sidenav-mini-icon text-xs"> AJ </span>
+                        <span class="sidenav-normal"> Anticipos jur&iacute;dicos </span>
+                    </a>
+                </li>
+                @endcan
                 <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
                         <span class="sidenav-mini-icon text-xs"> C </span>
