@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('assets/css/crm-premium.css') }}?v=39" rel="stylesheet" />
+  <link href="{{ asset('assets/css/crm-premium.css') }}?v=40" rel="stylesheet" />
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
   @livewireStyles
@@ -60,10 +60,15 @@
     <hr class="horizontal dark mt-0">
     {{-- Usuario: foto, nombre y cargo (enlaza a Mi perfil) --}}
     <a class="crm-user" href="{{ route('mi-perfil') }}" title="Ver mi perfil">
-      <span class="crm-user__foto">@if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="" onerror="this.remove()">@endif<b>{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</b></span>
-      <b class="crm-user__nombre">{{ Auth::user()->name }}</b>
-      <span class="crm-user__cargo">{{ Auth::user()->cargo() }}</span>
-      <span class="crm-user__link">Ver mi perfil →</span>
+      <span class="crm-user__foto">
+        <b class="crm-user__inicial" aria-hidden="true">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</b>
+        @if (Auth::user()->avatarUrl())<img src="{{ Auth::user()->avatarUrl() }}" alt="" onerror="this.remove()">@endif
+        <span class="crm-user__placa">
+          <b class="crm-user__nombre">{{ Auth::user()->name }}</b>
+          <span class="crm-user__cargo">{{ Auth::user()->cargo() }}</span>
+        </span>
+      </span>
+      <span class="crm-user__link">Ver mi perfil <i aria-hidden="true">→</i></span>
     </a>
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       {{-- Menú según el rol activo: Controller y Líder comercial tienen el suyo; Admin/Gerencia el completo --}}
@@ -155,7 +160,7 @@
             <span class="nav-link-text ms-1">Producci&oacute;n</span>
           </a>
           <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal')),
+            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal') || request()->is('lista-anticipos-admin') || request()->is('anticipo-admin/*')),
             'collapse' => true
             ]) id="dashboardsProduccion">
             <ul class="nav ms-4">
@@ -169,6 +174,12 @@
                     <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
                         <span class="sidenav-mini-icon text-xs"> OC </span>
                         <span class="sidenav-normal"> Ordenes de compra </span>
+                    </a>
+                </li>
+                <li @class(['active' => request()->is('lista-anticipos-admin') || request()->is('anticipo-admin/*'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('lista-anticipos-admin') || request()->is('anticipo-admin/*'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
+                        <span class="sidenav-mini-icon text-xs"> A </span>
+                        <span class="sidenav-normal"> Anticipos </span>
                     </a>
                 </li>
                 <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>

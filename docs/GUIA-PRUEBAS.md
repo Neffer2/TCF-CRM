@@ -244,7 +244,7 @@ Ejecuta la cadena completa con estos usuarios en orden:
 |---|---|---|---|
 | 6.1 | Solicitud | `prueba.productor` → Solicitar anticipo → ítems de su centro de costo → intenta `valor_anticipo` mayor al valor total del ítem | Rechazado. Con valores válidos, el anticipo se crea (estado Revisión líder) |
 | 6.2 | No saltarse al líder | Con la consola del navegador invoca el método Livewire `revisionAnticipoProductor(1)` sobre su propio anticipo | Rechazado ("transición no permitida" / "sin permisos"); el estado NO cambia |
-| 6.3 | Revisión líder | `prueba.lider` → lista de anticipos → aprueba con observaciones | Pasa a revisión de gerencia **sin error 500** y la página redirige bien |
+| 6.3 | Revisión líder | `prueba.lider` → menú **Anticipos por revisar** → aprueba con observaciones | Pasa a revisión de gerencia **sin error 500** y la página redirige bien |
 | 6.4 | Revisión gerencia | `prueba.gerencia` → aprueba | Pasa a cargue de evidencias; el productor recibe la notificación (log) |
 | 6.5 | Evidencias | `prueba.productor` → sube evidencias del anticipo → envía | Pasa a **Revisión de evidencias**: `prueba.lider` las aprueba o las devuelve antes de Contabilidad (ver 8j.7). Intenta borrar una evidencia de OTRO anticipo por consola → bloqueado |
 | 6.6 | Causación | `prueba.contabilidad` → lista anticipos (estado aprobado) → causa con código | Pasa a causado. Intenta causarlo de nuevo → bloqueado |
@@ -259,7 +259,7 @@ Datos de demostración: `php artisan db:seed --class=AnticiposJuridicosDemoSeede
 
 | # | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| 6b.1 | Pantalla que se explica sola | `prueba.productor` → Solicitar anticipo → pestaña Anticipo Jurídico | Arriba dice qué es y quién lo revisa; debajo el recorrido de 6 etapas (Productor, Líder, Controller, Gerencia, Contabilidad, Tesorería) |
+| 6b.1 | Pantalla que se explica sola | `prueba.productor` → menú **Solicitar anticipo** (desde el 28-sep está en el menú lateral; también en Inicio) → pestaña Anticipo Jurídico | Arriba dice qué es y quién lo revisa; debajo el recorrido de 6 etapas (Productor, Líder, Controller, Gerencia, Contabilidad, Tesorería) |
 | 6b.2 | Sin orden de compra | "Aún no hay orden de compra" → proyecto → busca el proveedor por nombre o NIT → valor base 30.000.000 → 40 % | Calcula **$12.000.000** y avisa que **pasa por Gerencia**; si el acuerdo con el proveedor es menor, lo advierte. Enviar sin adjuntar soporte → error "hay que adjuntar al menos un soporte" |
 | 6b.3 | Validaciones | Valor base mayor al costo del proyecto; porcentaje 0 o 150; proveedor persona natural; archivo .exe | Cada uno rechazado con su mensaje en el campo |
 | 6b.4 | Envío | Adjunta una cotización (PDF o imagen, puedes adjuntar varias y quitar una) → Enviar a revisión | Abre la ficha del anticipo con el mensaje de confirmación; estado **Revisión líder de producción** |
@@ -496,6 +496,16 @@ Siete migraciones (`2026_09_25_*`) que copian datos y no borran nada; el respald
 Con cada usuario de prueba, recorre su menú completo clic por clic. **Ninguna página debe dar 500.** Presta atención especial a: dashboards, listas con paginación, formularios de creación, y los PDF/Excel de descarga.
 
 ---
+
+# PARTE B-bis — Problemas comunes del entorno (revísalos antes de reportar)
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| Al iniciar sesión (o al pulsar cualquier botón) sale "Not Found: The requested resource /livewire/message/… was not found on this server", o los botones "no hacen nada" y la página solo recarga | El proyecto está corriendo con el servidor de PHP **sin el enrutador de Laravel** (`php -S localhost:9000 -t public`). Todas las acciones de Livewire (crear, guardar, aprobar, filtrar) van a `/livewire/message/...` y ese servidor no las conoce | Arranca siempre con `php artisan serve --port=9000` (o con Apache/nginx apuntando a `public/` con `mod_rewrite`). Si al pulsar un botón no pasa nada, abre la consola del navegador (F12 → Red): verás la petición a `/livewire/message` con 404 |
+| "Table 'tfc_crm.roles_user' doesn't exist" | El código es anterior al 25-sep y la base es la nueva (el catálogo de roles se llama `roles` desde las mejoras de base de datos, caso 8k.9) | `git pull origin correcciones` (último commit `56def47` o posterior), `composer install`, `php artisan optimize:clear` |
+| Todas las cuentas tienen la clave `Prueba123*` | Es a propósito: la base del paquete es una copia **saneada** para pruebas. Las claves reales no salen de producción, se quitaron los tokens y las cuentas bancarias van enmascaradas (ver A3 y `COMO-IMPORTAR-LA-BASE.md`). Producción conserva sus claves | Nada que hacer. No es un hallazgo |
+| Un adjunto viejo (PDF, foto, RUT) da "no encontrado" | Los archivos de `storage/app/public` no viajan con la base | Solo cuentan los archivos que subas tú durante las pruebas |
+| `php artisan migrate:status` muestra migraciones con "No" | La base es de un paquete anterior | Reimporta `bullcrm.sql` del paquete vigente |
 
 # PARTE C — Cómo reportar
 
