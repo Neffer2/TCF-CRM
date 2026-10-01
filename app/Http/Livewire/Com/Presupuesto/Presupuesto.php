@@ -217,7 +217,7 @@ class Presupuesto extends Component
             }
 
             $item->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $item->v_total_cot = ($this->utilidad > 0) ? ($this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
+            $item->v_total_cot = ($this->utilidad > 0) ? ($this->otros * $this->cantidad * $this->dia * $item->v_unitario_cot) : 0;
             $item->rentabilidad = ($this->utilidad > 0) ? ($item->v_total_cot - $item->v_total) : 0;
 
             $item->save();
@@ -621,7 +621,7 @@ class Presupuesto extends Component
             $itemOriginal->ciudad = $this->ciudad;
 
             $itemOriginal->v_unitario_cot = ($this->utilidad > 0) ? $this->valor_unitario / $this->utilidad : 0;
-            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->cantidad * $this->dia * $itemOriginal->v_unitario_cot : 0;
+            $itemOriginal->v_total_cot = ($this->utilidad > 0) ? $this->otros * $this->cantidad * $this->dia * $itemOriginal->v_unitario_cot : 0;
             $itemOriginal->rentabilidad = ($this->utilidad > 0) ? $itemOriginal->v_total_cot - $itemOriginal->v_total : 0;
             $itemOriginal->update();
         }
@@ -1086,7 +1086,7 @@ class Presupuesto extends Component
     public function getValorTotalCliente()
     {
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario_cliente)) {
-            $this->valor_total_cliente = $this->cantidad * $this->dia * $this->valor_unitario_cliente;
+            $this->valor_total_cliente = $this->otros * $this->cantidad * $this->dia * $this->valor_unitario_cliente;
             $this->getUtilidad();
         }
     }
@@ -1184,7 +1184,7 @@ class Presupuesto extends Component
     // Calcula el valor total del ítem
     public function getValorTotal(){
         if (!is_null($this->cantidad) && !is_null($this->dia) && !is_null($this->valor_unitario)){
-            $this->valor_total = $this->cantidad * $this->dia * $this->valor_unitario;
+            $this->valor_total = $this->otros * $this->cantidad * $this->dia * $this->valor_unitario;
         }
         if ($this->valor_total_cliente != 0){
             $this->getUtilidad();
