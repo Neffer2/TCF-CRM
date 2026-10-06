@@ -27,7 +27,7 @@ class OrdenCompra extends Model
     }
 
     public function tipo(){
-        return $this->hasOne(TipoOrdenCompra::class, 'id', 'tipo_oc');
+        return $this->belongsTo(TipoOrdenCompra::class, 'tipo_oc', 'id');
     }
 
     public function presupuesto(){
@@ -48,5 +48,10 @@ class OrdenCompra extends Model
 
     public function anticipos(){
         return $this->hasMany(Anticipo::class, 'oc_id', 'id');
+    }
+    public function getPresupuestoResueltoAttribute()
+    {
+        return $this->presupuesto
+            ?? $this->ordenItems->first()?->itemPresupuesto?->presupuesto;
     }
 }

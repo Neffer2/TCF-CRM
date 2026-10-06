@@ -31,4 +31,12 @@ class ProductorController extends Controller
     public function showRemision($orden){
         return view('productor.remision.index', ['orden' => $orden]);
     }
+
+    public function ShowAnticipo($anticipo_id = null) {
+        return view('productor.anticipos.anticipo', ['anticipo_id' => $anticipo_id]);
+    }
+
+    public function showListaAnticipos($anticipo_id = null) {
+        return view('productor.anticipos.index', compact('anticipo_id'));
+    }
 }

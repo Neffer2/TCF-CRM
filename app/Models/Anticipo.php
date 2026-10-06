@@ -2,44 +2,40 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Anticipo extends Model
 {
-    use HasFactory;
     protected $table = 'anticipos';
 
     protected $fillable = [
         'oc_id',
-        'presupuesto_id',
         'porcentaje_anticipo',
         'total_anticipo',
-        'fecha_solicitud',
-        'fecha_aprobacion',
-        'justificacion_rechazo',
         'estado_id',
+        'fecha_solicitud',
         'productor_id',
-        'firma_productor'
     ];
 
-    public function estado(){
-        return $this->belongsTo(EstadoOrdenesCompra::class, 'estado_id');
-    }
-
-    public function ordenCompra(){
+    public function ordenCompra(): BelongsTo
+    {
         return $this->belongsTo(OrdenCompra::class, 'oc_id');
     }
 
-    public function presupuesto() {
-        return $this->belongsTo(PresupuestoProyecto::class, 'presupuesto_id', 'id');
+    public function estado(): BelongsTo
+    {
+        return $this->belongsTo(Estados_Anticipo::class, 'estado_id');
     }
 
-    public function anticipoItems() {
-        return $this->hasMany(ItemAnticipo::class, 'anticipo_id', 'id');
+    public function aprobaciones(): HasMany
+    {
+        return $this->hasMany(Aprobaciones_Anticipos::class, 'anticipo_id')->orderBy('orden', 'asc');
     }
-
-    public function productor_info(){
-        return $this->hasOne(User::class, 'id', 'productor_id');
+    
+    public function itemPresupuesto()
+    {
+        return $this->belongsTo(ItemPresupuesto::class, 'item_id', 'id');
     }
 }

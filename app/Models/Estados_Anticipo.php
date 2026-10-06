@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Estados_Anticipo extends Model
 {
     use HasFactory;
-    protected $table = 'estados_anticipo';
+    protected $table = 'estados_anticipos';
 
     protected $fillable = [
         'codigo',

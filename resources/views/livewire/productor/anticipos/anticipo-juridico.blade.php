@@ -1,5 +1,4 @@
-<div class="form-group">
-    <div class="card {{ $ordenesCompraDisponibles ? 'p-3' : '' }}">
+<div class="card {{ $anticipo_id ? 'p-3' : '' }}">
     <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
         SOLICITUD ANTICIPO JURÍDICO
     </div>
@@ -45,7 +44,7 @@
                                         {{ $orden->proveedor->tercero }}
                                     @endif
                                 </label>
-                                <textarea class="form-control" disabled>@if ($orden) {{ $orden->proveedor->OrdenCompra->last()->observaciones_negociacion }} @endif</textarea>
+                                <textarea class="form-control" disabled>@if ($orden) {{ $orden->proveedor?->OrdenCompra?->last()?->observaciones_negociacion }} @endif</textarea>
                             </div>
                         </td>
                     </tr>
@@ -72,7 +71,7 @@
                     @if ($orden)
                         @foreach ($orden->ordenItems as $item)
                             <tr>
-                                <td class="text-center">{{ $item->display_item }}</td>
+                                <td class="text-center">{{ $item->num_item }}</td>
                                 <td class="text-center">{{ $item->cant_oc }}</td>
                                 <td class="text-center">{{ $item->dias_oc }}</td>
                                 <td class="text-center">{{ $item->otros_oc }}</td>
@@ -98,57 +97,51 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="observaciones">Orden de compra:</label>
-                                    <select name="orden_compra" id="orden_compra" class="form-control" wire:model="orden_compra">
+                                    <label for="orden_compra">Orden de compra:</label>
+                                    <select id="orden_compra" class="form-control" wire:model="orden_compra">
                                         <option value="">Seleccione una orden de compra</option>
-                                        @foreach ($ordenes as $orden)
-                                            <option value="{{ $orden->id }}">{{ $orden->presupuesto->cod_cc }} - {{ $orden->proveedor->tercero }} </option>
+                                        @foreach ($ordenes as $oc)
+                                            <option value="{{ $oc->id }}">
+                                                {{ $oc->cod_oc ?? 'OC #' . $oc->id }} | {{ $oc->presupuesto->cod_cc }} - {{ $oc->proveedor->tercero }}
+                                            </option>
                                         @endforeach
                                     </select>
+                                    @if ($ordenes->isEmpty())
+                                        <small class="text-muted">No se encontraron órdenes disponibles.</small>
+                                    @endif
                                     @error('orden_compra')
-                                    <div id="orden_compra" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
+                                        <div class="text-invalid">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="observaciones">Valor Orden</label>
-                                    <input class="form-control" disabled @if($orden_compra) value="{{ number_format($ordenes->find($orden_compra)->ordenItems->sum('vtotal_oc')) }}" @endif>
-                                    @error('observaciones')
-                                    <div id="observaciones" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                    <label>Valor Orden</label>
+                                    <input class="form-control" disabled value="{{ $orden ? number_format($totalOrden) : '' }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="observaciones">% Anticipo:</label>
-                                    <input type="number" name="porcentaje_anticipo" id="porcentaje_anticipo" class="form-control" wire:model="porcentaje_anticipo" min="0" max="100" step="1">
+                                    <label for="porcentaje_anticipo">% Anticipo:</label>
+                                    <input type="number" id="porcentaje_anticipo" class="form-control"
+                                        wire:model="porcentaje_anticipo" min="1" max="100" step="1">
                                     @error('porcentaje_anticipo')
-                                    <div id="porcentaje_anticipo" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
+                                        <div class="text-invalid">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="total_anticipo">Total:</label>
-                                    <input type="text" class="form-control" wire:model="total_anticipo" disabled x-mask:dynamic="$money($input)">
-                                    @error('total_anticipo')
-                                    <div id="total_anticipo" class="text-invalid">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                    <label>Total:</label>
+                                    <input type="text" class="form-control" disabled
+                                        value="{{ $total_anticipo ? number_format($total_anticipo) : '' }}">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <button class="btn bg-gradient-primary" wire:click="nuevoAnticipoJuridico">Crear Anticipo</button>
+                                <button class="btn bg-gradient-primary" wire:click="nuevoAnticipoJuridico"
+                                        wire:loading.attr="disabled">Crear Anticipo</button>
                             </div>
                         </div>
                     @endif
@@ -204,15 +197,4 @@
             </div>
         </div>
     </div>
-</div>
-
-
-
-    <label for="oc_id">Seleccionar Orden de Compra</label>
-    <select wire:model="ordenCompraId" class="form-control" id="oc_id">
-        <option value="">-- Seleccione una OC --</option>
-        @foreach($ordenesCompraDisponibles as $oc)
-            <option value="{{ $oc->id }}">OC #{{ $oc->id }}</option>
-        @endforeach
-    </select>
 </div>

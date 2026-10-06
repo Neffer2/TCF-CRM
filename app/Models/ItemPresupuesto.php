@@ -27,6 +27,12 @@ class ItemPresupuesto extends Model
         return $this->hasOne(Proveedor::class, 'id', 'proveedor');
     }
 
+    public function presupuesto()
+    {
+        return $this->belongsTo(PresupuestoProyecto::class, 'presupuesto_id', 'id');
+    }
+
+
     // Obtiene el item que reconocen los productores
     public function displayItem(){
         foreach ($this->presto->presupuestoItems as $key => $item) {
