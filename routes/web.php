@@ -109,7 +109,10 @@ Route::get('/', function () {
 /* --- */
 
 /* Líder produccion */
-    Route::get('/dashboard-lider-produccion', [LiderProduccionController::class, 'index'])->middleware(['auth'])->middleware(['lproduccion'])->name('dashboard-lider-produccion');
+    Route::get('/dashboard-lider-produccion', [LiderProduccionController::class, 'showAsignacionProyectos'])->middleware(['auth'])->middleware(['lproduccion'])->name('dashboard-lider-produccion');
+    Route::get('/lista-anticipos-lider', [LiderProduccionController::class, 'showListaAnticipos'])->middleware(['auth', 'lproduccion'])->name('lista-anticipos-lider');
+    Route::get('/actualizaciones-anticipos', [LiderProduccionController::class, 'showactualizaciones'])->middleware(['auth', 'lproduccion'])->name('actualizaciones-anticipo');
+
 /* --- */
 
 /* Productor */

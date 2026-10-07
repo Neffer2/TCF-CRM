@@ -1,4 +1,4 @@
-@if (Auth::user()->rol == 1)
+@if (Auth::user()->rol == 1 || Auth::user()->rol == 6)
     <div>
         <div class="card">
             <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">

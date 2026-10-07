@@ -35,18 +35,48 @@
     <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#dashboardsExamples" class="nav-link active" aria-controls="dashboardsExamples" role="button" aria-expanded="false">
+          <a data-bs-toggle="collapse" href="#dashboardsExamples"
+            @class(['nav-link', 'active' => request()->routeIs('dashboard-lider-produccion')])
+            role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-shop text-primary text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Inicio</span>
           </a>
-          <div class="collapse  show " id="dashboardsExamples">
-            <ul class="nav ms-4"> 
-              <li class="nav-item active">
-                <a class="nav-link active" href="{{ route('dashboard-lider-produccion') }}">
+          <div @class(['collapse', 'show' => request()->routeIs('dashboard-lider-produccion')]) id="dashboardsExamples">
+            <ul class="nav ms-4">
+              <li @class(['nav-item', 'active' => request()->routeIs('dashboard-lider-produccion')])>
+                <a @class(['nav-link', 'active' => request()->routeIs('dashboard-lider-produccion')])
+                  href="{{ route('dashboard-lider-produccion') }}">
                   <span class="sidenav-mini-icon"> D </span>
                   <span class="sidenav-normal"> Dashboard </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-money-coins text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Anticipo</span>
+          </a>
+          <div @class(['collapse', 'show' => request()->is('lista-anticipos')]) id="anticipos">
+            <ul class="nav ms-4">
+              <li @class(['nav-item', 'active' => request()->is('anticipo-prod')])>
+                <a @class(['nav-link', 'ps-4', 'pe-0', 'active' => request()->is('anticipo-prod')])
+                  href="{{ url('lista-anticipos-lider') }}">
+                  <span class="sidenav-mini-icon"> An </span>
+                  <span class="sidenav-normal"> Aprobaciones </span>
+                </a>
+              </li>
+              <li @class(['nav-item', 'active' => request()->is('actualizaciones-anticipo')])>
+                <a @class(['nav-link', 'ps-4', 'pe-0', 'active' => request()->is('actualizaciones-anticipo')])
+                  href="{{ route('actualizaciones-anticipo') }}">
+                  <span class="sidenav-mini-icon"> Oc's </span>
+                  <span class="sidenav-normal"> Actualizaciones </span>
                 </a>
               </li>
             </ul>

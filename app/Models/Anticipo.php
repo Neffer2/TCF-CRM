@@ -15,6 +15,7 @@ class Anticipo extends Model
         'porcentaje_anticipo',
         'total_anticipo',
         'estado_id',
+        'justificacion_rechazo',
         'fecha_solicitud',
         'productor_id',
     ];
