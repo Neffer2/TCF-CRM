@@ -253,4 +253,9 @@ class AdminController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="orden_compra_'.$orden->id.'.pdf"');
     }
+
+    public function showListaAnticiposAdmin()
+    {
+        return view('admin.produccion.anticipos.lista-anticipos-index');
+    }
 }

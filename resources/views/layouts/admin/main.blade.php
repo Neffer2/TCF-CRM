@@ -116,7 +116,7 @@
             <span class="nav-link-text ms-1">Producci&oacute;n</span>
           </a>
           <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('personal')),
+            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('lista-anticipos') || request()->is('personal')),
             'collapse' => true
             ]) id="dashboardsProduccion">
             <ul class="nav ms-4">
@@ -138,8 +138,8 @@
                         <span class="sidenav-normal"> Consumidos </span>
                     </a>
                 </li>
-                <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
-                    <a @class(['active' => request()->is('personal'), 'nav-link' => true]) href="{{ route('personal') }}">
+                <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
+                    <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
                         <span class="sidenav-mini-icon"> A </span>
                         <span class="sidenav-normal"> Anticipos </span>
                     </a>

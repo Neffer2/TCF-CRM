@@ -88,6 +88,7 @@ class ListaAnticipo extends Component
         ->whereHas('estado', function ($q) {
             $q->whereIn('id', [2]);
         })
+        ->whereNull('justificacion_rechazo')
         ->when($this->search, function ($query) {
             $s = '%' . trim($this->search) . '%';
             $query->where(function ($q) use ($s) {
