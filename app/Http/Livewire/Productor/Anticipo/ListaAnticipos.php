@@ -5,6 +5,8 @@ namespace App\Http\Livewire\Productor\Anticipo;
 use App\Models\Anticipo;
 use App\Models\OrdenCompra;
 use Livewire\Component;
+use App\Exports\AnticipoOrdenes;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ListaAnticipos extends Component
 {
@@ -138,5 +140,16 @@ class ListaAnticipos extends Component
         $this->porcentaje_anticipo = null;
         $this->total_anticipo = null;
         $this->dispatchBrowserEvent('close-modal-detalle');
+    }
+
+    /**
+     * Método invocado desde la vista para descargar la factura/orden de anticipo.
+     * 
+     * @param int $anticipoId
+     * @return StreamedResponse
+     */
+    public function exportarAnticipoPdf(int $anticipoId)
+    {
+        return AnticipoOrdenes::downloadPdf($anticipoId);
     }
 }

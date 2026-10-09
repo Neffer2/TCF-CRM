@@ -113,7 +113,6 @@
 
                 <div class="modal-body">
                     @if ($selectedAnticipo)
-                        <!-- Alerta informativa en caso de rechazo -->
                         @if ($selectedAnticipo->estado_id == 6)
                             <div class="alert alert-danger text-white mb-3" role="alert">
                                 <strong>Anticipo Rechazado:</strong> {{ $selectedAnticipo->justificacion_rechazo ?? 'Sin observación especificada.' }}
@@ -162,6 +161,20 @@
                                     $ {{ number_format($total_anticipo ?? $selectedAnticipo->total_anticipo, 2) }}
                                 </p>
                             </div>
+
+                            @if($selectedAnticipo->estado_id == 8)
+                                <button 
+                                    wire:click="exportarAnticipoPdf({{ $anticipo->id }})" 
+                                    wire:loading.attr="disabled"
+                                    class="btn btn-primary">
+                                    <span wire:loading.remove wire:target="exportarAnticipoPdf({{ $anticipo->id }})">
+                                        Descargar Anticipo / Orden
+                                    </span>
+                                    <span wire:loading wire:target="exportarAnticipoPdf({{ $anticipo->id }})">
+                                        Generando PDF...
+                                    </span>
+                                </button>
+                            @endif
 
                             @if ($selectedAnticipo->observacion_causal)
                                 <div class="col-md-12 mb-3">

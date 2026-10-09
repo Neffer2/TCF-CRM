@@ -1,18 +1,8 @@
-@php
-    use App\Services\AnticipoJuridicoFlujo as F;
-    $pesos = fn ($v) => '$'.number_format((float) $v, 0, ',', '.');
-    $fecha = fn ($v) => $v ? \Carbon\Carbon::parse($v)->format('d/m/Y h:i a') : '—';
-    $p = $a->proveedor;
-    $presupuesto = $a->presupuesto;
-    $gestion = optional($presupuesto)->gestion;
-    $orden = $a->ordenCompra;
-    $puesto = ['aprobar_lider' => 'Líder de producción', 'aprobar_controller' => 'Controller', 'aprobar_gerencia' => 'Gerencia'];
-@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Orden de anticipo {{ $a->cod_orden_anticipo }}</title>
+    <title>Orden de anticipo {{ $a->cod_orden_anticipo ?? '#'.$a->id }}</title>
     <style>
         @page { margin: 34px 38px 60px; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 10.5px; color: #1E1915; }
@@ -33,17 +23,20 @@
         .valores .total td { background: #FDECE2; font-size: 13px; font-weight: bold; }
         .firmas th { background: #F2EEEA; text-align: left; padding: 6px; font-size: 9.5px; border: 1px solid #1E1915; }
         .firmas td { padding: 6px; border: 1px solid #1E1915; vertical-align: top; }
-        .nota { margin-top: 14px; padding: 8px 10px; background: #F6F3EF; color: #6A6159; font-size: 9.5px; line-height: 1.5; }
         .pie { position: fixed; bottom: -40px; left: 0; right: 0; font-size: 8.5px; color: #9A9088; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="pie">Generada por BULLCRM el {{ $fecha($a->fecha_orden_anticipo) }} · Anticipo #{{ $a->id }} · Válida con las aprobaciones registradas en el CRM.</div>
+    <div class="pie">
+        Generada por BULLCRM el {{ $fecha($a->fecha_solicitud) }} · Anticipo #{{ $a->id }} · Válida con las aprobaciones registradas en el CRM.
+    </div>
 
     <table>
         <tr>
             <td class="empresa" style="vertical-align: top">
-                @if ($logo)<img src="{{ $logo }}" height="46" alt="Bull Marketing"><br><br>@endif
+                @if ($logo)
+                    <img src="{{ $logo }}" height="46" alt="Bull Marketing"><br><br>
+                @endif
                 <b>BULL MARKETING S.A.S.</b>
                 <span>NIT 900298176</span>
                 <span>Cra 53C No. 127D 23</span>
@@ -51,8 +44,8 @@
             </td>
             <td class="titulo">
                 <h1>ORDEN DE ANTICIPO</h1>
-                <div class="nro">{{ $a->cod_orden_anticipo }}</div>
-                <span>Fecha: {{ optional($a->fecha_orden_anticipo)->format('d/m/Y') }}</span>
+                <div class="nro">{{ $a->cod_orden_anticipo ?? '#'.$a->id }}</div>
+                <span>Fecha: {{ $a->fecha_solicitud ? \Illuminate\Support\Carbon::parse($a->fecha_solicitud)->format('d/m/Y') : '—' }}</span>
                 <span>{{ $orden ? 'Sobre la orden de compra '.($orden->cod_oc ?: '#'.$orden->id) : 'Sin orden de compra previa' }}</span>
             </td>
         </tr>
@@ -77,21 +70,51 @@
 
     <h2>Valor del anticipo</h2>
     <table class="valores">
-        <tr><td class="k">{{ $orden ? 'Valor de la orden de compra' : 'Valor base (según soporte del proveedor)' }}</td><td class="v">{{ $pesos($a->valor_base) }}</td></tr>
-        <tr><td class="k">Porcentaje de anticipo</td><td class="v">{{ rtrim(rtrim(number_format((float) $a->porcentaje_anticipo, 2, ',', '.'), '0'), ',') }} %</td></tr>
-        <tr class="total"><td class="k">Valor a anticipar</td><td class="v">{{ $pesos($a->total_anticipo) }}</td></tr>
+        <tr>
+            <td class="k">{{ $orden ? 'Valor de la orden de compra' : 'Valor base (según soporte del proveedor)' }}</td>
+            <td class="v">{{ $pesos($valorBase) }}</td>
+        </tr>
+        <tr>
+            <td class="k">Porcentaje de anticipo</td>
+            <td class="v">{{ rtrim(rtrim(number_format((float) $a->porcentaje_anticipo, 2, ',', '.'), '0'), ',') }} %</td>
+        </tr>
+        <tr class="total">
+            <td class="k">Valor a anticipar</td>
+            <td class="v">{{ $pesos($a->total_anticipo) }}</td>
+        </tr>
     </table>
 
     <h2>Aprobaciones</h2>
     <table class="firmas">
-        <tr><th style="width: 22%">Paso</th><th style="width: 28%">Nombre</th><th style="width: 20%">Fecha</th><th>Observación</th></tr>
+        <tr>
+            <th style="width: 22%">Paso</th>
+            <th style="width: 28%">Nombre</th>
+            <th style="width: 20%">Fecha</th>
+            <th>Observación</th>
+        </tr>
         @if ($solicitud)
-            <tr><td>Solicitó (productor)</td><td>{{ optional($solicitud->usuario)->name ?: '—' }}</td><td>{{ $fecha($solicitud->created_at) }}</td><td>{{ $solicitud->observacion ?: '—' }}</td></tr>
+            <tr>
+                <td>Solicitó (productor)</td>
+                <td>{{ optional($solicitud->usuario)->name ?: '—' }}</td>
+                <td>{{ $fecha($solicitud->created_at) }}</td>
+                <td>{{ $solicitud->observacion ?: '—' }}</td>
+            </tr>
         @else
-            <tr><td>Solicitó (productor)</td><td>{{ optional($a->productor_info)->name ?: '—' }}</td><td>{{ $fecha($a->fecha_solicitud) }}</td><td>—</td></tr>
+            <tr>
+                <td>Solicitó (productor)</td>
+                <td>{{ optional($a->productor_info)->name ?: '—' }}</td>
+                <td>{{ $fecha($a->fecha_solicitud) }}</td>
+                <td>—</td>
+            </tr>
         @endif
+
         @foreach ($aprobaciones as $ap)
-            <tr><td>{{ $puesto[$ap->accion] }}</td><td>{{ optional($ap->usuario)->name ?: '—' }}</td><td>{{ $fecha($ap->created_at) }}</td><td>{{ $ap->observacion ?: '—' }}</td></tr>
+            <tr>
+                <td>{{ $puesto[$ap->accion] ?? $ap->accion }}</td>
+                <td>{{ optional($ap->usuario)->name ?: '—' }}</td>
+                <td>{{ $fecha($ap->created_at) }}</td>
+                <td>{{ $ap->observacion ?: '—' }}</td>
+            </tr>
         @endforeach
     </table>
 </body>
