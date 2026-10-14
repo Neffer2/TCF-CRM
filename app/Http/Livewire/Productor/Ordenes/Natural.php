@@ -253,7 +253,7 @@ class Natural extends Component
         // Crea la orden de compra (tipo natural)
         $orden = OrdenCompra::create([
             'tipo_oc' => 2,
-            'estado_id' => 3,
+            'estado_id' => 8,
             'presupuesto_id' => null,
             'proveedor_id' => 3,
         ]);
@@ -337,9 +337,9 @@ class Natural extends Component
                 $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
             }
         }else {
-            // Si la orden de compra ya tiene evidencias, actualiza el estado a 2: Revisión controller
+            // Si la orden de compra ya tiene evidencias, actualiza el estado a 7:  Lider de produccion
             $this->queriedOrden->update([
-                'estado_id' => 2,
+                'estado_id' => 8,
                 'fecha_envio_produccion' => now()
             ]);
 

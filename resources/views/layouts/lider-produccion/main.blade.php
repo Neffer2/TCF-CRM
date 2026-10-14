@@ -57,6 +57,26 @@
         </li>
 
         <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#ordenes" class="nav-link" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Ordenes</span>
+          </a>
+          <div @class(['collapse', 'show' => request()->is('orden-compra')]) id="ordenes">
+            <ul class="nav ms-4">
+              <li @class(['nav-item', 'active' => request()->is('orden-compra')])>
+                <a @class(['nav-link', 'ps-4', 'pe-0', 'active' => request()->is('orden-compra')])
+                  href="{{ url('orden-compra') }}">
+                  <span class="sidenav-mini-icon"> OC </span>
+                  <span class="sidenav-normal"> Ordenes De Compra </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li> 
+
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-money-coins text-success text-sm opacity-10"></i>

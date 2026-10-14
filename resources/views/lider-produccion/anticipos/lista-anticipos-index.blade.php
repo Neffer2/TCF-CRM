@@ -15,13 +15,5 @@
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="col-md-12"  >
-                    <h3 class="text-left">Lista de ordenes de compra</h3>
-                    @livewire('lider-produccion.anticipos.ordenes-compra')
-                </div>
-            </div>
-        </div>
     </div>
 @endsection

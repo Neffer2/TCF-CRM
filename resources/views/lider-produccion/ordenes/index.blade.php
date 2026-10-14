@@ -6,5 +6,5 @@
     @endsection
 
     @section('content')
-        @livewire('admin.produccion.ordenes-compra', ['estado_id' => [8,10]])
+        @livewire('lider-produccion.ordenes.ordenes-compra')
     @endsection

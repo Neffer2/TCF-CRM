@@ -135,6 +135,45 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-briefcase-24 text-warning text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Nomina Y Empleados</span>
+          </a>
+          <div @class([
+            'collapse' => true,
+            'show' => (request()->is('anticipo-prod') ||
+                        request()->is('lista-anticipos'))]) id="anticipos">
+            <ul class="nav ms-4">
+              <li @class(['active' => request()->is('anticipo-prod'), 'nav-item' => true])">
+                <a @class(['active' => request()->is('anticipo-prod'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('anticipo-prod') }}">
+                  <span class="sidenav-mini-icon"> No </span>
+                  <span class="sidenav-normal"> Nomina </span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('ordenes-compra-empleado'), 'nav-item' => true])">
+                <a @class(['active' => request()->is('ordenes-compra-empleado'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-compra-empleado') }}">
+                    <span class="sidenav-mini-icon"> Em </span>
+                    <span class="sidenav-normal"> Empleados </span>
+                </a>
+              </li>
+              <li @class(['active' => request()->is('lista-anticipos'), 'nav-item' => true])">
+                <a @class(['active' => request()->is('lista-anticipos'),
+                        'nav-link' => true,
+                        'ps-4' => true, 'pe-0' => true]) href="{{ route('lista-anticipos') }}">
+                    <span class="sidenav-mini-icon"> M' Oc </span>
+                    <span class="sidenav-normal"> Mis ordenes </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-money-coins text-success text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Anticipo</span>

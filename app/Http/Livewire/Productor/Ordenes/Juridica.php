@@ -222,7 +222,7 @@ class Juridica extends Component
 
         // Si la orden está creada, actualiza
         if ($this->orden_compra){
-            $this->orden_compra->estado_id = 2;
+            $this->orden_compra->estado_id = 8;
             $this->orden_compra->fecha_envio_produccion = now();
             $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');

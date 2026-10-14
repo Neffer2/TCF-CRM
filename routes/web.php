@@ -119,6 +119,10 @@ Route::get('/', function () {
     Route::get('/lista-anticipos-lider', [LiderProduccionController::class, 'showListaAnticipos'])->middleware(['auth', 'lproduccion'])->name('lista-anticipos-lider');
     Route::get('/actualizaciones-anticipos', [LiderProduccionController::class, 'showactualizaciones'])->middleware(['auth', 'lproduccion'])->name('actualizaciones-anticipo');
 
+    Route::get('/orden-compra', [LiderProduccionController::class, 'showOrdenesCompra'])->middleware(['auth', 'lproduccion'])->name('orden-compra');
+
+    Route::get('/orden-juridica-li/{orden?}', [LiderProduccionController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['lproduccion'])->name('orden-juridica-li');
+    Route::get('/orden-natural-li/{orden_id?}', [LiderProduccionController::class, 'showOrdenNatural'])->middleware(['auth'])->middleware(['lproduccion'])->name('orden-natural-li');
 /* --- */
 
 /* Productor */

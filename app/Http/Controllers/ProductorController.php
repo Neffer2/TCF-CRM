@@ -17,7 +17,6 @@ class ProductorController extends Controller
     */
 
     public function index(){
-        // id_estado =  1 CERRADO
         $proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')
         ->where([
             ['productor', Auth::id()],
@@ -38,5 +37,10 @@ class ProductorController extends Controller
 
     public function showListaAnticipos($anticipo_id = null) {
         return view('productor.anticipos.index', compact('anticipo_id'));
+    }
+
+    public function showOCEmpleados()
+    {
+        return view('productor.ordenes.empleado');
     }
 }
