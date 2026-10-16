@@ -13,7 +13,7 @@ class Juridica extends Component{
 
     // Estados (ajusta a tu tabla; deben ser los mismos que en Natural)
     const ESTADO_RECHAZADA       = 3;
-    const ESTADO_APROBADA        = 3;
+    const ESTADO_APROBADA        = 1;
     const ESTADO_PEND_CONTROLLER = 9;
     const ESTADO_PEND_LIDER      = 10;
     const ESTADO_PEND_GERENCIA   = 11;
