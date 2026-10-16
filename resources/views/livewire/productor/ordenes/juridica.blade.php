@@ -143,8 +143,10 @@
                     {{-- Campo: Código de Orden de Compra --}}
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="cod_oc">Código de orden de compra:</label>
-                            <input name="cod_oc" id="cod_oc" class="form-control" wire:model="cod_oc">
+                            <label for="cod_oc">Código de orden de compra a generar:</label>
+                            <!-- wire:model mapeará automáticamente lo que tenga la variable $cod_oc en tu clase -->
+                            <input type="text" id="cod_oc" class="form-control" wire:model="cod_oc" readonly>
+                            <small class="text-muted">Este código se genera automáticamente en secuencia.</small>
                             @error('cod_oc')
                                 <div class="text-invalid">
                                     {{ $message }}
@@ -152,7 +154,6 @@
                             @enderror
                         </div>
                     </div>
-
                     {{-- Sección: Aprobar --}}
                     <div class="col-md-6 d-flex align-items-center mb-3">
                         <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">

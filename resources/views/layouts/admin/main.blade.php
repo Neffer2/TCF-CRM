@@ -116,7 +116,7 @@
             <span class="nav-link-text ms-1">Producci&oacute;n</span>
           </a>
           <div @class([
-            'show' => (request()->is('proveedores') || request()->is('ordenes-compra') || request()->is('consumidos') || request()->is('lista-anticipos') || request()->is('personal')),
+            'show' => (request()->is('proveedores') || request()->is('consumidos') || request()->is('personal')),
             'collapse' => true
             ]) id="dashboardsProduccion">
             <ul class="nav ms-4">
@@ -126,22 +126,10 @@
                         <span class="sidenav-normal"> Proveedores </span>
                     </a>
                 </li>
-                <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
-                    <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
-                        <span class="sidenav-mini-icon text-xs"> OC </span>
-                        <span class="sidenav-normal"> Ordenes de compra </span>
-                    </a>
-                </li>
                 <li @class(['active' => request()->is('consumidos'), 'nav-item' => true])>
                     <a @class(['active' => request()->is('consumidos'), 'nav-link' => true]) href="{{ route('consumidos') }}">
                         <span class="sidenav-mini-icon text-xs"> C </span>
                         <span class="sidenav-normal"> Consumidos </span>
-                    </a>
-                </li>
-                <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
-                    <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
-                        <span class="sidenav-mini-icon"> A </span>
-                        <span class="sidenav-normal"> Anticipos </span>
                     </a>
                 </li>
                 <li @class(['active' => request()->is('personal'), 'nav-item' => true])>
@@ -150,6 +138,40 @@
                         <span class="sidenav-normal"> Personal </span>
                     </a>
                 </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#ordenes" class="nav-link" aria-controls="ordenes" role="button" aria-expanded="false">
+            <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
+              <i class="ni ni-cart text-info text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Ordenes de compra</span>
+          </a>
+          <div @class([
+            'show' => (request()->is('ordenes-compra') || request()->is('lista-anticipos') || request()->is('aprobaciones-ordenes-compra')),
+            'collapse' => true
+            ]) id="ordenes" style="">
+            <ul class="nav ms-4">
+              <li @class(['active' => request()->is('ordenes-compra'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('ordenes-compra'), 'nav-link' => true]) href="{{ route('ordenes-compra') }}">
+                      <span class="sidenav-mini-icon text-xs"> OC </span>
+                      <span class="sidenav-normal"> Ordenes de compra </span>
+                  </a>
+              </li>
+              <li @class(['active' => request()->is('aprobaciones-ordenes-compra'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('aprobaciones-ordenes-compra'), 'nav-link' => true]) href="{{ route('aprobaciones-ordenes-compra') }}">
+                      <span class="sidenav-mini-icon text-xs"> OCA </span>
+                      <span class="sidenav-normal"> Ordenes por aprobar </span>
+                  </a>
+              </li>
+              <li @class(['active' => request()->is('lista-anticipos-admin'), 'nav-item' => true])>
+                  <a @class(['active' => request()->is('lista-anticipos-admin'), 'nav-link' => true]) href="{{ route('lista-anticipos-admin') }}">
+                      <span class="sidenav-mini-icon text-xs"> A </span>
+                      <span class="sidenav-normal"> Anticipos </span>
+                  </a>
+              </li>
             </ul>
           </div>
         </li>

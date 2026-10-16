@@ -9,6 +9,10 @@ use App\Models\Proveedor;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
 
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 class Juridica extends Component
 {
     // Traits para subir archivos y enviar emails
@@ -16,11 +20,13 @@ class Juridica extends Component
 
     // Variables para los datos del formulario y modelos
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
-    public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $cod_oc, $gr;
+    public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $gr;
     public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion;
 
     // Variables para la orden y presupuesto seleccionados
     public $presupuesto, $orden_compra;
+
+    public $cod_oc;
 
     // Variables útiles para la gestión de items y proveedores
     public $ocItems = [], $selectedItem, $maxCant, $maxValor, $maxDias, $maxOtros, $items = [], $proveedores = [];
@@ -38,6 +44,10 @@ class Juridica extends Component
     public function mount (){
         if ($this->orden_compra){
             $this->getItems();
+
+            if ($this->orden_compra->estado_id == 2) {
+                $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
+            }
         }
     }
 
@@ -209,45 +219,56 @@ class Juridica extends Component
     }
 
     // Envía la orden de compra para aprobación de controller (crea o actualiza)
-    public function enviarAprobacion(){
+    public function enviarAprobacion()
+    {
         $this->validate([
             'proveedor' => 'required',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
         ]);
 
-        if (count($this->ocItems) == 0){
+        if (count($this->ocItems) == 0) {
             $this->addError('customError', 'No puedes enviar una orden de compra vacía.');
             return redirect()->back();
         }
 
-        // Si la orden está creada, actualiza
-        if ($this->orden_compra){
+        if ($this->orden_compra) {
+
+            // Actualiza la OC existente
             $this->orden_compra->estado_id = 8;
             $this->orden_compra->fecha_envio_produccion = now();
             $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
-            $this->orden_compra->update();
+
+            $this->orden_compra->save();
 
             $this->deleteItems($this->orden_compra->id);
             $this->storeItems($this->orden_compra->id);
-        }else{
-            // Si no existe, crea una nueva OC
+
+        } else {
+
+            // Crea una nueva OC
             $orden = new OrdenCompra;
+
             $orden->tipo_oc = 1;
+            $orden->estado_id = 8;
             $orden->fecha_envio_produccion = now();
             $orden->presupuesto_id = $this->presupuesto->id;
-
             $orden->proveedor_id = $this->proveedor;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
 
             $orden->save();
+
             $this->storeItems($orden->id);
         }
 
         $this->resetFields();
         $this->resetOcInfo();
+
         $this->emit('ordenCreada');
-        return redirect()->back()->with('success', 'Orden de compra enviada a aprobación.');
+
+        return redirect()->back()->with(
+            'success',
+            'Orden de compra enviada a aprobación.');
     }
 
     // Guarda los items de la OC en la base de datos
@@ -256,7 +277,7 @@ class Juridica extends Component
             $itemsOrden = new OcItem;
             $itemsOrden->oc_id = $orden_id;
             $itemsOrden->item_id = $item['item'];
-            $itemsOrden->num_item = $item['num_item']; // <--- Guardamos el num_item real de BD
+            $itemsOrden->num_item = $item['num_item'];
             $itemsOrden->desc_oc = $item['desc'];
             $itemsOrden->cant_oc = $item['cant'];
             $itemsOrden->dias_oc = $item['dias'];
@@ -277,25 +298,46 @@ class Juridica extends Component
     }
 
     // Cambia el estado de la orden de compra (aprobada, rechazada, GR, anulada)
-    public function cambioEstado($estado){
+    public function cambioEstado($estado){    
         $messaje = '';
 
-        if ($estado == 1){
-            // ORDEN APROBADA
+        if ($estado == 1) {
             $this->validate([
                 'oc_helisa' => 'required|file|mimes:pdf|max:10000',
-                'cod_oc' => 'required|max:200',
                 'observaciones_negociacion' => 'nullable|string|max:1000'
             ]);
 
-            $this->orden_compra->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_juridicas_helisa'); ;
-            $this->orden_compra->observaciones_negociacion = $this->observaciones_negociacion;
-            $this->orden_compra->fecha_aprobacion = now();
-            $this->orden_compra->cod_oc = $this->cod_oc;
+            $archivo = $this->oc_helisa->store('public/ordenes_juridicas_helisa');
+
+            try {
+                $this->conLockDB('oc_consecutivo', 10, function () use ($archivo) {
+                    DB::transaction(function () use ($archivo) {
+                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+
+                        if (!empty($orden->cod_oc)) {
+                            throw new \RuntimeException('Esta orden ya fue aprobada.');
+                        }
+
+                        $orden->archivo_orden_helisa      = $archivo;
+                        $orden->observaciones_negociacion = $this->observaciones_negociacion;
+                        $orden->fecha_aprobacion          = now();
+                        $orden->cod_oc                    = $this->siguienteCodigoOC();
+                        $orden->estado_id                 = 1;
+                        $orden->save();
+
+                        $this->orden_compra = $orden;
+                    });
+                });
+            } catch (\Throwable $e) {
+                Storage::delete($archivo);
+                $this->addError('oc_helisa', $e->getMessage());
+                return;
+            }
 
             $this->mailOrdenAprobada($this->orden_compra);
-            $messaje = 'Orden de compra APROBADA.';
-        }elseif($estado == 3){
+            $messaje = 'Orden de compra APROBADA con codigo ' . $this->orden_compra->cod_oc . '.';
+
+        } elseif ($estado == 3) {
             // ORDEN RECHAZADA
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
@@ -303,7 +345,8 @@ class Juridica extends Component
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
             $messaje = 'Orden de compra RECHAZADA.';
-        }elseif ($estado == 5) {
+            
+        } elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
                 'gr' => 'nullable|string',
@@ -314,7 +357,8 @@ class Juridica extends Component
             $this->orden_compra->observacion_remision = $this->observaciones_remision;
             $this->mailGrGenerado($this->orden_compra);
             $messaje = 'Good Receive guardado y enviado con éxito.';
-        }elseif ($estado == 6) {
+            
+        } elseif ($estado == 6) {
             // ORDEN ANULADA
             $this->validate([
                 'observaciones_anulacion' => 'required|string|max:1000'
@@ -329,6 +373,53 @@ class Juridica extends Component
         $this->orden_compra->update();
 
         return redirect()->route('ordenes-compra')->with('success', $messaje);
+
+    }
+
+    public function cargarOrdenParaAprobar($id)
+    {
+        $this->orden_compra = OrdenCompra::find($id);
+        $this->cod_oc = $this->siguienteCodigoOC(); 
+    }
+    
+    public function seleccionarOrden($id)
+    {
+        $this->orden_compra = OrdenCompra::find($id);
+        $this->cod_oc = $this->siguienteCodigoOC(); 
+    }
+
+    // El método mejorado para evitar sobreposiciones usando transacciones y locks
+    protected function conLockDB(string $nombre, int $segundos, callable $callback)
+    {
+        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
+        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
+
+        if ((int) $r->obtenido !== 1) {
+            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
+        }
+
+        try {
+            return $callback();
+        } finally {
+            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
+        }
+    }
+
+    protected function siguienteCodigoOC(): string
+    {
+         $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
+            ->where('cod_oc', '!=', '')
+            ->latest('id')
+            ->first();
+
+        $ultimo = 0;
+
+        // Extrae los dígitos del final: "OC-47573" -> 47573
+        if ($ultimaOrden && preg_match('/(\d+)$/', $ultimaOrden->cod_oc, $m)) {
+            $ultimo = (int) $m[1];
+        }
+
+        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
     }
 
     // Elimina la orden de compra y sus items

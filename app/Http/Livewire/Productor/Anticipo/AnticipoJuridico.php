@@ -17,7 +17,7 @@ class AnticipoJuridico extends Component
     public $search = '';
 
     private const TIPO_OC_JURIDICO = 1;   // valor de tipo_oc para jurídico
-    private const OC_ESTADO_ANTICIPO = 2; // estado de OC que permite anticipo
+    private const OC_ESTADO_ANTICIPO = 8; // estado de OC que permite anticipo
     private const ANTICIPO_RECHAZADO = 6;
 
 

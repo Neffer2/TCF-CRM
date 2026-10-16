@@ -258,4 +258,45 @@ class AdminController extends Controller
     {
         return view('admin.produccion.anticipos.lista-anticipos-index');
     }
+
+    public function showAprobacionesOC()
+    {
+        return view('admin.ordenescompra.aprobaciones.aprobaciones-index');
+    }
+
+    /**
+     * Muestra la página de orden jurídica específica
+     *
+     * @param int $orden_id - ID de la orden de compra
+     * @return \Illuminate\View\View
+     */
+
+    public function showOrdenJuridicaAd($orden_id)
+    {
+        $orden = OrdenCompra::find($orden_id);
+
+        $presupuesto = $orden->presupuesto;
+
+        $proveedores = Proveedor::select('id', 'tercero')->get();
+
+        return view('admin.ordenescompra.ordenes.orden-juridica', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
+    }    
+
+    /**
+     * Muestra la página de orden natural específica
+     *
+     * @param int $orden_id - ID de la orden de compra
+     * @return \Illuminate\View\View
+     */
+
+    public function showOrdenNaturalAd($orden_id)
+    {
+        $orden = OrdenCompra::find($orden_id);
+
+        $presupuesto = $orden->presupuesto;
+
+        $proveedores = Proveedor::select('id','tercero');
+
+        return view('admin.ordenescompra.ordenes.orden-natural', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
+    }
 }

@@ -11,7 +11,7 @@ use Livewire\Component;
 class AnticipoNatural extends Component
 {
     private const TIPO_OC_NATURAL    = 2;
-    private const OC_ESTADO_ANTICIPO = 3;
+    private const OC_ESTADO_ANTICIPO = 8;
     private const ANTICIPO_RECHAZADO = 6;
 
     public $orden_compra, $porcentaje_anticipo, $total_anticipo;

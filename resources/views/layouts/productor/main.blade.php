@@ -133,7 +133,7 @@
             </div>
         </li>
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
+          <a data-bs-toggle="collapse" href="#nomia" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
               <i class="ni ni-briefcase-24 text-warning text-sm opacity-10"></i>
             </div>
@@ -142,7 +142,7 @@
           <div @class([
             'collapse' => true,
             'show' => (request()->is('anticipo-prod') ||
-                        request()->is('lista-anticipos'))]) id="anticipos">
+                        request()->is('lista-anticipos'))]) id="nomia">
             <ul class="nav ms-4">
               <li @class(['active' => request()->is('anticipo-prod'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('anticipo-prod'),
@@ -152,14 +152,16 @@
                   <span class="sidenav-normal"> Nomina </span>
                 </a>
               </li>
+              <!--
               <li @class(['active' => request()->is('ordenes-compra-empleado'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('ordenes-compra-empleado'),
                         'nav-link' => true,
-                        'ps-4' => true, 'pe-0' => true]) href="{{ route('ordenes-compra-empleado') }}">
+                        'ps-4' => true, 'pe-0' => true]) href="#">
                     <span class="sidenav-mini-icon"> Em </span>
                     <span class="sidenav-normal"> Empleados </span>
                 </a>
               </li>
+              -->
               <li @class(['active' => request()->is('lista-anticipos'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('lista-anticipos'),
                         'nav-link' => true,

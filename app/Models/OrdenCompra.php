@@ -54,4 +54,9 @@ class OrdenCompra extends Model
         return $this->presupuesto
             ?? $this->ordenItems->first()?->itemPresupuesto?->presupuesto;
     }
+
+    public function getTotalOcAttribute()
+    {
+        return (float) $this->ordenItems()->sum('vtotal_oc');
+    }
 }
