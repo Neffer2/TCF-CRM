@@ -139,12 +139,6 @@
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-control-label text-xs font-weight-bold">Código OC (Opcional al aprobar)</label>
-                                    <input type="text" wire:model.defer="cod_oc" class="form-control" placeholder="Ingrese el código de OC...">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label class="form-control-label text-xs font-weight-bold text-danger">Justificación de Rechazo (Obligatorio si se rechaza)</label>
                                     <textarea wire:model.defer="justificacion_rechazo" class="form-control" rows="3"></textarea>
                                     @error('justificacion_rechazo') <span class="text-danger text-xs">{{ $message }}</span> @enderror

@@ -12,6 +12,7 @@ class OrdenJuridica extends Component {
 
     // Recibe el objeto OrdenCompra que pasa el componente padre / vista
     public $orden_compra;
+
     
     public $proveedor_nombre;
     public $justificacion_rechazo;
@@ -62,9 +63,9 @@ class OrdenJuridica extends Component {
         $icon = '';
 
         if ($estado == 9) {
-            // APROBAR
+            
             $this->orden_compra->fecha_aprobacion = now();
-            // (Tus campos adicionales de aprobación si los hay)
+            
             
             $titulo = '¡Aprobada!';
             $mensaje = 'Orden de compra APROBADA con éxito.';

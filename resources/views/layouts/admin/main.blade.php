@@ -97,7 +97,7 @@
                   <span class="sidenav-normal"> Actualizaciones </span>
                 </a>
               </li>
-              @if(Auth::user()->id == 8 || Auth::user()->id == 10)
+              @if(Auth::user()->id == 8 || Auth::user()->id == 10 || Auth::user()->id == 91)
                   <li @class(['active' => request()->is('validacionesCliente'), 'nav-item' => true])>
                       <a @class(['active' => request()->is('validacionesCliente'), 'nav-link' => true]) href="{{ route('validacionesCliente') }}">
                           <span class="sidenav-mini-icon text-xs"> C </span>

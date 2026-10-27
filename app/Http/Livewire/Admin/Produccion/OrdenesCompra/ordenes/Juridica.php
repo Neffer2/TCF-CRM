@@ -6,6 +6,10 @@ use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Traits\Email;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class Juridica extends Component{
 
@@ -37,7 +41,6 @@ class Juridica extends Component{
 
     public $ocItems = [];
     public $totalOrden = 0;
-
     public $puedeAprobar = false;
 
     public function mount($orden_compra = null)
@@ -46,6 +49,7 @@ class Juridica extends Component{
             $this->orden_compra = $orden_compra;
             $this->loadOrdenData();
             $this->puedeAprobar = $this->esMiTurno();
+            $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
         }
     }
 
@@ -129,19 +133,77 @@ class Juridica extends Component{
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
 
+        $icon = 'success';
+
         if ($accion === 'aprobar') {
             $nuevoEstado = $this->siguienteEstadoAprobacion();
 
             if ($nuevoEstado === self::ESTADO_APROBADA) {
-                $this->orden_compra->fecha_aprobacion = now();
+                try {
+                    $this->orden_compra->load([
+                        'proveedor',
+                        'presupuesto.gestion.contacto',
+                        'presupuesto.presupuestoItems',
+                        'ordenItems',
+                    ]);
+
+                    $dompdf = new Dompdf(['enable_remote' => true]);
+                    $html = View::make('exports.orden_compra_pdf', [
+                        'orden' => $this->orden_compra,
+                    ])->render();
+
+                    $dompdf->loadHtml($html);
+                    $dompdf->setPaper('A4', 'portrait');
+                    $dompdf->render();
+
+                    $pdfOutput = $dompdf->output();
+
+                    // Definir ruta y nombre del archivo
+                    $nombreArchivo = 'orden_compra_' . ($this->orden_compra->id) . '_' . time() . '.pdf';
+                    $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
+
+                    // Guardar en Storage
+                    Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                } catch (\Throwable $e) {
+                    $this->addError('customError', 'Error al generar el PDF: ' . $e->getMessage());
+                    return;
+                }
+                try {
+                    $this->conLockDB('oc_consecutivo', 10, function () use ($rutaAlmacenamiento, $nuevoEstado) {
+                        DB::transaction(function () use ($rutaAlmacenamiento, $nuevoEstado) {
+                            $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+
+                            if (!empty($orden->cod_oc)) {
+                                throw new \RuntimeException('Esta orden ya fue aprobada y tiene código asignado.');
+                            }
+
+                            $orden->archivo_orden_helisa  = $rutaAlmacenamiento;
+                            $orden->fecha_aprobacion      = now();
+                            $orden->cod_oc                = $this->siguienteCodigoOC();
+                            $orden->estado_id             = $nuevoEstado;
+                            $orden->save();
+
+                            $this->orden_compra = $orden;
+                        });
+                    });
+                } catch (\Throwable $e) {
+                    $this->addError('customError', $e->getMessage());
+                    return;
+                }
+
                 $titulo  = '¡Aprobada!';
-                $mensaje = 'Orden de compra APROBADA con éxito.';
+                $mensaje = 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
+
             } else {
+                // Instancia intermedia de aprobación (no es la final)
+                $this->orden_compra->estado_id = $nuevoEstado;
+                $this->orden_compra->update();
+
                 $titulo  = '¡Aprobada!';
                 $mensaje = 'Orden aprobada y enviada a la siguiente instancia de aprobación.';
-                // Aquí puedes notificar al siguiente aprobador (Email)
+                // Aquí puedes notificar al siguiente aprobador por email si lo deseas
             }
-            $icon = 'success';
 
         } elseif ($accion === 'rechazar') {
             $this->validate([
@@ -149,8 +211,9 @@ class Juridica extends Component{
             ]);
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
+            $this->orden_compra->estado_id = self::ESTADO_RECHAZADA;
+            $this->orden_compra->update();
 
-            $nuevoEstado = self::ESTADO_RECHAZADA; // editable nuevamente por el productor
             $titulo  = '¡Rechazada!';
             $mensaje = 'Orden de compra RECHAZADA.';
             $icon    = 'error';
@@ -158,15 +221,46 @@ class Juridica extends Component{
             abort(400);
         }
 
-        $this->orden_compra->estado_id = $nuevoEstado;
-        $this->orden_compra->update();
-
         // Redirección con sesión flash compatible con Livewire v2
         session()->flash('swal_title', $titulo);
         session()->flash('swal_msg', $mensaje);
         session()->flash('swal_icon', $icon);
 
         return redirect('/orden-compra');
+    }
+
+    protected function conLockDB(string $nombre, int $segundos, callable $callback)
+    {
+        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
+        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
+
+        if ((int) $r->obtenido !== 1) {
+            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
+        }
+
+        try {
+            return $callback();
+        } finally {
+            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
+        }
+    }
+
+    protected function siguienteCodigoOC(): string
+    {
+         $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
+            ->where('cod_oc', '!=', '')
+            ->whereNotNull('fecha_aprobacion')
+            ->orderByDesc('fecha_aprobacion')
+            ->orderByDesc('id') // desempate si dos tienen la misma fecha
+            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
+
+        $ultimo = 0;
+
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
+            $ultimo = (int) $m[1];
+        }
+
+        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
     }
 
     public function render(){

@@ -116,60 +116,50 @@
                         @endphp
                         <a href="{{ asset("storage/$aux") }}" target="_blank" class="btn-link">
                             <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                            <span class="btn-inner--text">Cotización - {{ $presupuesto->gestion->nom_proyecto_cot }}</span>
+                            <span class="btn-inner--text">Cotización - {{ optional($presupuesto->gestion)->nom_proyecto_cot ?? 'N/A' }}</span>
                         </a>
                     </div>
 
-                    {{-- Vista previa PDF --}}
+                    {{-- Vista previa PDF que se generará automáticamente --}}
                     <div class="col-md-12 mb-4">
                         <div class="d-none d-md-block w-100">
                             <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
                         </div>
                     </div>
 
-                    {{-- Campo: Adjuntar Orden de Compra --}}
+                    {{-- Campo: Código de Orden de Compra Automático --}}
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="oc_helisa">Adjunta la orden de compra generada en Helisa (PDF):</label>
-                            <input id="oc_helisa" wire:model="oc_helisa" type="file" class="form-control" accept=".pdf,.xls,.xlsx">
-                            @error('oc_helisa')
-                                <div class="text-invalid">
-                                    {{ $message }}
-                                </div>
+                            <label for="cod_oc">Código de orden de compra a generar:</label>
+                            <input type="text" id="cod_oc" class="form-control" wire:model="cod_oc" readonly>
+                            <small class="text-muted">Este código se genera automáticamente en secuencia.</small>
+                            @error('cod_oc')
+                                <div class="text-invalid text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
-                    {{-- Campo: Código de Orden de Compra --}}
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="cod_oc">Código de orden de compra a generar:</label>
-                            <!-- wire:model mapeará automáticamente lo que tenga la variable $cod_oc en tu clase -->
-                            <input type="text" id="cod_oc" class="form-control" wire:model="cod_oc" readonly>
-                            <small class="text-muted">Este código se genera automáticamente en secuencia.</small>
-                            @error('cod_oc')
-                                <div class="text-invalid">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                    {{-- Aviso informativo de generación automática --}}
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="alert alert-light border w-100 mb-0 py-2">
+                            <small><i class="ni ni-bell-55 text-warning"></i> Al hacer clic en <strong>Aprobar</strong>, el sistema generará y almacenará el PDF oficial de forma automática.</small>
                         </div>
                     </div>
+
                     {{-- Sección: Aprobar --}}
-                    <div class="col-md-6 d-flex align-items-center mb-3">
+                    <div class="col-md-6 d-flex align-items-center mt-3">
                         <button wire:click="cambioEstado(1)" wire:loading.attr="disabled" class="btn bg-gradient-warning">
-                            Aprobar
+                            Aprobar y Generar PDF
                         </button>
                     </div>
 
                     {{-- Sección: Rechazar y Justificación --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6 mt-3">
                         <div class="form-group mb-2">
                             <label for="justificacion_rechazo">Justificación de rechazo:</label>
                             <textarea name="justificacion_rechazo" id="justificacion_rechazo" class="form-control" wire:model="justificacion_rechazo" rows="2"></textarea>
                             @error('justificacion_rechazo')
-                                <div class="text-invalid">
-                                    {{ $message }}
-                                </div>
+                                <div class="text-invalid text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                         <button wire:click="cambioEstado(3)" class="btn bg-gradient-danger">Rechazar</button>
@@ -581,7 +571,9 @@
                 <div class="row px-4">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <button wire:click="enviarAprobacion" wire:loading.attr="disabled" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
+                            @if($orden_compra && $orden_compra->estado_id == 3)
+                                <button wire:click="enviarAprobacion" wire:loading.attr="disabled" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
+                            @endif
                             @if($orden_compra && $orden_compra->estado_id == 3)
                                 <button wire:click="deleteOrden" class="btn btn-icon btn-3 btn bg-gradient-danger mt-2 mb-0" type="button">
                                     <span class="btn-inner--icon">

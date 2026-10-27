@@ -31,21 +31,26 @@
 
                     <!-- Información General -->
                     <div class="row mb-4">
+                        <!-- Proveedor -->
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-control-label text-xs font-weight-bold">Proveedor</label>
                                 <input type="text" class="form-control" value="{{ $proveedor_nombre }}" disabled>
                             </div>
                         </div>
+
+                        <!-- Fecha de Envío -->
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-control-label text-xs font-weight-bold">Fecha de Envío</label>
                                 <input type="text" class="form-control" value="{{ $orden_compra->fecha_envio_produccion ?? 'N/A' }}" disabled>
                             </div>
                         </div>
-                        <div class="col-md-4">
+
+                        <!-- Archivo de Cotización -->
+                        <div class="col-md-2">
                             <div class="form-group">
-                                <label class="form-control-label text-xs font-weight-bold">Archivo de Cotización</label>
+                                <label class="form-control-label text-xs font-weight-bold d-block">Archivo de Cotización</label>
                                 <div>
                                     @if($orden_compra && $orden_compra->archivo_cot)
                                         <a href="{{ Storage::url($orden_compra->archivo_cot) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
@@ -57,12 +62,30 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($orden_compra && $orden_compra->archivo_remision)
+                            <!-- Archivo de Remisión -->
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-control-label text-xs font-weight-bold d-block">Archivo de Remisión</label>
+                                    <div>
+                                       <a href="{{ Storage::url($orden_compra->archivo_remision) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
+                                            <i class="fas fa-file-pdf me-1"></i> Ver Remisión
+                                        </a>            
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
 
                     <hr class="horizontal dark">
 
                     <!-- Tabla de Ítems (Solo Lectura) -->
-                    <h6 class="mb-3">Ítems de la Orden de Compra</h6>
+                    @if($orden_compra && $orden_compra->archivo_remision)
+                        <h6 class="mb-3">Ítems de la Remision</h6>
+                    @elseif($orden_compra && $orden_compra->archivo_cot)
+                        <h6 class="mb-3">Items de la Orden de Compra</h6>
+                    @endif
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0">
                             <thead>
@@ -123,12 +146,6 @@
 
                     <!-- Sección de Aprobación o Rechazo -->
                     <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label text-xs font-weight-bold">Observaciones de Negociación (Opcional)</label>
-                                <textarea wire:model.defer="observaciones_negociacion" class="form-control" rows="3" placeholder="Notas adicionales para la aprobación..."></textarea>
-                            </div>
-                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-control-label text-xs font-weight-bold text-danger">Justificación de Rechazo (Obligatorio si se rechaza)</label>

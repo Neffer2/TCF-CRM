@@ -9,6 +9,10 @@ use App\Models\Proveedor;
 use App\Traits\Email;
 use Livewire\WithFileUploads;
 
+use Barryvdh\DomPDF\Facade\Pdf; 
+use Illuminate\Support\Facades\View;
+use Dompdf\Dompdf;
+
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -138,7 +142,7 @@ class Juridica extends Component
                 $this->maxCant = $item->cantidad;
                 $this->maxDias = $item->dia;
                 $this->maxOtros = $item->otros;
-                $this->maxValor = $item->v_unitario;
+                $this->maxValor = $item->v_total;
             }
         })->first();
     }
@@ -303,22 +307,45 @@ class Juridica extends Component
 
         if ($estado == 1) {
             $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf|max:10000',
                 'observaciones_negociacion' => 'nullable|string|max:1000'
             ]);
 
-            $archivo = $this->oc_helisa->store('public/ordenes_juridicas_helisa');
-
             try {
-                $this->conLockDB('oc_consecutivo', 10, function () use ($archivo) {
-                    DB::transaction(function () use ($archivo) {
+                // Generamos el PDF automáticamente de manera idéntica a tu controlador web
+                $this->orden_compra->load([
+                    'proveedor',
+                    'presupuesto.gestion.contacto',
+                    'presupuesto.presupuestoItems',
+                    'ordenItems',
+                ]);
+
+                $dompdf = new Dompdf(['enable_remote' => true]);
+                $html = View::make('exports.orden_compra_pdf', [
+                    'orden' => $this->orden_compra,
+                ])->render();
+
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfOutput = $dompdf->output();
+
+                // Definimos la ruta y nombre del archivo automático
+                $nombreArchivo = 'orden_helisa_' . ($this->orden_compra->cod_oc ?? $this->orden_compra->id) . '_' . time() . '.pdf';
+                $rutaAlmacenamiento = 'public/ordenes_juridicas_helisa/' . $nombreArchivo;
+
+                // Guardamos el PDF generado en el Storage
+                Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                $this->conLockDB('oc_consecutivo', 10, function () use ($rutaAlmacenamiento) {
+                    DB::transaction(function () use ($rutaAlmacenamiento) {
                         $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
                         if (!empty($orden->cod_oc)) {
                             throw new \RuntimeException('Esta orden ya fue aprobada.');
                         }
 
-                        $orden->archivo_orden_helisa      = $archivo;
+                        $orden->archivo_orden_helisa      = $rutaAlmacenamiento;
                         $orden->observaciones_negociacion = $this->observaciones_negociacion;
                         $orden->fecha_aprobacion          = now();
                         $orden->cod_oc                    = $this->siguienteCodigoOC();
@@ -329,15 +356,14 @@ class Juridica extends Component
                     });
                 });
             } catch (\Throwable $e) {
-                Storage::delete($archivo);
-                $this->addError('oc_helisa', $e->getMessage());
+                $this->addError('customError', $e->getMessage());
                 return;
             }
 
             $this->mailOrdenAprobada($this->orden_compra);
-            $messaje = 'Orden de compra APROBADA con codigo ' . $this->orden_compra->cod_oc . '.';
-
-        } elseif ($estado == 3) {
+            $messaje = 'Orden de compra APROBADA y generada automáticamente con código ' . $this->orden_compra->cod_oc . '.';
+            
+        }elseif ($estado == 3) {
             // ORDEN RECHAZADA
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
@@ -409,13 +435,14 @@ class Juridica extends Component
     {
          $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
             ->where('cod_oc', '!=', '')
-            ->latest('id')
-            ->first();
+            ->whereNotNull('fecha_aprobacion')
+            ->orderByDesc('fecha_aprobacion')
+            ->orderByDesc('id') // desempate si dos tienen la misma fecha
+            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
 
         $ultimo = 0;
 
-        // Extrae los dígitos del final: "OC-47573" -> 47573
-        if ($ultimaOrden && preg_match('/(\d+)$/', $ultimaOrden->cod_oc, $m)) {
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
             $ultimo = (int) $m[1];
         }
 
@@ -575,13 +602,6 @@ class Juridica extends Component
         ]);
     }
 
-    // Al actualizar el archivo de Helisa
-    public function updatedOc_helisa(){
-        $this->validate([
-            'oc_helisa' => 'required|file|mimes:pdf|max:10000',
-        ]);
-    }
-
     // Al actualizar el GR
     public function updatedGr(){
         $this->validate([
@@ -616,5 +636,29 @@ class Juridica extends Component
         $this->file_cot = null;
 
         $this->ocItems = [];
+    }
+
+    public function generarPdfReal()
+    {
+        // Valida que exista la orden o los datos necesarios
+        if (!$this->orden_compra) {
+            session()->flash('error', 'No hay una orden de compra seleccionada.');
+            return;
+        }
+
+        // Carga las relaciones necesarias para la vista del PDF
+        $this->orden_compra->load('ordenItems', 'proveedorRelacion', 'presupuesto.gestion');
+
+        // Genera el PDF con una vista blade dedicada (ej: pdf.orden-compra)
+        $pdf = Pdf::loadView('pdf.orden-compra', [
+            'orden_compra' => $this->orden_compra,
+            'presupuesto' => $this->presupuesto,
+            'ocItems' => $this->ocItems
+        ]);
+
+        // Retorna el PDF para visualizarse en el navegador (stream)
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'Orden_Compra_' . ($this->orden_compra->cod_oc ?? 'Borrador') . '.pdf');
     }
 }

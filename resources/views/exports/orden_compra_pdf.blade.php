@@ -1,149 +1,253 @@
+@php
+    $fmt = fn($v) => number_format((float) $v, 2, ',', '.');
+
+    // Mapeo del número de orden (usando el código o ID real)
+    $numeroOrden = $orden->cod_oc ?? $orden->id;
+    // Extraer solo los números si el código tiene formato ej: "OC 001" -> 1
+    $numeroLimpio = preg_match('/\d+/', $numeroOrden, $m) ? (int)$m[0] : $orden->id;
+
+    // Fecha de emisión o aprobación
+    $fechaBase = $orden->fecha_aprobacion ?? $orden->created_at ?? now();
+    $fecha = \Carbon\Carbon::parse($fechaBase)->locale('es');
+    $fechaTexto = ucfirst($fecha->translatedFormat('F d')) . ' DE ' . $fecha->format('Y');
+
+    // Datos del proveedor real
+    $prov = $orden->proveedor;
+
+    // Mapeo de ítems reales desde la relación ordenItems
+    $itemsTransformados = $orden->ordenItems->map(function($item) {
+        return (object)[
+            'descripcion'    => $item->desc_oc,
+            'centro_costo'   => $item->num_item ?? '-', // O el campo de centro de costo si aplica
+            'cantidad'       => $item->cant_oc,
+            'valor_unitario' => $item->vunit_oc,
+        0];
+    });
+
+    $subtotal = $orden->ordenItems->sum('vtotal_oc');
+    $iva        = $orden->iva         ?? 0;
+    $retefuente = $orden->retefuente ?? 0;
+    $reteiva    = $orden->reteiva    ?? 0;
+    $reteica    = $orden->reteica    ?? 0;
+    $total      = $subtotal + $iva - $retefuente - $reteiva - $reteica;
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orden de Compra</title>
+    <title>Orden de Compra {{ str_pad($numeroLimpio, 8, '0', STR_PAD_LEFT) }}</title>
     <style>
-        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; color: #000; }
+        @page { margin: 40px 38px 30px 38px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #000;
+            margin: 0;
         }
 
-        .table-title {
-            padding: 4px;
-            font-size: 12px;
+        table { border-collapse: collapse; width: 100%; }
+        td, th { vertical-align: top; }
+
+        .empresa-nombre { font-size: 18px; font-weight: bold; padding-bottom: 6px; }
+        .empresa-datos td { font-size: 10px; padding: 1px 0; }
+        .empresa-datos b { font-weight: bold; }
+
+        .logo { width: 260px; height: auto; }
+        .oc-titulo { font-size: 13px; font-weight: bold; text-align: right; line-height: 1.3; }
+        .fecha { font-size: 9.5px; text-align: right; }
+
+        .proveedor td { font-size: 9.5px; padding: 3px 0; }
+        .proveedor .lbl { font-weight: bold; width: 62px; }
+
+        .sub-header td { font-size: 9.5px; padding: 6px 0 3px 0; }
+
+        /* Tabla de ítems */
+        .items { border: 1px solid #000; }
+        .items th {
+            background: #c8c8c8;
+            border: 1px solid #000;
+            font-size: 9.5px;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 20px;
-            background-color: lightgray;
+            padding: 3px;
+        }
+        .items td {
+            font-size: 9.5px;
+            padding: 2px 3px;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+        }
+        .items td.num { text-align: right; }
+        .items td.ctr { text-align: center; }
+        .items tr.relleno td { height: 260px; }
+
+        /* Observaciones + totales */
+        .pie { border: 1px solid #000; border-top: 1px solid #000; }
+        .pie td.obs { width: 62%; font-size: 9.5px; padding: 2px 3px; border-right: 1px solid #000; }
+        .totales td { font-size: 9.5px; padding: 2px 3px; border-bottom: 1px solid #000; }
+        .totales td.lbl { font-weight: bold; width: 40%; border-right: 1px solid #000; background: #fff; }
+        .totales td.val { text-align: right; }
+        .totales tr.total td { background: #c8c8c8; }
+        .totales tr.total td.val { background: #fff; }
+        .totales tr:last-child td { border-bottom: none; }
+
+        .aceptada {
+            border: 1px solid #000;
+            border-top: none;
+            font-size: 9px;
+            padding: 2px 3px;
         }
 
-        .table-cols { border-top: 1px solid #000; border-bottom: 1px solid #000; } /* agregado */
-        .table-cols td, .table-cols th { border-left: 1px solid #000; }
-        .table-cols td:last-child, .table-cols th:last-child { border-right: 1px solid #000; }
-        .table-cols td {word-wrap: break-word; white-space: pre-wrap}
+        .legal {
+            border: 1px solid #000;
+            border-top: none;
+            font-size: 6.2px;
+            line-height: 1.25;
+            padding: 2px 3px 10px 3px;
+            text-align: justify;
+        }
 
-        .totals-table { width:100%; border-collapse: collapse; }
-        .totals-table td { border:1px solid #000; padding:4px; }
-        /* .totals-table tr:last-child td { background:#d3d3d3; } */
+        .firmas td { font-size: 10px; padding-top: 16px; }
+        .firmas .rol { font-size: 6.5px; padding-top: 18px; }
     </style>
 </head>
 <body>
+
+    {{-- ENCABEZADO --}}
     <table>
         <tr>
-            <td style="vertical-align: top;">
-                <p style="font-size: 17px; margin-bottom: 0"><strong>BULL MARKETING S A S</strong></p>
-                <p style="margin-bottom: 0; line-height: 5px">N.I.T: 900298176</p>
-                <p style="margin-bottom: 0; line-height: 5px">DIRECCIÓN: CRA 53C No. 127D 23</p>
-                <p style="margin-bottom: 0; line-height: 5px">TELEFONOS: 4322700</p>
+            <td style="width:58%;">
+                <div class="empresa-nombre">BULL MARKETING S A S</div>
+                <table class="empresa-datos">
+                    <tr><td><b>N.I.T.</b>&nbsp;&nbsp; 900298176</td></tr>
+                    <tr><td><b>DIRECCION:</b>&nbsp; CRA 53C No. 127D 23</td></tr>
+                    <tr><td><b>TELEFONOS:</b>&nbsp; 4322700</td></tr>
+                    <tr><td><b>CORREO:</b> facturacion.proveedores@bullmarketing.com.co</td></tr>
+                </table>
             </td>
-            <td style="text-align: right;">
-                <img src="https://www.bullmarketing.com.co/wp-content/uploads/2022/02/Logo-bull-negro_2-e1664286411369.png" alt="BUllmarketing logo" height="70">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div>
-                    <p style="font-size: 14px; margin-bottom: 0; text-decoration: underline;"><strong>Datos del Proveedor</strong></p>
-                    <table>
-                        @if ( $orden->tipo_oc == 1 || $orden->tipo_oc == 3 )
-                            <tr>
-                                <td width="60">Nombre:</td>
-                                <td>{{ $orden->proveedor->tercero }}</td>
-                            </tr>
-                            <tr>
-                                <td width="60">NIT:</td>
-                                <td>{{ $orden->proveedor->documento }}</td>
-                            </tr>
-                            <tr>
-                                <td width="60">Dirección:</td>
-                                <td>{{ $orden->proveedor->direccion }}</td>
-                            </tr>
-                            <tr>
-                                <td width="60">Ciudad:</td>
-                                <td>{{ $orden->proveedor->ciudad }}</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td width="60">Nombre:</td>
-                                <td>{{ $orden->naturalInfo->tercero->nombre }}</td>
-                            </tr>
-                            <tr>
-                                <td width="60">NIT:</td>
-                                <td>{{ $orden->naturalInfo->tercero->cedula }}</td>
-                            </tr>
-                            <tr>
-                                <td width="60">Dirección:</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td width="60">Ciudad:</td>
-                                <td>{{ $orden->naturalInfo->tercero->ciudad }}</td>
-                            </tr>
-                        @endif
-                    </table>
+            <td style="width:42%; text-align:right;">
+                {{-- Si usas imagen pública o asset local --}}
+                <img class="logo" src="{{ public_path('images/bull-marketing-logo.png') }}" alt="BULL Marketing">
+                <div class="oc-titulo">
+                    ORDEN DE COMPRA<br>
+                    Nro. {{ str_pad($numeroLimpio, 8, '0', STR_PAD_LEFT) }}
                 </div>
             </td>
-            <td style="text-align: right; vertical-align: top">
-                <p style="font-weight: bold;">
-                    ORDEN DE COMPRA <br>
-                    NRO {{ $orden->cod_oc }}
-                </p>
-                <p>FECHA: {{ date_format(date_create( $orden->fecha_aprobacion ), "Y-m-d") }}</p>
-            </td>
         </tr>
     </table>
 
-    <p style="font-size: 14px; font-weight: bold; margin-bottom: 2rem">
-        Solicitamos sean ejecutados los siguientes servicios:
-    </p>
-
-    <table class="table-cols">
-        <tr class="">
-            <th class="table-title">DESCRIPCIÓN</th>
-            <th class="table-title">CANT</th>
-            <th class="table-title">VR UNITARIO</th>
-            <th class="table-title">VR TOTAL</th>
-        </tr>
-        @foreach( $orden->ordenItems as $item )
-            <tr>
-                <td width="50%" style="padding: 2px; font-size: 10px;">{{ $item->desc_oc }}</td>
-                <td width="10%" style="text-align: center; font-size: 10px">{{ $item->cant_oc }}</td>
-                <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vunit_oc) }}</td>
-                <td width="10%" style="text-align: right; font-size: 10px">{{ number_format($item->vtotal_oc) }}</td>
-            </tr>
-        @endforeach
-    </table>
-    <br><br>
-    <table class="totals-table">
+    <table style="margin-top:6px;">
         <tr>
-            <td width="60%" style="vertical-align: top">
-                <p style="margin-bottom: 0">
-                    <b>Observaciones:</b>
-                </p>
+            <td style="font-size:9.5px;">Datos del Proveedor</td>
+            <td class="fecha">FECHA: {{ $fechaTexto }}</td>
+        </tr>
+    </table>
 
-                {{ $orden->observaciones_negociacion  }}
-            </td>
-            <td width="40%">
-                <table class="totals-table">
-                    <tr>
-                        <td style="font-weight: bold;; font-size: 12px">SUBTOTAL:</td>
-                        <td style="text-align: right; font-size: 10px">{{ number_format($orden->subtotal) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold;; font-size: 12px">IVA:</td>
-                        <td style="text-align: right; font-size: 10px">{{ number_format(0) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: bold; background-color: lightgray; font-size: 12px">TOTALES:</td>
-                        <td style="text-align: right; font-size: 10px">{{ number_format($orden->subtotal) }}</td>
-                    </tr>
+    {{-- DATOS DEL PROVEEDOR (Adaptados a la tabla proveedor de tu base de datos) --}}
+    <table class="proveedor" style="margin-top:6px;">
+        <tr>
+            <td class="lbl">Nombre :</td>
+            <td colspan="3">{{ $prov->tercero ?? $prov->nombre ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Nit &nbsp;&nbsp;&nbsp;:</td>
+            <td colspan="3">{{ $prov->nit ?? $prov->documento ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Dirección :</td>
+            <td colspan="3">{{ $prov->direccion ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Ciudad &nbsp;:</td>
+            <td style="width:40%;">{{ $prov->ciudad ?? 'N/A' }}</td>
+            <td colspan="2"><b>PROYECTO / ORIGEN:</b> {{ optional($orden->presupuesto->gestion)->nom_proyecto_cot ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Correo:</td>
+            <td><span>{{ $prov->correo ?? $prov->email ?? '' }}</span></td>
+            <td class="lbl" style="width:60px;">Contacto:</td>
+            <td>{{ $prov->contacto ?? '' }}</td>
+        </tr>
+    </table>
+
+    <table class="sub-header">
+        <tr>
+            <td>Solicitamos sean ejecutados los siguientes servicios:</td>
+            <td style="text-align:right;">Página 1 de 1</td>
+        </tr>
+    </table>
+
+    {{-- ÍTEMS REALES --}}
+    <table class="items">
+        <thead>
+            <tr>
+                <th style="width:50%;">DESCRIPCION</th>
+                <th style="width:13%;">ITEM #</th>
+                <th style="width:7%;">CANT</th>
+                <th style="width:14%;">VR UNITARIO</th>
+                <th style="width:16%;">VR TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($orden->ordenItems as $item)
+                <tr>
+                    <td>{{ $item->desc_oc }}</td>
+                    <td class="ctr">{{ $item->num_item }}</td>
+                    <td class="num">{{ $fmt($item->cant_oc) }}</td>
+                    <td class="num">{{ $fmt($item->vunit_oc) }}</td>
+                    <td class="num">{{ $fmt($item->vtotal_oc) }}</td>
+                </tr>
+            @endforeach
+            <tr class="relleno">
+                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {{-- OBSERVACIONES Y TOTALES --}}
+    <table class="pie">
+        <tr>
+            <td class="obs">OBSERVACIONES: {{ $orden->observaciones_negociacion ?? $orden->observacion_remision ?? '' }}</td>
+            <td style="padding:0;">
+                <table class="totales">
+                    <tr><td class="lbl">SUBTOTAL</td><td class="val">{{ $fmt($subtotal) }}</td></tr>
+                    <tr><td class="lbl">IVA</td><td class="val">{{ $fmt($iva) }}</td></tr>
+                    <tr><td class="lbl">RETEFUENTE</td><td class="val">{{ $fmt($retefuente) }}</td></tr>
+                    <tr><td class="lbl">RETEIVA</td><td class="val">{{ $fmt($reteiva) }}</td></tr>
+                    <tr><td class="lbl">RETEICA</td><td class="val">{{ $fmt($reteica) }}</td></tr>
+                    <tr class="total"><td class="lbl">T O T A L E S</td><td class="val">{{ $fmt($total) }}</td></tr>
                 </table>
             </td>
         </tr>
     </table>
+
+    <div class="aceptada">
+        Nos permitimos comunicarles que su oferta comercial ha sido aceptada, razón por la cual les solicitamos el suministro de los siguientes items:
+    </div>
+
+    {{-- CONDICIONES --}}
+    <div class="legal">
+        Su cotización comercial hace parte integral de la presente orden en todo lo relativo a condiciones comerciales, compromisos adquiridos, plazos de entrega, cantidades, características, materiales, elementos y valores.<br>
+        BULL MARKETING SAS no aceptara productos y/o servicios que no cumplan con las especificaciones suministradas en las muestras que dieron origen a su oferta comercial, clase de insumo y/o servicios, calidad, aspecto, falta o deficiencia del insumo y/o servicio.<br>
+        La presente orden de compra tiene una vigencia de treinta (30) días calendario a partir de su emisión, BULL MARKETING SAS no se hará responsable por el pago de facturación de los productos y/o servicios suministrados una vez vencido el termino antes indicado.<br>
+        GARANTIA INCUMPLIMIENTO Y RESPONSABILIDAD<br>
+        El Proveedor garantiza que los bienes y/o servicios objeto de la presente Orden de Compra serán aptos, pertinentes y adecuados para el fin al cual están destinados, y que cumplirán con estándares de calidad satisfactorios, conforme a las mejores prácticas del mercado. El Proveedor garantiza igualmente que los bienes y/o servicios se ajustarán estrictamente a las especificaciones técnicas, condiciones comerciales, plazos y alcances establecidos en la Orden de Compra y en los documentos contractuales que la integran. Se considerará incumplimiento, entre otros eventos, la entrega tardía, la entrega incompleta, la entrega defectuosa o dañada, la no conformidad de los bienes y/o servicios con lo pactado, así como cualquier desviación frente a las condiciones acordadas. En caso de incumplimiento, el Proveedor estará obligado, a su exclusivo costo y riesgo, a reparar, subsanar, corregir, sustituir o reemplazar los bienes y/o servicios defectuosos o no conformes, según corresponda, sin costo adicional para la Compañía, dentro del término que esta determine. El Proveedor asumirá la totalidad de los gastos y costos necesarios para la reparación, subsanación, sustitución o reemplazo de los bienes y/o servicios, incluyendo, sin limitarse a ello, costos logísticos, transporte, reprocesos, mano de obra, materiales y cualquier otro rubro asociado. Así mismo, el Proveedor será plenamente responsable por todos los daños directos e indirectos, incluyendo lucro cesante, daño emergente y cualquier perjuicio de naturaleza consecuencial, que se generen como resultado del incumplimiento, la entrega tardía, la entrega dañada o cualquier otra falla en la ejecución de la presente Orden de Compra, sin perjuicio de las demás acciones legales a que haya lugar. La garantía tendrá una vigencia de treinta (30) días calendario, contados a partir de la recepción y aceptación de los bienes y/o servicios por parte de la Compañía. El Proveedor deberá atender la garantía dentro de un plazo no superior a diez (10) días hábiles, contados a partir de la recepción de la reclamación formal.
+    </div>
+
+    {{-- FIRMAS (Personalizables según tu lógica o nombres estáticos/dinámicos) --}}
+    <table class="firmas">
+        <tr>
+            <td style="width:33%;">{{ $orden->elaboro ?? 'Equipo Producción' }}</td>
+            <td style="width:33%;">{{ $orden->solicito ?? 'Jurídica / Compras' }}</td>
+            <td style="width:34%;">{{ $orden->aprobo ?? 'Gerencia' }}</td>
+        </tr>
+        <tr>
+            <td class="rol">ELABORO</td>
+            <td class="rol">SOLICITÓ</td>
+            <td class="rol">APROBO</td>
+        </tr>
+    </table>
+
 </body>
 </html>

@@ -15,6 +15,7 @@ use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;  
 
 class Natural extends Component
 {
@@ -57,6 +58,7 @@ class Natural extends Component
         if ($this->orden_id){
             $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
             $this->getData();
+            $this->cod_oc = $this->queriedOrden->cod_oc ?: $this->siguienteCodigoOC(); // solo informativo
         }
     }
 
@@ -477,35 +479,67 @@ class Natural extends Component
         * EVIDENCIAS
     */
     // Valida y sube el archivo de evidencia para la orden de compra
-    public function validateEvidencia($estado){
+    public function validateEvidencia($estado)
+    {
         if ($estado == 5) {
+            // cod_oc ya no se valida: nunca viene del navegador
             $this->validate([
-                'cod_oc' => 'required|string',
                 'oc_helisa' => 'required|file|mimes:pdf|max:2048'
             ]);
 
-            $this->queriedOrden->cod_oc = $this->cod_oc;
-            $this->queriedOrden->archivo_orden_helisa = $this->oc_helisa->store('public/ordenes_naturales');
-            $this->queriedOrden->fecha_aprobacion = now();
+            $archivo = $this->oc_helisa->store('public/ordenes_naturales');
+
+            try {
+                $this->conLockDB('oc_consecutivo', 10, function () use ($archivo) {
+                    DB::transaction(function () use ($archivo) {
+                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
+
+                        // Si ya tenía código (ciclo de rechazo y reenvío), se conserva
+                        if (empty($orden->cod_oc)) {
+                            $orden->cod_oc = $this->siguienteCodigoOC();
+                        }
+
+                        $orden->archivo_orden_helisa = $archivo;
+                        $orden->fecha_aprobacion     = now();
+                        $orden->estado_id            = 5;
+                        $orden->save();
+
+                        $this->queriedOrden = $orden;
+                        $this->cod_oc       = $orden->cod_oc;
+                    });
+                });
+            } catch (\RuntimeException $e) {
+                Storage::delete($archivo);
+                $this->addError('cod_oc', $e->getMessage());
+                return;
+            } catch (\Throwable $e) {
+                Storage::delete($archivo);
+                report($e);
+                $this->addError('cod_oc', 'No se pudo guardar la orden. Intenta de nuevo.');
+                return;
+            }
+
+            // El correo sale solo cuando todo quedó guardado
             $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+
         } elseif ($estado == 7) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:255'
             ]);
 
             $this->queriedOrden->justificacion_rechazo = $this->justificacion_rechazo;
+            $this->queriedOrden->estado_id = 7;
+            $this->queriedOrden->update();
+
             $this->oc_evidencias_rechazadas($this->queriedOrden);
             if (Auth()->user()->rol == 1){
                 $this->ocNaturalEvidenciasRechazadas($this->queriedOrden);
             }
         }
 
-        $this->queriedOrden->estado_id = $estado;
-        $this->queriedOrden->update();
-
         if (Auth()->user()->rol == 1) {
-            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa');
-        }elseif (Auth()->user()->rol == 7) {
+            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa con codigo ' . $this->cod_oc . '.');
+        } elseif (Auth()->user()->rol == 7) {
             return redirect()->route('ordenes-prod')->with('success', 'Validación exitosa');
         }
     }
@@ -656,5 +690,38 @@ class Natural extends Component
     public function toggleRechazo()
     {
         $this->toggleRechazo = !$this->toggleRechazo;
+    }
+
+    protected function conLockDB(string $nombre, int $segundos, callable $callback)
+    {
+        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
+
+        if ((int) $r->obtenido !== 1) {
+            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
+        }
+
+        try {
+            return $callback();
+        } finally {
+            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
+        }
+    }
+
+    protected function siguienteCodigoOC(): string
+    {
+        $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
+            ->where('cod_oc', '!=', '')
+            ->whereNotNull('fecha_aprobacion')
+            ->orderByDesc('fecha_aprobacion')
+            ->orderByDesc('id')
+            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
+
+        $ultimo = 0;
+
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
+            $ultimo = (int) $m[1];
+        }
+
+        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
     }
 }

@@ -119,16 +119,44 @@
                         </div>
                     </div>
 
+                   <div class="col-md-12 mb-4">
+                        <!-- Visualizador PDF para pantallas medianas y grandes -->
+                        <div class="d-none d-md-block w-100">
+                            <embed src="{{ route('orden-compra.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                        </div>
+                        
+                        <!-- Sección de descarga para móviles o respaldo -->
+                        <div class="mt-3 text-center">
+                            <p class="text-muted">Este archivo se guarda de manera automática. Si no lo puedes visualizar, descárgalo aquí:</p>
+                            <a href="{{ route('orden-compra.pdf', $orden_compra) }}" class="btn btn-primary" download>
+                                <i class="fas fa-download"></i> Descargar Orden de Compra
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Campo: Código de Orden de Compra Automático --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cod_oc">Código de orden de compra a generar:</label>
+                            <input type="text" id="cod_oc" class="form-control" wire:model="cod_oc" readonly>
+                            <small class="text-muted">Código provisional. El definitivo se asigna al aprobar.</small>
+                            @error('cod_oc')
+                                <div class="text-invalid text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Aviso informativo de generación automática --}}
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="alert alert-light border w-100 mb-0 py-2">
+                            <small><i class="ni ni-bell-55 text-warning"></i> Al hacer clic en <strong>Aprobar</strong>, el sistema generará y almacenará el PDF oficial de forma automática.</small>
+                        </div>
+                    </div>
+                    
                     <hr class="horizontal dark">
 
                     @if ($puedeAprobar)
                         <div class="row mt-4">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-control-label text-xs font-weight-bold">Código OC (Opcional al aprobar)</label>
-                                    <input type="text" wire:model.defer="cod_oc" class="form-control" placeholder="Ingrese el código de OC...">
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-control-label text-xs font-weight-bold text-danger">Justificación de Rechazo (Obligatorio si se rechaza)</label>

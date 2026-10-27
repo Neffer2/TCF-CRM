@@ -826,13 +826,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="cod_oc">C&oacute;digo de orden de compra AJAJA</label>
-                                    <input id="cod_oc" type="text" class="form-control @error('cod_oc') is-invalid @elseif(strlen($cod_oc) > 0) is-valid @enderror"
-                                    wire:model.change="cod_oc" placeholder="C&oacute;digo de orden de compra">
+                                    <label for="cod_oc">C&oacute;digo de orden de compra</label>
+                                    <input type="text" id="cod_oc"
+                                        class="form-control @error('cod_oc') is-invalid @enderror"
+                                        value="{{ $cod_oc }}" readonly>
+                                    <small class="text-muted">Código provisional. El definitivo se asigna al aprobar.</small>
                                     @error('cod_oc')
-                                        <div id="cod_oc" class="text-invalid">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
