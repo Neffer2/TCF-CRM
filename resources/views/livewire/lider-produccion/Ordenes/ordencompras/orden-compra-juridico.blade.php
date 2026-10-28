@@ -6,7 +6,11 @@
                 <!-- Encabezado -->
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-0">Detalle de Orden de Compra Jurídica</h5>
+                        @if($orden_compra && $orden_compra->archivo_remision)
+                            <h5 class="mb-3">Detalle de Remision Juridica</h5>
+                        @elseif($orden_compra && $orden_compra->archivo_cot)
+                            <h5 class="mb-3">Detalle de Orden de Compra Juridica</h5>
+                        @endif
                         <p class="text-sm mb-0">Visualización de información y gestión de aprobación / rechazo.</p>
                     </div>
                     <div>

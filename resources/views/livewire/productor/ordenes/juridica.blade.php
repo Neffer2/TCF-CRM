@@ -248,28 +248,43 @@
             @elseif(($orden_compra && ($orden_compra->estado_id == 4) && ((Auth::user()->rol == 1))))
                 {{-- GOOD RECEIVE --}}
                 <div class="row px-4">
+
+                    <!-- SECCIÓN DE VISUALIZACIÓN DEL PDF CON EMBED -->
+                    <div class="col-md-12 mt-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vista Previa del Good Receive</h5>
+                            </div>
+                            <div class="card-body">
+                                <embed src="{{ route('orden-compra-gr.pdf', $orden_compra) }}" type="application/pdf" width="100%" height="600px" />
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="">Observaciones: </label>
                             <textarea disabled class="form-control">{{ $orden_compra->observacion_remision }}</textarea>
                         </div>
                     </div>
+
                     <div class="row mb-3" x-data="{ accion: true }" x-cloak>
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="acciones">Acciones</label>
-                                <select x-model="accion" id="acciones" class="form-control" >
+                                <select x-model="accion" id="acciones" class="form-control">
                                     <option value="1">Aprobar</option>
                                     <option value="">Anular</option>
                                 </select>
                             </div>
                         </div>
-                        {{-- <span x-text="accion"> --}}
+
                         <div class="row col-md-10" x-show="accion">
                             <label for="gr">Good Receive:</label>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input id="gr" wire:model="gr" class="form-control">
+                                    <!-- Si ya tiene GR, podemos mostrarlo de manera informativa o deshabilitada -->
+                                    <input id="gr" wire:model="gr" class="form-control" placeholder="Se genera automáticamente" @if($orden_compra->gr) readonly value="{{ $orden_compra->gr }}" @endif>
                                     @error('gr')
                                         <div id="gr" class="text-invalid">
                                             {{ $message }}
@@ -279,15 +294,21 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                                    @if(!$orden_compra->gr)
+                                        <button wire:click="cambioEstado(5)" wire:loading.attr="disabled" class="btn bg-gradient-warning">Enviar Good Receive</button>
+                                    @else
+                                        <span class="badge bg-success">GR Generado: {{ $orden_compra->gr }}</span>
+                                    @endif
+
                                     <div class="spinner-border text-warning ms-1" role="status" wire:loading>
                                         <span class="sr-only">Loading...</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row col-md-10" x-show="!accion">
-                            <label for="gr">Observaciones de anulaci&oacute;n:</label>
+                            <label for="gr">Observaciones de anulación:</label>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <textarea wire:model="observaciones_anulacion" class="form-control" rows="1"></textarea>
@@ -309,6 +330,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row px-4">
                     <div class="col-md-2">
                         <div class="form-group">

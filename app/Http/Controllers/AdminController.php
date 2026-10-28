@@ -254,6 +254,41 @@ class AdminController extends Controller
             ->header('Content-Disposition', 'inline; filename="orden_compra_'.$orden->id.'.pdf"');
     }
 
+     /**
+     * Genera el PDF del Good Received (GR) de una orden de compra
+     * para visualizar/embeder.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\OrdenCompra $orden
+     * @return \Illuminate\Http\Response
+     */
+    public function ordenCompraGr(Request $request, OrdenCompra $orden){
+        $orden->load([
+            'proveedor',
+            'presupuesto.gestion.contacto',
+            'presupuesto.presupuestoItems',
+            'ordenItems',
+        ]);
+ 
+        $grNumero = $request->input('gr_numero', $orden->id);
+        $grFecha  = $request->input('gr_fecha', now());
+ 
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $html = View::make('exports.good_recive_pdf', [
+            'oc'       => $orden,
+            'grNumero' => $grNumero,
+            'grFecha'  => $grFecha,
+        ])->render();
+ 
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+ 
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="good_received_'.str_pad($grNumero, 8, '0', STR_PAD_LEFT).'.pdf"');
+    }
+
     public function showListaAnticiposAdmin()
     {
         return view('admin.produccion.anticipos.lista-anticipos-index');

@@ -21,6 +21,7 @@ class Juridica extends Component{
     const ESTADO_PEND_CONTROLLER = 9;
     const ESTADO_PEND_LIDER      = 10;
     const ESTADO_PEND_GERENCIA   = 11;
+    const ESTADO_REVISON_GR = 4;
 
     // Umbrales
     const UMBRAL_CONTROLLER = 2000000;   // total OC > 2M pasa a líder comercial
@@ -104,6 +105,9 @@ class Juridica extends Component{
 
     protected function siguienteEstadoAprobacion(): int
     {
+        if($this->orden_compra && !empty($this->orden_compra->archivo_remision)){
+            return self::ESTADO_REVISON_GR;
+        }
         // Se recalcula desde BD, no desde la propiedad pública de Livewire
         $total = $this->orden_compra->total_oc;
 
@@ -195,7 +199,7 @@ class Juridica extends Component{
                 $titulo  = '¡Aprobada!';
                 $mensaje = 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
 
-            } else {
+            } else { 
                 // Instancia intermedia de aprobación (no es la final)
                 $this->orden_compra->estado_id = $nuevoEstado;
                 $this->orden_compra->update();

@@ -48,6 +48,8 @@ Route::get('/', function () {
     Route::get('/validaciones', [AdminController::class, 'validaciones'])->middleware(['auth'])->name('validaciones');
     Route::get('/estado-facturacion', [AdminController::class, 'estadoFacturacion'])->middleware(['auth'])->middleware(['admin'])->name('estado-facturacion');
 
+    Route::get('/ordenes-compra-gr/pdf/{orden}', [AdminController::class, 'ordenCompraGr'])->middleware(['auth'])->middleware(['admin'])->name('orden-compra-gr.pdf');
+
     Route::get('/orden-juridica/{orden?}', [AdminController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['admin'])->name('orden-juridica');
     Route::get('/orden-natural/{orden_id?}', function ($orden_id){
         return view('admin.produccion.ordenes.natural', ['orden_id' => $orden_id]);

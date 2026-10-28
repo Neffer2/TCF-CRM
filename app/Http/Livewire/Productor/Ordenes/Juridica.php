@@ -12,8 +12,7 @@ use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf; 
 use Illuminate\Support\Facades\View;
 use Dompdf\Dompdf;
-
-
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,6 +50,10 @@ class Juridica extends Component
 
             if ($this->orden_compra->estado_id == 2) {
                 $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
+            }
+
+            if($this->orden_compra->estado_id == 5){
+                $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
             }
         }
     }
@@ -375,15 +378,56 @@ class Juridica extends Component
         } elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
-                'gr' => 'nullable|string',
                 'observaciones_remision' => 'nullable|string|max:1000'
             ]);
-
-            $this->orden_compra->gr = $this->gr;
-            $this->orden_compra->observacion_remision = $this->observaciones_remision;
-            $this->mailGrGenerado($this->orden_compra);
-            $messaje = 'Good Receive guardado y enviado con éxito.';
             
+            try{
+                $this->orden_compra->load([
+                    'proveedor',
+                    'presupuesto.gestion.contacto',
+                    'presupuesto.presupuestoItems',
+                    'ordenItems',                    
+                ]);
+
+                $dompdf = new Dompdf(['enable_remote' => true]);
+                $html = View::make('exports.good_recive_pdf', [
+                    'orden' => $this->orden_compra
+                ])->render();
+
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfOutput = $dompdf->output();
+
+                $nombreArchivo = 'good_receive_' . ($this->orden_compra_>gr) . '_' . time() . '.pdf';
+                $rutaAlmacenamiento = 'public/ordenes_gr/' . $nombreArchivo;
+
+                Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                $this->conLockDB('gr_consecutivo', 10, function () use ($rutaAlmacenamiento){
+                    DB::transaction(function () use ($rutaAlmacenamiento) {
+                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+
+                        if(!empty($orden->gr)){
+                            throw new \RuntimeException('Este good Receive ya fue generado. ');
+                        }
+
+                        $orden->archivo_gr = $rutaAlmacenamiento;
+                        $orden->observacion_remision = $this->observaciones_remision;
+                        $orden->gr = $this->siguienteCodigoGR();
+                        $orden->save();
+
+                        $this->orden_compra = $orden;
+                    });
+                });
+            } catch(\Throwable $e){
+                $this->addError('customError', $e->getMessage());
+                return;
+            }
+            
+            $this->mailGrGenerado($this->orden_compra);
+            $messaje = 'Good Receive ' . $this->orden_compra->gr . ' generado y guardado con exito.';
         } elseif ($estado == 6) {
             // ORDEN ANULADA
             $this->validate([
@@ -429,6 +473,25 @@ class Juridica extends Component
         } finally {
             DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
         }
+    }
+
+    protected function siguienteCodigoGR(): string
+    {
+        $ultimaOrden = OrdenCompra::whereNotNull('gr')
+            ->where('gr', '!=', '')
+            ->orderByDesc('id') 
+            ->first(['id', 'gr']);
+
+        $ultimo = 0;
+
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/,', $ultimaOrden->gr, $m)) {
+            $ultimo = (int) $m[1];
+        } else {
+            // Si quieres partir de un número base como el ejemplo (17498)
+            $ultimo = 17498; 
+        }
+
+        return 'Nro. ' . str_pad($ultimo + 1, 8, '0', STR_PAD_LEFT);
     }
 
     protected function siguienteCodigoOC(): string
