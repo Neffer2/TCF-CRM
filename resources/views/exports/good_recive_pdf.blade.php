@@ -1,6 +1,9 @@
 @php
     use Carbon\Carbon;
 
+    $oc = $oc ?? $orden;
+    $grNumero = $grNumero ?? $oc->id;
+    
     $oc->loadMissing(['ordenItems', 'proveedor', 'presupuesto']);
 
     $meses = [

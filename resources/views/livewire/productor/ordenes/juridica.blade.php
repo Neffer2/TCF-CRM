@@ -283,8 +283,8 @@
                             <label for="gr">Good Receive:</label>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <!-- Si ya tiene GR, podemos mostrarlo de manera informativa o deshabilitada -->
-                                    <input id="gr" wire:model="gr" class="form-control" placeholder="Se genera automáticamente" @if($orden_compra->gr) readonly value="{{ $orden_compra->gr }}" @endif>
+                                    <!-- wire:model sincroniza el valor automático que calculó el backend -->
+                                    <input id="gr" wire:model="gr" class="form-control" placeholder="Generando código..." disabled>
                                     @error('gr')
                                         <div id="gr" class="text-invalid">
                                             {{ $message }}

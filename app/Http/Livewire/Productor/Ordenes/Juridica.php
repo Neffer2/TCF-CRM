@@ -46,14 +46,18 @@ class Juridica extends Component
     // Inicializa items si hay una orden de compra existente
     public function mount (){
         if ($this->orden_compra){
-            $this->getItems();
+            if (method_exists($this, 'getItems')) {
+                $this->getItems();
+            }
 
             if ($this->orden_compra->estado_id == 2) {
                 $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
             }
 
-            if($this->orden_compra->estado_id == 5){
-                $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
+            if(empty($this->orden_compra->gr)){
+                $this->gr = $this->siguienteCodigoGR();
+            } else {
+                $this->gr = $this->orden_compra->gr;
             }
         }
     }
@@ -378,6 +382,7 @@ class Juridica extends Component
         } elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
+                'gr'                     => 'required|string',
                 'observaciones_remision' => 'nullable|string|max:1000'
             ]);
             
@@ -400,29 +405,30 @@ class Juridica extends Component
 
                 $pdfOutput = $dompdf->output();
 
-                $nombreArchivo = 'good_receive_' . ($this->orden_compra_>gr) . '_' . time() . '.pdf';
+                $nombreArchivo = 'good_receive_' . ($this->orden_compra->gr) . '_' . time() . '.pdf';
                 $rutaAlmacenamiento = 'public/ordenes_gr/' . $nombreArchivo;
 
                 Storage::put($rutaAlmacenamiento, $pdfOutput);
 
-                $this->conLockDB('gr_consecutivo', 10, function () use ($rutaAlmacenamiento){
-                    DB::transaction(function () use ($rutaAlmacenamiento) {
+                $this->conLockDB('gr_consecutivo', 10, function () use ($estado) 
+                {
+                    DB::transaction(function () use ($estado) {
                         $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
-                        if(!empty($orden->gr)){
-                            throw new \RuntimeException('Este good Receive ya fue generado. ');
+                        if (empty($orden->gr)) {
+                            $orden->gr = $this->gr ?: $this->siguienteCodigoGR();
                         }
 
-                        $orden->archivo_gr = $rutaAlmacenamiento;
                         $orden->observacion_remision = $this->observaciones_remision;
-                        $orden->gr = $this->siguienteCodigoGR();
+                        $orden->estado_id = $estado;
                         $orden->save();
 
                         $this->orden_compra = $orden;
                     });
                 });
             } catch(\Throwable $e){
-                $this->addError('customError', $e->getMessage());
+                dd($e);
+                //$this->addError('customError', $e->getMessage());
                 return;
             }
             
@@ -444,6 +450,16 @@ class Juridica extends Component
 
         return redirect()->route('ordenes-compra')->with('success', $messaje);
 
+    }
+
+    public function cargarGRParaAprobar($id){
+        $this->orden_compra = OrdenCompra::find($id);
+        $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
+    }    
+
+    public function selecionarGR($id){
+        $this->orden_compra = OrdenCompra::find($id);
+        $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
     }
 
     public function cargarOrdenParaAprobar($id)
@@ -484,14 +500,11 @@ class Juridica extends Component
 
         $ultimo = 0;
 
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/,', $ultimaOrden->gr, $m)) {
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->gr, $m)) {
             $ultimo = (int) $m[1];
-        } else {
-            // Si quieres partir de un número base como el ejemplo (17498)
-            $ultimo = 17498; 
         }
 
-        return 'Nro. ' . str_pad($ultimo + 1, 8, '0', STR_PAD_LEFT);
+        return str_pad($ultimo + 1, '0', STR_PAD_LEFT);
     }
 
     protected function siguienteCodigoOC(): string
