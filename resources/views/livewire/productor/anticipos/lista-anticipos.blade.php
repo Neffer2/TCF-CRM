@@ -164,13 +164,13 @@
 
                             @if($selectedAnticipo->estado_id == 8)
                                 <button 
-                                    wire:click="exportarAnticipoPdf({{ $anticipo->id }})" 
+                                    wire:click="exportarAnticipoPdf({{ $selectedAnticipo->id }})" 
                                     wire:loading.attr="disabled"
                                     class="btn btn-primary">
-                                    <span wire:loading.remove wire:target="exportarAnticipoPdf({{ $anticipo->id }})">
+                                    <span wire:loading.remove wire:target="exportarAnticipoPdf({{ $selectedAnticipo->id }})">
                                         Descargar Anticipo / Orden
                                     </span>
-                                    <span wire:loading wire:target="exportarAnticipoPdf({{ $anticipo->id }})">
+                                    <span wire:loading wire:target="exportarAnticipoPdf({{ $selectedAnticipo->id }})">
                                         Generando PDF...
                                     </span>
                                 </button>

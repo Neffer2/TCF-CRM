@@ -10,12 +10,13 @@ use App\Models\OcItem;
 use App\Models\NaturalInfo;
 use App\Traits\SMS;
 use App\Traits\Email;
-use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Stmt\Return_;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;  
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Dompdf\Dompdf;
 
 class Natural extends Component
 {
@@ -26,7 +27,7 @@ class Natural extends Component
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
-            $tipo_servicio, $tipo_contrato, $cod_oc, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
+            $tipo_servicio, $tipo_contrato, $cod_oc, $gr, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
 
     // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -55,10 +56,11 @@ class Natural extends Component
         $this->servicios = app('servicios');
         $this->bancos = app('bancos');
 
-        if ($this->orden_id){
-            $this->queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
+        if ($this->orden_id) {
+            $this->queriedOrden = OrdenCompra::find($this->orden_id);
             $this->getData();
-            $this->cod_oc = $this->queriedOrden->cod_oc ?: $this->siguienteCodigoOC(); // solo informativo
+            $this->cod_oc = $this->queriedOrden->cod_oc ?: $this->siguienteCodigoOC();
+            $this->gr     = $this->queriedOrden->gr ?: $this->siguienteCodigoGR();
         }
     }
 
@@ -221,6 +223,23 @@ class Natural extends Component
         unset($this->selected_item);
     }
 
+    public function enviarAprobacion()
+    {
+        $queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
+
+        if ($queriedOrden) {
+            $queriedOrden->estado_id = 8;
+            $queriedOrden->save();
+
+            // Alerta usando SweetAlert y pasando el ID de la orden
+            $this->dispatchBrowserEvent('swal', [
+                'title' => '¡Éxito!',
+                'text' => 'Envia a líder de producción para aprobación con el número de orden ' . $queriedOrden->id,
+                'icon' => 'success',
+            ]);
+        }
+    }
+
     // Elimina un item de la orden de compra
     public function deleteItem($itemId){
         unset($this->items[$itemId]);
@@ -339,7 +358,7 @@ class Natural extends Component
                 $this->oc_evidencias($this->queriedOrden->naturalInfo->tercero, $this->queriedOrden->id);
             }
         }else {
-            // Si la orden de compra ya tiene evidencias, actualiza el estado a 7:  Lider de produccion
+            // Si la orden de compra ya tiene evidencias, actualiza el estado a 8:  Lider de produccion
             $this->queriedOrden->update([
                 'estado_id' => 8,
                 'fecha_envio_produccion' => now()
@@ -482,45 +501,45 @@ class Natural extends Component
     public function validateEvidencia($estado)
     {
         if ($estado == 5) {
-            // cod_oc ya no se valida: nunca viene del navegador
-            $this->validate([
-                'oc_helisa' => 'required|file|mimes:pdf|max:2048'
-            ]);
-
-            $archivo = $this->oc_helisa->store('public/ordenes_naturales');
+            $archivo = null;
 
             try {
-                $this->conLockDB('oc_consecutivo', 10, function () use ($archivo) {
-                    DB::transaction(function () use ($archivo) {
+                $this->conLockDB('gr_consecutivo', 10, function () use (&$archivo) {
+                    DB::transaction(function () use (&$archivo) {
                         $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
 
-                        // Si ya tenía código (ciclo de rechazo y reenvío), se conserva
-                        if (empty($orden->cod_oc)) {
-                            $orden->cod_oc = $this->siguienteCodigoOC();
+                        // Si ya tenía GR (ciclo de rechazo y reenvío), se conserva
+                        if (empty($orden->gr)) {
+                            $orden->gr = $this->siguienteCodigoGR();
                         }
 
-                        $orden->archivo_orden_helisa = $archivo;
+                        // El PDF necesita el GR ya asignado
+                        $archivo = $this->generarPdfCuentaCobro($orden);
+
+                        $orden->archivo_cuenta_cobro = $archivo;
                         $orden->fecha_aprobacion     = now();
                         $orden->estado_id            = 5;
                         $orden->save();
 
                         $this->queriedOrden = $orden;
-                        $this->cod_oc       = $orden->cod_oc;
+                        $this->gr       = $orden->gr;
                     });
                 });
             } catch (\RuntimeException $e) {
-                Storage::delete($archivo);
-                $this->addError('cod_oc', $e->getMessage());
+                if ($archivo) Storage::disk('public')->delete($archivo);
+                $this->addError('gr', $e->getMessage());
                 return;
             } catch (\Throwable $e) {
-                Storage::delete($archivo);
+                if ($archivo) Storage::disk('public')->delete($archivo);
                 report($e);
-                $this->addError('cod_oc', 'No se pudo guardar la orden. Intenta de nuevo.');
+                //$this->addError('gr', 'No se pudo generar la cuenta de cobro. Intenta de nuevo.');
+                dd($e);
                 return;
             }
 
-            // El correo sale solo cuando todo quedó guardado
             $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+
+            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa con código ' . $this->gr . '.');
 
         } elseif ($estado == 7) {
             $this->validate([
@@ -706,6 +725,18 @@ class Natural extends Component
             DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
         }
     }
+    protected function siguienteCodigoGR(): string
+    {
+        $ultimo = (int) OrdenCompra::useWritePdo()
+            ->whereNotNull('gr')
+            ->whereRaw("TRIM(gr) REGEXP '^GR[ ]?[0-9]+$'")
+            ->selectRaw("MAX(CAST(REPLACE(REPLACE(TRIM(gr), 'GR', ''), ' ', '') AS UNSIGNED)) AS n")
+            ->value('n');
+
+        $ultimo = max($ultimo, 17498); // base inicial
+
+        return 'GR ' . str_pad($ultimo + 1, 5, '0', STR_PAD_LEFT);
+    }
 
     protected function siguienteCodigoOC(): string
     {
@@ -723,5 +754,40 @@ class Natural extends Component
         }
 
         return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
+    }
+
+    protected function generarPdfCuentaCobro(OrdenCompra $orden): string
+    {
+        $orden->load([
+            'naturalInfo.tercero',
+            'ordenItems.itemPresupuesto.presto',
+        ]);
+
+        $items   = $orden->ordenItems;
+        $tercero = $orden->naturalInfo->tercero;
+        $total   = $items->sum('vtotal_oc');
+        $fecha   = now()->locale('es')->translatedFormat('d \d\e F \d\e Y');
+
+        $html = View::make('exports.cuenta-cobro', [
+            'oc'       => $orden,
+            'orden'    => $orden,
+            'items'    => $items,
+            'tercero'  => $tercero,
+            'total'    => $total,
+            'fecha'    => $fecha,
+            'grNumero' => $orden->gr,
+            'grFecha'  => now(),
+            'preview'  => false,
+        ])->render();
+
+        $dompdf = new Dompdf(['isRemoteEnabled' => true]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $ruta = 'ordenes_naturales/cuenta_cobro_' . Str::slug($orden->gr) . '.pdf';
+        Storage::disk('public')->put($ruta, $dompdf->output());
+
+        return $ruta;
     }
 }

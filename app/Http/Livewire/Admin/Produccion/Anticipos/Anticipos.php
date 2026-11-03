@@ -57,22 +57,30 @@ class Anticipos extends Component
             return;
         }
 
-        $valor_anticipo = $this->selectedAnticipo->total_anticipo;
+        $anticipo = $this->selectedAnticipo;
+        $valor_anticipo = $anticipo->total_anticipo;
         $val_controller = 10000000;
 
-        if ($valor_anticipo <= $val_controller) {
-            $this->selectedAnticipo->update([
-                'estado_id' => 8
-            ]);
-            session()->flash('message', 'Anticipo #' . $this->selectedAnticipo->id . ' aprobado correctamente.');
+        // Caso 1: ya está en espera de gerencia (estado 5) -> gerencia aprueba -> estado 8
+        if ($anticipo->estado_id == 5) {
+            $anticipo->update(['estado_id' => 8]);
+            session()->flash('message', 'Anticipo #' . $anticipo->id . ' aprobado por gerencia correctamente.');
             $this->cerrarModal();
-        } else {
-            $this->selectedAnticipo->update([
-                'estado_id' => 5
-            ]);
-            session()->flash('message', 'Anticipo #' . $this->selectedAnticipo->id . ' aprobado y enviado a gerencia.');
-            $this->cerrarModal();
+            return;
         }
+
+        // Caso 2: aprobación inicial (controller)
+        if ($valor_anticipo <= $val_controller) {
+            // Dentro del límite del controller -> aprobado directo
+            $anticipo->update(['estado_id' => 8]);
+            session()->flash('message', 'Anticipo #' . $anticipo->id . ' aprobado correctamente.');
+        } else {
+            // Supera el límite -> pasa a gerencia
+            $anticipo->update(['estado_id' => 5]);
+            session()->flash('message', 'Anticipo #' . $anticipo->id . ' aprobado y enviado a gerencia.');
+        }
+
+        $this->cerrarModal();
     }
 
     public function rechazarAnticipo()
@@ -104,7 +112,7 @@ class Anticipos extends Component
                 'estado'
             ])
             ->whereHas('ordenCompra', function ($q) {
-                $q->whereIn('tipo_oc', [1, 2]);
+                $q->whereIn('tipo_oc', [1, 2, 4]);
             })
             // Filtro condicional según el grupo de ID del usuario autenticado
             ->where(function ($query) use ($user, $idsController, $idsLideresComerciales, $idsGerencia) {

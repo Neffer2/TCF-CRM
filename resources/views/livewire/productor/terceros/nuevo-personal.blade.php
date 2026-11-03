@@ -462,45 +462,71 @@
                             </div>
                         @endif
                         @guest
-                            <div class="col-md-12 mt-3">
-                                <div wire:loading>
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
+                            @if (!$mostrarContrato)
+                                <!-- PASO 1: Botón para confirmar información y mostrar el contrato a leer -->
+                                <div class="col-md-12 mt-3">
+                                    <button type="button" class="btn bg-gradient-primary" wire:click="confirmarInformacion" wire:loading.attr="disabled">
+                                        Confirmar información
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
-                                    Confirmar informaci&oacute;n
-                                </button>
-                                @if ($contrato)
-                                    <div class="d-none d-md-block" style="width:100%;">
-                                        <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
+                            @else
+                                <!-- PASO 2: Visualización del Contrato a leer -->
+                                <div class="col-md-12 mt-3">
+                                    <h5>Vista previa del Contrato (Léalo antes de firmar)</h5>
+                                    <div class="d-none d-md-block w-100 mb-3">
+                                        <embed src="data:application/pdf;base64,{{ $contratoBase64 }}" width="100%" height="800" type="application/pdf">
                                     </div>
 
                                     <div class="d-block d-md-none text-center w-100">
-                                        <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
+                                        <a href="data:application/pdf;base64,{{ $contratoBase64 }}" target="_blank" class="btn btn-primary w-100 my-2">
                                             Ver contrato (abrir PDF)
                                         </a>
                                     </div>
+                                </div>
 
-                                    <div class="col-md-12 mt-3">
-                                        <div class="form-group">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
-                                                <label class="custom-control-label" for="customCheck1">
-                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
-                                                </label>
-                                                @error('terminos')
-                                                    <div id="terminos" class="text-invalid">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+                                <!-- Canvas de Firma del Contratista -->
+                                <div class="col-md-12 mt-4" wire:ignore>
+                                    <div class="card p-3">
+                                        <label class="form-label">Firma del contratista <span class="text-danger">*</span></label>
+                                        <div>
+                                            <canvas id="firma-canvas" width="600" height="200"
+                                                    style="border:1px solid #ccc; border-radius:6px; width:100%; height:200px; touch-action:none; background:#fff; cursor: crosshair;"></canvas>
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary mt-1" id="firma-borrar">Borrar firma</button>
+                                            </div>
+                                        </div>
+                                        @error('firma') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Términos y Condiciones -->
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-group">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="fcustomCheck1" wire:model.lazy="terminos">
+                                            <label class="custom-control-label" for="fcustomCheck1">
+                                                Al marcar esta casilla estás aceptando la política de tratamiento de datos y el contrato de prestación de servicios <span class="text-danger">*</span>
+                                            </label>
+                                            @error('terminos')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PASO 3: Botón de Guardar cambios condicionado a que acepte los términos -->
+                                @if ($terminos)
+                                    <div class="modal-footer">
+                                        <div class="row w-100">
+                                            <div class="col-md-12 @guest ps-0 @endguest">
+                                                <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="generarContrato" wire:loading.attr="disabled">
+                                                    Guardar cambios y Firmar Contrato
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 @endif
-                            </div>
+                            @endif
                         @endguest
                     </div>
                 </div>
@@ -531,17 +557,6 @@
                         </div>
                     @endif
                 @endauth
-                @guest
-                    @if ($terminos)
-                        <div class="modal-footer">
-                            <div class="row w-100">
-                                <div class="col-md-12 @guest ps-0 @endguest">
-                                    <button id="enviar-btn" type="button" class="btn bg-gradient-primary" wire:click="actualizarTercero" wire:loading.attr="disabled">Guardar cambios</button>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                @endguest
             </div>
         @elseif ($orden && $orden->estado_id == 7)
             <div class="modal-body pt-1">
@@ -550,7 +565,7 @@
                         <h3 class="m-0">Adjunta tus evidencias</h3>
                         <p class="text-sm m-0">
                             <b>
-                                Recuerda que debes adjuntar las evidencias de cada uno de los servicios que has realizado. <br>
+                                Recuerda que debes adjuntar las evidencias de cada uno de los servicios que has realizado.<br>
                                 Debes adjuntar ({{ $orden->ordenItems->sum('cant_oc') }}) evidencias en total.
                             </b>
                         </p>
@@ -607,22 +622,6 @@
                 </div>
 
                 <div class="row mt-5">
-                    <!-- Campo: Cuenta de Cobro -->
-                    <div class="col-md-12 mb-3">
-                        <div class="form-group">
-                            <label for="cuentaCobro">Cuenta de cobro: <span class="text-danger">*</span></label>
-                            <input type="file" id="cuentaCobro" 
-                                accept=".pdf,image/*"
-                                class="form-control @error('cuentaCobro') is-invalid @elseif($cuentaCobro) is-valid @enderror"
-                                wire:model.change="cuentaCobro">
-                            @error('cuentaCobro')
-                                <div class="text-invalid text-danger text-xs mt-1">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-
                     <!-- Campos existentes -->
                     <div class="col-md-4">
                         <div class="form-group">
@@ -662,19 +661,40 @@
                     </div>
 
                     @if ($evidencias->count() == $orden->ordenItems->sum('cant_oc'))
-                        <div class="col-md-2">
-                            <button type="button" class="btn bg-gradient-success" wire:click="saveEvidencia" wire:loading.attr="disabled">
-                                Guardar evidencias
-                            </button>
+                    <div class="col-md-12 mt-3">
+                        <h5>Vista previa de la Cuenta de Cobro</h5>
+                        <div class="d-none d-md-block w-100 mb-3">
+                            <embed src="data:application/pdf;base64,{{ $pdfCuentaCobroBase64 }}" width="100%" height="800" type="application/pdf">
                         </div>
-                    @else
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="newEvidencia" wire:loading.attr="disabled">
-                                    Agregar evidencia
+                    </div>
+
+                    <!-- Sección de Firma del Tercero -->
+                    <div class="col-md-12 mt-4" wire:ignore>
+                        <div class="card p-3">
+                            <h5>Firma de la Cuenta de Cobro</h5>
+                            <p class="text-muted small">Firme en el recuadro para aprobar el documento y finalizar el proceso.</p>
+                            
+                            <div style="border: 2px dashed #ccc; width: 100%; height: 200px; position: relative;">
+                                <canvas id="firma-canvas" width="600" height="200" style="width: 100%; height: 100%; touch-action: none; cursor: crosshair;"></canvas>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-secondary btn-sm" id="firma-borrar">Limpiar Firma</button>
+                                <!-- Único botón que guarda evidencias, firma, genera el PDF y cierra el proceso -->
+                                <button type="button" class="btn bg-gradient-success" wire:click="guardarCuentaCobroConFirma" wire:loading.attr="disabled">
+                                    Guardar Evidencias y Firmar Cuenta de Cobro
                                 </button>
                             </div>
                         </div>
+                    </div>
+                    @else
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <button type="button" class="btn bg-gradient-primary" wire:click="newEvidencia" wire:loading.attr="disabled">
+                                Agregar evidencia
+                            </button>
+                        </div>
+                    </div>
                     @endif
                     <div class="col-md-12 mt-3">
                         <div wire:loading>
@@ -890,42 +910,6 @@
                                 @enderror
                             </div>
                         </div>
-                        @guest
-                            {{-- <div class="col-md-12">
-                                <button type="button" class="btn bg-gradient-primary" wire:click="generarContrato">
-                                    Confirmar informaci&oacute;n
-                                </button>
-                                @if ($contrato)
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-none d-md-block" style="width:100%;">
-                                            <embed src="{{ $contrato }}" width="100%" height="900" type="application/pdf">
-                                        </div>
-
-                                        <div class="d-block text-center w-100">
-                                            <a href="{{ $contrato }}" target="_blank" class="btn btn-primary w-100 my-2">
-                                                Ver contrato (abrir PDF)
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12 mt-3">
-                                        <div class="form-group">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="fcustomCheck1" wire:model.lazy="terminos">
-                                                <label class="custom-control-label" for="customCheck1">
-                                                    Al marcar esta casilla estas aceptando la <a>pol&iacute;tica de tratamiento de datos y el contrato de prestaci&oacute;n de servicios <span class="text-danger">*</span>
-                                                </label>
-                                                @error('terminos')
-                                                    <div id="terminos" class="text-invalid">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div> --}}
-                        @endguest
                     </div>
                 </div>
                 @auth
@@ -968,5 +952,69 @@
                 @endguest
             </div>
         @endif
+        <script>
+        function initFirmaCanvas() {
+            const canvas = document.getElementById('firma-canvas');
+            if (!canvas || canvas.dataset.initialized) return;
+            
+            // Marcamos el canvas como inicializado para no duplicar eventos
+            canvas.dataset.initialized = 'true';
+
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            const pos = e => {
+                const r = canvas.getBoundingClientRect();
+                return {
+                    x: (e.clientX - r.left) * (canvas.width / r.width),
+                    y: (e.clientY - r.top) * (canvas.height / r.height)
+                };
+            };
+
+            canvas.addEventListener('pointerdown', e => {
+                drawing = true;
+                canvas.setPointerCapture(e.pointerId);
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            });
+
+            canvas.addEventListener('pointermove', e => {
+                if (!drawing) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+            });
+
+            const fin = () => {
+                if (!drawing) return;
+                drawing = false;
+                @this.set('firma', canvas.toDataURL('image/png'), true);
+            };
+
+            canvas.addEventListener('pointerup', fin);
+            canvas.addEventListener('pointerleave', fin);
+
+            const btnLimpiar = document.getElementById('firma-borrar');
+            if (btnLimpiar) {
+                btnLimpiar.addEventListener('click', () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    @this.set('firma', null, true);
+                });
+            }
+        }
+
+        const observer = new MutationObserver(() => {
+            initFirmaCanvas();
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        document.addEventListener('DOMContentLoaded', initFirmaCanvas);
+        </script>
     </div>
 @endif

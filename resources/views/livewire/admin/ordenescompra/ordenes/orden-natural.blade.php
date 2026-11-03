@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
+                
                 <!-- Encabezado -->
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <div>
@@ -134,7 +135,87 @@
                     </div>
 
                     <hr class="horizontal dark">
+                    
+                    @if ($queriedOrden->evidencias && $queriedOrden->evidencias->isNotEmpty())
+                        <h6 class="mb-3 text-uppercase text-body text-xs font-weight-bolder">Evidencias Adjuntas por el Tercero</h6>
+                        <div class="table-responsive p-0 mb-4">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($queriedOrden->evidencias as $evidencia)
+                                        @php
+                                            $fotoUrl = asset(str_replace("public", "storage", $evidencia->foto_evidencia));
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                <span class="text-xs font-weight-bold text-secondary mb-0">
+                                                    {{ $evidencia->fecha_evidencia }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ $fotoUrl }}" target="_blank">
+                                                    <img src="{{ $fotoUrl }}" class="border-radius-lg shadow-sm" height="50" alt="Evidencia">
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="text-xs text-secondary mb-0">
+                                                    {{ $evidencia->observacion_evidencia ?? 'Sin observaciones' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <h5 class="mb-2">Vista previa de la cuenta de cobro</h5>
+                            {{-- wire:ignore evita que Livewire recargue el PDF en cada render --}}
+                            <div class="d-none d-md-block w-100" wire:ignore>
+                                <embed src="{{ asset('storage/' . $queriedOrden->archivo_cuenta_cobro) }}" width="100%" height="800" type="application/pdf">
+                            </div>
+                        </div>
+                    @else
+                        <div class="col-md-12 mb-4">
+                            <div class="d-none d-md-block w-100">
+                                <embed src="{{ route('orden-compra.pdf', $queriedOrden) }}" width="100%" height="800" type="application/pdf">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="text-muted">Este archivo se guarda de manera automática. Si no lo puedes visualizar, descárgalo aquí:</p>
+                                <a href="{{ route('orden-compra.pdf', $queriedOrden) }}" class="btn btn-primary" download>
+                                    <i class="fas fa-download"></i> Descargar Orden de Compra
+                                </a>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cod_oc">Código de orden de compra a generar:</label>
+                                    <input type="text" id="cod_oc" class="form-control" wire:model="cod_oc" readonly>
+                                    <small class="text-muted">Código provisional. El definitivo se asigna al aprobar.</small>
+                                    @error('cod_oc')
+                                        <div class="text-invalid text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="alert alert-light border w-100 mb-0 py-2">
+                                    <small><i class="ni ni-bell-55 text-warning"></i> Al hacer clic en <strong>Aprobar</strong>, el sistema generará y almacenará el PDF oficial de forma automática.</small>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <hr class="horizontal dark">
+
+                    <!-- Sección de Aprobación o Rechazo -->
                     @if ($puedeAprobar)
                         <div class="row mt-4">
                             <div class="col-md-6">

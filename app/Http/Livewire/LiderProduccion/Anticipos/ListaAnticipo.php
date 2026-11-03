@@ -83,7 +83,7 @@ class ListaAnticipo extends Component
             'estado'
         ])
         ->whereHas('ordenCompra', function ($q) {
-            $q->whereIn('tipo_oc', [1, 2]);
+            $q->whereIn('tipo_oc', [1, 2, 4]);
         })
         ->whereHas('estado', function ($q) {
             $q->whereIn('id', [2]);

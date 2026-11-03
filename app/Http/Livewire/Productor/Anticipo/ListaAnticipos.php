@@ -54,6 +54,10 @@ class ListaAnticipos extends Component
                 ->orWhere(function ($sub) {
                     $sub->where('tipo_oc', 2)
                         ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', auth()->id()));
+                })
+                ->orWhere(function ($sub) {
+                    $sub->where('tipo_oc', 4)
+                        ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', auth()->id()));
                 });
             })
             ->when($this->search, function ($query) {

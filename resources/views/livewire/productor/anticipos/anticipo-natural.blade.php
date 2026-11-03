@@ -88,6 +88,17 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
+                                <label for="tipo_oc_anticipo">Tipo de anticipo:</label>
+                                <select id="tipo_oc_anticipo" class="form-control" wire:model="tipo_oc">
+                                    @foreach ($tipos as $tipo)
+                                        <option value="{{ $tipo->id }}">{{ $tipo->description }}</option>
+                                    @endforeach
+                                </select>
+                                @error('tipo_oc') <div class="text-invalid">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 <label>Valor Orden</label>
                                 <input class="form-control" disabled value="{{ $orden ? number_format($totalOrden) : '' }}">
                             </div>

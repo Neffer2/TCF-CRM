@@ -15,7 +15,8 @@ class OrdenCompra extends Model
         'presupuesto_id',
         'proveedor_id',
         'fecha_aprobacion',
-        'fecha_envio_produccion'
+        'fecha_envio_produccion',
+        'gr'
     ];
 
     public function ordenItems(){

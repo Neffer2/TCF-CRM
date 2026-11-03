@@ -30,9 +30,12 @@ class NuevoPersonal extends Component
     public $nombre, $apellido, $cedula, $correo, $telefono, $ciudad,
     $banco, $rut, $cert_bancaria, $terminos, $estado = 1, $terceroXlsx,
     $copia_cedula, $num_rut, $servicio, $art383, $check_art383,
-    $planilla_aportes, $tipo_cuenta, $num_cuenta, $archivo_cuenta_cobro, $queriedOrden;
+    $planilla_aportes, $tipo_cuenta, $num_cuenta, $queriedOrden;
+    public $mostrarContrato = false;
 
-    public $cuentaCobro;
+    public $firma;
+    public $contratoBase64;
+    public $pdfCuentaCobroBase64;
 
     // Variables auxiliares
     public $estados, $ciudades, $deleteConfirm = false, $contrato, $servicios = [], $bancos = [], $min_rut = 198000;
@@ -64,6 +67,9 @@ class NuevoPersonal extends Component
         $this->evidencias = collect();
 
         $this->estados = EstadoTercero::all();
+
+        $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
+        $this->generarPrevisualizacionContrato();
 
         if ($this->tercero){$this->fillForm();}
     }
@@ -130,68 +136,20 @@ class NuevoPersonal extends Component
             'servicio',
             'rut',
             'cert_bancaria',
-            'archivo_cuenta_cobro', // Limpiar la variable Livewire
         ]);
 
         return redirect()->back();
     }
 
     // Actualiza un tercero existente
-    public function actualizarTercero(){
-        // Si el valor supera el mínimo, exige número de RUT
-        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
-            $this->validate([
-                'num_rut' => 'required|numeric'
-            ]);
-        }
-
-        $this->validate([
-            'nombre' => 'required|max:255',
-            'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric',
-            'correo' => 'required|email',
-            'telefono' => 'required|numeric',
-            'ciudad' => 'required|string',
-            'servicio' => 'required|string',
-            'estado' => 'required|numeric|max:1'
-        ]);
-
-        // Si no está autenticado, exige más campos
-        if (!Auth::check()){
-            $this->validate([
-                'banco' => 'required|string|max:255',
-                'tipo_cuenta' => 'required|string|max:255',
-                'num_cuenta' => 'required|string|max:255',
-                'contrato' => 'required|string',
-                'terminos' => 'required|accepted'
-            ]);
-        }
-
-        $tercero = $this->tercero;
-        $tercero->nombre = $this->nombre;
-        $tercero->apellido = $this->apellido;
-        $tercero->cedula = trim($this->cedula);
-        $tercero->correo = trim($this->correo);
-        $tercero->telefono = trim($this->telefono);
-        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){ $tercero->num_rut = trim($this->num_rut); }
-        $tercero->ciudad = $this->ciudad;
-        $tercero->servicio = $this->servicio;
-        $tercero->estado = trim($this->estado);
-        $tercero->tipo_cuenta = $this->tipo_cuenta;
-        $tercero->num_cuenta = $this->num_cuenta;
-
-        // Banco
-        if($this->banco){
-            $this->validate(['banco' => 'string|max:255']);
-            $tercero->banco = $this->banco;
-        }
-
+    private function guardarArchivosTemporales($tercero)
+    {
         // Copia de cédula
         if (!$tercero->copia_cedula && !Auth::check()){
-            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png,jpg,bmp,png|max:10000']);
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }elseif($this->copia_cedula){
-            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png,jpg,bmp,png|max:10000']);
+            $this->validate(['copia_cedula' => 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
             $tercero->copia_cedula = $this->copia_cedula->store('public/copia_cedula');
         }
 
@@ -207,7 +165,7 @@ class NuevoPersonal extends Component
         // Planilla de aportes
         if (!$tercero->planilla_aportes && !Auth::check()){
             $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
-            if ($this->planilla_aportes){$tercero->planilla_aportes = $this->planilla_aportes->store('public/planillas_aportes');}
+            if ($this->planilla_aportes){ $tercero->planilla_aportes = $this->planilla_aportes->store('public/planillas_aportes'); }
         }
 
         // RUT si aplica
@@ -220,69 +178,121 @@ class NuevoPersonal extends Component
                 $tercero->rut = $this->rut->store('public/ruts');
             }
         }
-
-        // Si no está autenticado, actualiza contrato y términos en la orden
-        if (!Auth::check()){
-            $this->orden->naturalInfo->contrato = $this->contrato;
-            $this->orden->naturalInfo->terminos = $this->terminos;
-            $this->orden->naturalInfo->update();
-
-            // La orden continúa editable, pero con contrato adjunto
-            $this->orden->estado_id = 3;
-            $this->orden->update();
-
-            // Mail notificacion
-            $this->ocNaturalFirmada($this->orden);
-        }
-
-        $tercero->update();
-        $this->emit('terceroRegistrado');
-
-        // Limpia los campos del formulario
-        $this->reset_fields([
-            'nombre',
-            'apellido',
-            'cedula',
-            'correo',
-            'telefono',
-            'ciudad',
-            'estado',
-            'banco',
-            'rut',
-            'num_rut',
-            'cert_bancaria',
-            'terminos'
-        ]);
-
-        if (!Auth::check()){
-            return redirect()->route('consulta-terceros');
-        }
-
-        return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
     }
 
     // Genera el contrato en PDF y lo almacena
-    public function generarContrato(){
-        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+    public function confirmarInformacion()
+    {
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut) {
             $this->validate([
                 'num_rut' => 'required|numeric'
             ]);
         }
 
         $this->validate([
-            'nombre' => 'required|max:255',
-            'apellido' => 'required|max:255',
-            'cedula' => 'required|numeric',
-            'correo' => 'required|email',
-            'telefono' => 'required|numeric',
-            'ciudad' => 'required|string',
-            'estado' => 'required|numeric|max:1',
-            'banco' => 'required|string|max:255',
-            'num_cuenta' => 'required|string|max:255',
-            'tipo_cuenta' => 'required|string|max:255'
+            'nombre'      => 'required|max:255',
+            'apellido'    => 'required|max:255',
+            'cedula'      => 'required|numeric',
+            'correo'      => 'required|email',
+            'telefono'    => 'required|numeric',
+            'ciudad'      => 'required|string',
+            'estado'      => 'required|numeric|max:1',
+            'banco'       => 'required|string|max:255',
+            'num_cuenta'  => 'required|string|max:255',
+            'tipo_cuenta' => 'required|string|max:255',
         ]);
 
-        // Validaciones de archivos requeridos
+        if (!Auth::check()){
+            $this->validate([
+                'banco'       => 'required|string|max:255',
+                'tipo_cuenta' => 'required|string|max:255',
+                'num_cuenta'  => 'required|string|max:255',
+            ]);
+        }
+
+        $tercero = $this->tercero;
+        $tercero->nombre      = $this->nombre;
+        $tercero->apellido    = $this->apellido;
+        $tercero->cedula      = trim($this->cedula);
+        $tercero->correo      = trim($this->correo);
+        $tercero->telefono    = trim($this->telefono);
+        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){ 
+            $tercero->num_rut = trim($this->num_rut); 
+        }
+        $tercero->ciudad      = $this->ciudad;
+        $tercero->servicio    = $this->servicio;
+        $tercero->estado      = trim($this->estado);
+        $tercero->tipo_cuenta = $this->tipo_cuenta;
+        $tercero->num_cuenta  = $this->num_cuenta;
+
+        if($this->banco){
+            $this->validate(['banco' => 'string|max:255']);
+            $tercero->banco = $this->banco;
+        }
+
+        $this->guardarArchivosTemporales($tercero);
+        $tercero->update();
+        
+        $contratoInfo = [
+            'items'    => $this->orden->ordenItems,
+            'tercero'  => $this->tercero,
+            'ciudad'   => $this->ciudad,
+            'telefono' => $this->telefono,
+            'correo'   => $this->correo,
+            'dia'      => Carbon::now()->format('d'),
+            'dia_str'  => $this->getNumberString(Carbon::now()->format('d')),
+            'mes'      => Carbon::now()->translatedFormat('F'),
+            'ano'      => Carbon::now()->format('Y'),
+            'num_rut'  => $this->num_rut,
+            'firma'    => null, // En blanco para la lectura
+        ];
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Guardamos el Base64 y activamos la vista del contrato
+        $this->contratoBase64 = base64_encode($dompdf->output());
+        $this->mostrarContrato = true;
+    }
+    public function generarContrato()
+    {
+        // 1. Si el valor supera el mínimo, exige número de RUT
+        if ($this->orden && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut){
+            $this->validate([
+                'num_rut' => 'required|numeric'
+            ]);
+        }
+
+        $this->validate([
+            'nombre'      => 'required|max:255',
+            'apellido'    => 'required|max:255',
+            'cedula'      => 'required|numeric',
+            'correo'      => 'required|email',
+            'telefono'    => 'required|numeric',
+            'ciudad'      => 'required|string',
+            'estado'      => 'required|numeric|max:1',
+            'banco'       => 'required|string|max:255',
+            'num_cuenta'  => 'required|string|max:255',
+            'tipo_cuenta' => 'required|string|max:255',
+            'terminos'    => 'required|accepted' // Validar aceptación de términos
+        ]);
+
+        // 2. Validar la firma digital
+        $this->validate(
+            ['firma' => 'required|string|starts_with:data:image/png;base64,|max:400000'],
+            ['firma.required' => 'Debes firmar el contrato.', 'firma.starts_with' => 'La firma no es válida.']
+        );
+
+        $firmaBin = base64_decode(substr($this->firma, strlen('data:image/png;base64,')), true);
+        if ($firmaBin === false || @getimagesizefromstring($firmaBin) === false) {
+            $this->addError('firma', 'La firma no es una imagen válida.');
+            return;
+        }
+
+        // 3. Validaciones de archivos requeridos
         if ((!$this->planilla_aportes && !$this->tercero->planilla_aportes) && !Auth::check()){
             $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
@@ -299,33 +309,176 @@ class NuevoPersonal extends Component
             $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
         }
 
-        // Información para el contrato
+        // 4. Información completa para el contrato (incluyendo la firma y sus metadatos)
         $contratoInfo = [
-            'items' => $this->orden->ordenItems,
-            'tercero' => $this->tercero,
-            'ciudad' => $this->ciudad,
-            'telefono' => $this->telefono,
-            'correo' => $this->correo,
-            'dia' => Carbon::now()->format('d'),
-            'dia_str' => $this->getNumberString(Carbon::now()->format('d')),
-            'mes' => Carbon::now()->translatedFormat('F'),
-            'ano' => Carbon::now()->format('Y'),
-            'num_rut' => $this->num_rut
+            'items'       => $this->orden->ordenItems,
+            'tercero'     => $this->tercero,
+            'ciudad'      => $this->ciudad,
+            'telefono'    => $this->telefono,
+            'correo'      => $this->correo,
+            'dia'         => Carbon::now()->format('d'),
+            'dia_str'     => $this->getNumberString(Carbon::now()->format('d')),
+            'mes'         => Carbon::now()->translatedFormat('F'),
+            'ano'         => Carbon::now()->format('Y'),
+            'num_rut'     => $this->num_rut,
+            'firma'       => $this->firma,
+            'firma_fecha' => Carbon::now()->format('Y-m-d H:i:s'),
+            'firma_ip'    => request()->ip(),
+            'firma_hash'  => hash('sha256', $firmaBin),
         ];
 
-        // Genera el PDF y lo guarda en storage
+        // 5. Genera el PDF con Dompdf
         $dompdf = new Dompdf(array('enable_remote' => true));
         $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
         $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        // Guardar el PDF en el almacenamiento
+        // 6. Guardar el PDF en el almacenamiento físico
         $output = $dompdf->output();
-        $filePath = storage_path('app/public/contratos/contrato_' . time() . '.pdf');
+        $fileName = 'contrato_' . time() . '.pdf';
+        $filePath = storage_path('app/public/contratos/' . $fileName);
         file_put_contents($filePath, $output);
 
-        // Generar una URL pública para el archivo
-        $this->contrato = asset('storage/contratos/' . basename($filePath));
+        // 7. Generar la URL pública completa (Ej: http://.../storage/contratos/contrato_...pdf)
+        $urlPublica = asset('storage/contratos/' . $fileName);
+        $this->contrato = $urlPublica;
+
+        // 8. Actualizar datos en la base de datos si no está autenticado
+        if (!Auth::check()){
+            $this->orden->naturalInfo->contrato = $urlPublica; // Se guarda la URL completa en el campo contrato
+            $this->orden->naturalInfo->terminos = $this->terminos;
+            $this->orden->naturalInfo->update();
+
+            $this->orden->estado_id = 3;
+            $this->orden->update();
+
+            $this->ocNaturalFirmada($this->orden);
+        }
+
+        // Limpiar firma de la propiedad y del canvas
+        $this->firma = null;
+        $this->dispatchBrowserEvent('firma-limpiar'); // O $this->dispatch('firma-limpiar') en Livewire v3
+
+        session()->flash('success', 'Contrato firmado y guardado con éxito.');
+
+        if (!Auth::check()){
+            return redirect()->route('consulta-terceros');
+        }
+
+        return redirect()->route('personal')->with('success', 'Cambios guardados con éxito.');
+    }
+
+    public function generarPrevisualizacionContrato()
+{
+    $contratoInfo = [
+        'items'    => $this->orden->ordenItems,
+        'tercero'  => $this->tercero,
+        'ciudad'   => $this->ciudad,
+        'telefono' => $this->telefono,
+        'correo'   => $this->correo,
+        'dia'      => Carbon::now()->format('d'),
+        'dia_str'  => $this->getNumberString(Carbon::now()->format('d')),
+        'mes'      => Carbon::now()->translatedFormat('F'),
+        'ano'      => Carbon::now()->format('Y'),
+        'num_rut'  => $this->num_rut,
+        'firma'    => null, // Sin firma en la previsualización
+    ];
+
+    $dompdf = new Dompdf(['enable_remote' => true]);
+    $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    $this->contratoBase64 = base64_encode($dompdf->output());
+}
+
+/**
+ * 2. Valida la firma, los términos, genera el PDF firmado y lo almacena
+ */
+    public function firmarYGuardarContrato()
+    {
+        // Validaciones básicas de datos y RUT si aplica
+        if ($this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut) {
+            $this->validate(['num_rut' => 'required|numeric']);
+        }
+
+        $this->validate([
+            'nombre'      => 'required|max:255',
+            'apellido'    => 'required|max:255',
+            'cedula'      => 'required|numeric',
+            'correo'      => 'required|email',
+            'telefono'    => 'required|numeric',
+            'ciudad'      => 'required|string',
+            'estado'      => 'required|numeric|max:1',
+            'banco'       => 'required|string|max:255',
+            'num_cuenta'  => 'required|string|max:255',
+            'tipo_cuenta' => 'required|string|max:255',
+            'terminos'    => 'required|accepted', // Validación de términos y condiciones
+        ]);
+
+        // Validar la firma
+        $this->validate(
+            ['firma' => 'required|string|starts_with:data:image/png;base64,|max:400000'],
+            ['firma.required' => 'Debes firmar el contrato.', 'firma.starts_with' => 'La firma no es válida.']
+        );
+
+        $firmaBin = base64_decode(substr($this->firma, strlen('data:image/png;base64,')), true);
+        if ($firmaBin === false || @getimagesizefromstring($firmaBin) === false) {
+            $this->addError('firma', 'La firma no es una imagen válida.');
+            return;
+        }
+
+        // Validaciones de archivos requeridos
+        if ((!$this->planilla_aportes && !$this->tercero->planilla_aportes) && !Auth::check()) {
+            $this->validate(['planilla_aportes' => 'nullable|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        }
+        if ((!$this->copia_cedula && !$this->tercero->copia_cedula) && !Auth::check()) {
+            $this->validate(['copia_cedula' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        }
+        if ((!$this->cert_bancaria && !$this->tercero->cert_bancaria) && !Auth::check()) {
+            $this->validate(['cert_bancaria' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        }
+        if (((!$this->rut && !$this->tercero->rut) && !Auth::check()) && $this->orden->ordenItems->sum('vtotal_oc') > $this->min_rut) {
+            $this->validate(['rut' => 'required|file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000']);
+        }
+
+        // Información con la firma definitiva para el contrato
+        $contratoInfo = [
+            'items'       => $this->orden->ordenItems,
+            'tercero'     => $this->tercero,
+            'ciudad'      => $this->ciudad,
+            'telefono'    => $this->telefono,
+            'correo'      => $this->correo,
+            'dia'         => Carbon::now()->format('d'),
+            'dia_str'     => $this->getNumberString(Carbon::now()->format('d')),
+            'mes'         => Carbon::now()->translatedFormat('F'),
+            'ano'         => Carbon::now()->format('Y'),
+            'num_rut'     => $this->num_rut,
+            'firma'       => $this->firma,
+            'firma_fecha' => Carbon::now()->format('Y-m-d H:i:s'),
+            'firma_ip'    => request()->ip(),
+            'firma_hash'  => hash('sha256', $firmaBin),
+        ];
+
+        // Generar PDF definitivo con Dompdf
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $html = View::make('exports.contrato', ['contratoInfo' => $contratoInfo])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Guardar en storage/app/public/contratos/
+        $nombreArchivo = 'contrato_' . time() . '.pdf';
+        $rutaRelativa  = 'contratos/' . $nombreArchivo;
+        Storage::disk('public')->put($rutaRelativa, $dompdf->output());
+
+        // Guardar ruta en la orden o naturalInfo según corresponda en tu BD
+        // Ej: $this->orden->naturalInfo->contrato = $rutaRelativa; ...
+
+        session()->flash('success', 'Contrato firmado y guardado con éxito.');
+        return redirect()->route('consulta-terceros');
     }
 
     // Convierte un número a texto (para el contrato)
@@ -401,21 +554,6 @@ class NuevoPersonal extends Component
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
     }
 
-    public function updatedCuentaCobro()
-    {
-        $this->validate([
-            'cuentaCobro' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10000',
-        ]);
-
-        $path = $this->cuentaCobro->store('cuentas_cobro', 'public');
-
-        $this->orden->update([
-            'archivo_cuenta_cobro' => $path // nombre real de la columna en BD
-        ]);
-
-        session()->flash('message', 'Cuenta de cobro subida correctamente.');
-    }
-
     // Elimina una evidencia de la colección y borra el archivo
     public function deleteEvidencia($itemId){
         $filePath = $this->evidencias[$itemId]['foto'];
@@ -423,9 +561,47 @@ class NuevoPersonal extends Component
         unset($this->evidencias[$itemId]);
     }
 
-    // Guarda todas las evidencias en la base de datos
-    public function saveEvidencia()
+    private function generarPdfCuentaCobroBase64()
     {
+        // Asegurarnos de tener cargadas las relaciones necesarias
+        if ($this->orden) {
+            $this->orden->load([
+                'naturalInfo.tercero',
+                'ordenItems.itemPresupuesto.presto',
+            ]);
+        }
+
+        $items   = $this->orden->ordenItems;
+        $tercero = $this->orden->naturalInfo->tercero;
+        $total   = $items->sum('vtotal_oc');
+        $fecha   = now()->locale('es')->translatedFormat('d \d\e F \d\e Y');
+
+        // Renderizamos la vista limpia de exports.cuenta-cobro
+        $html = View::make('exports.cuenta-cobro', [
+            'orden'   => $this->orden,
+            'items'   => $items,
+            'tercero' => $tercero,
+            'total'   => $total,
+            'fecha'   => $fecha,
+        ])->render();
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return base64_encode($dompdf->output());
+    }
+
+    public function guardarCuentaCobroConFirma()
+    {
+        // 1. Validar que la firma no esté vacía
+        if (!$this->firma) {
+            session()->flash('error', 'Por favor, dibuje su firma antes de continuar.');
+            return;
+        }
+
+        // 2. Ejecutar la lógica de guardado de evidencias (lo que hacía saveEvidencia)
         DB::transaction(function () {
             foreach ($this->evidencias as $evidencia) {
                 $this->orden->evidencias()->create([
@@ -436,27 +612,56 @@ class NuevoPersonal extends Component
                 ]);
             }
 
-            if ($this->cuentaCobro) {
-                $this->validate([
-                    'cuentaCobro' => 'file|mimes:pdf,jpg,jpeg,png|max:10000'
-                ]);
-
-                $this->orden->archivo_cuenta_cobro = $this->cuentaCobro->store('cuentas_cobro', 'public');
-            }
-
             $this->orden->estado_id = 3;
             $this->orden->save();
         });
 
+        // Limpiar campos de evidencias
         $this->reset_fields([
             'fechaEvidencia',
             'fotoEvidencia',
-            'observacionEvidencia',
-            'archivo_cuenta_cobro'
+            'observacionEvidencia'
         ]);
 
+        // Enviar correo de notificación de evidencias
         $this->ocNaturalEvidenciasEnviadas($this->orden);
 
+        // 3. Generar el PDF con la firma y guardarlo en 'cuentas_cobro/'
+        $this->orden->load([
+            'naturalInfo.tercero',
+            'ordenItems.itemPresupuesto.presto',
+        ]);
+
+        $items   = $this->orden->ordenItems;
+        $tercero = $this->orden->naturalInfo->tercero;
+        $total   = $items->sum('vtotal_oc');
+        $fecha   = now()->locale('es')->translatedFormat('d \d\e F \d\e Y');
+
+        $html = View::make('exports.cuenta-cobro', [
+            'orden'       => $this->orden,
+            'items'       => $items,
+            'tercero'     => $tercero,
+            'total'       => $total,
+            'fecha'       => $fecha,
+            'firmaBase64' => $this->firma, 
+        ])->render();
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $nombreArchivo = 'cuenta_cobro_' . $this->orden->id . '_' . time() . '.pdf';
+        $rutaRelativa  = 'cuentas_cobro/' . $nombreArchivo;
+
+        Storage::disk('public')->put($rutaRelativa, $dompdf->output());
+
+        // Actualizar la ruta del archivo en el modelo
+        $this->orden->archivo_cuenta_cobro = $rutaRelativa;
+        $this->orden->save();
+
+        session()->flash('success', 'Cuenta de cobro firmada y evidencias guardadas con éxito.');
+        
         return redirect()->route('consulta-terceros');
     }
 

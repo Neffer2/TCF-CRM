@@ -16,6 +16,7 @@ class AnticipoOrdenes
      *
      * @param int $anticipoId
      * @return StreamedResponse
+     *
      */
     public static function downloadPdf(int $anticipoId): StreamedResponse
     {
@@ -24,6 +25,8 @@ class AnticipoOrdenes
             'ordenCompra.presupuesto.gestion.contacto',
             'ordenCompra.proveedor',
             'ordenCompra.ordenItems',
+            'ordenCompra.naturalInfo.tercero',
+            'ordenCompra.naturalInfo.productor',
             'aprobaciones.usuario',
             'estado',
         ])->findOrFail($anticipoId);
@@ -43,6 +46,46 @@ class AnticipoOrdenes
         $proveedor = $orden?->proveedor;
         $presupuesto = $orden?->presupuesto;
         $gestion = $presupuesto?->gestion;
+        $orden = $anticipo->ordenCompra;
+        $naturalInfo = $orden?->naturalInfo;
+        $tercero = $naturalInfo?->tercero;
+
+        $esNatural = $naturalInfo !== null && $tercero !== null;
+
+        if ($esNatural) {
+            // Persona natural: los datos salen de Tercero
+            $contraparte = [
+                'tipo'      => 'Persona natural',
+                'etiqueta'  => 'Nombre completo',
+                'nombre'    => $tercero->nombre ?? null,
+                'documento' => $tercero->cedula ?? null,
+                'dv'        => $tercero->dv ?? null,
+                'direccion' => $tercero->direccion ?? null,
+                'ciudad'    => $tercero->ciudad ?? null,
+                'contacto'  => collect([
+                    $tercero->correo ?? null,
+                    $tercero->celular ?? null,
+                ])->filter()->implode(' · '),
+            ];
+        } else {
+            // Persona jurídica: los datos salen de Proveedor
+            $contraparte = [
+                'tipo'      => 'Persona jurídica',
+                'etiqueta'  => 'Razón social',
+                'nombre'    => $proveedor?->tercero,
+                'documento' => $proveedor?->num_rut,
+                'dv'        => $proveedor?->dv,
+                'direccion' => $proveedor?->direccion,
+                'ciudad'    => $proveedor?->ciudad,
+                'contacto'  => collect([
+                    $proveedor?->contacto,
+                    $proveedor?->correo,
+                    $proveedor?->celular,
+                ])->filter()->implode(' · '),
+            ];
+        }
+
+        $productor = $naturalInfo?->productor;
 
         // Mapeo de acciones/estados en las aprobaciones
         $puesto = [
@@ -70,7 +113,9 @@ class AnticipoOrdenes
         $html = view('exports.orden_anticipo_pdf', [
             'a'           => $anticipo,
             'orden'       => $orden,
-            'p'           => $proveedor,
+            'contraparte' => $contraparte,
+            'esNatural'   => $esNatural,
+            'productor'   => $productor,
             'gestion'     => $gestion,
             'presupuesto' => $presupuesto,
             'valorBase'   => $valorBase,
@@ -94,6 +139,8 @@ class AnticipoOrdenes
         $dompdf->render();
 
         $fileName = 'Orden_Anticipo_' . ($anticipo->cod_orden_anticipo ?? $anticipo->id) . '.pdf';
+
+        $orden = $anticipo->ordenCompra;
 
         return response()->streamDownload(
             fn() => print($dompdf->output()),

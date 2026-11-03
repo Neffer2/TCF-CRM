@@ -7,13 +7,17 @@ use App\Models\OrdenCompra;
 use App\Traits\Email;
 use App\Traits\SMS;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\DB;
 
 class Natural extends Component{
 
 use SMS, Email;
 
     // Estados (ajusta a tu tabla)
-    const ESTADO_RECHAZADA       = 3;
+    const ESTADO_RECHAZADA       = 12;
     const ESTADO_APROBADA        = 3;
     const ESTADO_PEND_CONTROLLER = 9;
     const ESTADO_PEND_LIDER      = 10;
@@ -56,6 +60,11 @@ use SMS, Email;
             if ($this->queriedOrden) {
                 $this->loadOrdenData();
                 $this->puedeAprobar = $this->esMiTurno();
+
+                // Precarga el código secuencial si la orden aún no lo tiene registrado
+                if (empty($this->queriedOrden->cod_oc)) {
+                    $this->cod_oc = $this->siguienteCodigoOC();
+                }
             }
         }
     }
@@ -164,7 +173,7 @@ use SMS, Email;
         }
     }
 
-    // Cambiar estado: Aprobar (3) o Rechazar (7)
+    // Cambiar estado: Aprobar (3) o Rechazar (7) // Si tiene evidencias (2)
     public function cambiarEstado($accion)
     {
         // Recargar la orden para no actuar sobre un estado desactualizado
@@ -174,38 +183,136 @@ use SMS, Email;
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
 
+        $tieneEvidencias = $this->queriedOrden->evidencias && $this->queriedOrden->evidencias->isNotEmpty();
+
         if ($accion === 'aprobar') {
-            $this->validate(['cod_oc' => 'nullable|string|max:200']);
+            
+            if ($tieneEvidencias) 
+            {
+                $this->queriedOrden->estado_id = 2;
+                $this->queriedOrden->update();
 
-            $nuevoEstado = $this->siguienteEstadoAprobacion();
-            $this->queriedOrden->cod_oc = $this->cod_oc;
-
-            if ($nuevoEstado === self::ESTADO_APROBADA) {
-                $this->queriedOrden->fecha_aprobacion = now();
-                $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-                $mensaje = 'Orden de compra natural APROBADA con éxito.';
-            } else {
-                $mensaje = 'Orden aprobada y enviada a la siguiente instancia de aprobación.';
+                return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Las evidencias de la orden ' . $this->queriedOrden->id . ' han sido APROBADAS');
             }
 
-        } elseif ($accion === 'rechazar') {
-            $this->validate(['justificacion_rechazo' => 'required|string|max:1000']);
+            if ($accion === 'aprobar')
+            {
+                $this->validate(['cod_oc' => 'nullable|string|max:200']);
 
-            $this->queriedOrden->justificacion_rechazo = $this->justificacion_rechazo;
-            $this->oc_evidencias_rechazadas($this->queriedOrden);
+                $nuevoEstado = $this->siguienteEstadoAprobacion();
 
-            $nuevoEstado = self::ESTADO_RECHAZADA;
-            $mensaje = 'Orden de compra natural RECHAZADA.';
-        } else {
-            abort(400);
+                if ($nuevoEstado === self::ESTADO_APROBADA) 
+                {
+                    try {
+                        // Usamos el lock de base de datos para asignar el código secuencial y evitar condiciones de carrera
+                        $this->conLockDB('oc_consecutivo', 10, function () use (&$nuevoEstado) {
+                            DB::transaction(function () use (&$nuevoEstado) {
+                                $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
+
+                                if (!empty($orden->cod_oc)) {
+                                    throw new \RuntimeException('Esta orden ya cuenta con un código asignado.');
+                                }
+
+                                $orden->fecha_aprobacion = now();
+                                $orden->cod_oc           = $this->siguienteCodigoOC();
+
+                                // 1. GENERACIÓN AUTOMÁTICA DEL PDF CON DOMPDF
+                                $orden->load([
+                                    'naturalInfo.tercero',
+                                    'naturalInfo.productor',
+                                    'ordenItems.itemPresupuesto',
+                                ]);
+
+                                $dompdf = new Dompdf(['enable_remote' => true]);
+                                $html = View::make('exports.orden_compra_pdf', [
+                                    'orden' => $orden,
+                                ])->render();
+
+                                $dompdf->loadHtml($html);
+                                $dompdf->setPaper('A4', 'portrait');
+                                $dompdf->render();
+
+                                $pdfOutput = $dompdf->output();
+                                $nombreArchivo = 'orden_natural_' . str_replace(' ', '_', $orden->cod_oc) . '_' . time() . '.pdf';
+                                $rutaAlmacenamiento = 'public/ordenes_naturales_helisa/' . $nombreArchivo;
+
+                                Storage::put($rutaAlmacenamiento, $pdfOutput);
+                                
+                                $orden->archivo_orden_helisa = $rutaAlmacenamiento;
+                                $orden->estado_id            = $nuevoEstado;
+                                $orden->save();
+
+                                $this->queriedOrden = $orden;
+                            });
+                        });
+
+                    } catch (\Throwable $e) {
+                        $this->addError('customError', $e->getMessage());
+                        return;
+                    }
+
+                    $this->ocNaturalRevisionContabilidad($this->queriedOrden);
+                    return redirect('aprobaciones-ordenes-compra')->with('succes', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada Y PDF generado');
+                } else {
+                    // Si pasa a una instancia intermedia (ej. líder comercial o gerencia)
+                    $this->queriedOrden->estado_id = $nuevoEstado;
+                    $this->queriedOrden->update();
+                    $mensaje = 'Orden aprobada y enviada a la siguiente instancia de aprobación.';
+                }
+
+            } elseif ($accion === 'rechazar') {
+                $this->validate(['justificacion_rechazo' => 'required|string|max:1000']);
+
+                $this->queriedOrden->justificacion_rechazo = $this->justificacion_rechazo;
+                $this->oc_evidencias_rechazadas($this->queriedOrden);
+
+                $nuevoEstado = self::ESTADO_RECHAZADA;
+                $mensaje = 'Orden de compra natural RECHAZADA.';
+            } else {
+                abort(400);
+            }
+
+            $this->queriedOrden->estado_id = $nuevoEstado;
+            $this->queriedOrden->update();
+
+            return redirect()->route('ordenes-compra')->with('success', $mensaje);
         }
-
-        $this->queriedOrden->estado_id = $nuevoEstado;
-        $this->queriedOrden->update();
-
-        return redirect()->route('ordenes-compra')->with('success', $mensaje);
     }
     
+    protected function conLockDB(string $nombre, int $segundos, callable $callback)
+    {
+        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
+        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
+
+        if ((int) $r->obtenido !== 1) {
+            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
+        }
+
+        try {
+            return $callback();
+        } finally {
+            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
+        }
+    }
+
+    protected function siguienteCodigoOC(): string
+    {
+        $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
+            ->where('cod_oc', '!=', '')
+            ->whereNotNull('fecha_aprobacion')
+            ->orderByDesc('fecha_aprobacion')
+            ->orderByDesc('id') // desempate si dos tienen la misma fecha
+            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
+
+        $ultimo = 0;
+
+        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
+            $ultimo = (int) $m[1];
+        }
+
+        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
+    }
+
     public function render(){
         return view('livewire.admin.ordenescompra.ordenes.orden-natural');
     }

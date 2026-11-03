@@ -282,11 +282,25 @@
                 </td>
                 <td style="text-align: center;">
                     <p class="bold">EL CONTRATISTA. <br><br><br></p>
-                    <p class="sign"> {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
+
+                    @if (!empty($contratoInfo['firma']))
+                        <!-- Esto solo se imprimirá en el PDF definitivo cuando ya haya firmado -->
+                        <img src="{{ $contratoInfo['firma'] }}" alt="Firma" style="max-height:80px; max-width:220px;">
+                    @else
+                        <!-- Esto se mostrará vacío en la previsualización -->
+                        <p class="sign" style="visibility: hidden; height: 80px; margin: 0;"></p>
+                    @endif
+
                     <p class="bold">__________________________</p>
                     <p class="bold">Nombre: {{ $contratoInfo['tercero']->nombre }} {{ $contratoInfo['tercero']->apellido }}</p>
                     <p>CEDULA. {{ $contratoInfo['tercero']->cedula }}</p>
-                    <p><br></p>
+
+                    @if (!empty($contratoInfo['firma']))
+                        <p style="font-size:8px; color:#666;">
+                            Firmado electrónicamente el {{ $contratoInfo['firma_fecha'] }} · IP {{ $contratoInfo['firma_ip'] }}<br>
+                            Huella: {{ substr($contratoInfo['firma_hash'], 0, 32) }}…
+                        </p>
+                    @endif
                 </td>
             </tr>
         </table>

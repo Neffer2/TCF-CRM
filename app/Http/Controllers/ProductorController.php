@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\PresupuestoProyecto;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Año;
+use Illuminate\Http\Request;
+use App\Models\OrdenCompra;
+
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class ProductorController extends Controller
 {
@@ -43,4 +48,5 @@ class ProductorController extends Controller
     {
         return view('productor.ordenes.empleado');
     }
+
 }

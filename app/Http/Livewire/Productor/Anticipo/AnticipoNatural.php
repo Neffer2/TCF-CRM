@@ -7,10 +7,13 @@ use Illuminate\Validation\Rule;
 use App\Models\OrdenCompra;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use App\Models\TipoOrdenCompra;
+use Illuminate\Support\Facades\DB;
 
 class AnticipoNatural extends Component
 {
     private const TIPO_OC_NATURAL    = 2;
+    private const TIPO_OC_EMPLEADO   = 4;
     private const OC_ESTADO_ANTICIPO = 8;
     private const ANTICIPO_RECHAZADO = 6;
 
@@ -18,6 +21,7 @@ class AnticipoNatural extends Component
     public $orden, $queriedAnticipo;
     public $anticipo_id;
     public $search = '';
+    public $tipo_oc = self::TIPO_OC_NATURAL;
 
     public function mount()
     {
@@ -37,18 +41,23 @@ class AnticipoNatural extends Component
     public function render()
     {
         $ordenes = $this->queriedAnticipo ? collect() : $this->ordenesDisponibles();
+        $tipos   = TipoOrdenCompra::whereIn('id', $this->tiposPermitidos())->get();
 
         $this->orden = $this->cargarOrden($this->orden_compra);
+        $totalOrden  = $this->orden ? $this->orden->ordenItems->sum('vtotal_oc') : 0;
 
-        $totalOrden = $this->orden ? $this->orden->ordenItems->sum('vtotal_oc') : 0;
+        return view('livewire.productor.anticipos.anticipo-natural', compact('ordenes', 'totalOrden', 'tipos'));
+    }
 
-        return view('livewire.productor.anticipos.anticipo-natural', compact('ordenes', 'totalOrden'));
+    private function tiposPermitidos(): array
+    {
+        return [self::TIPO_OC_NATURAL, self::TIPO_OC_EMPLEADO];
     }
 
     private function ordenesDisponibles()
     {
         return OrdenCompra::with(['proveedor', 'presupuesto', 'ordenItems.itemPresupuesto.presupuesto', 'naturalInfo'])
-            ->where('tipo_oc', self::TIPO_OC_NATURAL)
+            ->where('tipo_oc', $this->tipo_oc)
             ->where('estado_id', self::OC_ESTADO_ANTICIPO)
             ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', Auth::id()))
             ->whereDoesntHave('anticipos', fn ($q) => $q->where('estado_id', '!=', self::ANTICIPO_RECHAZADO))
@@ -93,6 +102,7 @@ class AnticipoNatural extends Component
         $this->orden               = $this->cargarOrden($this->orden_compra);
         $this->porcentaje_anticipo = $this->queriedAnticipo->porcentaje_anticipo;
         $this->total_anticipo      = $this->queriedAnticipo->total_anticipo;
+        $this->tipo_oc             = $this->orden?->tipo_oc ?? self::TIPO_OC_NATURAL;
     }
 
     public function nuevoAnticipoNatural()
@@ -105,42 +115,55 @@ class AnticipoNatural extends Component
                     ->where(fn ($q) => $q->where('estado_id', '!=', self::ANTICIPO_RECHAZADO)),
             ],
             'porcentaje_anticipo' => 'required|numeric|min:1|max:100',
+            'tipo_oc'             => ['required', Rule::in($this->tiposPermitidos())],
         ]);
 
         $orden = OrdenCompra::with('ordenItems')
-            ->where('tipo_oc', self::TIPO_OC_NATURAL)
+            ->where('tipo_oc', self::TIPO_OC_NATURAL)   // la OC listada aún es natural
             ->where('estado_id', self::OC_ESTADO_ANTICIPO)
             ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', Auth::id()))
             ->findOrFail($this->orden_compra);
 
         $total = ($orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
 
-        ModelAnticipo::create([
-            'oc_id'               => $orden->id,
-            'porcentaje_anticipo' => $this->porcentaje_anticipo,
-            'total_anticipo'      => $total,
-            'estado_id'           => 2,
-            'fecha_solicitud'     => now(),
-            'productor_id'        => Auth::id(),
-        ]);
+        DB::transaction(function () use ($orden, $total) {
+            // Actualiza el tipo de la OC según el desplegable
+            $orden->update(['tipo_oc' => $this->tipo_oc]);
 
-        return redirect()->route('lista-anticipos-prod')->with('success', 'Anticipo creado');
+            ModelAnticipo::create([
+                'oc_id'               => $orden->id,
+                'porcentaje_anticipo' => $this->porcentaje_anticipo,
+                'total_anticipo'      => $total,
+                'estado_id'           => 2,
+                'fecha_solicitud'     => now(),
+                'productor_id'        => Auth::id(),
+            ]);
+        });
+
+        return redirect()->route('lista-anticipos')->with('success', 'Anticipo creado');
     }
 
     public function actualizarAnticipoNatural()
     {
-        $this->validate(['porcentaje_anticipo' => 'required|numeric|min:1|max:100']);
+        $this->validate([
+            'porcentaje_anticipo' => 'required|numeric|min:1|max:100',
+            'tipo_oc'             => ['required', Rule::in($this->tiposPermitidos())],
+        ]);
 
         if ($this->queriedAnticipo) {
             $orden = OrdenCompra::with('ordenItems')->findOrFail($this->queriedAnticipo->oc_id);
             $total = ($orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
 
-            $this->queriedAnticipo->update([
-                'porcentaje_anticipo' => $this->porcentaje_anticipo,
-                'total_anticipo'      => $total,
-                'estado_id'           => 1,
-                'fecha_aprobacion'    => now(),
-            ]);
+            DB::transaction(function () use ($orden, $total) {
+                $orden->update(['tipo_oc' => $this->tipo_oc]);
+
+                $this->queriedAnticipo->update([
+                    'porcentaje_anticipo' => $this->porcentaje_anticipo,
+                    'total_anticipo'      => $total,
+                    'estado_id'           => 1,
+                    'fecha_aprobacion'    => now(),
+                ]);
+            });
 
             return redirect()->route('lista-anticipos-admin')->with('success', 'Anticipo aprobado');
         }
@@ -149,6 +172,8 @@ class AnticipoNatural extends Component
     public function updatedOrdenCompra()
     {
         $this->orden = $this->cargarOrden($this->orden_compra);
+        // Al elegir una OC, el desplegable refleja su tipo actual (natural por defecto)
+        $this->tipo_oc = $this->orden?->tipo_oc ?? self::TIPO_OC_NATURAL;
         $this->updatedPorcentajeAnticipo();
     }
 

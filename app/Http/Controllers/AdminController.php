@@ -289,6 +289,59 @@ class AdminController extends Controller
             ->header('Content-Disposition', 'inline; filename="good_received_'.str_pad($grNumero, 8, '0', STR_PAD_LEFT).'.pdf"');
     }
 
+    public function showCuentaCobroRevision(Request $request, OrdenCompra $orden)
+    {
+        $orden->load([
+            'naturalInfo.tercero',
+            'ordenItems.itemPresupuesto.presto',
+        ]);
+
+        // GR provisional solo para la vista previa (NO se guarda)
+        $grNumero = $orden->gr ?: $this->siguienteCodigoGR();
+        $grFecha  = $request->input('gr_fecha', now());
+
+        $items   = $orden->ordenItems;
+        $tercero = $orden->naturalInfo->tercero;
+        $total   = $items->sum('vtotal_oc');
+        $fecha   = now()->locale('es')->translatedFormat('d \d\e F \d\e Y');
+
+        $html = View::make('exports.cuenta-cobro', [
+            'oc'       => $orden,
+            'orden'    => $orden,
+            'items'    => $items,
+            'tercero'  => $tercero,
+            'total'    => $total,
+            'fecha'    => $fecha,
+            'grNumero' => $grNumero,
+            'grFecha'  => $grFecha,
+            'preview'  => true,
+        ])->render();
+
+        $dompdf = new Dompdf(['enable_remote' => true]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="vista_previa_' . preg_replace('/\W+/', '_', $grNumero) . '.pdf"');
+    }
+    private function siguienteCodigoGR(): string
+    {
+        $ultima = OrdenCompra::whereNotNull('gr')
+            ->where('gr', '!=', '')
+            ->orderByDesc('id')
+            ->first(['id', 'gr']);
+
+        $ultimo = 0;
+
+        if ($ultima && preg_match('/(\d+)\s*$/', $ultima->gr, $m)) {
+            $ultimo = (int) $m[1];
+        }
+
+        return 'GR ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
+    }
+
     public function showListaAnticiposAdmin()
     {
         return view('admin.produccion.anticipos.lista-anticipos-index');
@@ -334,4 +387,5 @@ class AdminController extends Controller
 
         return view('admin.ordenescompra.ordenes.orden-natural', ['presupuesto' => $presupuesto, 'orden' => $orden, 'proveedores' => $proveedores]);
     }
+
 }

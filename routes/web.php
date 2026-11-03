@@ -74,6 +74,8 @@ Route::get('/', function () {
     Route::get('/reporte-consumidos', [AdminController::class, 'reporteConsumidos'])->middleware(['auth'])->middleware(['admin'])->name('reporte-consumidos');
     Route::get('/reporte-plano-helisa/{mes?}', [AdminController::class, 'reportePlanoHelisa'])->middleware(['auth'])->name('reporte-plano-helisa');
 
+    Route::get('cuentaCobro/{orden?}', [AdminController::class, 'showCuentaCobroRevision'])->middleware(['auth'])->middleware(['admin'])->name('cuenta-cobro-revision');
+
 
     /* Anticipos provisional (Lider comercial, Gerencia, Controller) */
 

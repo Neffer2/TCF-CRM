@@ -107,11 +107,9 @@ class OrdenNatural extends Component
         }
     }
 
-    // Cambiar estado: Aprobar (3) o Rechazar (7)
+    // Cambiar estado: Aprobar (9) o Rechazar (12)
     public function cambiarEstado($estado)
     {
-        $mensaje = '';
-
         if ($estado == 9) {
             $this->validate([
                 'cod_oc' => 'nullable|string|max:200',
@@ -124,7 +122,10 @@ class OrdenNatural extends Component
                 $this->ocNaturalRevisionContabilidad($this->queriedOrden);
             }
 
-            $mensaje = 'Orden de compra natural APROBADA con éxito.';
+            $this->queriedOrden->estado_id = $estado;
+            $this->queriedOrden->update();
+
+            return redirect()->route('orden-compra')->with('success', 'La orden ' . $this->queriedOrden->id . ' a sido APROBADA y enviada Controller');
 
         } elseif ($estado == 3) {
             $this->validate([
@@ -137,13 +138,11 @@ class OrdenNatural extends Component
                 $this->oc_evidencias_rechazadas($this->queriedOrden);
             }
 
-            $mensaje = 'Orden de compra natural RECHAZADA.';
+            $this->queriedOrden->estado_id = $estado;
+            $this->queriedOrden->update();
+
+            return redirect()->route('orden-compra')->with('error', 'La orden de compra' . $this->queriedOrden->id . 'a sido RECHAZADA y devuelva al productor');
         }
-
-        $this->queriedOrden->estado_id = $estado;
-        $this->queriedOrden->update();
-
-        return redirect()->route('ordenes-compra')->with('success', $mensaje);
     }
     
     public function render(){

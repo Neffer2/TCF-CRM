@@ -52,12 +52,26 @@
     </table>
     <div class="raya"></div>
 
-    <h2>Proveedor</h2>
+    <h2>{{ $esNatural ? 'Tercero (persona natural)' : 'Proveedor' }}</h2>
     <table class="datos">
-        <tr><td class="k">Razón social</td><td>{{ optional($p)->tercero ?: '—' }}</td></tr>
-        <tr><td class="k">NIT</td><td>{{ optional($p)->documento }}{{ optional($p)->dv !== null && optional($p)->dv !== '' ? '-'.$p->dv : '' }}</td></tr>
-        <tr><td class="k">Dirección</td><td>{{ trim((optional($p)->direccion ?: '').' '.(optional($p)->ciudad ?: '')) ?: '—' }}</td></tr>
-        <tr><td class="k">Contacto</td><td>{{ collect([optional($p)->contacto, optional($p)->correo, optional($p)->celular])->filter()->implode(' · ') ?: '—' }}</td></tr>
+        <tr>
+            <td class="k">{{ $contraparte['etiqueta'] }}</td>
+            <td>{{ $contraparte['nombre'] ?: '—' }}</td>
+        </tr>
+        <tr>
+            <td class="k">{{ $esNatural ? 'cedula' : 'NIT' }}</td>
+            <td>
+                {{ $contraparte['documento'] ?: '—' }}{{ !$esNatural && filled($contraparte['dv']) ? '-'.$contraparte['dv'] : '' }}
+            </td>
+        </tr>
+        <tr>
+            <td class="k">Dirección</td>
+            <td>{{ trim(($contraparte['direccion'] ?: '').' '.($contraparte['ciudad'] ?: '')) ?: '—' }}</td>
+        </tr>
+        <tr>
+            <td class="k">Contacto</td>
+            <td>{{ $contraparte['contacto'] ?: '—' }}</td>
+        </tr>
     </table>
 
     <h2>Proyecto</h2>
@@ -65,7 +79,7 @@
         <tr><td class="k">Proyecto</td><td>{{ optional($gestion)->nom_proyecto_cot ?: '—' }}</td></tr>
         <tr><td class="k">Cliente</td><td>{{ optional(optional($gestion)->contacto)->empresa ?: '—' }}</td></tr>
         <tr><td class="k">Centro de costos</td><td>{{ optional($presupuesto)->cod_cc ?: '—' }}</td></tr>
-        <tr><td class="k">Productor</td><td>{{ optional($a->productor_info)->name ?: '—' }}</td></tr>
+        <tr><td class="k">Productor</td><td>{{ optional($productor)->name ?: '—' }}</td></tr>
     </table>
 
     <h2>Valor del anticipo</h2>
@@ -102,7 +116,7 @@
         @else
             <tr>
                 <td>Solicitó (productor)</td>
-                <td>{{ optional($a->productor_info)->name ?: '—' }}</td>
+                <td class="k">Productor</td><td>{{ optional($productor)->name ?: '—' }}</td>
                 <td>{{ $fecha($a->fecha_solicitud) }}</td>
                 <td>—</td>
             </tr>

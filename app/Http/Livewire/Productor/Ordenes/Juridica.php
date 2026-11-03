@@ -382,21 +382,21 @@ class Juridica extends Component
         } elseif ($estado == 5) {
             // GR GENERADO
             $this->validate([
-                'gr'                     => 'required|string',
                 'observaciones_remision' => 'nullable|string|max:1000'
             ]);
-            
-            try{
+
+            try {
+                // 1. Generamos el PDF primero (fuera del lock para optimizar tiempo)
                 $this->orden_compra->load([
                     'proveedor',
                     'presupuesto.gestion.contacto',
                     'presupuesto.presupuestoItems',
-                    'ordenItems',                    
+                    'ordenItems',
                 ]);
 
                 $dompdf = new Dompdf(['enable_remote' => true]);
                 $html = View::make('exports.good_recive_pdf', [
-                    'orden' => $this->orden_compra
+                    'orden' => $this->orden_compra,
                 ])->render();
 
                 $dompdf->loadHtml($html);
@@ -404,36 +404,52 @@ class Juridica extends Component
                 $dompdf->render();
 
                 $pdfOutput = $dompdf->output();
-
-                $nombreArchivo = 'good_receive_' . ($this->orden_compra->gr) . '_' . time() . '.pdf';
-                $rutaAlmacenamiento = 'public/ordenes_gr/' . $nombreArchivo;
+                $nombreArchivo = 'good_receive_' . ($this->orden_compra->id) . '_' . time() . '.pdf';
+                $rutaAlmacenamiento = 'public/good_receives/' . $nombreArchivo;
 
                 Storage::put($rutaAlmacenamiento, $pdfOutput);
 
-                $this->conLockDB('gr_consecutivo', 10, function () use ($estado) 
-                {
-                    DB::transaction(function () use ($estado) {
+                // 2. BLOQUEO DE CONCURRENCIA (Evita que dos procesos obtengan el mismo número a la vez)
+                $this->conLockDB('gr_consecutivo', 10, function () use ($rutaAlmacenamiento, $estado) {
+                    DB::statement('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+                    DB::transaction(function () use ($rutaAlmacenamiento, $estado) {
+                        // Bloqueamos la fila de esta orden específica
                         $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
-                        if (empty($orden->gr)) {
-                            $orden->gr = $this->gr ?: $this->siguienteCodigoGR();
+                        if (!empty($orden->gr)) {
+                            throw new \RuntimeException('Este Good Receive ya fue generado.');
                         }
 
+                        // CALCULAMOS EL SIGUIENTE DENTRO DEL CANDADO
+                        $orden->gr = $this->siguienteCodigoGR();
+
+                        $duplicado = OrdenCompra::useWritePdo()
+                            ->where('gr', $orden->gr)
+                            ->where('id', '!=', $orden->id)
+                            ->exists();
+
+                        if ($duplicado) {
+                            throw new \RuntimeException('Conflicto de consecutivo, intenta de nuevo.');
+                        }
+                        $orden->archivo_gr = $rutaAlmacenamiento;
                         $orden->observacion_remision = $this->observaciones_remision;
                         $orden->estado_id = $estado;
                         $orden->save();
 
                         $this->orden_compra = $orden;
+                        $this->gr = $orden->gr; // Sincronizamos la propiedad visual
                     });
                 });
-            } catch(\Throwable $e){
+
+            } catch (\Throwable $e) {
                 dd($e);
                 //$this->addError('customError', $e->getMessage());
                 return;
             }
-            
-            $this->mailGrGenerado($this->orden_compra);
-            $messaje = 'Good Receive ' . $this->orden_compra->gr . ' generado y guardado con exito.';
+
+        $this->mailGrGenerado($this->orden_compra);
+        $messaje = 'Good Receive ' . $this->orden_compra->gr . ' guardado y enviado con éxito.';
+
         } elseif ($estado == 6) {
             // ORDEN ANULADA
             $this->validate([
@@ -493,18 +509,15 @@ class Juridica extends Component
 
     protected function siguienteCodigoGR(): string
     {
-        $ultimaOrden = OrdenCompra::whereNotNull('gr')
-            ->where('gr', '!=', '')
-            ->orderByDesc('id') 
-            ->first(['id', 'gr']);
+        $ultimo = (int) OrdenCompra::useWritePdo()
+            ->whereNotNull('gr')
+            ->whereRaw("TRIM(gr) REGEXP '^GR[ ]?[0-9]+$'")
+            ->selectRaw("MAX(CAST(REPLACE(REPLACE(TRIM(gr), 'GR', ''), ' ', '') AS UNSIGNED)) AS n")
+            ->value('n');
 
-        $ultimo = 0;
+        $ultimo = max($ultimo, 17498); // base inicial
 
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->gr, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return str_pad($ultimo + 1, '0', STR_PAD_LEFT);
+        return 'GR ' . str_pad($ultimo + 1, 5, '0', STR_PAD_LEFT);
     }
 
     protected function siguienteCodigoOC(): string

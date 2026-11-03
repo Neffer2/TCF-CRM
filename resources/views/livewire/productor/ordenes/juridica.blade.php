@@ -593,9 +593,9 @@
                 <div class="row px-4">
                     <div class="col-md-6">
                         <div class="form-group">
-                            @if($orden_compra && $orden_compra->estado_id == 3)
+                            
                                 <button wire:click="enviarAprobacion" wire:loading.attr="disabled" class="btn bg-gradient-warning mt-2 mb-0">Enviar a aprobaci&oacute;n</button>
-                            @endif
+                            
                             @if($orden_compra && $orden_compra->estado_id == 3)
                                 <button wire:click="deleteOrden" class="btn btn-icon btn-3 btn bg-gradient-danger mt-2 mb-0" type="button">
                                     <span class="btn-inner--icon">
