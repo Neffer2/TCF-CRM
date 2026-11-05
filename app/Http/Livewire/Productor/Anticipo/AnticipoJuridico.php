@@ -101,7 +101,7 @@ class AnticipoJuridico extends Component
             'productor_id'        => $productorId,
         ]);
 
-        return redirect()->route('lista-anticipos-prod')->with('success', 'Anticipo creado');
+        return redirect()->route('lista-anticipos')->with('success', 'Anticipo creado');
     }
 
     public function actualizarAnticipoJuridico()
