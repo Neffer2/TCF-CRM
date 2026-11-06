@@ -353,7 +353,16 @@
                 </div>
             </div>
         </div>
-
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">JUSTIFICACION</label>
+                <textarea class="form-control"
+                        placeholder="Justificación" wire:model.lazy="justificacion_productor" cols="30" rows="3"></textarea>
+                @error('justificacion_productor')
+                    <span class="text-danger error">{{ $message }}</span> 
+                @enderror
+           </div>
+        </div>
         <div class="row">
             <div class="col-md-6">
                 @if(!$orden_id)
@@ -361,7 +370,6 @@
                 @endif
             </div>
         </div>
-
         
     @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && ($queriedOrden->estado_id == 3)))
         @if ($queriedOrden->evidencias->isEmpty())

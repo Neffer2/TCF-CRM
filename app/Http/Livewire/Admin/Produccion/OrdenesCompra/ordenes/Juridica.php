@@ -71,6 +71,7 @@ class Juridica extends Component{
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
+                'justificacion_productor' => $item->justificacion_productor ?? '',
                 'otros' => $item->otros_oc,
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $subtotal
@@ -132,11 +133,12 @@ class Juridica extends Component{
     {
         // Recargar para no actuar sobre un estado desactualizado
         $this->orden_compra->refresh();
-
+        
+        /*
         if (!$this->esMiTurno()) {
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
-
+        */
         $icon = 'success';
 
         if ($accion === 'aprobar') {
@@ -196,17 +198,13 @@ class Juridica extends Component{
                     return;
                 }
 
-                $titulo  = '¡Aprobada!';
                 $mensaje = 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
 
             } else { 
-                // Instancia intermedia de aprobación (no es la final)
                 $this->orden_compra->estado_id = $nuevoEstado;
                 $this->orden_compra->update();
 
-                $titulo  = '¡Aprobada!';
                 $mensaje = 'Orden aprobada y enviada a la siguiente instancia de aprobación.';
-                // Aquí puedes notificar al siguiente aprobador por email si lo deseas
             }
 
         } elseif ($accion === 'rechazar') {
@@ -218,19 +216,12 @@ class Juridica extends Component{
             $this->orden_compra->estado_id = self::ESTADO_RECHAZADA;
             $this->orden_compra->update();
 
-            $titulo  = '¡Rechazada!';
             $mensaje = 'Orden de compra RECHAZADA.';
-            $icon    = 'error';
         } else {
             abort(400);
         }
 
-        // Redirección con sesión flash compatible con Livewire v2
-        session()->flash('swal_title', $titulo);
-        session()->flash('swal_msg', $mensaje);
-        session()->flash('swal_icon', $icon);
-
-        return redirect('/orden-compra');
+        return redirect()->route('aprobaciones-ordenes-compra')->with('success', $mensaje);
     }
 
     protected function conLockDB(string $nombre, int $segundos, callable $callback)

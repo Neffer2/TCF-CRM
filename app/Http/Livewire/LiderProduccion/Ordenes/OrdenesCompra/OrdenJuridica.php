@@ -48,6 +48,7 @@ class OrdenJuridica extends Component {
                 'desc' => $item->desc_oc,
                 'cant' => $item->cant_oc,
                 'dias' => $item->dias_oc,
+                'justificacion_productor' => $item->justificacion_productor ?? '',
                 'otros' => $item->otros_oc,
                 'vUnit' => $item->vunit_oc,
                 'vTotal' => $subtotal
@@ -59,17 +60,12 @@ class OrdenJuridica extends Component {
     public function cambiarEstado($estado)
     {
         $mensaje = '';
-        $titulo = '';
-        $icon = '';
 
         if ($estado == 9) {
             
             $this->orden_compra->fecha_aprobacion = now();
             
-            
-            $titulo = '¡Aprobada!';
             $mensaje = 'Orden de compra APROBADA con éxito.';
-            $icon = 'success';
 
         } elseif ($estado == 3) {
             // RECHAZAR
@@ -79,20 +75,13 @@ class OrdenJuridica extends Component {
 
             $this->orden_compra->justificacion_rechazo = $this->justificacion_rechazo;
             
-            $titulo = '¡Rechazada!';
             $mensaje = 'Orden de compra RECHAZADA.';
-            $icon = 'error';
         }
 
         $this->orden_compra->estado_id = $estado;
         $this->orden_compra->update();
 
-        // Redirección con sesión flash compatible con Livewire v2
-        session()->flash('swal_title', $titulo);
-        session()->flash('swal_msg', $mensaje);
-        session()->flash('swal_icon', $icon);
-
-        return redirect('/orden-compra');
+        return redirect()->route('orden-compra')->with('success', $mensaje);
     }
 
     public function render(){

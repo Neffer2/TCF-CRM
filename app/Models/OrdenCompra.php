@@ -15,6 +15,7 @@ class OrdenCompra extends Model
         'presupuesto_id',
         'proveedor_id',
         'fecha_aprobacion',
+        'justificacion_productor',
         'fecha_envio_produccion',
         'gr'
     ];

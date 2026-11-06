@@ -24,6 +24,7 @@ class OrdenNatural extends Component
 
     // Control de aprobación / rechazo
     public $justificacion_rechazo;
+    public $justificacion_productor;
     public $cod_oc;
 
     public function mount($orden_id = null)
@@ -70,8 +71,7 @@ class OrdenNatural extends Component
 
         $this->justificacion_rechazo = $this->queriedOrden->justificacion_rechazo;
         $this->cod_oc = $this->queriedOrden->cod_oc;
-
-        // 2. Cargar ítems (Usando tu lógica original exacta de getData)
+        $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
         $queriedItems = $this->queriedOrden->ordenItems;
 
         foreach ($queriedItems as $item) {

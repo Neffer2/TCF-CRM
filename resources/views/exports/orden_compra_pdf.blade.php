@@ -8,6 +8,8 @@
     $fecha = \Carbon\Carbon::parse($fechaBase)->locale('es');
     $fechaTexto = ucfirst($fecha->translatedFormat('F d')) . ' DE ' . $fecha->format('Y');
 
+    $codCcOrden = optional($orden->presupuesto)->cod_cc ?? 'N/A';
+
     // Detección automática: Proveedor (Jurídica) o Tercero (Natural)
     $prov = $orden->proveedor ?? optional($orden->naturalInfo)->tercero;
     
@@ -129,6 +131,7 @@
         <thead>
             <tr>
                 <th style="width:50%;">DESCRIPCION</th>
+                <th style="width:20%;">CENTRO DE COSTOS</th>
                 <th style="width:13%;">ITEM #</th>
                 <th style="width:7%;">CANT</th>
                 <th style="width:14%;">VR UNITARIO</th>
@@ -139,6 +142,7 @@
             @foreach ($orden->ordenItems as $item)
                 <tr>
                     <td>{{ $item->desc_oc ?? optional($item->itemPresupuesto)->descripcion }}</td>
+                    <td>{{ $item->cod_cc ?? optional($item->itemPresupuesto)->cod_cc ?? $codCcOrden }}</td>
                     <td class="ctr">{{ $item->num_item ?? optional($item->itemPresupuesto)->num_item }}</td>
                     <td class="num">{{ $fmt($item->cant_oc) }}</td>
                     <td class="num">{{ $fmt($item->vunit_oc) }}</td>
@@ -146,7 +150,7 @@
                 </tr>
             @endforeach
             <tr class="relleno">
-                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
             </tr>
         </tbody>
     </table>
@@ -157,10 +161,6 @@
             <td style="padding:0;">
                 <table class="totales">
                     <tr><td class="lbl">SUBTOTAL</td><td class="val">{{ $fmt($subtotal) }}</td></tr>
-                    <tr><td class="lbl">IVA</td><td class="val">{{ $fmt($iva) }}</td></tr>
-                    <tr><td class="lbl">RETEFUENTE</td><td class="val">{{ $fmt($retefuente) }}</td></tr>
-                    <tr><td class="lbl">RETEIVA</td><td class="val">{{ $fmt($reteiva) }}</td></tr>
-                    <tr><td class="lbl">RETEICA</td><td class="val">{{ $fmt($reteica) }}</td></tr>
                     <tr class="total"><td class="lbl">T O T A L E S</td><td class="val">{{ $fmt($total) }}</td></tr>
                 </table>
             </td>
@@ -168,25 +168,12 @@
     </table>
 
     <div class="aceptada">
-        Nos permitimos comunicarles que su oferta comercial ha sido aceptada, razón por la cual les solicitamos el suministro de los siguientes items:
+        Nos permitimos comunicarles que los valores presentadados son antes de impuestos y retenciones, los cuales se aplicarán según la normatividad vigente. La presente orden de compra está sujeta a la aceptación de los términos y condiciones establecidos en la cotización comercial correspondiente.
     </div>
 
     <div class="legal">
         Su cotización comercial hace parte integral de la presente orden... (condiciones legales estándar).
     </div>
-
-    <table class="firmas">
-        <tr>
-            <td style="width:33%;">{{ optional(optional($orden->naturalInfo)->productor)->name ?? 'Producción' }}</td>
-            <td style="width:33%;">{{ $orden->solicito ?? 'Jurídica / Compras' }}</td>
-            <td style="width:34%;">{{ $orden->aprobo ?? 'Gerencia' }}</td>
-        </tr>
-        <tr>
-            <td class="rol">ELABORO</td>
-            <td class="rol">SOLICITÓ</td>
-            <td class="rol">APROBÓ</td>
-        </tr>
-    </table>
 
 </body>
 </html>

@@ -193,6 +193,10 @@
                                 @error('justificacion_rechazo') <span class="text-danger text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label>Justificación del Productor</label>
+                            <textarea class="form-control" rows="3" disabled>{{ $justificacion_productor ?? 'N/A' }}</textarea>
+                        </div>
                     </div>
 
                     <!-- Botones de Acción Final -->

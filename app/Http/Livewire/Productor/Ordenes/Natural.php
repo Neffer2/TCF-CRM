@@ -27,7 +27,7 @@ class Natural extends Component
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
-            $tipo_servicio, $tipo_contrato, $cod_oc, $gr, $oc_helisa, $justificacion_rechazo, $toggleRechazo = false;
+            $tipo_servicio, $tipo_contrato, $cod_oc, $gr, $oc_helisa, $justificacion_rechazo, $justificacion_productor, $toggleRechazo = false;
 
     // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -257,7 +257,8 @@ class Natural extends Component
         }
 
         $this->validate([
-            'tercero' => 'required'
+            'tercero' => 'required',
+            'justificacion_productor' => 'required|string|max:255'
         ]);
 
         $tercero = Tercero::where('id', $this->tercero)->first();
@@ -275,7 +276,7 @@ class Natural extends Component
         $orden = OrdenCompra::create([
             'tipo_oc' => 2,
             'estado_id' => 8,
-            'presupuesto_id' => null,
+            'justificacion_productor' => $this->justificacion_productor,
             'proveedor_id' => 3,
         ]);
 
@@ -330,7 +331,7 @@ class Natural extends Component
         unset($this->tercero);
         unset($this->selected_item);
         $this->items = collect();
-        return back()->with('success', 'Orden de compra creada correctamente');
+        return back()->with('success', 'Orden de compra creada correctamente y enviada a líder de producción para aprobación');
     }
     /* * --------------------- * */
 
@@ -345,7 +346,12 @@ class Natural extends Component
         }
 
         $this->validate([
-            'tercero' => 'required'
+            'tercero' => 'required',
+            'justificacion_productor' => 'required|string|max:1000'
+        ]);
+
+        $this->queriedOrden->update([
+            'justificacion_productor' => $this->justificacion_productor,
         ]);
 
         // Si la orden tiene contrato, cambia el estado y envía mensaje
@@ -532,8 +538,8 @@ class Natural extends Component
             } catch (\Throwable $e) {
                 if ($archivo) Storage::disk('public')->delete($archivo);
                 report($e);
-                //$this->addError('gr', 'No se pudo generar la cuenta de cobro. Intenta de nuevo.');
-                dd($e);
+                $this->addError('gr', 'No se pudo generar la cuenta de cobro. Intenta de nuevo.');
+                //dd($e);
                 return;
             }
 

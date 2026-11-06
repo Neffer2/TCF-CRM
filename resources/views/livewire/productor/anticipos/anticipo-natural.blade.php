@@ -41,7 +41,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        @foreach (['No. ITEM', 'CANT', 'DIAS', 'OTROS', 'CARACTERISTICAS', 'V. UNI', 'V. TOTAL'] as $th)
+                        @foreach (['No. ITEM', 'CANT', 'DIAS', 'OTROS', 'DESCRIPCIÓN', 'V. UNI', 'V. TOTAL'] as $th)
                             <th class="font-weight-bold bg-gradient-info text-white">{{ $th }}</th>
                         @endforeach
                     </tr>

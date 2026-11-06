@@ -24,7 +24,7 @@ class Juridica extends Component
     // Variables para los datos del formulario y modelos
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $gr;
-    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion;
+    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion, $justificacion_productor;
 
     // Variables para la orden y presupuesto seleccionados
     public $presupuesto, $orden_compra;
@@ -234,6 +234,7 @@ class Juridica extends Component
     {
         $this->validate([
             'proveedor' => 'required',
+            'justificacion_productor' => 'required|string',
             'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
         ]);
 
@@ -248,6 +249,7 @@ class Juridica extends Component
             $this->orden_compra->estado_id = 8;
             $this->orden_compra->fecha_envio_produccion = now();
             $this->orden_compra->proveedor_id = $this->proveedor;
+            $this->orden_compra->justificacion_productor = $this->justificacion_productor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
 
             $this->orden_compra->save();
@@ -265,6 +267,7 @@ class Juridica extends Component
             $orden->fecha_envio_produccion = now();
             $orden->presupuesto_id = $this->presupuesto->id;
             $orden->proveedor_id = $this->proveedor;
+            $orden->justificacion_productor = $this->justificacion_productor;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
 
             $orden->save();
@@ -442,8 +445,8 @@ class Juridica extends Component
                 });
 
             } catch (\Throwable $e) {
-                dd($e);
-                //$this->addError('customError', $e->getMessage());
+                //dd($e);
+                $this->addError('customError', $e->getMessage());
                 return;
             }
 
@@ -723,7 +726,7 @@ class Juridica extends Component
     public function resetOcInfo(){
         $this->proveedor = "";
         $this->file_cot = null;
-
+        $this->justificacion_productor = "";
         $this->ocItems = [];
     }
 

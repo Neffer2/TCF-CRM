@@ -91,7 +91,7 @@
                                         <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
-                                        <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white">DESCRIPCIÓN</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                                         @if (Auth::user()->rol != 1 && Auth::user()->rol != 6)

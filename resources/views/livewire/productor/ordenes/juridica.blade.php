@@ -26,7 +26,7 @@
                             </tr>
                             @if ($justificacion_rechazo && Auth::user()->rol != 1 && $orden_compra->estado_id == 3)
                                 <tr style="height: 35px;">
-                                    <td class="font-weight-bold">Jutificacion de rechazo:</td>
+                                    <td class="font-weight-bold">Justificación de rechazo:</td>
                                     <td>
                                         <textarea disabled cols="30" rows="2">{{ $justificacion_rechazo }}</textarea>
                                     </td>
@@ -73,7 +73,7 @@
                                     <th class="font-weight-bold bg-gradient-primary text-white">CANT</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">DIAS</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">OTROS</th>
-                                    <th class="font-weight-bold bg-gradient-primary text-white">CARACTERISTICAS</th>
+                                    <th class="font-weight-bold bg-gradient-primary text-white">DESCRIPCIÓN</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. UNI</th>
                                     <th class="font-weight-bold bg-gradient-primary text-white">V. TOTAL</th>
                                     @if (Auth::user()->rol != 1)
@@ -587,6 +587,17 @@
                                     <span class="sr-only">Loading...</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">JUSTIFICACION</label>
+                            <textarea class="form-control"
+                                placeholder="Justificación" wire:model.lazy="justificacion_productor" cols="30" rows="3"></textarea>
+                                
+                                @error('justificacion_productor')
+                                    <span class="text-danger error">{{ $message }}</span>
+                                @enderror
                         </div>
                     </div>
                 </div>

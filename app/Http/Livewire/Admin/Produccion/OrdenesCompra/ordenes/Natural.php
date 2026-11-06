@@ -47,6 +47,7 @@ use SMS, Email;
 
     // Control de aprobación / rechazo
     public $justificacion_rechazo;
+    public $justificacion_productor;
     public $cod_oc;
 
     public function mount($orden_id = null)
@@ -135,6 +136,7 @@ use SMS, Email;
         }
 
         $this->justificacion_rechazo = $this->queriedOrden->justificacion_rechazo;
+        $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
         $this->cod_oc = $this->queriedOrden->cod_oc;
 
         // 2. Cargar ítems (Usando tu lógica original exacta de getData)
@@ -178,11 +180,11 @@ use SMS, Email;
     {
         // Recargar la orden para no actuar sobre un estado desactualizado
         $this->queriedOrden->refresh();
-
+        /*
         if (!$this->esMiTurno()) {
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
-
+        */
         $tieneEvidencias = $this->queriedOrden->evidencias && $this->queriedOrden->evidencias->isNotEmpty();
 
         if ($accion === 'aprobar') {

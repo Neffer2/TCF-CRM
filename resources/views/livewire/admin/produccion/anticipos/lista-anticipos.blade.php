@@ -204,7 +204,7 @@
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">CANT</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">DIAS</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">OTROS</th>
-                                        <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2">CARACTERISTICAS</th>
+                                        <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2">DESCRIPCIÓN</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">V. UNI</th>
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">V. TOTAL</th>
                                     </tr>
