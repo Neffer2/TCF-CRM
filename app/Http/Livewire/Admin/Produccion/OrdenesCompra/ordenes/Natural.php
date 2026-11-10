@@ -180,11 +180,11 @@ use SMS, Email;
     {
         // Recargar la orden para no actuar sobre un estado desactualizado
         $this->queriedOrden->refresh();
-        /*
+        
         if (!$this->esMiTurno()) {
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
-        */
+    
         $tieneEvidencias = $this->queriedOrden->evidencias && $this->queriedOrden->evidencias->isNotEmpty();
 
         if ($accion === 'aprobar') {
@@ -205,20 +205,25 @@ use SMS, Email;
 
                 if ($nuevoEstado === self::ESTADO_APROBADA) 
                 {
+                    $soloAprobada = false;
                     try {
-                        // Usamos el lock de base de datos para asignar el código secuencial y evitar condiciones de carrera
-                        $this->conLockDB('oc_consecutivo', 10, function () use (&$nuevoEstado) {
-                            DB::transaction(function () use (&$nuevoEstado) {
+                        $this->conLockDB('oc_consecutivo', 10, function () use (&$nuevoEstado, &$soloAprobada) {
+                            DB::transaction(function () use (&$nuevoEstado, &$soloAprobada) {
                                 $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
 
+                                // Si ya tiene código OC: solo se aprueba (sin nuevo código ni PDF)
                                 if (!empty($orden->cod_oc)) {
-                                    throw new \RuntimeException('Esta orden ya cuenta con un código asignado.');
+                                    $orden->estado_id        = $nuevoEstado;
+                                    $orden->save();
+
+                                    $this->queriedOrden = $orden;
+                                    $soloAprobada = true;
+                                    return;
                                 }
 
-                                $orden->fecha_aprobacion = now();
+                                // --- Flujo normal: sin código asignado ---
                                 $orden->cod_oc           = $this->siguienteCodigoOC();
 
-                                // 1. GENERACIÓN AUTOMÁTICA DEL PDF CON DOMPDF
                                 $orden->load([
                                     'naturalInfo.tercero',
                                     'naturalInfo.productor',
@@ -239,7 +244,7 @@ use SMS, Email;
                                 $rutaAlmacenamiento = 'public/ordenes_naturales_helisa/' . $nombreArchivo;
 
                                 Storage::put($rutaAlmacenamiento, $pdfOutput);
-                                
+
                                 $orden->archivo_orden_helisa = $rutaAlmacenamiento;
                                 $orden->estado_id            = $nuevoEstado;
                                 $orden->save();
@@ -254,7 +259,8 @@ use SMS, Email;
                     }
 
                     $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-                    return redirect('aprobaciones-ordenes-compra')->with('succes', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada Y PDF generado');
+                    return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada Y PDF generado');
+
                 } else {
                     // Si pasa a una instancia intermedia (ej. líder comercial o gerencia)
                     $this->queriedOrden->estado_id = $nuevoEstado;

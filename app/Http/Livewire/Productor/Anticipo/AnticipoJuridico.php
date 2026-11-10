@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class AnticipoJuridico extends Component
 {
-    public $orden_compra, $porcentaje_anticipo, $total_anticipo;
+    public $orden_compra, $porcentaje_anticipo, $total_anticipo, $justificacion_productor;
     public $orden, $queriedAnticipo;
     public $anticipo_id;
     public $search = '';
@@ -78,6 +78,7 @@ class AnticipoJuridico extends Component
         $this->validate([
             'orden_compra'        => 'required|exists:ordenes_compra,id|unique:anticipos,oc_id',
             'porcentaje_anticipo' => 'required|numeric|min:1|max:100',
+            'justificacion_productor' => 'required|string|max:500',
         ]);
 
         $productorId = Auth::id();
@@ -99,6 +100,7 @@ class AnticipoJuridico extends Component
             'estado_id'           => 2,
             'fecha_solicitud'     => now(),
             'productor_id'        => $productorId,
+            'justificacion_productor' => $this->justificacion_productor,
         ]);
 
         return redirect()->route('lista-anticipos')->with('success', 'Anticipo creado');

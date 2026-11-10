@@ -59,6 +59,7 @@
 @yield('hero-style')
 <div class="main-content position-relative max-height-vh-100 h-100">
     <!-- Navbar -->
+    @livewire('maintenance-notice')
     <nav class="navbar navbar-main navbar-expand-lg  px-0 mx-4 shadow-none border-radius-xl z-index-sticky">
         <div class="container-fluid py-1">
             <nav aria-label="breadcrumb">

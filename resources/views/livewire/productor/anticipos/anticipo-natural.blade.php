@@ -49,7 +49,7 @@
                     <tbody>
                     @foreach ($orden?->ordenItems ?? [] as $item)
                         <tr>
-                            <td class="text-center">{{ $item->num_item }}</td>
+                            <td class="text-center">{{ $item->itemPresupuesto?->num_item ?? 'N/A' }}</td>
                             <td class="text-center">{{ $item->cant_oc }}</td>
                             <td class="text-center">{{ $item->dias_oc }}</td>
                             <td class="text-center">{{ $item->otros_oc }}</td>
@@ -63,7 +63,6 @@
             </div>
         </div>
     </div>
-
     <div class="row px-4">
         <div class="col-md-12">
             <div class="card card-body">
@@ -119,6 +118,19 @@
                             </div>
                         </div>
                     </div>
+
+                        <div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="justificacion_productor_natural">Justificacion Anticipo:</label>
+                                    <textarea id="justificacion_productor_natural" class="form-control" wire:model="justificacion_productor"></textarea>
+                                    @error('justificacion_productor')
+                                        <div class="text-invalid">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                     <button class="btn bg-gradient-info" wire:click="nuevoAnticipoNatural"
                             wire:loading.attr="disabled">Crear Anticipo</button>
 

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Produccion\Anticipos;
 
 use Livewire\Component;
 use App\Models\Anticipo;
+use App\Models\OrdenCompra;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +16,7 @@ class Anticipos extends Component
     // Propiedades para la gestión del detalle
     public $selectedAnticipo = null;
     public $showModal = false;
+    public $fechalider = null;
 
     // Propiedad para la observación de rechazo
     public $justificacion_rechazo = '';
@@ -43,6 +45,14 @@ class Anticipos extends Component
         if ($this->selectedAnticipo) {
             $this->showModal = true;
         }
+    }
+    public function formatearFecha($fecha)
+    {
+        if (!$fecha) {
+            return 'N/A';
+        }
+
+        return \Carbon\Carbon::parse($fecha)->format('d/m/Y H:i');
     }
 
     public function cerrarModal()

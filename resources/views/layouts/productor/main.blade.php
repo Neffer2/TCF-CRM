@@ -58,6 +58,7 @@
 </head>
 <body class="g-sidenav-show bg-gray-100 @yield('nav-hidden')">
   @yield('hero-style')
+  @livewire('maintenance-notice')
   <!-- Barra lateral -->
   <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
     <div class="sidenav-header d-flex align-items-center justify-content-center">
@@ -132,6 +133,7 @@
                 </ul>
             </div>
         </li>
+        <!--
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#nomia" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">
@@ -142,7 +144,7 @@
           <div @class([
             'collapse' => true,
             'show' => (request()->is('anticipo-prod') ||
-                        request()->is('lista-anticipos'))]) id="nomia">
+                        request()->is('lista-nomina'))]) id="nomia">
             <ul class="nav ms-4">
               <li @class(['active' => request()->is('anticipo-prod'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('anticipo-prod'),
@@ -152,7 +154,7 @@
                   <span class="sidenav-normal"> Nomina </span>
                 </a>
               </li>
-              <!--
+              
               <li @class(['active' => request()->is('ordenes-compra-empleado'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('ordenes-compra-empleado'),
                         'nav-link' => true,
@@ -161,7 +163,7 @@
                     <span class="sidenav-normal"> Empleados </span>
                 </a>
               </li>
-              -->
+              
               <li @class(['active' => request()->is('lista-anticipos'), 'nav-item' => true])">
                 <a @class(['active' => request()->is('lista-anticipos'),
                         'nav-link' => true,
@@ -173,6 +175,7 @@
             </ul>
           </div>
         </li>
+        -->
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#anticipos" class="nav-link" aria-controls="applicationsExamples" role="button" aria-expanded="false">
             <div class="icon icon-shape icon-sm text-center d-flex align-items-center justify-content-center">

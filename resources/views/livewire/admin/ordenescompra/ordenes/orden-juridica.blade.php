@@ -43,8 +43,14 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="form-control-label text-xs font-weight-bold">Fecha de Envío</label>
+                                <label class="form-control-label text-xs font-weight-bold">Fecha Productor</label>
                                 <input type="text" class="form-control" value="{{ $orden_compra->fecha_envio_produccion ?? 'N/A' }}" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-control-label text-xs font-weight-bold">Fecha Aprobacion Lider</label>
+                                <input type="text" class="form-control" value="{{ $orden_compra->fecha_aprobacion ?? 'N/A' }}" disabled>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -184,10 +190,12 @@
                                     @error('justificacion_rechazo') <span class="text-danger text-xs">{{ $message }}</span> @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label>Justificación del Productor</label>
-                                <textarea class="form-control" rows="3" disabled>{{ $orden_compra->justificacion_productor ?? 'N/A' }}</textarea>
-                            </div>
+                            @if(!$orden_compra->archivo_remision)
+                                <div class="col-md-6">
+                                    <label>Justificación del Productor</label>
+                                    <textarea class="form-control" rows="3" disabled>{{ $orden_compra->justificacion_productor ?? 'N/A' }}</textarea>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="row mt-4">

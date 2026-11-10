@@ -138,6 +138,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="justificacion_productor_juridico">Justificacion Anticipo:</label>
+                                    <textarea id="justificacion_productor_juridico" class="form-control" wire:model="justificacion_productor"></textarea>
+                                    @error('justificacion_productor')
+                                        <div class="text-invalid">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="row">
                             <div class="col-md-12">
                                 <button class="btn bg-gradient-primary" wire:click="nuevoAnticipoJuridico"

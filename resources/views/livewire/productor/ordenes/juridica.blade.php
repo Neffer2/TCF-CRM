@@ -42,7 +42,7 @@
                                 <td>
                                     <div class="form-group m-0">
                                         <label for="proveedor"><b>Proveedor:</b> @if ($proveedor)
-                                            {{ $proveedores->where('id', $proveedor)->first()->tercero }}
+                                            {{ $proveedores->where('id', $proveedor)->first()?->tercero ?? 'N/A' }}
                                         @endif </label>
                                         <select id="proveedor" type="text" size="6" wire:model.lazy="proveedor" class="form-control" style="font-size: 9px;" @if (Auth::user()->rol == 1) disabled @endif>
                                             @foreach ($proveedores as $proveedor_info)
@@ -256,7 +256,7 @@
                                 <h5 class="mb-0">Vista Previa del Good Receive</h5>
                             </div>
                             <div class="card-body">
-                                <embed src="{{ route('orden-compra-gr.pdf', $orden_compra) }}" type="application/pdf" width="100%" height="600px" />
+                                <embed src="{{ route('orden-compra-gr.pdf', $orden_compra) }}" type="application/pdf" width="100%" height="1000px" />
                             </div>
                         </div>
                     </div>

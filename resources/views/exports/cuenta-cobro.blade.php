@@ -66,18 +66,6 @@
 
     <p>Por Concepto de: {{ $concepto }}</p>
 
-    <p class="just">
-        Por favor aplicar la retención en la fuente de acuerdo con lo establecido en los artículos 383 E.T.
-        Declaro bajo gravedad de juramento que no solicitare al agente retenedor la aplicación de costos y
-        deducciones de conformidad con lo previsto en el numeral 6 del artículo 1.2.4.1.6 del Decreto 2231
-        de 2023, y me rigen por lo previsto en el artículo 383 del Estatuto Tributario.
-    </p>
-
-    <p class="just">
-        No pago aportes a seguridad social de acuerdo con el artículo 1.2.4.1.7 del decreto 1625 de 2016 y
-        art 135 ley 1753 de 2015.
-    </p>
-
     <table class="items">
         <thead>
             <tr>
@@ -94,7 +82,7 @@
         <tbody>
             @foreach ($items as $i => $item)
                 <tr>
-                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $item->itemPresupuesto->num_item }}</td>
                     <td>{{ $item->itemPresupuesto->presto->cod_cc ?? '-' }}</td>
                     <td>{{ $item->desc_oc }}</td>
                     <td class="r">{{ $item->cant_oc }}</td>
@@ -112,6 +100,18 @@
             </tr>
         </tfoot>
     </table>
+
+    <p class="just">
+        Por favor aplicar la retención en la fuente de acuerdo con lo establecido en los artículos 383 E.T.
+        Declaro bajo gravedad de juramento que no solicitare al agente retenedor la aplicación de costos y
+        deducciones de conformidad con lo previsto en el numeral 6 del artículo 1.2.4.1.6 del Decreto 2231
+        de 2023, y me rigen por lo previsto en el artículo 383 del Estatuto Tributario.
+    </p>
+
+    <p class="just">
+        No pago aportes a seguridad social de acuerdo con el artículo 1.2.4.1.7 del decreto 1625 de 2016 y
+        art 135 ley 1753 de 2015.
+    </p>
 
     <p style="margin-top: 18px;">Cordialmente,</p>
 

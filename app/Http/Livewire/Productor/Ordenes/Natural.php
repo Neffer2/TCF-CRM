@@ -345,9 +345,11 @@ class Natural extends Component
             return back();
         }
 
+        $tieneContrato = $this->queriedOrden->naturalInfo->contrato;
+
         $this->validate([
             'tercero' => 'required',
-            'justificacion_productor' => 'required|string|max:1000'
+            'justificacion_productor' => ($tieneContrato ? 'nullable' : 'required') . '|string|max:1000',
         ]);
 
         $this->queriedOrden->update([
@@ -415,6 +417,7 @@ class Natural extends Component
             'ciudad',
             'banco',
         ]);
+        
 
         unset($this->tercero);
         unset($this->selected_item);

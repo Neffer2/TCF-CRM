@@ -9,7 +9,6 @@
     </div>
 
     <div class="card-body pt-2">
-        <!-- Tabla de Ítems de la Orden de Compra -->
         <div class="row font-table px-2 mb-4">
             <div class="col-md-12">
                 @if (session()->has('success_item'))
@@ -39,17 +38,15 @@
                                 <tr>
                                     <td class="text-center align-middle">{{ $item['num_item'] }}</td>
                                     
-                                    <!-- Cantidad con actualización en tiempo real -->
                                     <td class="text-center align-middle" style="width: 80px;">
                                         <input type="number" wire:model.live="ocItems.{{ $index }}.cant" class="form-control form-control-sm text-center" step="any">
                                     </td>
 
-                                    <!-- Días con actualización en tiempo real -->
                                     <td class="text-center align-middle" style="width: 80px;">
                                         <input type="number" wire:model.live="ocItems.{{ $index }}.dias" class="form-control form-control-sm text-center" step="any">
+                                        @error("ocItems.$index.cant") <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                                     </td>
 
-                                    <!-- Otros con actualización en tiempo real -->
                                     <td class="text-center align-middle" style="width: 80px;">
                                         <input type="number" wire:model.live="ocItems.{{ $index }}.otros" class="form-control form-control-sm text-center" step="any">
                                     </td>
@@ -58,12 +55,11 @@
                                         <textarea disabled class="form-control form-control-sm" rows="1">{{ $item['desc'] }}</textarea>
                                     </td>
 
-                                    <!-- Valor Unitario con actualización en tiempo real -->
                                     <td class="text-center">{{ number_format($item['vUnit'] ?? 0) }}</td>
 
-                                    <!-- Valor Total que se recalcula visualmente al instante -->
                                     <td class="text-center align-middle font-weight-bold text-success">
-                                        ${{ number_format($item['vTotal'], 2) }}
+                                        <textarea disabled class="form-control form-control-sm" rows="1">${{ number_format($item['vTotal'], 2) }}</textarea>
+                                        @error("ocItems.$index.vTotal") <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                                     </td>
 
                                     @if(isset(auth()->user()->rol) && auth()->user()->rol != 1)

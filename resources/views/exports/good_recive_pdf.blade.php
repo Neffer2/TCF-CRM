@@ -23,7 +23,7 @@
         'logo'      => public_path('images/bull-marketing.png'),
     ];
 
-    // ── Proveedor (AJUSTAR nombres de columnas a tu tabla `proveedores`) ──
+    // ── Proveedor ──────────────────────────────────────────
     $prov = $oc->proveedor;
     $proveedor = [
         'nombre'    => $prov->tercero ?? $prov->nombre ?? '',
@@ -32,7 +32,7 @@
         'ciudad'    => $prov->ciudad ?? '',
     ];
 
-    // ── Centro de costo (AJUSTAR columna del presupuesto) ────────
+    // ── Centro de costo ────────────────────────────────────────
     $presupuesto = $oc->presupuesto_resuelto;
     $cCosto      = $presupuesto->cod_cc ?? '';
 
@@ -46,18 +46,13 @@
     ])->all();
 
     $gr = [
-        'numero'           => str_pad($grNumero, 8, '0', STR_PAD_LEFT),
+        'numero'         => str_pad($grNumero, 8, '0', STR_PAD_LEFT),
         'observaciones'    => '',
     ];
 
     // ── Totales ──────────────────────────────────────────────────
     $subtotal   = collect($items)->sum('vr_total');
-    $ivaPct     = $ivaPct ?? 19;
-    $iva        = round($subtotal * $ivaPct / 100, 2);
-    $retefuente = $retefuente ?? 0;
-    $reteiva    = $reteiva ?? 0;
-    $reteica    = $reteica ?? 0;
-    $total      = $subtotal + $iva - $retefuente - $reteiva - $reteica;
+    $total      = $subtotal;
 
     $fmt  = fn ($n) => number_format((float) $n, 2, '.', ',');
     $logo = $empresa['logo'] ?? null;
@@ -86,6 +81,18 @@
 
         .gr-title { font-weight: bold; font-size: 11px; line-height: 1.3; }
         .fecha { font-size: 9px; }
+
+        /* Estilo para la validez de facturación */
+        .valido-facturacion {
+            font-size: 8px;
+            font-weight: bold;
+            border: 1px solid #000;
+            background-color: #f2f2f2;
+            padding: 4px;
+            margin-top: 6px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
 
         .seccion { font-weight: bold; font-size: 12px; text-decoration: underline; margin: 22px 0 6px 0; }
         .datos td { padding: 2px 4px; font-size: 11px; }
@@ -127,7 +134,7 @@
                 <div class="empresa-nombre">{{ $empresa['nombre'] }}</div>
                 N.I.T. {{ $empresa['nit'] }}<br>
                 DIRECCION: {{ $empresa['direccion'] }}<br>
-                TELEFONOS:{{ $empresa['telefono'] }}
+                TELEFONOS: {{ $empresa['telefono'] }}
             </td>
             <td style="width: 45%; vertical-align: top;">
                 <div class="logo-box">
@@ -141,6 +148,10 @@
                 <div class="center gr-title" style="margin-top: 4px;">
                     GOOD RECEIVED<br>
                     Nro. &nbsp;&nbsp;&nbsp;&nbsp;{{ $gr['numero'] }}
+                </div>
+                {{-- Aviso de validez para facturación --}}
+                <div class="valido-facturacion">
+                    DOCUMENTO VÁLIDO PARA FACTURACIÓN
                 </div>
             </td>
         </tr>
@@ -217,10 +228,6 @@
             <td style="width: 45%;">
                 <table class="totales">
                     <tr><td class="lbl">SUBTOTAL</td><td class="val">{{ $fmt($subtotal) }}</td></tr>
-                    <tr><td class="lbl">IVA</td><td class="val">{{ $fmt($iva) }}</td></tr>
-                    <tr><td class="lbl">RETEFUENTE</td><td class="val">{{ $fmt($retefuente) }}</td></tr>
-                    <tr><td class="lbl">RETEIVA</td><td class="val">{{ $fmt($reteiva) }}</td></tr>
-                    <tr><td class="lbl">RETEICA</td><td class="val">{{ $fmt($reteica) }}</td></tr>
                     <tr class="total"><td class="lbl">TOTALES</td><td class="val">{{ $fmt($total) }}</td></tr>
                 </table>
             </td>

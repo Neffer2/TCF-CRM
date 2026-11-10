@@ -133,61 +133,57 @@ class Juridica extends Component{
     {
         // Recargar para no actuar sobre un estado desactualizado
         $this->orden_compra->refresh();
-        
-        /*
+
         if (!$this->esMiTurno()) {
             abort(403, 'No tienes permiso o no es tu turno para gestionar esta orden.');
         }
-        */
-        $icon = 'success';
 
         if ($accion === 'aprobar') {
             $nuevoEstado = $this->siguienteEstadoAprobacion();
 
             if ($nuevoEstado === self::ESTADO_APROBADA) {
+                $soloAprobada = false;
+
                 try {
-                    $this->orden_compra->load([
-                        'proveedor',
-                        'presupuesto.gestion.contacto',
-                        'presupuesto.presupuestoItems',
-                        'ordenItems',
-                    ]);
-
-                    $dompdf = new Dompdf(['enable_remote' => true]);
-                    $html = View::make('exports.orden_compra_pdf', [
-                        'orden' => $this->orden_compra,
-                    ])->render();
-
-                    $dompdf->loadHtml($html);
-                    $dompdf->setPaper('A4', 'portrait');
-                    $dompdf->render();
-
-                    $pdfOutput = $dompdf->output();
-
-                    // Definir ruta y nombre del archivo
-                    $nombreArchivo = 'orden_compra_' . ($this->orden_compra->id) . '_' . time() . '.pdf';
-                    $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
-
-                    // Guardar en Storage
-                    Storage::put($rutaAlmacenamiento, $pdfOutput);
-
-                } catch (\Throwable $e) {
-                    $this->addError('customError', 'Error al generar el PDF: ' . $e->getMessage());
-                    return;
-                }
-                try {
-                    $this->conLockDB('oc_consecutivo', 10, function () use ($rutaAlmacenamiento, $nuevoEstado) {
-                        DB::transaction(function () use ($rutaAlmacenamiento, $nuevoEstado) {
+                    $this->conLockDB('oc_consecutivo', 10, function () use ($nuevoEstado, &$soloAprobada) {
+                        DB::transaction(function () use ($nuevoEstado, &$soloAprobada) {
                             $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
                             if (!empty($orden->cod_oc)) {
-                                throw new \RuntimeException('Esta orden ya fue aprobada y tiene código asignado.');
+                                $orden->estado_id        = $nuevoEstado;
+                                $orden->save();
+
+                                $this->orden_compra = $orden;
+                                $soloAprobada = true;
+                                return;
                             }
 
-                            $orden->archivo_orden_helisa  = $rutaAlmacenamiento;
-                            $orden->fecha_aprobacion      = now();
-                            $orden->cod_oc                = $this->siguienteCodigoOC();
-                            $orden->estado_id             = $nuevoEstado;
+                            $orden->load([
+                                'proveedor',
+                                'presupuesto.gestion.contacto',
+                                'presupuesto.presupuestoItems',
+                                'ordenItems',
+                            ]);
+
+                            $dompdf = new Dompdf(['enable_remote' => true]);
+                            $html = View::make('exports.orden_compra_pdf', [
+                                'orden' => $orden,
+                            ])->render();
+
+                            $dompdf->loadHtml($html);
+                            $dompdf->setPaper('A4', 'portrait');
+                            $dompdf->render();
+
+                            $pdfOutput = $dompdf->output();
+
+                            $nombreArchivo = 'orden_compra_' . $orden->id . '_' . time() . '.pdf';
+                            $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
+
+                            Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                            $orden->archivo_orden_helisa = $rutaAlmacenamiento;
+                            $orden->cod_oc               = $this->siguienteCodigoOC();
+                            $orden->estado_id            = $nuevoEstado;
                             $orden->save();
 
                             $this->orden_compra = $orden;
@@ -198,9 +194,11 @@ class Juridica extends Component{
                     return;
                 }
 
-                $mensaje = 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
+                $mensaje = $soloAprobada
+                    ? 'Orden de compra APROBADA con éxito.'
+                    : 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
 
-            } else { 
+            } else {
                 $this->orden_compra->estado_id = $nuevoEstado;
                 $this->orden_compra->update();
 

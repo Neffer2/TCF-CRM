@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\AnticipoOrdenes;
 use App\Http\Middleware\productor;
 use App\Models\Anticipo;
 use Illuminate\Support\Facades\Route;
@@ -171,6 +172,10 @@ Route::get('/', function () {
     Route::view('/consulta-terceros/{orden?}', 'productor.terceros.consulta-terceros')->name('consulta-terceros');
 /* --- */
 
+
+Route::get('/anticipos/{anticipo}/pdf', fn (int $anticipo) => AnticipoOrdenes::inlinePdf($anticipo))
+    ->name('anticipos.pdf')
+    ->middleware('auth');
 
 Route::get('trial-mail', function (){
     return view('mails.grGenerado');

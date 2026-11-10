@@ -16,11 +16,6 @@
                         <button :class="!show ? 'btn bg-gradient-info disabled' : 'btn bg-gradient-info'" x-on:click="show = ! show" type="button">
                             Anticipo Natural
                         </button>
-                        <!--
-                        <button :class="show ? 'btn bg-gradient-secondary disabled' : 'btn bg-gradient-secondary'" x-on:click="show = ! show" type="button">
-                            Anticipo Empleado
-                        </button>
-                        -->
                     </div>
                 </div>
             </div>

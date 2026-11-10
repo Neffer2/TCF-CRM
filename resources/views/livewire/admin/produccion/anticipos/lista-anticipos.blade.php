@@ -3,7 +3,7 @@
     $userRol = Auth::user()->rol;
 
     $ids_controller = [2, 208, 197, 214, 145, 181, 210, 206];
-    $ids_lideresComerciales = [9, 17, 192];
+    $ids_lideresComerciales = [192, 9, 17];
     $ids_gerencia = [10, 8];
 
     // Determinar grupo y título dinámicamente
@@ -34,7 +34,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h3 class="mb-0">{{ $tituloVista }}</h3>
-                    <p class="text-sm mb-0">Gestión y consulta de anticipos en tu etapa de aprobación.</p>
+                    <p class="text-sm mb-0">Gestión y consulta los anticipos para aprobar</p>
                 </div>
                 <div class="col-md-4 mb-0">
                     <label for="search">Buscar:</label>
@@ -180,6 +180,10 @@
                                     <h6 class="mb-0">{{ $selectedAnticipo->created_at ? $selectedAnticipo->created_at->format('d/m/Y H:i') : 'N/A' }}</h6>
                                 </div>
                                 <div class="col-md-3 col-6 mb-2">
+                                    <span class="text-xs text-secondary">Aprobacion Lider:</span>
+                                    <h6 class="mb-0">{{ $this->formatearFecha($selectedAnticipo->fecha_aprobacion ?? null) }}</h6>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
                                     <span class="text-xs text-secondary">Centro de Costos / OC:</span>
                                     <h6 class="mb-0">{{ $selectedAnticipo->ordenCompra?->presupuesto?->cod_cc ?? ('OC #' . ($selectedAnticipo->ordenCompra?->id ?? 'N/A')) }}</h6>
                                 </div>
@@ -234,6 +238,20 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="form-gruop mb-0">
+                            <embed wire:key="pdf-{{ $selectedAnticipo->id }}"
+                                src="{{ route('anticipos.pdf', $selectedAnticipo->id) }}"
+                                width="100%" height="900" type="application/pdf">
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="justificacion_productor" class="form-control-label text-xs font-weight-bold text-primary">
+                                Justificacion del productor
+                            </label>
+                            <textarea class="form-control" rows="3" disabled>{{ $selectedAnticipo->justificacion_productor ?? 'N/A'}}</textarea>
+                        </div>
+
                         <div class="form-group mb-0">
                             <label for="justificacion_rechazo" class="form-control-label text-xs font-weight-bold text-danger">
                                 Justificación / Motivo de Rechazo <span class="text-muted">(Requerido para rechazar)</span>:

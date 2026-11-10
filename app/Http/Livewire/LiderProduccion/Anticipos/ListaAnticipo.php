@@ -52,7 +52,8 @@ class ListaAnticipo extends Component
     {
         if ($this->selectedAnticipo) {
             $this->selectedAnticipo->update([
-                'estado_id' => 3
+                'estado_id' => 3,
+                'fecha_aprobacion' => now(),
             ]);
 
             session()->flash('message', 'Anticipo #' . $this->selectedAnticipo->id . ' aprobado correctamente.');

@@ -7,7 +7,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
+use Illuminate\Http\Response;
 
 class AnticipoOrdenes 
 {
@@ -18,11 +18,12 @@ class AnticipoOrdenes
      * @return StreamedResponse
      *
      */
-    public static function downloadPdf(int $anticipoId): StreamedResponse
+    public static function output(int $anticipoId): array
     {
         // Cargar las relaciones según la estructura real de tu proyecto
         $anticipo = Anticipo::with([
             'ordenCompra.presupuesto.gestion.contacto',
+            'ordenCompra.presupuesto.productor_info',
             'ordenCompra.proveedor',
             'ordenCompra.ordenItems',
             'ordenCompra.naturalInfo.tercero',
@@ -73,7 +74,7 @@ class AnticipoOrdenes
                 'tipo'      => 'Persona jurídica',
                 'etiqueta'  => 'Razón social',
                 'nombre'    => $proveedor?->tercero,
-                'documento' => $proveedor?->num_rut,
+                'documento' => $proveedor?->documento,
                 'dv'        => $proveedor?->dv,
                 'direccion' => $proveedor?->direccion,
                 'ciudad'    => $proveedor?->ciudad,
@@ -85,7 +86,8 @@ class AnticipoOrdenes
             ];
         }
 
-        $productor = $naturalInfo?->productor;
+        $productor = $naturalInfo?->productor
+            ?? $presupuesto->productor_info;
 
         // Mapeo de acciones/estados en las aprobaciones
         $puesto = [
@@ -126,7 +128,13 @@ class AnticipoOrdenes
             'fecha'       => $fecha,
             'logo'        => $logo,
         ])->render();
-
+        /*
+        dd(
+            $orden->getAttributes(),
+            $presupuesto?->getAttributes(),
+            $gestion?->getAttributes()
+        );
+        */
         // Configuración de Dompdf
         $options = new Options();
         $options->set('isRemoteEnabled', true);
@@ -140,12 +148,27 @@ class AnticipoOrdenes
 
         $fileName = 'Orden_Anticipo_' . ($anticipo->cod_orden_anticipo ?? $anticipo->id) . '.pdf';
 
-        $orden = $anticipo->ordenCompra;
+        return [$dompdf->output(), $fileName];
+    }
+
+    public static function downloadPdf(int $anticipoId): StreamedResponse
+    {
+        [$pdf, $fileName] = self::output($anticipoId);
 
         return response()->streamDownload(
-            fn() => print($dompdf->output()),
+            fn () => print($pdf),
             $fileName,
             ['Content-Type' => 'application/pdf']
         );
+    }
+
+    public static function inlinePdf(int $anticipoId): Response
+    {
+        [$pdf, $fileName] = self::output($anticipoId);
+
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $fileName . '"',
+        ]);
     }
 }

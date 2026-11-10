@@ -32,10 +32,13 @@ class Remision extends Component
 
     public function getData()
     {
-        $this->storedOrden = OrdenCompra::with('ordenItems')->find($this->orden);
+        $this->storedOrden = OrdenCompra::with('ordenItems.itemPresupuesto')
+            ->find($this->orden);
 
         if ($this->storedOrden && $this->storedOrden->ordenItems) {
-            $this->ocItems = $this->storedOrden->ordenItems->map(function ($item, $index) {
+            $this->ocItems = $this->storedOrden->ordenItems->map(function ($item) {
+                $presu = $item->itemPresupuesto;
+
                 return [
                     'id'       => $item->id,
                     'num_item' => $item->num_item,
@@ -45,38 +48,63 @@ class Remision extends Component
                     'desc'     => $item->desc_oc ?? '',
                     'vUnit'    => $item->vunit_oc ?? 0,
                     'vTotal'   => $item->vtotal_oc ?? 0,
+
+                    'max_cant'   => $presu?->cantidad ?? 0,
+                    'max_vUnit'  => $presu?->v_unitario ?? 0,
+                    'max_vTotal' => $presu?->v_total ?? 0,
                 ];
             })->toArray();
         }
     }
-
     public function updatedOcItems($value, $key)
     {
-        // $key viene en formato "index.campo", por ejemplo: "0.cant", "1.dias", etc.
         $parts = explode('.', $key);
-        
-        if (count($parts) === 2) {
-            $index = $parts[0];
 
-            if (isset($this->ocItems[$index])) {
-                $item = $this->ocItems[$index];
-
-                $cant  = (float) ($item['cant'] ?? 0);
-                $dias  = (float) ($item['dias'] ?? 0);
-                $otros = (float) ($item['otros'] ?? 0);
-                $vUnit = (float) ($item['vUnit'] ?? 0);
-
-                // Aplicar factores para la fórmula
-                $factorDias  = $dias > 0 ? $dias : 1;
-                $factorOtros = $otros > 0 ? $otros : 1;
-
-                // Recalcular el vTotal de inmediato
-                $this->ocItems[$index]['vTotal'] = $cant * $factorDias * $factorOtros * $vUnit;
-            }
+        if (count($parts) !== 2) {
+            return;
         }
+
+        [$index, $field] = $parts;
+
+        if (!isset($this->ocItems[$index])) {
+            return;
+        }
+
+        $item = $this->ocItems[$index];
+
+        $cant  = (float) ($item['cant'] ?? 0);
+        $dias  = (float) ($item['dias'] ?? 0);
+        $otros = (float) ($item['otros'] ?? 0);
+        $vUnit = (float) ($item['vUnit'] ?? 0);
+
+        // Tope de cantidad
+        if ($field === 'cant' && $cant > (float) $item['max_cant']) {
+            $cant = (float) $item['max_cant'];
+            $this->ocItems[$index]['cant'] = $cant;
+            $this->addError("ocItems.$index.cant", "La cantidad no puede superar {$item['max_cant']}.");
+        }
+
+        // Tope de valor unitario
+        if ($field === 'vUnit' && $vUnit > (float) $item['max_vUnit']) {
+            $vUnit = (float) $item['max_vUnit'];
+            $this->ocItems[$index]['vUnit'] = $vUnit;
+            $this->addError("ocItems.$index.vUnit", "El valor unitario no puede superar {$item['max_vUnit']}.");
+        }
+
+        $factorDias  = $dias > 0 ? $dias : 1;
+        $factorOtros = $otros > 0 ? $otros : 1;
+
+        $vTotal = $cant * $factorDias * $factorOtros * $vUnit;
+
+        // Tope del total
+        if ($vTotal > (float) $item['max_vTotal']) {
+            $vTotal = (float) $item['max_vTotal'];
+            $this->addError("ocItems.$index.vTotal", "El valor total no puede superar {$item['max_vTotal']}.");
+        }
+
+        $this->ocItems[$index]['vTotal'] = $vTotal;
     }
 
-    // El botón de guardar fila (💾) ahora solo persiste los cambios ya calculados en la Base de Datos
     public function updateItem($index)
     {
         if (!isset($this->ocItems[$index])) {
@@ -85,16 +113,55 @@ class Remision extends Component
 
         $itemData = $this->ocItems[$index];
 
-        $ocItem = OcItem::find($itemData['id']);
-        if ($ocItem) {
-            $ocItem->update([
-                'cant_oc'   => $itemData['cant'],
-                'dias_oc'   => $itemData['dias'],
-                'otros_oc'  => $itemData['otros'],
-                'vunit_oc'  => $itemData['vUnit'],
-                'vtotal_oc' => $itemData['vTotal'],
-            ]);
+        $ocItem = OcItem::with('itemPresupuesto')->find($itemData['id']);
+        if (!$ocItem) {
+            return;
         }
+
+        $presu = $ocItem->itemPresupuesto;
+        if (!$presu) {
+            $this->addError("ocItems.$index.cant", 'Este ítem no tiene un ítem de presupuesto asociado.');
+            return;
+        }
+
+        $cant  = (float) $itemData['cant'];
+        $dias  = (float) $itemData['dias'];
+        $otros = (float) $itemData['otros'];
+        $vUnit = (float) $itemData['vUnit'];
+
+        // Recalcular en servidor, sin confiar en el vTotal del cliente
+        $vTotal = round(
+            $cant * ($dias > 0 ? $dias : 1) * ($otros > 0 ? $otros : 1) * $vUnit,
+            2
+        );
+
+        // Topes inmutables del presupuesto
+        $maxCant   = (float) $presu->cantidad;
+        $maxVUnit  = (float) $presu->v_unitario;
+        $maxVTotal = (float) $presu->v_total;
+
+        if ($cant > $maxCant) {
+            $this->addError("ocItems.$index.cant", "La cantidad no puede superar {$maxCant}.");
+            return;
+        }
+
+        if ($vUnit > $maxVUnit) {
+            $this->addError("ocItems.$index.vUnit", "El valor unitario no puede superar {$maxVUnit}.");
+            return;
+        }
+
+        if ($vTotal > $maxVTotal) {
+            $this->addError("ocItems.$index.vTotal", "El valor total no puede superar {$maxVTotal}.");
+            return;
+        }
+
+        $ocItem->update([
+            'cant_oc'   => $cant,
+            'dias_oc'   => $dias,
+            'otros_oc'  => $otros,
+            'vunit_oc'  => $vUnit,
+            'vtotal_oc' => $vTotal,
+        ]);
 
         session()->flash('success_item', "Ítem #{$itemData['num_item']} actualizado y guardado correctamente.");
     }

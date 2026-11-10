@@ -67,27 +67,35 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
+                        @if ($orden->tipo_oc == 2)
                             @php
-                                $archivo_orden_helisa = str_replace('public/', '', $orden->archivo_orden_helisa);
+                                $archivo_cuenta_cobro = str_replace('public/', '', $orden->archivo_cuenta_cobro);
                             @endphp
-                            <a href="{{ asset("storage/$archivo_orden_helisa") }}" target="_blank" class="">
+                            <a href="{{ asset("storage/$archivo_cuenta_cobro") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Orden de compra.</span>
+                                <span class="btn-inner--text">Cuenta de cobro</span>
                             </a>
                             <br>
-                            @if ($orden->tipo_oc == 2)
                                 <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->cert_bancaria)) }}" target="_blank">
                                     <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
                                     <span class="btn-inner--text">Certificación bancaria.</span>
                                 </a>
-                                @if ($orden->naturalInfo->tercero->art383)
-                                    <br>
-                                    <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">
-                                        <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                        <span class="btn-inner--text">Certificación Art. 383.</span>
-                                    </a>
-                                @endif
+                            @if ($orden->naturalInfo->tercero->art383)
+                                <br>
+                                <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->art383)) }}" target="_blank">
+                                    <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                    <span class="btn-inner--text">Certificación Art. 383.</span>
+                                </a>
                             @endif
+                        @elseif ($orden->tipo_oc == 1)
+                            @php
+                                $archivo_gr = str_replace('public/', '', $orden->archivo_gr);
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_gr") }}" target="_blank" class="">
+                                <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
+                                <span class="btn-inner--text">Orden de compra</span>
+                            </a>
+                        @endif
                         </div>
                     </div>
                 </div>

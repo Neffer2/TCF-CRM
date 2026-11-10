@@ -17,7 +17,7 @@ class AnticipoNatural extends Component
     private const OC_ESTADO_ANTICIPO = 8;
     private const ANTICIPO_RECHAZADO = 6;
 
-    public $orden_compra, $porcentaje_anticipo, $total_anticipo;
+    public $orden_compra, $porcentaje_anticipo, $total_anticipo, $justificacion_productor;
     public $orden, $queriedAnticipo;
     public $anticipo_id;
     public $search = '';
@@ -116,10 +116,11 @@ class AnticipoNatural extends Component
             ],
             'porcentaje_anticipo' => 'required|numeric|min:1|max:100',
             'tipo_oc'             => ['required', Rule::in($this->tiposPermitidos())],
+            'justificacion_productor' => 'required|string|max:500',
         ]);
 
         $orden = OrdenCompra::with('ordenItems')
-            ->where('tipo_oc', self::TIPO_OC_NATURAL)   // la OC listada aún es natural
+            ->where('tipo_oc', self::TIPO_OC_NATURAL)
             ->where('estado_id', self::OC_ESTADO_ANTICIPO)
             ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', Auth::id()))
             ->findOrFail($this->orden_compra);
@@ -136,6 +137,7 @@ class AnticipoNatural extends Component
                 'total_anticipo'      => $total,
                 'estado_id'           => 2,
                 'fecha_solicitud'     => now(),
+                'justificacion_productor' => $this->justificacion_productor ?? null,
                 'productor_id'        => Auth::id(),
             ]);
         });
@@ -162,6 +164,7 @@ class AnticipoNatural extends Component
                     'total_anticipo'      => $total,
                     'estado_id'           => 1,
                     'fecha_aprobacion'    => now(),
+                    'justificacion_productor' => $this->justificacion_productor,
                 ]);
             });
 

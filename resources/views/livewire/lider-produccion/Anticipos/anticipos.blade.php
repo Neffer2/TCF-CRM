@@ -216,6 +216,14 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="form-group mb-0">
+                            <label for="justificacion_productor" class="form-control-label text-xs font-weight-bold text-primary">
+                                Justificacion del productor
+                            </label>
+                            <textarea class="form-control" rows="3" disabled>{{ $selectedAnticipo->justificacion_productor ?? 'N/A'}}</textarea>
+                        </div>
+
                         <div class="form-group mb-0">
                             <label for="justificacion_rechazo" class="form-control-label text-xs font-weight-bold text-danger">
                                 Justificación / Motivo de Rechazo <span class="text-muted">(Requerido para rechazar)</span>:
