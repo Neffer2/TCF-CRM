@@ -168,7 +168,8 @@
     </table>
 
     <div class="aceptada">
-        Nos permitimos comunicarles que los valores presentadados son antes de impuestos y retenciones, los cuales se aplicarán según la normatividad vigente. La presente orden de compra está sujeta a la aceptación de los términos y condiciones establecidos en la cotización comercial correspondiente.
+        Los valores presentados son antes de impuestos y retenciones, los cuales se aplicarán según la normatividad vigente. Esta orden de compra está sujeta a la aceptación de los términos y condiciones establecidos en la cotización comercial correspondiente.
+        Este documento no es válido para facturación; el único documento válido para este fin es el GR (Good Receipt).
     </div>
 
     <div class="legal">
