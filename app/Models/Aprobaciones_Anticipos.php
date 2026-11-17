@@ -18,6 +18,10 @@ class Aprobaciones_Anticipos extends Model{
         'obervacion'
     ];
 
+    public function usuario(){
+        return $this->belongsTo(User::class, 'usuario_decicion_id', 'id');
+    }
+
     public function anticipo(){
         return $this->belongsTo(User::class, 'usuario_decicion_id', 'id');
     }
