@@ -8,6 +8,9 @@
         </div>
     </div>
     <div class="card-body pt-2">
+        <div class="mb-3">
+            @include('partials.orden-compra-adjuntos', ['orden' => $orden])
+        </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="row">

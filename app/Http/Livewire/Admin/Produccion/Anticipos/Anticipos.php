@@ -73,7 +73,7 @@ class Anticipos extends Component
 
         // Caso 1: ya está en espera de gerencia (estado 5) -> gerencia aprueba -> estado 8
         if ($anticipo->estado_id == 5) {
-            $anticipo->update(['estado_id' => 8]);
+            $anticipo->update(['estado_id' => Anticipo::ESTADO_APROBADO]);
             session()->flash('message', 'Anticipo #' . $anticipo->id . ' aprobado por gerencia correctamente.');
             $this->cerrarModal();
             return;
@@ -82,7 +82,7 @@ class Anticipos extends Component
         // Caso 2: aprobación inicial (controller)
         if ($valor_anticipo <= $val_controller) {
             // Dentro del límite del controller -> aprobado directo
-            $anticipo->update(['estado_id' => 8]);
+            $anticipo->update(['estado_id' => Anticipo::ESTADO_APROBADO]);
             session()->flash('message', 'Anticipo #' . $anticipo->id . ' aprobado correctamente.');
         } else {
             // Supera el límite -> pasa a gerencia

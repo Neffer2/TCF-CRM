@@ -87,7 +87,7 @@ class AnticipoOrdenes
         }
 
         $productor = $naturalInfo?->productor
-            ?? $presupuesto->productor_info;
+            ?? $presupuesto?->productor_info;
 
         // Mapeo de acciones/estados en las aprobaciones
         $puesto = [

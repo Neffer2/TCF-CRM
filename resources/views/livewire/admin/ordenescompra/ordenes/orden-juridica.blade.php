@@ -53,33 +53,10 @@
                                 <input type="text" class="form-control" value="{{ $orden_compra->fecha_aprobacion ?? 'N/A' }}" disabled>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label class="form-control-label text-xs font-weight-bold">Archivo de Cotización</label>
-                                <div>
-                                    @if($orden_compra && $orden_compra->archivo_cot)
-                                        <a href="{{ Storage::url($orden_compra->archivo_cot) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
-                                            <i class="fas fa-file-pdf me-1"></i> Ver Cotización
-                                        </a>
-                                    @else
-                                        <span class="text-sm text-secondary">No adjunto</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        @if($orden_compra && $orden_compra->archivo_remision)
-                            <!-- Archivo de Remisión -->
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-control-label text-xs font-weight-bold d-block">Archivo de Remisión</label>
-                                    <div>
-                                       <a href="{{ Storage::url($orden_compra->archivo_remision) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
-                                            <i class="fas fa-file-pdf me-1"></i> Ver Remisión
-                                        </a>            
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        @include('partials.orden-compra-adjuntos', ['orden' => $orden_compra])
                     </div>
 
                     <hr class="horizontal dark">

@@ -72,6 +72,10 @@
 
                     <hr class="horizontal dark">
 
+                    <div class="mb-3">
+                        @include('partials.orden-compra-adjuntos', ['orden' => $queriedOrden])
+                    </div>
+
                     <!-- Tabla de Ítems (Solo Lectura) -->
                     <h6 class="mb-3">Ítems de la Orden Natural</h6>
                     <div class="table-responsive p-0">

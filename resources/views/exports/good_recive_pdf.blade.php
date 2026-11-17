@@ -4,7 +4,7 @@
     $oc = $oc ?? $orden;
     $grNumero = $grNumero ?? $oc->id;
     
-    $oc->loadMissing(['ordenItems', 'proveedor', 'presupuesto']);
+    $oc->loadMissing(['ordenItems', 'proveedor', 'presupuesto', 'anticipos']);
 
     $meses = [
         1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
@@ -52,7 +52,11 @@
 
     // ── Totales ──────────────────────────────────────────────────
     $subtotal   = collect($items)->sum('vr_total');
-    $total      = $subtotal;
+    $anticipo   = $oc->anticipos
+        ->where('estado_id', '!=', 6)
+        ->filter(fn ($anticipo) => filled($anticipo->comprobante_pago))
+        ->sum('total_anticipo');
+    $total      = $subtotal - $anticipo;
 
     $fmt  = fn ($n) => number_format((float) $n, 2, '.', ',');
     $logo = $empresa['logo'] ?? null;
@@ -228,7 +232,8 @@
             <td style="width: 45%;">
                 <table class="totales">
                     <tr><td class="lbl">SUBTOTAL</td><td class="val">{{ $fmt($subtotal) }}</td></tr>
-                    <tr class="total"><td class="lbl">TOTALES</td><td class="val">{{ $fmt($total) }}</td></tr>
+                    <tr><td class="lbl">ANTICIPO PAGADO</td><td class="val">{{ $anticipo > 0 ? $fmt($anticipo) : 'No aplica' }}</td></tr>
+                    <tr class="total"><td class="lbl">TOTAL A FACTURAR</td><td class="val">{{ $fmt($total) }}</td></tr>
                 </table>
             </td>
         </tr>

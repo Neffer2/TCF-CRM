@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Anticipo extends Model
 {
+    public const ESTADO_APROBADO = 8;
+
     protected $table = 'anticipos';
 
     protected $fillable = [

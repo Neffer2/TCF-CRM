@@ -8,7 +8,8 @@
     $fecha = \Carbon\Carbon::parse($fechaBase)->locale('es');
     $fechaTexto = ucfirst($fecha->translatedFormat('F d')) . ' DE ' . $fecha->format('Y');
 
-    $codCcOrden = optional($orden->presupuesto)->cod_cc ?? 'N/A';
+    $orden->loadMissing('ordenItems.itemPresupuesto.presupuesto');
+    $codCcOrden = $orden->presupuesto?->cod_cc;
 
     // Detección automática: Proveedor (Jurídica) o Tercero (Natural)
     $prov = $orden->proveedor ?? optional($orden->naturalInfo)->tercero;
@@ -26,6 +27,7 @@
     $reteiva    = $orden->reteiva    ?? 0;
     $reteica    = $orden->reteica    ?? 0;
     $total      = $subtotal + $iva - $retefuente - $reteiva - $reteica;
+    $esBorrador = (int) (auth()->user()->rol ?? 0) === 6;
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -35,6 +37,19 @@
     <style>
         @page { margin: 40px 38px 30px 38px; }
         body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #000; margin: 0; }
+        .marca-agua {
+            position: fixed;
+            top: 47%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #a00000;
+            opacity: 0.24;
+            transform: rotate(-30deg);
+            z-index: 10;
+        }
         table { border-collapse: collapse; width: 100%; }
         td, th { vertical-align: top; }
         .empresa-nombre { font-size: 18px; font-weight: bold; padding-bottom: 6px; }
@@ -65,6 +80,9 @@
     </style>
 </head>
 <body>
+    @if ($esBorrador)
+        <div class="marca-agua">BORRADOR NO VALIDO PARA EJECUTAR</div>
+    @endif
 
     <table>
         <tr>
@@ -140,17 +158,28 @@
         </thead>
         <tbody>
             @foreach ($orden->ordenItems as $item)
+                @php
+                    $itemPresupuesto = $item->itemPresupuesto;
+                    $codCcItem = $itemPresupuesto?->presupuesto?->cod_cc;
+                @endphp
                 <tr>
-                    <td>{{ $item->desc_oc ?? optional($item->itemPresupuesto)->descripcion }}</td>
-                    <td>{{ $item->cod_cc ?? optional($item->itemPresupuesto)->cod_cc ?? $codCcOrden }}</td>
-                    <td class="ctr">{{ $item->num_item ?? optional($item->itemPresupuesto)->num_item }}</td>
+                    <td>
+                        @if (filled($item->desc_oc))
+                            <div>{{ $item->desc_oc }}</div>
+                        @endif
+                        @if (filled($itemPresupuesto?->descripcion))
+                            <div>{{ $itemPresupuesto->descripcion }}</div>
+                        @endif
+                    </td>
+                    <td>{{ $codCcItem ?: ($item->cod_cc ?: ($codCcOrden ?: 'N/A')) }}</td>
+                    <td class="ctr">{{ $item->num_item ?? $itemPresupuesto?->num_item }}</td>
                     <td class="num">{{ $fmt($item->cant_oc) }}</td>
                     <td class="num">{{ $fmt($item->vunit_oc) }}</td>
                     <td class="num">{{ $fmt($item->vtotal_oc) }}</td>
                 </tr>
             @endforeach
             <tr class="relleno">
-                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>web
             </tr>
         </tbody>
     </table>

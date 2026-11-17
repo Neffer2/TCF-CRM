@@ -51,35 +51,10 @@
                             </div>
                         </div>
 
-                        <!-- Archivo de Cotización -->
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label class="form-control-label text-xs font-weight-bold d-block">Archivo de Cotización</label>
-                                <div>
-                                    @if($orden_compra && $orden_compra->archivo_cot)
-                                        <a href="{{ Storage::url($orden_compra->archivo_cot) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
-                                            <i class="fas fa-file-pdf me-1"></i> Ver Cotización
-                                        </a>
-                                    @else
-                                        <span class="text-sm text-secondary">No adjunto</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+                    </div>
 
-                        @if($orden_compra && $orden_compra->archivo_remision)
-                            <!-- Archivo de Remisión -->
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-control-label text-xs font-weight-bold d-block">Archivo de Remisión</label>
-                                    <div>
-                                       <a href="{{ Storage::url($orden_compra->archivo_remision) }}" target="_blank" class="btn btn-sm bg-gradient-secondary mt-1">
-                                            <i class="fas fa-file-pdf me-1"></i> Ver Remisión
-                                        </a>            
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                    <div class="mb-3">
+                        @include('partials.orden-compra-adjuntos', ['orden' => $orden_compra, 'mostrarVistaPreviaOc' => true])
                     </div>
 
                     <hr class="horizontal dark">
@@ -163,6 +138,10 @@
                                 <textarea class="form-control" rows="3" disabled>{{ $orden_compra->justificacion_productor ?? 'N/A' }}</textarea>
                             </div>
                         @endif
+                    </div>
+
+                    <div class="d-none d-md-block w-100">
+                        <embed src="{{ route('orden-compra-lider.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
                     </div>
 
                     <!-- Botones de Acción Final -->

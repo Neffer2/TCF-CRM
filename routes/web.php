@@ -132,6 +132,8 @@ Route::get('/', function () {
 
     Route::get('/orden-juridica-li/{orden?}', [LiderProduccionController::class, 'showOrdenJuridica'])->middleware(['auth'])->middleware(['lproduccion'])->name('orden-juridica-li');
     Route::get('/orden-natural-li/{orden_id?}', [LiderProduccionController::class, 'showOrdenNatural'])->middleware(['auth'])->middleware(['lproduccion'])->name('orden-natural-li');
+    Route::get('/lider-produccion/ordenes-compra/pdf/{orden}', [LiderProduccionController::class, 'ordenCompraPdfLider'])
+        ->middleware(['auth', 'lproduccion'])->name('orden-compra-lider.pdf');
 /* --- */
 
 /* Productor */
