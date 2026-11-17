@@ -85,6 +85,6 @@ class OrdenJuridica extends Component {
     }
 
     public function render(){
-        return view('livewire.lider-produccion.ordenes.ordencompras.orden-compra-juridico');
+        return view('livewire.lider-produccion.Ordenes.ordencompras.orden-compra-juridico');
     } 
 }

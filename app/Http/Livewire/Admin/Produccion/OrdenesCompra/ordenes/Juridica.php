@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Admin\Produccion\OrdenesCompra\Ordenes;
+namespace App\Http\Livewire\Admin\Produccion\OrdenesCompra\ordenes;
 
 use Livewire\Component;
 use App\Models\OrdenCompra;

@@ -120,6 +120,6 @@ class ActualizacionesAnticipo extends Component
     public function render()
     {
         $this->listaAnticiposRechazados();
-        return view('livewire.lider-produccion.anticipos.actualizaciones-anticipos');
+        return view('livewire.lider-produccion.Anticipos.actualizaciones-anticipos');
     }
 }

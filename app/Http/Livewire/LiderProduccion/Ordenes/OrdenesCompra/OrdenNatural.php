@@ -146,6 +146,6 @@ class OrdenNatural extends Component
     }
     
     public function render(){
-        return view('livewire.lider-produccion.ordenes.ordencompras.orden-compra-natural');
+        return view('livewire.lider-produccion.Ordenes.ordencompras.orden-compra-natural');
     } 
 }

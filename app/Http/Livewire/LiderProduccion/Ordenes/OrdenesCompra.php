@@ -107,7 +107,7 @@ class OrdenesCompra extends Component{
         // Aplicar ordenamiento y paginación
         $ordenes = $query->orderBy('created_at', $this->fecha)->paginate(15);
 
-        return view('livewire.lider-produccion.ordenes.ordenes-compra', ['ordenes' => $ordenes]);
+        return view('livewire.lider-produccion.Ordenes.ordenes-compra', ['ordenes' => $ordenes]);
     }
 
     /**

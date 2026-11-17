@@ -106,6 +106,6 @@ class ListaAnticipo extends Component
     public function render()
     {
         $this->listaAnticipos();
-        return view('livewire.lider-produccion.anticipos.anticipos');
+        return view('livewire.lider-produccion.Anticipos.anticipos');
     }
 }
