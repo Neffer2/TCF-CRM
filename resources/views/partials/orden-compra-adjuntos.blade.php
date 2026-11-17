@@ -32,10 +32,6 @@
                 <i class="fas fa-file me-1" aria-hidden="true"></i> Ver {{ $nombre }}
             </a>
         @endforeach
-        @foreach ($anticipos as $anticipo)
-            <a href="{{ route('anticipos.pdf', $anticipo->id) }}" target="_blank" rel="noopener" class="btn btn-sm bg-gradient-secondary mb-0">
-                <i class="fas fa-file-pdf me-1" aria-hidden="true"></i> Ver anticipo {{ $anticipo->cod_orden_anticipo ?? '#'.$anticipo->id }}
-            </a>
-        @endforeach
+        @include('partials.orden-compra-anticipos', ['anticipos' => $anticipos])
     </div>
 @endif

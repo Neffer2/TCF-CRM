@@ -2,7 +2,7 @@
     @php
         // ===== Usuarios (por ID) que ven cada estado: agrega aquí los IDs =====
         $usuariosPorEstado = [
-            9  => [2, 208, 197, 214, 145, 181, 210, 206],     // estos usuarios controller solo ven estado_id = 9
+            9  => [2, 91, 208, 197, 214, 145, 181, 210, 206],     // estos usuarios controller solo ven estado_id = 9
             10 => [192, 9, 17],     // estos usuarios lider comercial solo ven estado_id = 10
             11 => [10, 8],     // estos usuarios gerencia solo ven estado_id = 11
         ];

@@ -1,9 +1,17 @@
 <div class="card card-body mb-2" x-data>
     {{-- <button wire:click="sendMessage">Mensaje</button> --}}
     <div class="row">
-        <div class="col-md-12 mb-3">
+        <div class="col-md-12 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
             <h3 class="m-0">Orden de compra natural @if($queriedOrden) #{{ $queriedOrden->id }} @endif</h3>
             <p class="text-sm m-0">Selecciona tu personal y asigna los items nesesarios.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                @include('partials.orden-compra-anticipos', [
+                    'anticipos' => $queriedOrden?->anticipos?->where('estado_id', \App\Models\Anticipo::ESTADO_APROBADO) ?? collect(),
+                    'claseBoton' => 'btn btn-sm btn-outline-primary mb-0',
+                ])
+            </div>
         </div>
         <div class="col-md-6" style="border-right: 1px solid #eee;">
             <div class="row">

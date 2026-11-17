@@ -4,6 +4,14 @@
             <div class="card-header text-center font-weight-bold bg-gradient-primary text-white p-0">
                 SOLICITUD ORDEN DE COMPRA JUR&Iacute;DICA
             </div>
+            @if ($orden_compra?->anticipos?->where('estado_id', \App\Models\Anticipo::ESTADO_APROBADO)->isNotEmpty())
+                <div class="d-flex flex-wrap justify-content-end gap-2 px-4 pt-3">
+                    @include('partials.orden-compra-anticipos', [
+                        'anticipos' => $orden_compra->anticipos->where('estado_id', \App\Models\Anticipo::ESTADO_APROBADO),
+                        'claseBoton' => 'btn btn-sm btn-outline-primary mb-0',
+                    ])
+                </div>
+            @endif
             <div class="row font-table px-4">
                 <div class="col-md-6 mt-3">
                     <div class="table-responsive">
