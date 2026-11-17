@@ -28,9 +28,9 @@ class Juridica extends Component{
     const UMBRAL_LIDER      = 10000000;  // anticipo > 10M pasa a gerencia
 
     // ===== TEMPORAL: IDs de usuario por rol (quitar al normalizar roles) =====
-    const IDS_CONTROLLER = [2];
-    const IDS_LIDER      = [9];
-    const IDS_GERENCIA   = [10];
+    const IDS_CONTROLLER = [2, 208, 197, 214, 145, 181, 210, 206];
+    const IDS_LIDER      = [192, 9, 17];
+    const IDS_GERENCIA   = [10, 8];
     // ========================================================================
 
     // Recibe el objeto OrdenCompra que pasa el componente padre / vista
