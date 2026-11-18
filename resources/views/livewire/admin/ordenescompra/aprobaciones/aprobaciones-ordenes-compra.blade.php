@@ -1,24 +1,4 @@
 <div>
-    @php
-        // ===== Usuarios (por ID) que ven cada estado: agrega aquí los IDs =====
-        $usuariosPorEstado = [
-            9  => [2, 91, 208, 197, 214, 145, 181, 210, 206],     // estos usuarios controller solo ven estado_id = 9
-            10 => [192, 9, 17],     // estos usuarios lider comercial solo ven estado_id = 10
-            11 => [10, 8],     // estos usuarios gerencia solo ven estado_id = 11
-        ];
-
-        $userId = Auth::user()->id;
-
-        // Estados que le corresponden al usuario actual (vacío = usuario normal, ve todo)
-        $estadosVisibles = [];
-        foreach ($usuariosPorEstado as $estadoId => $ids) {
-            if (Auth::user()->rol == 1 && in_array($userId, $ids)) {
-                $estadosVisibles[] = $estadoId;
-            }
-        }
-
-        $esEspecial = !empty($estadosVisibles);
-    @endphp
 
     <div class="card">
         <!-- Encabezado de la Tarjeta -->
@@ -72,9 +52,8 @@
                     <select id="estado" class="form-select form-select-sm" wire:model="estado">
                         <option value="">Seleccionar</option>
                         @foreach ($estados as $estado)
-                            @if (!$esEspecial || in_array($estado->id, $estadosVisibles))
+
                                 <option value="{{ $estado->id }}">{{ $estado->description }}</option>
-                            @endif
                         @endforeach
                     </select>
                 </div>
@@ -109,7 +88,7 @@
                     </thead>
                     <tbody>
                         @foreach ($ordenes as $orden)
-                            @continue($esEspecial && !in_array($orden->estado_id, $estadosVisibles))
+
                             @if ($orden->tipo_oc == 1)
                                 <tr>
                                     <td class="ps-3">
@@ -202,12 +181,7 @@
 
             <!-- Footer con Paginación e Información -->
             <div class="d-flex justify-content-between align-items-center px-3 pt-3">
-                @php
-                    $ordenesArray = $ordenes->toArray();
-                    $registros_page = count($ordenesArray['data'] ?? []);
-                    $total = $ordenesArray['total'] ?? 0;
-                @endphp
-                <p class="text-xs text-secondary mb-0">Mostrando {{ $registros_page }} registros de {{ $total }}.</p>
+                <p class="text-xs text-secondary mb-0">Mostrando {{ $ordenes->count() }} registros de {{ $ordenes->total() }}.</p>
                 <div>
                     {{ $ordenes->links() }}
                 </div>

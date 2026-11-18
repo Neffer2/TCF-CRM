@@ -36,10 +36,34 @@ class Aprobaciones extends Component
     public $productor_id;          // ID específico del productor autenticado
     public $yearInfo;              // Información del año seleccionado
 
+    protected function estadosVisibles(): array
+    {
+        $usuariosPorEstado = [
+            9 => [2, 91, 208, 197, 214, 145, 181, 210, 206],
+            10 => [192, 9, 17],
+            11 => [10, 8],
+        ];
+        $estados = [];
+        foreach ($usuariosPorEstado as $estado => $usuarios) {
+            if ((int) auth()->user()->rol === 1 && in_array((int) auth()->id(), $usuarios, true)) {
+                $estados[] = $estado;
+            }
+        }
+
+        return $estados ?: [9, 10, 11];
+    }
+
+    public function updating($name)
+    {
+        if (in_array($name, ['cod_oc', 'cod_cc', 'fecha', 'estado', 'año', 'tipo', 'productor', 'documento'], true)) {
+            $this->resetPage();
+        }
+    }
+
     public function render(){
 
         // Inicia la consulta base
-        $query = OrdenCompra::whereIn('estado_id', [9, 10, 11]);
+        $query = OrdenCompra::whereIn('estado_id', $this->estadosVisibles());
 
         // Filtro por estado de la orden de compra
         if ($this->estado){
@@ -66,7 +90,10 @@ class Aprobaciones extends Component
 
         // Filtro por código de orden de compra
         if ($this->cod_oc){
-            $query->where('cod_oc', 'LIKE', "%$this->cod_oc%")->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            $query->where(function ($q) {
+                $q->where('cod_oc', 'LIKE', "%$this->cod_oc%")
+                    ->orWhere('id', 'LIKE', "%$this->cod_oc%");
+            });
         }
 
         // Filtro por documento
@@ -137,7 +164,7 @@ class Aprobaciones extends Component
      * Obtiene los estados de órdenes de compra Lider produccion
      */
     public function getEstados(){
-        $this->estados = EstadoOrdenesCompra::where('id', 8)->get();
+        $this->estados = EstadoOrdenesCompra::whereIn('id', $this->estadosVisibles())->get();
     }
 
     /**
@@ -159,10 +186,6 @@ class Aprobaciones extends Component
      * Valida la selección y carga la información completa del año
      */
     public function updatedAño(){
-        $this->validate([
-            'año' => 'required'
-        ]);
-
-        $this->yearInfo = Año::find($this->año);
+        $this->yearInfo = $this->año ? Año::find($this->año) : null;
     }
 }
