@@ -68,8 +68,10 @@ class NuevoPersonal extends Component
 
         $this->estados = EstadoTercero::all();
 
-        $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
-        $this->generarPrevisualizacionContrato();
+        if ($this->orden) {
+            $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
+            $this->generarPrevisualizacionContrato();
+        }
 
         if ($this->tercero){$this->fillForm();}
     }
@@ -563,13 +565,14 @@ class NuevoPersonal extends Component
 
     private function generarPdfCuentaCobroBase64()
     {
-        // Asegurarnos de tener cargadas las relaciones necesarias
-        if ($this->orden) {
-            $this->orden->load([
-                'naturalInfo.tercero',
-                'ordenItems.itemPresupuesto.presto',
-            ]);
+        if (!$this->orden) {
+            throw new \Exception('No se ha seleccionado o cargado ninguna orden para generar el PDF.');
         }
+
+            $this->orden->load([
+            'naturalInfo.tercero',
+            'ordenItems.itemPresupuesto.presto',
+        ]);
 
         $items   = $this->orden->ordenItems;
         $tercero = $this->orden->naturalInfo->tercero;
