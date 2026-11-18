@@ -119,7 +119,7 @@ class AnticipoJuridico extends Component
             $this->queriedAnticipo->update([
                 'porcentaje_anticipo' => $this->porcentaje_anticipo,
                 'total_anticipo'      => $total,
-                'estado_id'           => 1,
+                'estado_id'           => 2,
                 'fecha_aprobacion'    => now(),
             ]);
 

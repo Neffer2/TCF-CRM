@@ -190,6 +190,94 @@
                                 <embed src="{{ asset('storage/' . $queriedOrden->archivo_cuenta_cobro) }}" width="100%" height="800" type="application/pdf">
                             </div>
                         </div>
+                        
+                        <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Código de orden de compra</label>
+                                    <input type="text" class="form-control" value="{{ $queriedOrden->cod_oc }}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="gr">Código GR</label>
+                                    <input type="text" id="gr" class="form-control @error('gr') is-invalid @enderror"
+                                        value="{{ $gr }}" readonly>
+                                    <small class="text-muted">Código provisional. El definitivo se asigna al aprobar.</small>
+                                    @error('gr')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="alert alert-info text-white text-sm mb-0 mt-2">
+                                    <i class="fas fa-file-pdf me-1"></i>
+                                    Al aprobar se generará automáticamente la <b>cuenta de cobro en PDF</b>
+                                    con los items de la orden y se asignará el código definitivo.
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <button type="button" class="btn bg-gradient-success mt-2 mb-0"
+                                        data-bs-toggle="modal" data-bs-target="#successModal"
+                                        wire:loading.attr="disabled" wire:target="validateEvidencia">
+                                    APROBAR
+                                </button>
+
+                                @if (!$queriedOrden->evidencias->isEmpty())
+                                    <button type="button" wire:click="toggleRechazo"
+                                            @if($this->toggleRechazo) disabled @endif
+                                            class="btn bg-gradient-danger mt-2 mb-0">
+                                        RECHAZAR EVIDENCIAS
+                                    </button>
+                                @endif
+
+                                {{-- Modal único --}}
+                                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="successModalLabel">Aprobar evidencias</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de aprobar esta orden?<br>
+                                                <small class="text-muted">Se generará la cuenta de cobro en PDF con {{ $queriedOrden->ordenItems->count() }} item(s).</small>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn bg-gradient-success" data-bs-dismiss="modal"
+                                                        wire:click="validateEvidencia(5)" wire:loading.attr="disabled">
+                                                    APROBAR
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if ($this->toggleRechazo)
+                                    <div class="card mt-2">
+                                        <div class="card-body">
+                                            ¿Estás seguro de rechazar estas evidencias?
+                                            <div class="form-group mt-2">
+                                                <label for="justificacion_rechazo">Justificación de Rechazo</label>
+                                                <textarea id="justificacion_rechazo"
+                                                        class="form-control @error('justificacion_rechazo') is-invalid @elseif(strlen($justificacion_rechazo) > 0) is-valid @enderror"
+                                                        wire:model.lazy="justificacion_rechazo" cols="30" rows="5"></textarea>
+                                                @error('justificacion_rechazo')
+                                                    <div class="text-invalid">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div>
+                                                <button type="button" wire:click="validateEvidencia(7)" class="btn bg-gradient-danger">Rechazar</button>
+                                                <button type="button" wire:click="toggleRechazo" class="btn btn-secondary">Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     @else
                         <div class="col-md-12 mb-4">
                             <div class="d-none d-md-block w-100">

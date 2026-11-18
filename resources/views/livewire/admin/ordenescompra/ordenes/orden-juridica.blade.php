@@ -7,7 +7,7 @@
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <div>
                         @if($orden_compra && $orden_compra->archivo_remision)
-                            <h5 class="mb-3">Detalle de Remision Juridica</h5>
+                            <h5 class="mb-3">Detalle de Remision Juridica ajaj</h5>
                         @elseif($orden_compra && $orden_compra->archivo_cot)
                             <h5 class="mb-3">Detalle de Orden de Compra Juridica</h5>
                         @endif
@@ -154,10 +154,25 @@
                                 <small><i class="ni ni-bell-55 text-warning"></i> Al hacer clic en <strong>Aprobar</strong>, el sistema generará y almacenará el PDF oficial de forma automática.</small>
                             </div>
                         </div>
+                    @else
+                        <div class="mt-3 mb-4">
+                            <h5>Good Receive</h5>
+                            <label>Código GR</label>
+                            <input class="form-control mb-3" value="{{ $orden_compra->codigoGR() }}" readonly>
+                            <a href="{{ route('orden-compra-gr.pdf', $orden_compra) }}" target="_blank" rel="noopener" class="btn btn-outline-primary">Ver GR</a>
+                            <div class="d-none d-md-block">
+                                <embed src="{{ route('orden-compra-gr.pdf', $orden_compra) }}" width="100%" height="900" type="application/pdf">
+                            </div>
+                            <label>Observaciones de remisión</label>
+                            <textarea class="form-control" disabled>{{ $orden_compra->observacion_remision }}</textarea>
+                        </div>
                     @endif
                     
                     <hr class="horizontal dark">
 
+                    @error('customError')
+                        <div class="alert alert-danger text-white">{{ $message }}</div>
+                    @enderror
                     @if ($puedeAprobar)
                         <div class="row mt-4">
                             <div class="col-md-6">
@@ -181,7 +196,7 @@
                                     <i class="fas fa-times me-1"></i> Rechazar Orden
                                 </button>
                                 <button type="button" wire:click="cambiarEstado('aprobar')" class="btn bg-gradient-success mb-0">
-                                    <i class="fas fa-check me-1"></i> Aprobar Orden
+                                    <i class="fas fa-check me-1"></i> {{ $orden_compra->archivo_remision ? 'Aprobar y generar GR' : 'Aprobar OC' }}
                                 </button>
                             </div>
                         </div>

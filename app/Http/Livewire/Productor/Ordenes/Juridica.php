@@ -51,11 +51,11 @@ class Juridica extends Component
             }
 
             if ($this->orden_compra->estado_id == 2) {
-                $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
+                $this->cod_oc = $this->orden_compra->cod_oc ?: $this->orden_compra->codigoOC();
             }
 
             if(empty($this->orden_compra->gr)){
-                $this->gr = $this->siguienteCodigoGR();
+                $this->gr = $this->orden_compra->codigoGR();
             } else {
                 $this->gr = $this->orden_compra->gr;
             }
@@ -347,23 +347,21 @@ class Juridica extends Component
                 // Guardamos el PDF generado en el Storage
                 Storage::put($rutaAlmacenamiento, $pdfOutput);
 
-                $this->conLockDB('oc_consecutivo', 10, function () use ($rutaAlmacenamiento) {
-                    DB::transaction(function () use ($rutaAlmacenamiento) {
-                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+                DB::transaction(function () use ($rutaAlmacenamiento) {
+                    $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
-                        if (!empty($orden->cod_oc)) {
-                            throw new \RuntimeException('Esta orden ya fue aprobada.');
-                        }
+                    if (!empty($orden->cod_oc)) {
+                        throw new \RuntimeException('Esta orden ya fue aprobada.');
+                    }
 
-                        $orden->archivo_orden_helisa      = $rutaAlmacenamiento;
-                        $orden->observaciones_negociacion = $this->observaciones_negociacion;
-                        $orden->fecha_aprobacion          = now();
-                        $orden->cod_oc                    = $this->siguienteCodigoOC();
-                        $orden->estado_id                 = 1;
-                        $orden->save();
+                    $orden->archivo_orden_helisa      = $rutaAlmacenamiento;
+                    $orden->observaciones_negociacion = $this->observaciones_negociacion;
+                    $orden->fecha_aprobacion          = now();
+                    $orden->cod_oc                    = $orden->codigoOC();
+                    $orden->estado_id                 = 1;
+                    $orden->save();
 
-                        $this->orden_compra = $orden;
-                    });
+                    $this->orden_compra = $orden;
                 });
             } catch (\Throwable $e) {
                 $this->addError('customError', $e->getMessage());
@@ -412,36 +410,24 @@ class Juridica extends Component
 
                 Storage::put($rutaAlmacenamiento, $pdfOutput);
 
-                // 2. BLOQUEO DE CONCURRENCIA (Evita que dos procesos obtengan el mismo número a la vez)
-                $this->conLockDB('gr_consecutivo', 10, function () use ($rutaAlmacenamiento, $estado) {
-                    DB::statement('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
-                    DB::transaction(function () use ($rutaAlmacenamiento, $estado) {
-                        // Bloqueamos la fila de esta orden específica
-                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+                // Actualizar la orden dentro de una transacción.
+                DB::transaction(function () use ($rutaAlmacenamiento, $estado) {
+                    // Bloqueamos la fila de esta orden específica
+                    $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
-                        if (!empty($orden->gr)) {
-                            throw new \RuntimeException('Este Good Receive ya fue generado.');
-                        }
+                    if (!empty($orden->gr)) {
+                        throw new \RuntimeException('Este Good Receive ya fue generado.');
+                    }
 
-                        // CALCULAMOS EL SIGUIENTE DENTRO DEL CANDADO
-                        $orden->gr = $this->siguienteCodigoGR();
+                    // Código basado en el ID de la orden.
+                    $orden->gr = $orden->codigoGR();
+                    $orden->archivo_gr = $rutaAlmacenamiento;
+                    $orden->observacion_remision = $this->observaciones_remision;
+                    $orden->estado_id = $estado;
+                    $orden->save();
 
-                        $duplicado = OrdenCompra::useWritePdo()
-                            ->where('gr', $orden->gr)
-                            ->where('id', '!=', $orden->id)
-                            ->exists();
-
-                        if ($duplicado) {
-                            throw new \RuntimeException('Conflicto de consecutivo, intenta de nuevo.');
-                        }
-                        $orden->archivo_gr = $rutaAlmacenamiento;
-                        $orden->observacion_remision = $this->observaciones_remision;
-                        $orden->estado_id = $estado;
-                        $orden->save();
-
-                        $this->orden_compra = $orden;
-                        $this->gr = $orden->gr; // Sincronizamos la propiedad visual
-                    });
+                    $this->orden_compra = $orden;
+                    $this->gr = $orden->gr; // Sincronizamos la propiedad visual
                 });
 
             } catch (\Throwable $e) {
@@ -473,73 +459,32 @@ class Juridica extends Component
 
     public function cargarGRParaAprobar($id){
         $this->orden_compra = OrdenCompra::find($id);
-        $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
+        $this->gr = $this->orden_compra->gr ?: $this->orden_compra->codigoGR();
     }    
 
     public function selecionarGR($id){
         $this->orden_compra = OrdenCompra::find($id);
-        $this->gr = $this->orden_compra->gr ?: $this->siguienteCodigoGR();
+        $this->gr = $this->orden_compra->gr ?: $this->orden_compra->codigoGR();
     }
 
     public function cargarOrdenParaAprobar($id)
     {
         $this->orden_compra = OrdenCompra::find($id);
-        $this->cod_oc = $this->siguienteCodigoOC(); 
+        $this->cod_oc = $this->orden_compra->codigoOC();
     }
     
     public function seleccionarOrden($id)
     {
         $this->orden_compra = OrdenCompra::find($id);
-        $this->cod_oc = $this->siguienteCodigoOC(); 
+        $this->cod_oc = $this->orden_compra->codigoOC();
     }
 
     // El método mejorado para evitar sobreposiciones usando transacciones y locks
-    protected function conLockDB(string $nombre, int $segundos, callable $callback)
-    {
-        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
-        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
 
-        if ((int) $r->obtenido !== 1) {
-            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
-        }
 
-        try {
-            return $callback();
-        } finally {
-            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
-        }
-    }
 
-    protected function siguienteCodigoGR(): string
-    {
-        $ultimo = (int) OrdenCompra::useWritePdo()
-            ->whereNotNull('gr')
-            ->whereRaw("TRIM(gr) REGEXP '^GR[ ]?[0-9]+$'")
-            ->selectRaw("MAX(CAST(REPLACE(REPLACE(TRIM(gr), 'GR', ''), ' ', '') AS UNSIGNED)) AS n")
-            ->value('n');
 
-        $ultimo = max($ultimo, 17498); // base inicial
 
-        return 'GR ' . str_pad($ultimo + 1, 5, '0', STR_PAD_LEFT);
-    }
-
-    protected function siguienteCodigoOC(): string
-    {
-         $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
-            ->where('cod_oc', '!=', '')
-            ->whereNotNull('fecha_aprobacion')
-            ->orderByDesc('fecha_aprobacion')
-            ->orderByDesc('id') // desempate si dos tienen la misma fecha
-            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
-
-        $ultimo = 0;
-
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
-    }
 
     // Elimina la orden de compra y sus items
     public function deleteOrden(){

@@ -21,7 +21,7 @@ use Dompdf\Dompdf;
 class Natural extends Component
 {
     // Incluye traits para subir archivos, paginación y SMS personalizados
-    use WithFileUploads, WithPagination, SMS, Email;
+    use WithFileUploads, WithPagination, SMS, Email, \App\Traits\GestionaEvidenciasNatural;
 
     // Variables públicas para modelos y datos del formulario
     public $tercero, $nombre, $apellido, $correo, $cedula, $telefono, $ciudad, $banco,
@@ -59,8 +59,8 @@ class Natural extends Component
         if ($this->orden_id) {
             $this->queriedOrden = OrdenCompra::find($this->orden_id);
             $this->getData();
-            $this->cod_oc = $this->queriedOrden->cod_oc ?: $this->siguienteCodigoOC();
-            $this->gr     = $this->queriedOrden->gr ?: $this->siguienteCodigoGR();
+            $this->cod_oc = $this->queriedOrden->cod_oc ?: $this->queriedOrden->codigoOC();
+            $this->gr     = $this->queriedOrden->gr ?: $this->queriedOrden->codigoGR();
         }
     }
 
@@ -507,70 +507,7 @@ class Natural extends Component
         * EVIDENCIAS
     */
     // Valida y sube el archivo de evidencia para la orden de compra
-    public function validateEvidencia($estado)
-    {
-        if ($estado == 5) {
-            $archivo = null;
 
-            try {
-                $this->conLockDB('gr_consecutivo', 10, function () use (&$archivo) {
-                    DB::transaction(function () use (&$archivo) {
-                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
-
-                        // Si ya tenía GR (ciclo de rechazo y reenvío), se conserva
-                        if (empty($orden->gr)) {
-                            $orden->gr = $this->siguienteCodigoGR();
-                        }
-
-                        // El PDF necesita el GR ya asignado
-                        $archivo = $this->generarPdfCuentaCobro($orden);
-
-                        $orden->archivo_cuenta_cobro = $archivo;
-                        $orden->fecha_aprobacion     = now();
-                        $orden->estado_id            = 5;
-                        $orden->save();
-
-                        $this->queriedOrden = $orden;
-                        $this->gr       = $orden->gr;
-                    });
-                });
-            } catch (\RuntimeException $e) {
-                if ($archivo) Storage::disk('public')->delete($archivo);
-                $this->addError('gr', $e->getMessage());
-                return;
-            } catch (\Throwable $e) {
-                if ($archivo) Storage::disk('public')->delete($archivo);
-                report($e);
-                $this->addError('gr', 'No se pudo generar la cuenta de cobro. Intenta de nuevo.');
-                //dd($e);
-                return;
-            }
-
-            $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-
-            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa con código ' . $this->gr . '.');
-
-        } elseif ($estado == 7) {
-            $this->validate([
-                'justificacion_rechazo' => 'required|string|max:255'
-            ]);
-
-            $this->queriedOrden->justificacion_rechazo = $this->justificacion_rechazo;
-            $this->queriedOrden->estado_id = 7;
-            $this->queriedOrden->update();
-
-            $this->oc_evidencias_rechazadas($this->queriedOrden);
-            if (Auth()->user()->rol == 1){
-                $this->ocNaturalEvidenciasRechazadas($this->queriedOrden);
-            }
-        }
-
-        if (Auth()->user()->rol == 1) {
-            return redirect()->route('ordenes-compra')->with('success', 'Validación exitosa con codigo ' . $this->cod_oc . '.');
-        } elseif (Auth()->user()->rol == 7) {
-            return redirect()->route('ordenes-prod')->with('success', 'Validación exitosa');
-        }
-    }
 
     /**
      *  UPDATES
@@ -653,7 +590,6 @@ class Natural extends Component
         $this->getValorTotal();
     }
 
-    
 
     // Cuando se actualizan los días, recalcula el valor total
     public function updatedDias(){
@@ -713,90 +649,5 @@ class Natural extends Component
         foreach ($fields as $field){
             $this->$field = '';
         }
-    }
-
-    public function toggleRechazo()
-    {
-        $this->toggleRechazo = !$this->toggleRechazo;
-    }
-
-    protected function conLockDB(string $nombre, int $segundos, callable $callback)
-    {
-        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
-
-        if ((int) $r->obtenido !== 1) {
-            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
-        }
-
-        try {
-            return $callback();
-        } finally {
-            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
-        }
-    }
-    protected function siguienteCodigoGR(): string
-    {
-        $ultimo = (int) OrdenCompra::useWritePdo()
-            ->whereNotNull('gr')
-            ->whereRaw("TRIM(gr) REGEXP '^GR[ ]?[0-9]+$'")
-            ->selectRaw("MAX(CAST(REPLACE(REPLACE(TRIM(gr), 'GR', ''), ' ', '') AS UNSIGNED)) AS n")
-            ->value('n');
-
-        $ultimo = max($ultimo, 17498); // base inicial
-
-        return 'GR ' . str_pad($ultimo + 1, 5, '0', STR_PAD_LEFT);
-    }
-
-    protected function siguienteCodigoOC(): string
-    {
-        $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
-            ->where('cod_oc', '!=', '')
-            ->whereNotNull('fecha_aprobacion')
-            ->orderByDesc('fecha_aprobacion')
-            ->orderByDesc('id')
-            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
-
-        $ultimo = 0;
-
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
-    }
-
-    protected function generarPdfCuentaCobro(OrdenCompra $orden): string
-    {
-        $orden->load([
-            'naturalInfo.tercero',
-            'ordenItems.itemPresupuesto.presto',
-        ]);
-
-        $items   = $orden->ordenItems;
-        $tercero = $orden->naturalInfo->tercero;
-        $total   = $items->sum('vtotal_oc');
-        $fecha   = now()->locale('es')->translatedFormat('d \d\e F \d\e Y');
-
-        $html = View::make('exports.cuenta-cobro', [
-            'oc'       => $orden,
-            'orden'    => $orden,
-            'items'    => $items,
-            'tercero'  => $tercero,
-            'total'    => $total,
-            'fecha'    => $fecha,
-            'grNumero' => $orden->gr,
-            'grFecha'  => now(),
-            'preview'  => false,
-        ])->render();
-
-        $dompdf = new Dompdf(['isRemoteEnabled' => true]);
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        $ruta = 'ordenes_naturales/cuenta_cobro_' . Str::slug($orden->gr) . '.pdf';
-        Storage::disk('public')->put($ruta, $dompdf->output());
-
-        return $ruta;
     }
 }

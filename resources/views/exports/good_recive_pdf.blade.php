@@ -2,7 +2,7 @@
     use Carbon\Carbon;
 
     $oc = $oc ?? $orden;
-    $grNumero = $grNumero ?? $oc->id;
+    $grNumero = $grNumero ?? $oc->codigoGR();
     
     $oc->loadMissing(['ordenItems', 'proveedor', 'presupuesto', 'anticipos']);
 

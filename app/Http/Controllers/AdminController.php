@@ -270,7 +270,7 @@ class AdminController extends Controller
             'ordenItems',
         ]);
  
-        $grNumero = $request->input('gr_numero', $orden->id);
+        $grNumero = $orden->codigoGR();
         $grFecha  = $request->input('gr_fecha', now());
  
         $dompdf = new Dompdf(['enable_remote' => true]);
@@ -297,7 +297,7 @@ class AdminController extends Controller
         ]);
 
         // GR provisional solo para la vista previa (NO se guarda)
-        $grNumero = $orden->gr ?: $this->siguienteCodigoGR();
+        $grNumero = $orden->gr ?: $orden->codigoGR();
         $grFecha  = $request->input('gr_fecha', now());
 
         $items   = $orden->ordenItems;
@@ -326,21 +326,7 @@ class AdminController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="vista_previa_' . preg_replace('/\W+/', '_', $grNumero) . '.pdf"');
     }
-    private function siguienteCodigoGR(): string
-    {
-        $ultima = OrdenCompra::whereNotNull('gr')
-            ->where('gr', '!=', '')
-            ->orderByDesc('id')
-            ->first(['id', 'gr']);
 
-        $ultimo = 0;
-
-        if ($ultima && preg_match('/(\d+)\s*$/', $ultima->gr, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return 'GR ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
-    }
 
     public function showListaAnticiposAdmin()
     {

@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class OrdenCompra extends Model
 {
     use HasFactory;
+
+    public function codigoOC(): string
+    {
+        return $this->cod_oc ?: 'OC ' . $this->getKey();
+    }
+
+    public function codigoGR(): string
+    {
+        return $this->gr ?: 'GR ' . $this->getKey();
+    }
     protected $table = "ordenes_compra";
     protected $fillable = [
         'tipo_oc',

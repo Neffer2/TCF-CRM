@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 class Natural extends Component{
 
 use SMS, Email;
+    use \App\Traits\GestionaEvidenciasNatural;
 
     // Estados (ajusta a tu tabla)
     const ESTADO_RECHAZADA       = 12;
@@ -25,7 +26,7 @@ use SMS, Email;
 
     // Umbrales
     const UMBRAL_CONTROLLER = 2000000;   // total OC > 2M pasa a líder comercial
-    const UMBRAL_LIDER      = 10000000;  // anticipo > 10M pasa a gerencia
+    const UMBRAL_LIDER      = 5000000;  // anticipo > 5M pasa a gerencia
 
     // ===== TEMPORAL: IDs de usuario por rol (quitar al normalizar roles) =====
     const IDS_CONTROLLER = [2, 208, 197, 214, 145, 181, 210, 206];
@@ -49,6 +50,8 @@ use SMS, Email;
     public $justificacion_rechazo;
     public $justificacion_productor;
     public $cod_oc;
+    public $gr;
+    public $toggleRechazo = false;
 
     public function mount($orden_id = null)
     {
@@ -60,11 +63,12 @@ use SMS, Email;
 
             if ($this->queriedOrden) {
                 $this->loadOrdenData();
+                $this->gr = $this->queriedOrden->codigoGR();
                 $this->puedeAprobar = $this->esMiTurno();
 
                 // Precarga el código secuencial si la orden aún no lo tiene registrado
                 if (empty($this->queriedOrden->cod_oc)) {
-                    $this->cod_oc = $this->siguienteCodigoOC();
+                    $this->cod_oc = $this->queriedOrden->codigoOC();
                 }
             }
         }
@@ -175,7 +179,7 @@ use SMS, Email;
         }
     }
 
-    // Cambiar estado: Aprobar (3) o Rechazar (7) // Si tiene evidencias (2)
+    // Cambiar estado: Aprobar (3) o Rechazar (7) // Si tiene evidencias (5)
     public function cambiarEstado($accion)
     {
         // Recargar la orden para no actuar sobre un estado desactualizado
@@ -203,7 +207,7 @@ use SMS, Email;
             
             if ($tieneEvidencias) 
             {
-                $this->queriedOrden->estado_id = 2;
+                $this->queriedOrden->estado_id = 5;
                 $this->queriedOrden->update();
 
                 return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Las evidencias de la orden ' . $this->queriedOrden->id . ' han sido APROBADAS');
@@ -219,50 +223,48 @@ use SMS, Email;
                 {
                     $soloAprobada = false;
                     try {
-                        $this->conLockDB('oc_consecutivo', 10, function () use (&$nuevoEstado, &$soloAprobada) {
-                            DB::transaction(function () use (&$nuevoEstado, &$soloAprobada) {
-                                $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
+                        DB::transaction(function () use (&$nuevoEstado, &$soloAprobada) {
+                            $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
 
-                                // Si ya tiene código OC: solo se aprueba (sin nuevo código ni PDF)
-                                if (!empty($orden->cod_oc)) {
-                                    $orden->estado_id        = $nuevoEstado;
-                                    $orden->save();
-
-                                    $this->queriedOrden = $orden;
-                                    $soloAprobada = true;
-                                    return;
-                                }
-
-                                // --- Flujo normal: sin código asignado ---
-                                $orden->cod_oc           = $this->siguienteCodigoOC();
-
-                                $orden->load([
-                                    'naturalInfo.tercero',
-                                    'naturalInfo.productor',
-                                    'ordenItems.itemPresupuesto',
-                                ]);
-
-                                $dompdf = new Dompdf(['enable_remote' => true]);
-                                $html = View::make('exports.orden_compra_pdf', [
-                                    'orden' => $orden,
-                                ])->render();
-
-                                $dompdf->loadHtml($html);
-                                $dompdf->setPaper('A4', 'portrait');
-                                $dompdf->render();
-
-                                $pdfOutput = $dompdf->output();
-                                $nombreArchivo = 'orden_natural_' . str_replace(' ', '_', $orden->cod_oc) . '_' . time() . '.pdf';
-                                $rutaAlmacenamiento = 'public/ordenes_naturales_helisa/' . $nombreArchivo;
-
-                                Storage::put($rutaAlmacenamiento, $pdfOutput);
-
-                                $orden->archivo_orden_helisa = $rutaAlmacenamiento;
-                                $orden->estado_id            = $nuevoEstado;
+                            // Si ya tiene código OC: solo se aprueba (sin nuevo código ni PDF)
+                            if (!empty($orden->cod_oc)) {
+                                $orden->estado_id        = $nuevoEstado;
                                 $orden->save();
 
                                 $this->queriedOrden = $orden;
-                            });
+                                $soloAprobada = true;
+                                return;
+                            }
+
+                            // --- Flujo normal: sin código asignado ---
+                            $orden->cod_oc           = $orden->codigoOC();
+
+                            $orden->load([
+                                'naturalInfo.tercero',
+                                'naturalInfo.productor',
+                                'ordenItems.itemPresupuesto',
+                            ]);
+
+                            $dompdf = new Dompdf(['enable_remote' => true]);
+                            $html = View::make('exports.orden_compra_pdf', [
+                                'orden' => $orden,
+                            ])->render();
+
+                            $dompdf->loadHtml($html);
+                            $dompdf->setPaper('A4', 'portrait');
+                            $dompdf->render();
+
+                            $pdfOutput = $dompdf->output();
+                            $nombreArchivo = 'orden_natural_' . str_replace(' ', '_', $orden->cod_oc) . '_' . time() . '.pdf';
+                            $rutaAlmacenamiento = 'public/ordenes_naturales_helisa/' . $nombreArchivo;
+
+                            Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                            $orden->archivo_orden_helisa = $rutaAlmacenamiento;
+                            $orden->estado_id            = $nuevoEstado;
+                            $orden->save();
+
+                            $this->queriedOrden = $orden;
                         });
 
                     } catch (\Throwable $e) {
@@ -287,40 +289,6 @@ use SMS, Email;
 
             return redirect()->route('aprobaciones-ordenes-compra')->with('success', $mensaje);
         }
-    }
-    
-    protected function conLockDB(string $nombre, int $segundos, callable $callback)
-    {
-        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
-        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
-
-        if ((int) $r->obtenido !== 1) {
-            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
-        }
-
-        try {
-            return $callback();
-        } finally {
-            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
-        }
-    }
-
-    protected function siguienteCodigoOC(): string
-    {
-        $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
-            ->where('cod_oc', '!=', '')
-            ->whereNotNull('fecha_aprobacion')
-            ->orderByDesc('fecha_aprobacion')
-            ->orderByDesc('id') // desempate si dos tienen la misma fecha
-            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
-
-        $ultimo = 0;
-
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
     }
 
     public function render(){

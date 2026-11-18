@@ -604,7 +604,7 @@ class Nomina extends Component
                 'gr' => 'nullable|string'
             ]);
 
-            $this->orden_nomina->gr = $this->gr;
+            $this->orden_nomina->gr = $this->orden_nomina->codigoGR();
             $this->ocJuridicaGrGenerado($this->orden_nomina);
             $messaje = 'Good Receive guardado y enviado con éxito.';
         }

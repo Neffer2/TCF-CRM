@@ -24,7 +24,7 @@ class Juridica extends Component{
     const ESTADO_REVISON_GR = 4;
 
     // Umbrales
-    const UMBRAL_CONTROLLER = 2000000;   // total OC > 2M pasa a líder comercial
+    const UMBRAL_CONTROLLER = 5000000;   // total OC > 5M pasa a líder comercial
     const UMBRAL_LIDER      = 10000000;  // anticipo > 10M pasa a gerencia
 
     // ===== TEMPORAL: IDs de usuario por rol (quitar al normalizar roles) =====
@@ -51,7 +51,7 @@ class Juridica extends Component{
             $this->orden_compra = $orden_compra;
             $this->loadOrdenData();
             $this->puedeAprobar = $this->esMiTurno();
-            $this->cod_oc = $this->orden_compra->cod_oc ?: $this->siguienteCodigoOC();
+            $this->cod_oc = $this->orden_compra->cod_oc ?: $this->orden_compra->codigoOC();
         }
     }
 
@@ -97,6 +97,10 @@ class Juridica extends Component{
     {
         $estado = $this->orden_compra->estado_id;
 
+        if ((int) $estado === self::ESTADO_REVISON_GR && $this->orden_compra->archivo_remision) {
+            return (int) Auth::user()->rol === 1;
+        }
+
         switch ($this->getRolUsuario()) {
             case 'controller':      return $estado == self::ESTADO_PEND_CONTROLLER;
             case 'lider_comercial': return $estado == self::ESTADO_PEND_LIDER;
@@ -140,55 +144,56 @@ class Juridica extends Component{
         }
 
         if ($accion === 'aprobar') {
+            if ($this->orden_compra->archivo_remision) {
+                return $this->aprobarRemision();
+            }
             $nuevoEstado = $this->siguienteEstadoAprobacion();
 
             if ($nuevoEstado === self::ESTADO_APROBADA) {
                 $soloAprobada = false;
 
                 try {
-                    $this->conLockDB('oc_consecutivo', 10, function () use ($nuevoEstado, &$soloAprobada) {
-                        DB::transaction(function () use ($nuevoEstado, &$soloAprobada) {
-                            $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+                    DB::transaction(function () use ($nuevoEstado, &$soloAprobada) {
+                        $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
 
-                            if (!empty($orden->cod_oc)) {
-                                $orden->estado_id        = $nuevoEstado;
-                                $orden->save();
-
-                                $this->orden_compra = $orden;
-                                $soloAprobada = true;
-                                return;
-                            }
-
-                            $orden->load([
-                                'proveedor',
-                                'presupuesto.gestion.contacto',
-                                'presupuesto.presupuestoItems',
-                                'ordenItems',
-                            ]);
-
-                            $orden->cod_oc = $this->siguienteCodigoOC();
-                            $dompdf = new Dompdf(['enable_remote' => true]);
-                            $html = View::make('exports.orden_compra_pdf', [
-                                'orden' => $orden,
-                            ])->render();
-
-                            $dompdf->loadHtml($html);
-                            $dompdf->setPaper('A4', 'portrait');
-                            $dompdf->render();
-
-                            $pdfOutput = $dompdf->output();
-
-                            $nombreArchivo = 'orden_compra_' . $orden->id . '_' . time() . '.pdf';
-                            $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
-
-                            Storage::put($rutaAlmacenamiento, $pdfOutput);
-
-                            $orden->archivo_orden_helisa = $rutaAlmacenamiento;
-                            $orden->estado_id            = $nuevoEstado;
+                        if (!empty($orden->cod_oc)) {
+                            $orden->estado_id        = $nuevoEstado;
                             $orden->save();
 
                             $this->orden_compra = $orden;
-                        });
+                            $soloAprobada = true;
+                            return;
+                        }
+
+                        $orden->load([
+                            'proveedor',
+                            'presupuesto.gestion.contacto',
+                            'presupuesto.presupuestoItems',
+                            'ordenItems',
+                        ]);
+
+                        $orden->cod_oc = $orden->codigoOC();
+                        $dompdf = new Dompdf(['enable_remote' => true]);
+                        $html = View::make('exports.orden_compra_pdf', [
+                            'orden' => $orden,
+                        ])->render();
+
+                        $dompdf->loadHtml($html);
+                        $dompdf->setPaper('A4', 'portrait');
+                        $dompdf->render();
+
+                        $pdfOutput = $dompdf->output();
+
+                        $nombreArchivo = 'orden_compra_' . $orden->id . '_' . time() . '.pdf';
+                        $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
+
+                        Storage::put($rutaAlmacenamiento, $pdfOutput);
+
+                        $orden->archivo_orden_helisa = $rutaAlmacenamiento;
+                        $orden->estado_id            = $nuevoEstado;
+                        $orden->save();
+
+                        $this->orden_compra = $orden;
                     });
                 } catch (\Throwable $e) {
                     $this->addError('customError', $e->getMessage());
@@ -223,38 +228,39 @@ class Juridica extends Component{
         return redirect()->route('aprobaciones-ordenes-compra')->with('success', $mensaje);
     }
 
-    protected function conLockDB(string $nombre, int $segundos, callable $callback)
+    protected function aprobarRemision()
     {
-        // false = usar el PDO de escritura (importante si tienes réplicas de lectura)
-        $r = DB::selectOne('SELECT GET_LOCK(?, ?) AS obtenido', [$nombre, $segundos], false);
-
-        if ((int) $r->obtenido !== 1) {
-            throw new \RuntimeException('El sistema está ocupado, intenta de nuevo.');
-        }
-
+        $ruta = null;
         try {
-            return $callback();
-        } finally {
-            DB::selectOne('SELECT RELEASE_LOCK(?) AS liberado', [$nombre], false);
+            DB::transaction(function () use (&$ruta) {
+                $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
+                $this->orden_compra = $orden;
+                abort_unless($this->esMiTurno() && $orden->archivo_remision, 403);
+                $orden->gr = $orden->codigoGR();
+                $pdf = new Dompdf(['enable_remote' => true]);
+                $pdf->loadHtml(View::make('exports.good_recive_pdf', ['orden' => $orden])->render());
+                $pdf->setPaper('A4', 'portrait');
+                $pdf->render();
+                $ruta = 'public/good_receives/good_receive_' . $orden->id . '_' . uniqid() . '.pdf';
+                if (!Storage::put($ruta, $pdf->output())) {
+                    throw new \RuntimeException('No se pudo guardar el PDF del GR.');
+                }
+                $orden->archivo_gr = $ruta;
+                $orden->estado_id = 5;
+                $orden->save();
+            });
+        } catch (\Throwable $e) {
+            if ($ruta) {
+                Storage::delete($ruta);
+            }
+            report($e);
+            $this->addError('customError', 'No se pudo generar el GR. Intenta de nuevo.');
+            return;
         }
-    }
 
-    protected function siguienteCodigoOC(): string
-    {
-         $ultimaOrden = OrdenCompra::whereNotNull('cod_oc')
-            ->where('cod_oc', '!=', '')
-            ->whereNotNull('fecha_aprobacion')
-            ->orderByDesc('fecha_aprobacion')
-            ->orderByDesc('id') // desempate si dos tienen la misma fecha
-            ->first(['id', 'cod_oc', 'fecha_aprobacion']);
-
-        $ultimo = 0;
-
-        if ($ultimaOrden && preg_match('/(\d+)\s*$/', $ultimaOrden->cod_oc, $m)) {
-            $ultimo = (int) $m[1];
-        }
-
-        return 'OC ' . str_pad($ultimo + 1, 3, '0', STR_PAD_LEFT);
+        $this->mailGrGenerado($this->orden_compra);
+        return redirect()->route('aprobaciones-ordenes-compra')
+            ->with('success', '' . $this->orden_compra->gr . ' generado correctamente.');
     }
 
     public function render(){

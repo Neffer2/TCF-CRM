@@ -208,10 +208,10 @@
                     <!-- Botones de Acción Final -->
                     <div class="row mt-4">
                         <div class="col-12 d-flex justify-content-end gap-2">
-                            <button type="button" wire:click="cambiarEstado(3)" class="btn bg-gradient-danger mb-0">
+                            <button type="button" wire:click="cambiarEstado(12)" class="btn bg-gradient-danger mb-0">
                                 <i class="fas fa-times me-1"></i> Rechazar Orden
                             </button>
-                            <button type="button" wire:click="cambiarEstado(9)" class="btn bg-gradient-success mb-0">
+                            <button type="button" wire:click="cambiarEstado(3)" class="btn bg-gradient-success mb-0">
                                 <i class="fas fa-check me-1"></i> Aprobar Orden
                             </button>
                         </div>

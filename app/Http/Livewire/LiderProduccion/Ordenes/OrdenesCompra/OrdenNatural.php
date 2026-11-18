@@ -110,10 +110,13 @@ class OrdenNatural extends Component
     // Cambiar estado: Aprobar (9) o Rechazar (12)
     public function cambiarEstado($estado)
     {
-        if ($estado == 9) {
+        // Si intentan aprobar (estado 3), validamos si tiene o no evidencias
+        if ($estado == 3) {
             $this->validate([
                 'cod_oc' => 'nullable|string|max:200',
             ]);
+
+            $nuevoEstado = ($this->queriedOrden->evidencias == null || empty($this->queriedOrden->evidencias)) ? 3 : 9;
 
             $this->queriedOrden->fecha_aprobacion = now();
             $this->queriedOrden->cod_oc = $this->cod_oc;
@@ -122,12 +125,16 @@ class OrdenNatural extends Component
                 $this->ocNaturalRevisionContabilidad($this->queriedOrden);
             }
 
-            $this->queriedOrden->estado_id = $estado;
+            $this->queriedOrden->estado_id = $nuevoEstado;
             $this->queriedOrden->update();
 
-            return redirect()->route('orden-compra')->with('success', 'La orden ' . $this->queriedOrden->id . ' a sido APROBADA y enviada Controller');
+            $mensaje = $nuevoEstado == 3 
+                ? 'La orden ' . $this->queriedOrden->id . ' ha sido APROBADA' 
+                : 'La orden ' . $this->queriedOrden->id . ' pasó a revisión por tener evidencias.';
 
-        } elseif ($estado == 3) {
+            return redirect()->route('orden-compra')->with('success', $mensaje);
+
+        } elseif ($estado == 12) {
             $this->validate([
                 'justificacion_rechazo' => 'required|string|max:1000',
             ]);
@@ -141,7 +148,7 @@ class OrdenNatural extends Component
             $this->queriedOrden->estado_id = $estado;
             $this->queriedOrden->update();
 
-            return redirect()->route('orden-compra')->with('error', 'La orden de compra' . $this->queriedOrden->id . 'a sido RECHAZADA y devuelva al productor');
+            return redirect()->route('orden-compra')->with('error', 'La orden de compra ' . $this->queriedOrden->id . ' ha sido RECHAZADA y devuelta al productor');
         }
     }
     
