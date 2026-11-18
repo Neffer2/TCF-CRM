@@ -67,7 +67,8 @@ class NuevoPersonal extends Component
         $this->evidencias = collect();
 
         $this->estados = EstadoTercero::all();
-
+        
+        // Valida si existe una para generar PDF 
         if ($this->orden) {
             $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
             $this->generarPrevisualizacionContrato();
