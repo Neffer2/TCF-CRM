@@ -122,10 +122,13 @@ class OrdenNatural extends Component
                     $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
                     abort_unless((int) $orden->estado_id === 8, 403);
                     $orden->fecha_aprobacion = now();
-                    $orden->cod_oc = $orden->codigoOC();
-                    $orden->estado_id = $orden->evidencias()->exists() ? 9 : 3;
+                    $tieneEvidencias = $orden->evidencias()->exists();
+                    $orden->estado_id = $tieneEvidencias ? 9 : 3;
+                    if (!$tieneEvidencias) {
+                        $orden->cod_oc = $orden->codigoOC();
+                    }
 
-                    if (empty($orden->archivo_orden_helisa)) {
+                    if (!$tieneEvidencias && empty($orden->archivo_orden_helisa)) {
                         $orden->load(['naturalInfo.tercero', 'ordenItems.itemPresupuesto.presupuesto']);
                         $pdf = new Dompdf(['enable_remote' => true]);
                         $pdf->loadHtml(view('exports.orden_compra_pdf', [
