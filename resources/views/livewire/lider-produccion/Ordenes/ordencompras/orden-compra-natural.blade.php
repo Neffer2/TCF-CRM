@@ -186,9 +186,7 @@
                             </div>
                         </div>
                         <hr class="horizontal dark">
-                    @endif
-
-                    @if ($queriedOrden)
+                    @elseif($queriedOrden)
                         <div class="mb-4">
                             <h5 class="mb-2">Vista previa de la orden de compra</h5>
                             <a href="{{ route('orden-compra-lider.pdf', $queriedOrden) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
