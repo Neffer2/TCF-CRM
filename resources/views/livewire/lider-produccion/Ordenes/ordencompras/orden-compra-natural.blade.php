@@ -188,6 +188,18 @@
                         <hr class="horizontal dark">
                     @endif
 
+                    @if ($queriedOrden)
+                        <div class="mb-4">
+                            <h5 class="mb-2">Vista previa de la orden de compra</h5>
+                            <a href="{{ route('orden-compra-lider.pdf', $queriedOrden) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-file-pdf me-1" aria-hidden="true"></i> Abrir PDF de la OC
+                            </a>
+                            <div class="d-none d-md-block w-100" wire:ignore>
+                                <embed src="{{ route('orden-compra-lider.pdf', $queriedOrden) }}" width="100%" height="900" type="application/pdf" title="Vista previa de la orden de compra natural">
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Sección de Aprobación o Rechazo -->
                     <div class="row mt-4">
                         <div class="col-md-6">
@@ -205,6 +217,9 @@
                         @endif
                     </div>
 
+                    @error('customError')
+                        <div class="alert alert-danger text-white">{{ $message }}</div>
+                    @enderror
                     <!-- Botones de Acción Final -->
                     <div class="row mt-4">
                         <div class="col-12 d-flex justify-content-end gap-2">

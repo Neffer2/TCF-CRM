@@ -31,6 +31,7 @@ class ListaAnticipo extends Component
     public function verDetalle($id)
     {
         $this->selectedAnticipo = Anticipo::with([
+            'productor',
             'ordenCompra.tipo',
             'ordenCompra.presupuesto',
             'ordenCompra.OrdenItems',
@@ -79,6 +80,7 @@ class ListaAnticipo extends Component
     public function listaAnticipos()
     {
         $this->ordenes = Anticipo::with([
+            'productor',
             'ordenCompra.tipo',
             'ordenCompra.presupuesto',
             'estado'

@@ -29,6 +29,11 @@ class Anticipo extends Model
         return $this->belongsTo(OrdenCompra::class, 'oc_id');
     }
 
+    public function productor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'productor_id');
+    }
+
     public function estado(): BelongsTo
     {
         return $this->belongsTo(Estados_Anticipo::class, 'estado_id');

@@ -7,10 +7,10 @@ use App\Models\OrdenCompra;
 use App\Traits\Email;
 use App\Traits\SMS;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
-use Dompdf\Dompdf;
-use Illuminate\Support\Facades\DB;
+
+
+
+
 
 class Natural extends Component{
 
@@ -221,59 +221,11 @@ use SMS, Email;
 
                 if ($nuevoEstado === self::ESTADO_APROBADA) 
                 {
-                    $soloAprobada = false;
-                    try {
-                        DB::transaction(function () use (&$nuevoEstado, &$soloAprobada) {
-                            $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
-
-                            // Si ya tiene código OC: solo se aprueba (sin nuevo código ni PDF)
-                            if (!empty($orden->cod_oc)) {
-                                $orden->estado_id        = $nuevoEstado;
-                                $orden->save();
-
-                                $this->queriedOrden = $orden;
-                                $soloAprobada = true;
-                                return;
-                            }
-
-                            // --- Flujo normal: sin código asignado ---
-                            $orden->cod_oc           = $orden->codigoOC();
-
-                            $orden->load([
-                                'naturalInfo.tercero',
-                                'naturalInfo.productor',
-                                'ordenItems.itemPresupuesto',
-                            ]);
-
-                            $dompdf = new Dompdf(['enable_remote' => true]);
-                            $html = View::make('exports.orden_compra_pdf', [
-                                'orden' => $orden,
-                            ])->render();
-
-                            $dompdf->loadHtml($html);
-                            $dompdf->setPaper('A4', 'portrait');
-                            $dompdf->render();
-
-                            $pdfOutput = $dompdf->output();
-                            $nombreArchivo = 'orden_natural_' . str_replace(' ', '_', $orden->cod_oc) . '_' . time() . '.pdf';
-                            $rutaAlmacenamiento = 'public/ordenes_naturales_helisa/' . $nombreArchivo;
-
-                            Storage::put($rutaAlmacenamiento, $pdfOutput);
-
-                            $orden->archivo_orden_helisa = $rutaAlmacenamiento;
-                            $orden->estado_id            = $nuevoEstado;
-                            $orden->save();
-
-                            $this->queriedOrden = $orden;
-                        });
-
-                    } catch (\Throwable $e) {
-                        $this->addError('customError', $e->getMessage());
-                        return;
-                    }
+                    $this->queriedOrden->estado_id = $nuevoEstado;
+                    $this->queriedOrden->save();
 
                     $this->ocNaturalRevisionContabilidad($this->queriedOrden);
-                    return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada Y PDF generado');
+                    return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada');
 
                 } else {
                     // Si pasa a una instancia intermedia (ej. líder comercial o gerencia)

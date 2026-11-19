@@ -39,8 +39,8 @@ class Aprobaciones extends Component
     protected function estadosVisibles(): array
     {
         $usuariosPorEstado = [
-            9 => [2, 91, 208, 197, 214, 145, 181, 210, 206],
-            10 => [192, 9, 17],
+            9 => [2, 10, 91, 208, 197, 214, 145, 181, 210, 206],
+            10 => [10, 192, 9, 17],
             11 => [10, 8],
         ];
         $estados = [];

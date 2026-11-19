@@ -11,15 +11,22 @@
     $orden->loadMissing('ordenItems.itemPresupuesto.presupuesto');
     $codCcOrden = $orden->presupuesto?->cod_cc;
 
-    // Detección automática: Proveedor (Jurídica) o Tercero (Natural)
-    $prov = $orden->proveedor ?? optional($orden->naturalInfo)->tercero;
+    $esNatural = (int) $orden->tipo_oc === 2;
+    $orden->loadMissing($esNatural ? 'naturalInfo.tercero' : 'proveedor');
+    $prov = $esNatural ? $orden->naturalInfo?->tercero : $orden->proveedor;
     
-    $nombreProv  = $prov->tercero ?? trim(($prov->nombre ?? '') . ' ' . ($prov->apellido ?? '')) ?: 'N/A';
-    $nitProv     = $prov->nit ?? $prov->cedula ?? $prov->documento ?? 'N/A';
+    $nombreProv = $esNatural
+        ? (trim(($prov->nombre ?? '') . ' ' . ($prov->apellido ?? '')) ?: 'N/A')
+        : ($prov?->tercero ?: 'N/A');
+    $nitProv = $esNatural
+        ? ($prov->cedula ?? $prov->documento ?? 'N/A')
+        : ($prov->nit ?? $prov->documento ?? 'N/A');
     $dirProv     = $prov->direccion ?? 'N/A';
     $ciudadProv  = $prov->ciudad ?? 'N/A';
     $correoProv  = $prov->correo ?? $prov->email ?? '';
-    $contactoProv= $prov->contacto ?? $prov->telefono ?? '';
+    $contactoProv = $esNatural
+        ? ($prov->telefono ?? $prov->celular ?? '')
+        : ($prov->contacto ?? $prov->telefono ?? $prov->celular ?? '');
 
     $subtotal = $orden->ordenItems->sum('vtotal_oc');
     $iva        = $orden->iva         ?? 0;
@@ -27,7 +34,7 @@
     $reteiva    = $orden->reteiva    ?? 0;
     $reteica    = $orden->reteica    ?? 0;
     $total      = $subtotal + $iva - $retefuente - $reteiva - $reteica;
-    $esBorrador = (int) (auth()->user()->rol ?? 0) === 6;
+    $esBorrador = $esBorrador ?? ((int) (auth()->user()->rol ?? 0) === 6);
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -107,7 +114,7 @@
 
     <table style="margin-top:6px;">
         <tr>
-            <td style="font-size:9.5px;">Datos del Proveedor / Tercero</td>
+            <td style="font-size:9.5px;">{{ $esNatural ? 'Datos del Tercero' : 'Datos del Proveedor' }}</td>
             <td class="fecha">FECHA: {{ $fechaTexto }}</td>
         </tr>
     </table>

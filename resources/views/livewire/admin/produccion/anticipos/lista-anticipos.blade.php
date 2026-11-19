@@ -180,6 +180,10 @@
                                     <h6 class="mb-0">{{ $selectedAnticipo->created_at ? $selectedAnticipo->created_at->format('d/m/Y H:i') : 'N/A' }}</h6>
                                 </div>
                                 <div class="col-md-3 col-6 mb-2">
+                                    <span class="text-xs text-secondary">Productor solicitante:</span>
+                                    <h6 class="mb-0 text-primary">{{ $selectedAnticipo->productor?->name ?? 'Sin productor registrado' }}</h6>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
                                     <span class="text-xs text-secondary">Aprobacion Lider:</span>
                                     <h6 class="mb-0">{{ $this->formatearFecha($selectedAnticipo->fecha_aprobacion ?? null) }}</h6>
                                 </div>

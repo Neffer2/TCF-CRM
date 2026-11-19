@@ -55,6 +55,9 @@
                                         <h6 class="mb-0 text-xs">
                                             Anticipo #{{ $anticipo->id }}
                                         </h6>
+                                        <p class="text-xs text-secondary mb-0">
+                                            Productor solicitante: {{ $anticipo->productor?->name ?? 'Sin productor registrado' }}
+                                        </p>
                                         @if ($anticipo->ordenCompra?->presupuesto?->cod_cc)
                                             <p class="text-xs text-secondary mb-0">
                                                 CC: {{ $anticipo->ordenCompra->presupuesto->cod_cc }}
@@ -156,6 +159,10 @@
                                 <div class="col-md-3 col-6 mb-2">
                                     <span class="text-xs text-secondary">Monto Solic. Anticipo:</span>
                                     <h6 class="mb-0 text-primary">$ {{ number_format($selectedAnticipo->total_anticipo ?? 0, 2) }}</h6>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <span class="text-xs text-secondary">Productor solicitante:</span>
+                                    <h6 class="mb-0 text-primary">{{ $selectedAnticipo->productor?->name ?? 'Sin productor registrado' }}</h6>
                                 </div>
                                 <div class="col-md-3 col-6 mb-2">
                                     <span class="text-xs text-secondary">Fecha Solicitud:</span>

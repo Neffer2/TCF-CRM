@@ -6,6 +6,9 @@ use Livewire\Component;
 use App\Models\OrdenCompra;
 use App\Traits\Email;
 use App\Traits\SMS;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrdenNatural extends Component
 {
@@ -70,7 +73,7 @@ class OrdenNatural extends Component
         }
 
         $this->justificacion_rechazo = $this->queriedOrden->justificacion_rechazo;
-        $this->cod_oc = $this->queriedOrden->cod_oc;
+        $this->cod_oc = $this->queriedOrden->codigoOC();
         $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
         $queriedItems = $this->queriedOrden->ordenItems;
 
@@ -112,23 +115,49 @@ class OrdenNatural extends Component
     {
         // Si intentan aprobar (estado 3), validamos si tiene o no evidencias
         if ($estado == 3) {
-            $this->validate([
-                'cod_oc' => 'nullable|string|max:200',
-            ]);
+            abort_unless((int) auth()->user()->rol === 6, 403);
+            $ruta = null;
+            try {
+                DB::transaction(function () use (&$ruta) {
+                    $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
+                    abort_unless((int) $orden->estado_id === 8, 403);
+                    $orden->fecha_aprobacion = now();
+                    $orden->cod_oc = $orden->codigoOC();
+                    $orden->estado_id = $orden->evidencias()->exists() ? 9 : 3;
 
-            $nuevoEstado = ($this->queriedOrden->evidencias == null || empty($this->queriedOrden->evidencias)) ? 3 : 9;
-
-            $this->queriedOrden->fecha_aprobacion = now();
-            $this->queriedOrden->cod_oc = $this->cod_oc;
+                    if (empty($orden->archivo_orden_helisa)) {
+                        $orden->load(['naturalInfo.tercero', 'ordenItems.itemPresupuesto.presupuesto']);
+                        $pdf = new Dompdf(['enable_remote' => true]);
+                        $pdf->loadHtml(view('exports.orden_compra_pdf', [
+                            'orden' => $orden,
+                            'esBorrador' => false,
+                        ])->render());
+                        $pdf->setPaper('A4', 'portrait');
+                        $pdf->render();
+                        $ruta = 'public/ordenes_naturales_helisa/orden_natural_' . $orden->id . '_' . uniqid() . '.pdf';
+                        if (!Storage::put($ruta, $pdf->output())) {
+                            throw new \RuntimeException('No se pudo guardar el PDF de la OC.');
+                        }
+                        $orden->archivo_orden_helisa = $ruta;
+                    }
+                    $orden->save();
+                    $this->queriedOrden = $orden;
+                    $this->cod_oc = $orden->cod_oc;
+                });
+            } catch (\Throwable $e) {
+                if ($ruta) {
+                    Storage::delete($ruta);
+                }
+                report($e);
+                $this->addError('customError', 'No se pudo aprobar y guardar la OC. Intenta de nuevo.');
+                return;
+            }
             
             if (method_exists($this, 'ocNaturalRevisionContabilidad')) {
                 $this->ocNaturalRevisionContabilidad($this->queriedOrden);
             }
 
-            $this->queriedOrden->estado_id = $nuevoEstado;
-            $this->queriedOrden->update();
-
-            $mensaje = $nuevoEstado == 3 
+            $mensaje = $this->queriedOrden->estado_id == 3
                 ? 'La orden ' . $this->queriedOrden->id . ' ha sido APROBADA' 
                 : 'La orden ' . $this->queriedOrden->id . ' pasó a revisión por tener evidencias.';
 
