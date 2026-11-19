@@ -116,6 +116,27 @@ class OrdenNatural extends Component
         // Si intentan aprobar (estado 3), validamos si tiene o no evidencias
         if ($estado == 3) {
             abort_unless((int) auth()->user()->rol === 6, 403);
+            $this->resetErrorBag('customError');
+            $this->queriedOrden->refresh();
+
+            if ($this->queriedOrden->evidencias()->exists()) {
+                try {
+                    $this->queriedOrden->update([
+                        'estado_id' => 9,
+                        'fecha_aprobacion' => now(),
+                    ]);
+                } catch (\Throwable $e) {
+                    report($e);
+                    $this->addError('customError', 'No se pudo enviar la orden a revisión del Controller. Intenta de nuevo.');
+                    return;
+                }
+
+                return redirect()->route('orden-compra')->with(
+                    'success',
+                    'Las evidencias de la orden ' . $this->queriedOrden->id . ' fueron aprobadas y enviadas al Controller.'
+                );
+            }
+
             $ruta = null;
             try {
                 DB::transaction(function () use (&$ruta) {
