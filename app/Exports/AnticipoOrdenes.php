@@ -53,7 +53,19 @@ class AnticipoOrdenes
 
         $esNatural = $naturalInfo !== null && $tercero !== null;
 
-        if ($esNatural) {
+        if ((int) $orden?->tipo_oc === 4) {
+            $empleado = $naturalInfo?->productor;
+            $contraparte = [
+                'tipo' => 'Empleado',
+                'etiqueta' => 'Empleado solicitante',
+                'nombre' => $empleado?->name,
+                'documento' => $empleado?->cedula,
+                'dv' => null,
+                'direccion' => $empleado?->direccion,
+                'ciudad' => $empleado?->ciudad,
+                'contacto' => $empleado?->email,
+            ];
+        } elseif ($esNatural) {
             // Persona natural: los datos salen de Tercero
             $contraparte = [
                 'tipo'      => 'Persona natural',

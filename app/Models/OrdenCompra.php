@@ -71,4 +71,10 @@ class OrdenCompra extends Model
     {
         return (float) $this->ordenItems()->sum('vtotal_oc');
     }
+
+    public function getProductorSolicitanteAttribute()
+    {
+        return $this->naturalInfo?->productor
+            ?? $this->presupuesto_resuelto?->productor_info;
+    }
 }

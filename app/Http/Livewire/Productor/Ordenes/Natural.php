@@ -13,10 +13,7 @@ use App\Traits\Email;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
-use Dompdf\Dompdf;
+use Illuminate\Validation\Rule;
 
 class Natural extends Component
 {
@@ -36,6 +33,8 @@ class Natural extends Component
 
     // Variables para identificar el productor y la orden actual
     public $productor, $orden_id;
+
+    public $es_orden_trabajo = false;
 
     /*
         * EVIDENCIAS
@@ -250,64 +249,70 @@ class Natural extends Component
      *  UPLOAD OC
     **/
     // Crea una nueva orden de compra con los items seleccionados
-    public function uploadOC(){
-        if ($this->items->count() <= 0){
+    public function uploadOC()
+    {
+        if ($this->items->count() <= 0) {
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
             return back();
         }
 
         $this->validate([
-            'tercero' => 'required',
-            'justificacion_productor' => 'required|string|max:255'
+            'tercero' => [Rule::requiredIf(fn () => ! $this->es_orden_trabajo)],
+            'justificacion_productor' => 'required|string|max:255',
         ]);
 
-        $tercero = Tercero::where('id', $this->tercero)->first();
-        $tercero->update([
-            'nombre' => $this->nombre,
-            'apellido' => $this->apellido,
-            'cedula' => $this->cedula,
-            'correo' => $this->correo,
-            'telefono' => $this->telefono,
-            'ciudad' => $this->ciudad,
-            'banco' => $this->banco
-        ]);
+        $tercero = null;
 
-        // Crea la orden de compra (tipo natural)
+        if (!$this->es_orden_trabajo && $this->tercero) {
+            $tercero = Tercero::where('id', $this->tercero)->first();
+
+            if ($tercero) {
+                $tercero->update([
+                    'nombre'   => $this->nombre,
+                    'apellido' => $this->apellido,
+                    'cedula'   => $this->cedula,
+                    'correo'   => $this->correo,
+                    'telefono' => $this->telefono,
+                    'ciudad'   => $this->ciudad,
+                    'banco'    => $this->banco,
+                ]);
+            }
+        }
+
+        // Si está marcado: tipo_oc = 4 y se guarda el ID de quien lo solicita
         $orden = OrdenCompra::create([
-            'tipo_oc' => 2,
-            'estado_id' => 8,
+            'tipo_oc'               => $this->es_orden_trabajo ? 4 : 2,
+            'estado_id'             => $this->es_orden_trabajo ? 3 : 8,
             'justificacion_productor' => $this->justificacion_productor,
-            'proveedor_id' => 3,
+            'proveedor_id'          => 3,
         ]);
 
-        // Crea la información adicional de la orden natural
-        $natural = NaturalInfo::create([
-            'oc_id' => $orden->id,
-            'tercero_id' => $tercero->id,
-            'productor_id' => $this->productor->id
+        NaturalInfo::create([
+            'oc_id'        => $orden->id,
+            'tercero_id'   => $tercero?->id,
+            'productor_id' => auth()->id(),
         ]);
 
-        // Crea los items de la orden
         $OcItem = new OcItem();
-        foreach ($this->items as $item){
+        foreach ($this->items as $item) {
             $OcItem->create([
-                'oc_id' => $orden->id,
-                'item_id' => $item['item']['id'],
-                'desc_oc' => $item['item']['nombre'],
-                'cant_oc' => $item['cant'],
-                'dias_oc' => $item['dias'],
-                'otros_oc' => $item['otros'],
-                'vunit_oc' => $item['valor_unitario'],
-                'vtotal_oc' => $item['valor_total'],
+                'oc_id'         => $orden->id,
+                'item_id'       => $item['item']['id'],
+                'desc_oc'       => $item['item']['nombre'],
+                'cant_oc'       => $item['cant'],
+                'dias_oc'       => $item['dias'],
+                'otros_oc'      => $item['otros'],
+                'vunit_oc'      => $item['valor_unitario'],
+                'vtotal_oc'     => $item['valor_total'],
                 'tipo_servicio' => $item['tipo_servicio'],
                 'tipo_contrato' => $item['tipo_contrato'],
             ]);
         }
 
-        // Envía mensaje al tercero si tiene teléfono
-        if ($tercero->telefono){ $this->oc_natura_creada($tercero, $orden->id); }
+        if ($tercero && $tercero->telefono) {
+            $this->oc_natura_creada($tercero, $orden->id);
+        }
 
-        // Limpia todos los campos y colecciones
         $this->resetFields([
             'presupuesto',
             'item_presupuesto',
@@ -326,12 +331,15 @@ class Natural extends Component
             'telefono',
             'ciudad',
             'banco',
+            'es_orden_trabajo',
         ]);
 
         unset($this->tercero);
         unset($this->selected_item);
         $this->items = collect();
-        return back()->with('success', 'Orden de compra creada correctamente y enviada a líder de producción para aprobación');
+
+        return redirect()->route('orden-natural-prod', ['orden_id' => $orden->id])
+            ->with('success', (int) $orden->tipo_oc === 4 ? 'Orden de empleado creada. Puedes editarla y solicitar un anticipo.' : 'Orden enviada a líder de producción para aprobación');
     }
     /* * --------------------- * */
 
@@ -339,7 +347,37 @@ class Natural extends Component
      *  Queried Data
     **/
     // Actualiza una orden de compra existente con los nuevos items y estado
+    protected function guardarOrdenEmpleado()
+    {
+        $this->validate([
+            'items' => 'required|min:1',
+            'justificacion_productor' => 'required|string|max:1000',
+        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $orden = OrdenCompra::lockForUpdate()->findOrFail($this->queriedOrden->id);
+            abort_unless((int) $orden->tipo_oc === 4 && (int) $orden->naturalInfo->productor_id === (int) auth()->id(), 403);
+            if ($orden->anticipos()->where('estado_id', '!=', 6)->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['items-error' => 'La orden tiene un anticipo en trámite.']);
+            }
+            $orden->update(['justificacion_productor' => $this->justificacion_productor]);
+            $orden->ordenItems()->delete();
+            foreach ($this->items as $item) {
+                $orden->ordenItems()->create([
+                    'item_id' => $item['item']['id'],
+                    'desc_oc' => $item['item']['nombre'],
+                    'cant_oc' => $item['cant'], 'dias_oc' => $item['dias'], 'otros_oc' => $item['otros'],
+                    'vunit_oc' => $item['valor_unitario'], 'vtotal_oc' => $item['valor_total'],
+                    'tipo_servicio' => $item['tipo_servicio'], 'tipo_contrato' => $item['tipo_contrato'],
+                ]);
+            }
+        });
+        return redirect()->route('orden-natural-prod', ['orden_id' => $this->queriedOrden->id])->with('success', 'Orden de empleado guardada.');
+    }
+
     public function updateOC(){
+        if ((int) $this->queriedOrden->tipo_oc === 4) {
+            return $this->guardarOrdenEmpleado();
+        }
         if ($this->items->count() <= 0){
             $this->addError('items-error', 'No se han agregado items a la orden de compra');
             return back();
@@ -432,18 +470,22 @@ class Natural extends Component
     **/
     // Carga los datos de una orden existente para edición
     public function getData(){
+        $this->es_orden_trabajo = (int) $this->queriedOrden->tipo_oc === 4;
         // Productor
         $this->productor = $this->queriedOrden->naturalInfo->productor;
         // Tercero
-        $queriedTercero = $this->queriedOrden->naturalInfo->tercero;
-        $this->tercero = $queriedTercero->id;
-        $this->nombre = $queriedTercero->nombre;
-        $this->apellido = $queriedTercero->apellido;
-        $this->correo = $queriedTercero->correo;
-        $this->cedula = $queriedTercero->cedula;
-        $this->telefono = $queriedTercero->telefono;
-        $this->ciudad = $queriedTercero->ciudad;
-        $this->banco = $queriedTercero->banco;
+        $queriedTercero = $this->es_orden_trabajo
+            ? $this->productor
+            : $this->queriedOrden->naturalInfo->tercero;
+        $this->tercero = $this->es_orden_trabajo ? null : $queriedTercero?->id;
+        $this->nombre = $this->es_orden_trabajo ? $queriedTercero?->name : $queriedTercero?->nombre;
+        $this->apellido = $this->es_orden_trabajo ? '' : $queriedTercero?->apellido;
+        $this->correo = $this->es_orden_trabajo ? $queriedTercero?->email : $queriedTercero?->correo;
+        $this->cedula = $queriedTercero?->cedula;
+        $this->telefono = $queriedTercero?->telefono;
+        $this->ciudad = $queriedTercero?->ciudad;
+        $this->banco = $queriedTercero?->banco;
+        $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
         // Items
         $queriedItems = $this->queriedOrden->ordenItems;
         foreach ($queriedItems as $item){

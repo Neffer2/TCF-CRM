@@ -3,8 +3,8 @@
     <div class="row">
         <div class="col-md-12 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
-            <h3 class="m-0">Orden de compra natural @if($queriedOrden) #{{ $queriedOrden->id }} @endif</h3>
-            <p class="text-sm m-0">Selecciona tu personal y asigna los items nesesarios.</p>
+            <h3 class="m-0">{{ $es_orden_trabajo ? 'Orden de empleado' : 'Orden de compra natural' }} @if($queriedOrden) #{{ $queriedOrden->id }} @endif</h3>
+            <p class="text-sm m-0">{{ $es_orden_trabajo ? 'Asigna los ítems, guarda la orden y solicita el anticipo.' : 'Selecciona tu personal y asigna los ítems necesarios.' }}</p>
             </div>
             <div class="d-flex flex-wrap gap-2">
                 @include('partials.orden-compra-anticipos', [
@@ -13,6 +13,12 @@
                 ])
             </div>
         </div>
+        @if ($es_orden_trabajo)
+            <div class="col-12 mb-3">
+                <label>Empleado solicitante</label>
+                <input class="form-control" value="{{ $queriedOrden?->naturalInfo?->productor?->name ?? auth()->user()->name }}" readonly>
+            </div>
+        @else
         <div class="col-md-6" style="border-right: 1px solid #eee;">
             <div class="row">
                 <div class="col-md-4">
@@ -159,6 +165,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
     <div class="row font-table py-2">
         <div class="col-md-12 table-responsive">
@@ -337,6 +344,17 @@
                         </div>
                     @enderror
                 </div>
+            </div>
+            <div class="form-check mb-2">
+                <input
+                    type="checkbox"
+                    id="es_orden_trabajo"
+                    class="form-check-input"
+                    wire:model="es_orden_trabajo"
+                >
+                <label class="form-check-label" for="es_orden_trabajo">
+                    Marcar como Anticipo empleado
+                </label>
             </div>
             @error('items-error')
                 <div class="text-invalid m-0">
@@ -534,7 +552,10 @@
                 @if(!$orden_id)
                     <button wire:click="uploadOC" class="btn bg-gradient-warning mt-2 mb-0">GENERAR ORDEN DE TRABAJO</button>
                 @else
-                    @if ($queriedOrden->naturalInfo->terminos == 1)
+                    @if ($es_orden_trabajo)
+                        <button wire:click="updateOC" class="btn bg-gradient-success mt-2">Guardar orden de empleado</button>
+                        <a href="{{ route('anticipo-prod', ['orden_id' => $queriedOrden->id, 'natural' => 1]) }}" class="btn btn-outline-primary mt-2">Solicitar anticipo</a>
+                    @elseif ($queriedOrden->naturalInfo->terminos == 1)
                         <button class="btn bg-gradient-success mt-2 mb-0" data-bs-toggle="modal" data-bs-target="#confirmarInfo">CONFIRMAR INFORMACI&Oacute;N</button>
                             <div class="modal fade" id="confirmarInfo" tabindex="-1" aria-labelledby="confirmarInfoLabel" aria-hidden="true">
                                 <div class="modal-dialog">

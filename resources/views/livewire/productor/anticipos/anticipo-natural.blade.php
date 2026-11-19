@@ -29,7 +29,7 @@
         </div>
         <div class="col-md-6 mt-3">
             <div class="form-group m-0">
-                <label><b>Proveedor:</b> {{ $orden?->proveedor?->tercero }}</label>
+                <label><b>{{ (int) $orden?->tipo_oc === 4 ? 'Empleado solicitante' : 'Proveedor' }}:</b> {{ (int) $orden?->tipo_oc === 4 ? $orden?->naturalInfo?->productor?->name : $orden?->proveedor?->tercero }}</label>
                 <textarea class="form-control" disabled>{{ $orden?->observaciones_negociacion }}</textarea>
             </div>
         </div>

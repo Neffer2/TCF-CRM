@@ -6,7 +6,7 @@
     @endsection
 
     @section('content')
-        <div class="card" x-data="{ show: true }" x-cloak>
+        <div class="card" x-data="{ show: {{ request()->boolean('natural') ? 'false' : 'true' }} }" x-cloak>
             <div id="accordion-anticipos">
                 <div class="row px-3 pt-3 pb-0">
                     <div class="col-md-6">

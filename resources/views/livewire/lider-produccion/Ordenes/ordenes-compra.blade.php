@@ -76,6 +76,7 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3" style="width: 22%;">Proyecto / Tercero</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tipo</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Gestión</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Proveedor / Tercero</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Centro Costos / Fecha Gen.</th>
                             <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha Envío (Prod.)</th>
@@ -105,6 +106,15 @@
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-primary">{{ $orden->tipo->description }}</span>
                                     </td>
+                                    @if ($orden->archivo_orden_helisa == null)
+                                        <td class="align-middle text-center text-sm">
+                                            <span class="badge badge-sm bg-gradient-primary">Orden De Compra</span>
+                                        </td>
+                                    @else
+                                        <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-primary">GR</span>
+                                    </td>
+                                    @endif
                                     <td class="align-middle">
                                         <span class="text-xs font-weight-bold mb-0 text-secondary">{{ $orden->proveedor->tercero }}</span>
                                     </td>
@@ -145,6 +155,15 @@
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-info">{{ $orden->tipo->description }}</span>
                                     </td>
+                                    @if ($orden->archivo_orden_helisa == null)
+                                        <td class="align-middle text-center text-sm">
+                                            <span class="badge badge-sm bg-gradient-primary">Orden De Compra</span>
+                                        </td>
+                                    @else
+                                        <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-primary">GR</span>
+                                    </td>
+                                    @endif
                                     <td class="align-middle">
                                         <span class="text-xs font-weight-bold mb-0 text-secondary">
                                             {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}

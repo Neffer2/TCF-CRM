@@ -143,6 +143,10 @@
             <td class="lbl" style="width:60px;">Contacto:</td>
             <td>{{ $contactoProv }}</td>
         </tr>
+        <tr>
+            <td class="lbl">Productor solicitante:</td>
+            <td colspan="3">{{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</td>
+        </tr>
     </table>
 
     <table class="sub-header">

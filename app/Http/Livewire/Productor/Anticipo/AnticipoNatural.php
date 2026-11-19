@@ -29,12 +29,15 @@ class AnticipoNatural extends Component
             $this->queriedAnticipo = ModelAnticipo::with('ordenCompra')->find($this->anticipo_id);
 
             // Si el anticipo es de otro tipo, este componente no lo carga
-            if ($this->queriedAnticipo?->ordenCompra?->tipo_oc != self::TIPO_OC_NATURAL) {
+            if (!in_array((int) $this->queriedAnticipo?->ordenCompra?->tipo_oc, $this->tiposPermitidos(), true)) {
                 $this->queriedAnticipo = null;
                 return;
             }
 
             $this->setData();
+        } elseif (request()->filled('orden_id')) {
+            $this->orden_compra = request('orden_id');
+            $this->updatedOrdenCompra();
         }
     }
 
@@ -93,7 +96,9 @@ class AnticipoNatural extends Component
             'ordenItems.itemPresupuesto.presupuesto.presupuestoItems',
             'anticipos',
             'naturalInfo',
-        ])->find($id);
+        ])->whereIn('tipo_oc', $this->tiposPermitidos())
+            ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', Auth::id()))
+            ->find($id);
     }
 
     public function setData()
@@ -120,7 +125,7 @@ class AnticipoNatural extends Component
         ]);
 
         $orden = OrdenCompra::with('ordenItems')
-            ->where('tipo_oc', self::TIPO_OC_NATURAL)
+            ->where('tipo_oc', $this->tipo_oc)
             ->where('estado_id', self::OC_ESTADO_ANTICIPO)
             ->whereHas('naturalInfo', fn ($n) => $n->where('productor_id', Auth::id()))
             ->findOrFail($this->orden_compra);
@@ -128,8 +133,9 @@ class AnticipoNatural extends Component
         $total = ($orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
 
         DB::transaction(function () use ($orden, $total) {
-            // Actualiza el tipo de la OC según el desplegable
-            $orden->update(['tipo_oc' => $this->tipo_oc]);
+            $orden = OrdenCompra::lockForUpdate()->findOrFail($orden->id);
+            abort_if($orden->anticipos()->where('estado_id', '!=', self::ANTICIPO_RECHAZADO)->exists(), 409);
+            $total = ($orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
 
             ModelAnticipo::create([
                 'oc_id'               => $orden->id,
@@ -157,7 +163,6 @@ class AnticipoNatural extends Component
             $total = ($orden->ordenItems->sum('vtotal_oc') * $this->porcentaje_anticipo) / 100;
 
             DB::transaction(function () use ($orden, $total) {
-                $orden->update(['tipo_oc' => $this->tipo_oc]);
 
                 $this->queriedAnticipo->update([
                     'porcentaje_anticipo' => $this->porcentaje_anticipo,

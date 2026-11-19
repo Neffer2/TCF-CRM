@@ -192,6 +192,8 @@
         </tr>
     </table>
 
+    <p><b>Productor solicitante:</b> {{ $oc->productor_solicitante?->name ?? 'Sin productor registrado' }}</p>
+
     <div class="solicitamos">Solicitamos sean ejecutados los siguientes servicios:</div>
     <div class="pagina">Página &nbsp; 1 &nbsp; de &nbsp; 1</div>
 

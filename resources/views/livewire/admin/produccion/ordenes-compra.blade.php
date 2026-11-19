@@ -144,7 +144,7 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                        <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                        <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre ?? 'Anticipo' }} {{ $orden->naturalInfo->tercero->apellido ?? 'Productor'}}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
@@ -270,7 +270,7 @@
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                    <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}</span>
+                                    <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre ?? 'Anticipo'}} {{ $orden->naturalInfo->tercero->apellido ?? 'Productor'}}</span>
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -282,7 +282,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-success m-0 me-1 mb-1"
-                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono }}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
+                                    href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono ?? 'N/A'}}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
                                     target="_blank">
                                         <i class="fa-brands fa-whatsapp"></i>
                                     </a>
@@ -359,6 +359,11 @@
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->rut)) }}" target="_blank">RUT</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->tercero->planilla_aportes)) }}" target="_blank">Planilla de Aportes</a><br>
                                                                         <a href="{{ asset(str_replace('public', 'storage', $orden->naturalInfo->contrato)) }}" target="_blank">Contrato</a><br>
+                                                                        @if($orden?->archivo_orden_helisa)
+                                                                            <a href="{{ asset(str_replace('public', 'storage', $orden->archivo_orden_helisa)) }}" target="_blank">Orden de compra</a><br>
+                                                                        @else
+                                                                            Sin Orden De Compra
+                                                                        @endif
                                                                         @if($orden?->archivo_cuenta_cobro)
                                                                             <a href="{{ asset("storage/".($orden->archivo_cuenta_cobro)) }}" target="_blank">Ver cuenta de cobro</a>
                                                                         @else

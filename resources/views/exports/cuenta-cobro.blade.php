@@ -48,6 +48,7 @@
     @endphp
 
     <div class="ref">{{ $orden->cod_oc }}</div>
+    <p><b>Productor solicitante:</b> {{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</p>
 
     <div class="center encabezado">
         <p>CUENTA DE COBRO</p>
