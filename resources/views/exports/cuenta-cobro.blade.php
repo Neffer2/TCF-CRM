@@ -45,6 +45,12 @@
         }
 
         $nombreCompleto = $tercero->nombre . ' ' . $tercero->apellido;
+        $fechasEvidencia = $orden->evidencias
+            ->pluck('fecha_evidencia')
+            ->filter()
+            ->map(fn ($fecha) => \Carbon\Carbon::parse($fecha)->format('d/m/Y'))
+            ->unique()
+            ->values();
     @endphp
 
     <div class="ref">{{ $orden->cod_oc }}</div>
@@ -73,6 +79,7 @@
                 <th>#</th>
                 <th>Proyecto</th>
                 <th>Descripción</th>
+                <!--<th class="r">F. Servicio</th>-->
                 <th class="r">Cant.</th>
                 <th class="r">Días</th>
                 <th class="r">Otros</th>
@@ -96,7 +103,7 @@
         </tbody>
         <tfoot>
             <tr class="total">
-                <td colspan="7" class="r">TOTAL</td>
+                <td colspan="8" class="r">TOTAL</td>
                 <td class="r">$ {{ number_format($total, 0, ',', '.') }}</td>
             </tr>
         </tfoot>

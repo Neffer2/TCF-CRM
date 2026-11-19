@@ -2,9 +2,9 @@
     $userId = Auth::user()->id;
     $userRol = Auth::user()->rol;
 
-    $ids_controller = [2, 208, 197, 214, 145, 181, 210, 206];
-    $ids_lideresComerciales = [192, 9, 17];
-    $ids_gerencia = [10, 8];
+    $ids_controller = [2, 91, 208, 197, 214, 145, 181, 210, 206];
+    $ids_lideresComerciales = [91, 192, 9, 17];
+    $ids_gerencia = [10, 91, 8];
 
     // Determinar grupo y título dinámicamente
     $esController = $userRol == 1 && in_array($userId, $ids_controller);

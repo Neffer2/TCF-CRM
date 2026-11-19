@@ -1,4 +1,8 @@
 <div class="card card-body mb-2" x-data>
+    @php
+        // Una orden existente conserva la visual correspondiente a su tipo guardado.
+        $es_orden_trabajo = $queriedOrden ? (int) $queriedOrden->tipo_oc === 4 : $es_orden_trabajo;
+    @endphp
     {{-- <button wire:click="sendMessage">Mensaje</button> --}}
     <div class="row">
         <div class="col-md-12 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -397,6 +401,8 @@
             </div>
         </div>
         
+    @elseif ((Auth()->user()->rol == 7) && $queriedOrden && (int) $queriedOrden->estado_id === 3 && (int) $queriedOrden->tipo_oc === 2 && $queriedOrden->evidencias->isNotEmpty())
+        @include('partials.orden-natural-revision-evidencias')
     @elseif ((Auth()->user()->rol == 7) && ($queriedOrden && ($queriedOrden->estado_id == 3)))
         @if ($queriedOrden->evidencias->isEmpty())
             <div class="row">
@@ -924,40 +930,7 @@
                 </table>
             </div>
             @if ($queriedOrden->evidencias)
-                <div class="table-responsive">
-                    <table class="table align-items-center mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Observaciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($queriedOrden->evidencias as $evidencia)
-                                <tr>
-                                    <td>
-                                        <p class="text-xs text-secondary mb-0">
-                                            {{ $evidencia->fecha_evidencia }}
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <p class="text-xs text-secondary mb-0">
-                                            <a href="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" target="_blank">
-                                                <img src="{{ asset(str_replace("public", "storage", $evidencia->foto_evidencia)) }}" height="40">
-                                            </a>
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <p class="text-xs text-secondary mb-0">
-                                            {{ $evidencia->observacion_evidencia }}
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                @include('partials.orden-natural-evidencias', ['evidencias' => $queriedOrden->evidencias])
             @endif
         </div>
     @endif
