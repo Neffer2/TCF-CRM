@@ -560,6 +560,18 @@
                         @enderror
                     </div>
                 </div>
+                @if (!$es_orden_trabajo && (int) Auth()->user()->rol === 7 && (!$queriedOrden || in_array((int) $queriedOrden->estado_id, [3, 12], true)))
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="porcentaje">NEGOCIACIÓN (%)</label>
+                                <input id="porcentaje" type="number" min="0" max="100" step="0.01" class="form-control @error('porcentaje') is-invalid @enderror"
+                                    placeholder="Porcentaje de negociación" required wire:model.lazy="porcentaje">
+                            @error('porcentaje')
+                                <div class="text-invalid">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                @endif
                 @error('items-error')
                     <div class="text-invalid m-0">
                         {{ $message }}

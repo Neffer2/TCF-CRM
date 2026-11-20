@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h3 class="mb-0">Causaci&oacute;n</h3>
-                <p class="text-sm mb-0">Digita el n&uacute;mero de causaci&oacute;n para esta Orden de compra. ssasasa</p>
+                <p class="text-sm mb-0">Digita el n&uacute;mero de causaci&oacute;n para esta Orden de compra.</p>
             </div>
         </div>
     </div>
