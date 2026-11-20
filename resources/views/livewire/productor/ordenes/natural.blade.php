@@ -11,10 +11,31 @@
             <p class="text-sm m-0">{{ $es_orden_trabajo ? 'Asigna los ítems, guarda la orden y solicita el anticipo.' : 'Selecciona tu personal y asigna los ítems necesarios.' }}</p>
             </div>
             <div class="d-flex flex-wrap gap-2">
+                @if ($es_orden_trabajo)
+                    @if ((int) auth()->user()->rol === 1 && $queriedOrden)
+                        @forelse ($queriedOrden->anticipos as $anticipo)
+                            <div>
+                            <button type="button" wire:key="descargar-anticipo-{{ $anticipo->id }}"
+                                wire:click="exportarAnticipoPdf({{ $anticipo->id }})"
+                                wire:loading.attr="disabled" wire:target="exportarAnticipoPdf"
+                                class="btn btn-primary mb-0">
+                                <span wire:loading.remove wire:target="exportarAnticipoPdf">
+                                    Descargar Anticipo / Orden {{ $anticipo->cod_orden_anticipo ?? '#'.$anticipo->id }}
+                                </span>
+                                <span wire:loading wire:target="exportarAnticipoPdf">Generando PDF...</span>
+                            </button>
+                                <small class="d-block text-muted">Estado: {{ $anticipo->estado?->description ?? 'Sin estado registrado' }}</small>
+                            </div>
+                        @empty
+                            <span class="text-muted text-sm">Esta OC no tiene anticipos asociados.</span>
+                        @endforelse
+                    @endif
+                @else
                 @include('partials.orden-compra-anticipos', [
                     'anticipos' => $queriedOrden?->anticipos?->where('estado_id', \App\Models\Anticipo::ESTADO_APROBADO) ?? collect(),
                     'claseBoton' => 'btn btn-sm btn-outline-primary mb-0',
                 ])
+                @endif
             </div>
         </div>
         @if ($es_orden_trabajo)
@@ -869,7 +890,6 @@
                         Orden de compra en revisi&oacute;n.
                     @endif
                 </h3>
-
                 @if (($queriedOrden->estado_id == 7) || (Auth()->user()->rol == 7 && $queriedOrden->estado_id == 2))
                     <div class="d-flex justify-content-center">
                         <div class="spinner-grow text-primary" role="status">
@@ -888,8 +908,8 @@
                 @endif
             </div>
         </div>
-    
-
+        <div>
+        </div>
     @elseif ($queriedOrden->estado_id == 5)
         <div class="card card-body px-3 py-0">
             <div class="table-responsive">

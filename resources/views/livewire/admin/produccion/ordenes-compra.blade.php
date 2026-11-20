@@ -89,7 +89,7 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Tipo</p>
-                                        <span class="badge badge-sm badge-primary">{{ $orden->tipo->description }}</span>
+                                        <span class="badge badge-sm badge-primary">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : $orden->tipo->description }}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Proveedor</p>
@@ -125,7 +125,7 @@
                                         <a class="btn bg-gradient-primary m-0 me-1 mb-1" href="{{ route('orden-juridica', ['orden' => $orden->id]) }}" target="_blank">Ver</a>
                                     </td>
                                 </tr>
-                            @elseif($orden->tipo_oc == 2)
+                            @elseif(in_array((int) $orden->tipo_oc, [2, 4], true))
                                 <tr>
                                     <td style="width: 16rem;">
                                         <div class="d-flex px-2 py-1" title="Orden #{{ $orden->id }}">
@@ -140,11 +140,11 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Tipo</p>
-                                        <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
+                                        <span class="badge badge-sm badge-info">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : $orden->tipo->description }}</span>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                        <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre ?? 'Anticipo' }} {{ $orden->naturalInfo->tercero->apellido ?? 'Productor'}}</span>
+                                        <p class="text-xs font-weight-bold mb-0">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : 'Tercero' }}</p>
+                                        <span class="text-xs text-secondary mb-0">{{ (int) $orden->tipo_oc === 4 ? ($orden->naturalInfo?->productor?->name ?? 'Sin empleado registrado') : trim(($orden->naturalInfo?->tercero?->nombre ?? '') . ' ' . ($orden->naturalInfo?->tercero?->apellido ?? '')) }}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Fecha Generaci&oacute;n</p>
@@ -160,7 +160,7 @@
                                         </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">Productor</p>
-                                        <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->productor->name ?? 'N/A' }}</p>
                                     </td>
                                     <td colspan="2">
                                         <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -266,11 +266,11 @@
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Tipo</p>
-                                    <span class="badge badge-sm badge-info">{{ $orden->tipo->description }}</span>
+                                    <span class="badge badge-sm badge-info">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : $orden->tipo->description }}</span>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0">Tercero</p>
-                                    <span class="text-xs text-secondary mb-0">{{ $orden->naturalInfo->tercero->nombre ?? 'Anticipo'}} {{ $orden->naturalInfo->tercero->apellido ?? 'Productor'}}</span>
+                                    <p class="text-xs font-weight-bold mb-0">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : 'Tercero' }}</p>
+                                    <span class="text-xs text-secondary mb-0">{{ (int) $orden->tipo_oc === 4 ? ($orden->naturalInfo?->productor?->name ?? 'Sin empleado registrado') : trim(($orden->naturalInfo?->tercero?->nombre ?? '') . ' ' . ($orden->naturalInfo?->tercero?->apellido ?? '')) }}</span>
                                 </td>
                                 <td>
                                     <p class="text-xs font-weight-bold mb-0">Estado</p>
@@ -281,16 +281,20 @@
                                     <p class="text-xs text-secondary mb-0">{{ $orden->created_at }}</p>
                                 </td>
                                 <td>
+                                    @if ((int) $orden->tipo_oc === 2)
                                     <a class="btn btn-success m-0 me-1 mb-1"
                                     href="https://wa.me/{{ $orden->naturalInfo->tercero->telefono ?? 'N/A'}}?text=¡Hola! Tu número de orden es: {{ $orden->id }}. Puedes seguir el estado de tu pago desde este enlace: {{ route('consulta-terceros') }}?orden={{ $orden->id }}. ¡Gracias por tus servicios y que tengas un día fabuloso! Bullmarketing.com.co"
                                     target="_blank">
                                         <i class="fa-brands fa-whatsapp"></i>
                                     </a>
+                                    @endif
                                 </td>
                                 <td>
+                                    @if ((int) $orden->tipo_oc === 2)
                                     <div x-data="init">
                                         <p class="text-xs font-weight-bold mb-0"><a href="#" @click="copyToClipboard('{{ route('consulta-terceros') }}?orden={{ $orden->id }}')">Copiar enlace</a></p>
                                     </div>
+                                    @endif
                                 </td>
                                 <td class="d-flex align-items-center justify-content-center">
                                     <a class="btn bg-gradient-primary m-0 me-1 mb-1 position-relative" href="{{ route('orden-natural-prod', ['orden_id' => $orden->id]) }}">
@@ -335,7 +339,7 @@
                                                             <tr>
                                                                 <td colspan="1">
                                                                     <p class="text-xs text-secondary mb-0">
-                                                                        {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}
+                                                                        {{ (int) $orden->tipo_oc === 4 ? ($orden->naturalInfo?->productor?->name ?? 'Sin empleado registrado') : trim(($orden->naturalInfo?->tercero?->nombre ?? '') . ' ' . ($orden->naturalInfo?->tercero?->apellido ?? '')) }}
                                                                     </p>
                                                                 </td>
                                                                 <td>

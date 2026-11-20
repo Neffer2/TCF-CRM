@@ -226,9 +226,12 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <a href="#">
+                            @php
+                                $archivo_gr = str_replace('public/', '', $orden_compra->archivo_gr)
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_gr") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
+                                <span class="btn-inner--text">Archivo GR</span>
                             </a>
                         </div>
                     </div>
@@ -348,9 +351,12 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <a href="#">
+                            @php
+                                $archivo_gr = str_replace('public/', '', $orden_compra->archivo_gr)
+                            @endphp
+                            <a href="{{ asset("storage/$archivo_gr") }}" target="_blank" class="">
                                 <span class="btn-inner--icon"><i class="ni ni-single-copy-04"></i></span>
-                                <span class="btn-inner--text">Gr: @if ($orden_compra->gr) {{ $orden_compra->gr }}. @endif</span>
+                                <span class="btn-inner--text">Archivo GR</span>
                             </a>
                         </div>
                         <div class="form-group">

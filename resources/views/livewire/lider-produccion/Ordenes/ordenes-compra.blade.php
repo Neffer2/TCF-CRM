@@ -104,7 +104,7 @@
                                         </div>
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-primary">{{ $orden->tipo->description }}</span>
+                                        <span class="badge badge-sm bg-gradient-primary">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : $orden->tipo->description }}</span>
                                     </td>
                                     @if ($orden->archivo_orden_helisa == null)
                                         <td class="align-middle text-center text-sm">
@@ -139,7 +139,7 @@
                                         <a class="btn btn-sm bg-gradient-primary mb-0 px-3" href="{{ route('orden-juridica-li', ['orden' => $orden->id]) }}" target="_blank">Ver</a>
                                     </td>
                                 </tr>
-                            @elseif($orden->tipo_oc == 2)
+                            @elseif(in_array((int) $orden->tipo_oc, [2, 4], true))
                                 <tr>
                                     <td class="ps-3">
                                         <div class="d-flex px-2 py-1" title="Orden #{{ $orden->id }}">
@@ -153,7 +153,7 @@
                                         </div>
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-info">{{ $orden->tipo->description }}</span>
+                                        <span class="badge badge-sm bg-gradient-info">{{ (int) $orden->tipo_oc === 4 ? 'Empleado' : $orden->tipo->description }}</span>
                                     </td>
                                     @if ($orden->archivo_orden_helisa == null)
                                         <td class="align-middle text-center text-sm">
@@ -166,7 +166,7 @@
                                     @endif
                                     <td class="align-middle">
                                         <span class="text-xs font-weight-bold mb-0 text-secondary">
-                                            {{ $orden->naturalInfo->tercero->nombre }} {{ $orden->naturalInfo->tercero->apellido }}
+                                            {{ (int) $orden->tipo_oc === 4 ? ($orden->naturalInfo?->productor?->name ?? 'Sin empleado registrado') : trim(($orden->naturalInfo?->tercero?->nombre ?? '') . ' ' . ($orden->naturalInfo?->tercero?->apellido ?? '')) }}
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">

@@ -37,6 +37,16 @@ class Natural extends Component
 
     public $es_orden_trabajo = false;
 
+    public function exportarAnticipoPdf(int $anticipoId)
+    {
+        abort_unless((int) auth()->user()?->rol === 1, 403);
+        $orden = OrdenCompra::findOrFail($this->orden_id);
+        abort_unless((int) $orden->tipo_oc === 4, 403);
+        $anticipo = $orden->anticipos()->findOrFail($anticipoId);
+
+        return \App\Exports\AnticipoOrdenes::downloadPdf($anticipo->id);
+    }
+
     /*
         * EVIDENCIAS
     */
