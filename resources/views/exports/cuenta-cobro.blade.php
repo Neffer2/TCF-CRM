@@ -47,6 +47,7 @@
         $nombreCompleto = $tercero->nombre . ' ' . $tercero->apellido;
         $fechasEvidencia = $orden->evidencias
             ->pluck('fecha_evidencia')
+            ->concat($fechasEvidenciaTemporales ?? [])
             ->filter()
             ->map(fn ($fecha) => \Carbon\Carbon::parse($fecha)->format('d/m/Y'))
             ->unique()
@@ -79,7 +80,7 @@
                 <th>#</th>
                 <th>Proyecto</th>
                 <th>Descripción</th>
-                <!--<th class="r">F. Servicio</th>-->
+                <th class="r">F. Servicio</th>
                 <th class="r">Cant.</th>
                 <th class="r">Días</th>
                 <th class="r">Otros</th>
@@ -93,6 +94,7 @@
                     <td>{{ $item->itemPresupuesto->num_item }}</td>
                     <td>{{ $item->itemPresupuesto->presto->cod_cc ?? '-' }}</td>
                     <td>{{ $item->desc_oc }}</td>
+                    <td>{{ $fechasEvidencia->isNotEmpty() ? $fechasEvidencia->implode(', ') : 'Sin fecha de evidencia' }}</td>
                     <td class="r">{{ $item->cant_oc }}</td>
                     <td class="r">{{ $item->dias_oc }}</td>
                     <td class="r">{{ $item->otros_oc }}</td>

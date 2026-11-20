@@ -552,6 +552,7 @@ class NuevoPersonal extends Component
         ];
 
         $this->evidencias->push($evidencia);
+        $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
 
         // Limpia las variables del formulario
         $this->reset_fields(['fechaEvidencia', 'fotoEvidencia', 'observacionEvidencia']);
@@ -562,6 +563,7 @@ class NuevoPersonal extends Component
         $filePath = $this->evidencias[$itemId]['foto'];
         Storage::delete($filePath);
         unset($this->evidencias[$itemId]);
+        $this->pdfCuentaCobroBase64 = $this->generarPdfCuentaCobroBase64();
     }
 
     private function generarPdfCuentaCobroBase64()
@@ -587,6 +589,7 @@ class NuevoPersonal extends Component
             'tercero' => $tercero,
             'total'   => $total,
             'fecha'   => $fecha,
+            'fechasEvidenciaTemporales' => collect($this->evidencias)->pluck('fecha'),
         ])->render();
 
         $dompdf = new Dompdf(['enable_remote' => true]);
@@ -632,6 +635,7 @@ class NuevoPersonal extends Component
 
         // 3. Generar el PDF con la firma y guardarlo en 'cuentas_cobro/'
         $this->orden->load([
+            'evidencias',
             'naturalInfo.tercero',
             'ordenItems.itemPresupuesto.presto',
         ]);
