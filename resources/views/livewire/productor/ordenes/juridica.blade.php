@@ -402,7 +402,7 @@
                                                     disabled
                                                     style="background-color: #e9ecef !important;"
                                                 @endif>
-                                                {{ $presupuestoItem->num_item }} <!-- <--- AQUÍ ESTÁ EL CAMBIO CLAVE -->
+                                                {{ $presupuestoItem->num_item }} 
                                             </option>
                                         @endif
                                     @endforeach
@@ -450,6 +450,16 @@
                                 <label for="">V. TOTAL</label>
                                 <input type="text" class="form-control @error('vTotal') is-invalid @elseif(strlen($vTotal) > 0) is-valid @enderror"
                                 placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="porcentaje">NEGOCIACIÓN (%)</label>
+                                <input id="porcentaje" type="number" min="0" max="100" step="0.01" class="form-control @error('porcentaje') is-invalid @enderror"
+                                placeholder="Porcentaje de negociación" required wire:model.lazy="porcentaje">
+                                @error('porcentaje')
+                                    <div class="text-invalid">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>

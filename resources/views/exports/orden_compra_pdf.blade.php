@@ -145,7 +145,8 @@
         </tr>
         <tr>
             <td class="lbl">Productor solicitante:</td>
-            <td colspan="3">{{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</td>
+            <td style="width:40%;">{{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</td>
+            <td colspan="2"><b>Negociación:</b> {{ number_format($orden->porcentaje, 0) }}%</td>
         </tr>
     </table>
 

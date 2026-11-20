@@ -27,7 +27,12 @@ class OrdenCompra extends Model
         'fecha_aprobacion',
         'justificacion_productor',
         'fecha_envio_produccion',
-        'gr'
+        'gr',
+        'porcentaje',
+    ];
+
+    protected $casts = [
+        'porcentaje' => 'decimal:2',
     ];
 
     public function ordenItems(){

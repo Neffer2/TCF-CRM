@@ -72,6 +72,9 @@
     </style>
 </head>
 <body>
+    @php
+        $esEmpleado = (int) $orden?->tipo_oc === 4;
+    @endphp
     <div class="pie">
         Generada por BULLCRM el {{ $fecha($a->fecha_solicitud) }} · Anticipo #{{ $a->id }} ·
         Válida con las aprobaciones registradas en el CRM · Página <span class="pagenum"></span>
@@ -103,16 +106,16 @@
     <table>
         <tr>
             <td class="col">
-                <h2>{{ $esNatural ? 'Tercero (persona natural)' : 'Proveedor' }}</h2>
+                <h2>{{ $esEmpleado ? 'Empleado' : ($esNatural ? 'Tercero (persona natural)' : 'Proveedor') }}</h2>
                 <table class="datos top">
                     <tr>
                         <td class="k">{{ $contraparte['etiqueta'] }}</td>
                         <td class="v">{{ $contraparte['nombre'] ?: 'No Registra' }}</td>
                     </tr>
                     <tr>
-                        <td class="k">{{ $esNatural ? 'Cédula' : 'NIT' }}</td>
+                        <td class="k">{{ ($esEmpleado || $esNatural) ? 'Cédula' : 'NIT' }}</td>
                         <td class="v">
-                            {{ $contraparte['documento'] ?: 'No Registra' }}{{ !$esNatural && filled($contraparte['dv']) ? ''.$contraparte['dv'] : '' }}
+                            {{ $contraparte['documento'] ?: 'No Registra' }}{{ !$esEmpleado && !$esNatural && filled($contraparte['dv']) ? ''.$contraparte['dv'] : '' }}
                         </td>
                     </tr>
                     <tr>

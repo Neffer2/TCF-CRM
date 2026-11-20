@@ -12,7 +12,6 @@ use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf; 
 use Illuminate\Support\Facades\View;
 use Dompdf\Dompdf;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,7 +23,7 @@ class Juridica extends Component
     // Variables para los datos del formulario y modelos
     public $item, $desc, $cant = 0, $vUnit = 0, $vTotal = 0, $dias, $otros;
     public $proveedor, $file_cot, $oc_helisa, $justificacion_rechazo, $gr;
-    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion, $justificacion_productor;
+    public $observaciones_remision, $observaciones_anulacion, $observaciones_negociacion, $justificacion_productor, $porcentaje;
 
     // Variables para la orden y presupuesto seleccionados
     public $presupuesto, $orden_compra;
@@ -193,6 +192,7 @@ class Juridica extends Component
         $this->file_cot = $this->orden_compra->archivo_cot;
         $this->justificacion_rechazo = $this->orden_compra->justificacion_rechazo;
         $this->observaciones_remision = $this->orden_compra->observacion_remision;
+        $this->porcentaje = $this->orden_compra->porcentaje;
 
         // Carga los items de la OC
         foreach ($this->orden_compra->ordenItems as $item){
@@ -235,7 +235,8 @@ class Juridica extends Component
         $this->validate([
             'proveedor' => 'required',
             'justificacion_productor' => 'required|string',
-            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000'
+            'file_cot' => 'required|file|mimes:pdf,xls,xlsx|max:10000',
+            'porcentaje' => ['required', 'numeric', 'between:0,100', 'regex:/^\d+(\.\d{1,2})?$/'],
         ]);
 
         if (count($this->ocItems) == 0) {
@@ -251,6 +252,7 @@ class Juridica extends Component
             $this->orden_compra->proveedor_id = $this->proveedor;
             $this->orden_compra->justificacion_productor = $this->justificacion_productor;
             $this->orden_compra->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
+            $this->orden_compra->porcentaje = $this->porcentaje;
 
             $this->orden_compra->save();
 
@@ -269,6 +271,7 @@ class Juridica extends Component
             $orden->proveedor_id = $this->proveedor;
             $orden->justificacion_productor = $this->justificacion_productor;
             $orden->archivo_cot = $this->file_cot->store('public/ordenes_juridicas');
+            $orden->porcentaje = $this->porcentaje;
 
             $orden->save();
 
@@ -669,6 +672,7 @@ class Juridica extends Component
 
     // Limpia los campos generales de la OC
     public function resetOcInfo(){
+        $this->porcentaje = null;
         $this->proveedor = "";
         $this->file_cot = null;
         $this->justificacion_productor = "";
