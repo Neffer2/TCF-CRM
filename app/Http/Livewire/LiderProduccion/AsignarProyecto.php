@@ -38,45 +38,56 @@ class AsignarProyecto extends Component
     }
 
     // Obtiene los proyectos disponibles para asignar según filtros
-    public function getProyectos(){
-        $año = Año::orderBy('description', 'DESC')->first();
+    public function getProyectos()
+    {
         $this->proyectos = [];
-        $filter = [];
-        $gestionFilter = [];
-        $baseFilter = [];
 
-        // Si hay comercial seleccionado, filtra por ese usuario
-        if ($this->comercial){
-            array_push($gestionFilter, ['id_user', $this->comercial]);
+        if (!$this->comercial) {
+            return;
         }
 
-        // Solo proyectos activos y sin productor asignado
-        array_push($filter, ['estado_id', 1]);
-        array_push($filter, ['productor', null]);
+        $anio = Año::orderByDesc('description')->first();
 
-        // Filtros adicionales por estado y fechas del año actual
-        array_push($baseFilter, ['id_estado', '<>', 4]);
-        array_push($baseFilter, ['id_estado', '<>', 1]);
-        array_push($baseFilter, ['fecha', '>=', $año->meses->first()->f_inicio]);
-        array_push($baseFilter, ['fecha', '<=', $año->meses->last()->f_fin]);
+        $periodo = $anio?->meses()
+            ->selectRaw('MIN(f_inicio) AS fecha_inicio, MAX(f_fin) AS fecha_fin')
+            ->first();
 
-        // Consulta los proyectos con los filtros aplicados
-        $this->proyectos = PresupuestoProyecto::with('gestion', 'baseComercial')->select('id', 'id_gestion', 'cod_cc')
-                            ->whereHas('gestion', function ($gestion) use ($gestionFilter){
-                                $gestion->where($gestionFilter);
-                            })
-                            ->whereHas('baseComercial', function ($base) use ($baseFilter){
-                                $base->where($baseFilter);
-                            })
-                            ->where($filter)
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+        if (!$periodo?->fecha_inicio || !$periodo?->fecha_fin) {
+            return;
+        }
+
+        $finExclusivo = \Illuminate\Support\Carbon::parse($periodo->fecha_fin)
+            ->startOfDay()
+            ->addDay();
+
+        $this->proyectos = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')
+            ->with('gestion', 'baseComercial')
+            ->where('estado_id', 1)
+            ->whereNull('productor')
+            ->whereHas('gestion', function ($gestion) {
+                $gestion->where('id_user', $this->comercial);
+            })
+            ->whereHas('baseComercial', function ($base) use ($periodo, $finExclusivo) {
+                $base->whereNotIn('id_estado', [1, 4])
+                    ->where('fecha', '>=', $periodo->fecha_inicio)
+                    ->where('fecha', '<', $finExclusivo);
+            })
+            ->orderByDesc('created_at')
+            ->get();
     }
 
     // Obtiene los proyectos actualmente asignados al productor
-    public function getAsigandos(){
-        $this->asignados = [];
-        $this->asignados = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')->where('productor', $this->id_productor)->get();
+    public function getAsigandos()
+    {
+        $inicioAnio = now()->startOfYear();
+        $inicioSiguienteAnio = $inicioAnio->copy()->addYear();
+
+        $this->asignados = PresupuestoProyecto::select('id', 'id_gestion', 'cod_cc')
+            ->where('productor', $this->id_productor)
+            ->where('fecha_cc', '>=', $inicioAnio)
+            ->where('fecha_cc', '<', $inicioSiguienteAnio)
+            ->where('id_gestion', '<>', 1)
+            ->get();
     }
 
     // Asigna el proyecto seleccionado al productor
