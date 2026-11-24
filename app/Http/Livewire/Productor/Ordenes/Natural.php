@@ -502,6 +502,7 @@ class Natural extends Component
         $this->ciudad = $queriedTercero?->ciudad;
         $this->banco = $queriedTercero?->banco;
         $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
+        $this->justificacion_rechazo = $this->queriedOrden->justificacion_rechazo;
         $this->porcentaje = $this->queriedOrden->porcentaje;
         // Items
         $queriedItems = $this->queriedOrden->ordenItems;

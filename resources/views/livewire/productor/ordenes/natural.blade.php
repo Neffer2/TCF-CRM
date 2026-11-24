@@ -803,6 +803,12 @@
                     {{ $message }}
                 </div>
             @enderror
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="justificacion_rechazo_productor">Justificación de rechazo</label>
+                    <textarea id="justificacion_rechazo_productor" class="form-control" cols="30" rows="3" readonly>{{ $queriedOrden->justificacion_rechazo }}</textarea>
+                </div>
+            </div>
         </div>
         
         <div class="row">
