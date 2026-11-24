@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Traits\SMS;
 use App\Traits\Email;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class NuevoPersonal extends Component
 {
@@ -145,6 +146,75 @@ class NuevoPersonal extends Component
     }
 
     // Actualiza un tercero existente
+    public function actualizarTercero()
+    {
+        abort_unless($this->tercero && $this->tercero->exists, 404);
+
+        if (Auth::check()) {
+            abort_unless((int) Auth::user()->rol === 1, 403);
+        } else {
+            abort_unless($this->orden && $this->orden->naturalInfo
+                && (int) $this->orden->naturalInfo->tercero_id === (int) $this->tercero->id, 403);
+            $this->validate(['terminos' => 'required|accepted']);
+        }
+
+        $this->cedula = trim((string) $this->cedula);
+        $this->correo = trim((string) $this->correo);
+        $this->telefono = trim((string) $this->telefono);
+
+        $rules = [
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'cedula' => ['required', 'numeric', Rule::unique('terceros', 'cedula')->ignore($this->tercero)],
+            'correo' => ['required', 'email', Rule::unique('terceros', 'correo')->ignore($this->tercero)],
+            'telefono' => ['required', 'numeric', Rule::unique('terceros', 'telefono')->ignore($this->tercero)],
+            'ciudad' => 'required|string',
+            'servicio' => 'required|string',
+            'estado' => ['required', Rule::in([0, 1])],
+            'banco' => 'nullable|string|max:255',
+            'num_rut' => 'nullable|numeric',
+            'tipo_cuenta' => 'nullable|string|max:255',
+            'num_cuenta' => 'nullable|string|max:255',
+        ];
+
+        $archivos = [
+            'copia_cedula' => 'public/copia_cedula',
+            'cert_bancaria' => 'public/cert_bancarias',
+            'rut' => 'public/ruts',
+            'planilla_aportes' => 'public/planillas_aportes',
+        ];
+
+        foreach ($archivos as $campo => $directorio) {
+            if ($this->$campo && $this->$campo !== $this->tercero->$campo) {
+                $rules[$campo] = 'file|mimes:pdf,xls,xlsx,jpg,bmp,png|max:10000';
+            }
+        }
+
+        $this->validate($rules);
+
+        foreach (['nombre', 'apellido', 'cedula', 'correo', 'telefono', 'ciudad',
+            'servicio', 'banco', 'num_rut', 'tipo_cuenta', 'num_cuenta'] as $campo) {
+            $this->tercero->$campo = $this->$campo;
+        }
+
+        if (Auth::check()) {
+            $this->tercero->estado = $this->estado;
+        }
+
+        foreach ($archivos as $campo => $directorio) {
+            if (isset($rules[$campo])) {
+                $this->tercero->$campo = $this->$campo->store($directorio);
+            }
+        }
+
+        $this->tercero->save();
+        $this->emit('terceroRegistrado');
+
+        return redirect()->route(Auth::check() ? 'personal' : 'consulta-terceros')
+            ->with('success', 'Información actualizada con éxito.');
+    }
+
+    // Guarda los documentos adjuntos para la confirmación del contrato
     private function guardarArchivosTemporales($tercero)
     {
         // Copia de cédula

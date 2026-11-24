@@ -238,7 +238,7 @@ class Natural extends Component
         $queriedOrden = OrdenCompra::where('id', $this->orden_id)->first();
 
         if ($queriedOrden) {
-            $queriedOrden->estado_id = 8;
+            $queriedOrden->estado_id = 7;
             $queriedOrden->save();
 
             // Alerta usando SweetAlert y pasando el ID de la orden
