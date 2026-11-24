@@ -4,9 +4,11 @@ namespace App\Http\Livewire\Admin\Produccion\OrdenesCompra\ordenes;
 
 use Livewire\Component;
 use App\Models\OrdenCompra;
+use App\Services\PdfService;
 use App\Traits\Email;
 use App\Traits\SMS;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -218,11 +220,16 @@ use SMS, Email;
                 $this->validate(['cod_oc' => 'nullable|string|max:200']);
 
                 $nuevoEstado = $this->siguienteEstadoAprobacion();
+                $this->queriedOrden->registrarAprobadorFormato($this->getRolUsuario(), Auth::user());
 
                 if ($nuevoEstado === self::ESTADO_APROBADA) 
                 {
-                    $this->queriedOrden->estado_id = $nuevoEstado;
-                    $this->queriedOrden->save();
+                    DB::transaction(function () use ($nuevoEstado) {
+                        $this->queriedOrden->estado_id = $nuevoEstado;
+                        $this->queriedOrden->archivo_orden_helisa = app(PdfService::class)
+                            ->generarPdfOC($this->queriedOrden, 'public/ordenes_naturales_helisa');
+                        $this->queriedOrden->save();
+                    });
 
                     $this->ocNaturalRevisionContabilidad($this->queriedOrden);
                     return redirect()->route('aprobaciones-ordenes-compra')->with('success', 'Orden de compra #' . $this->queriedOrden->id . ' aprobada');

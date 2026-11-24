@@ -84,6 +84,9 @@
         .legal { border: 1px solid #000; border-top: none; font-size: 6.2px; line-height: 1.25; padding: 2px 3px 10px 3px; text-align: justify; }
         .firmas td { font-size: 10px; padding-top: 16px; }
         .firmas .rol { font-size: 6.5px; padding-top: 18px; }
+        .aprobaciones { margin-top: 10px; page-break-inside: avoid; }
+        .aprobaciones th, .aprobaciones td { border: 1px solid #000; padding: 4px 6px; font-size: 9px; text-align: left; }
+        .aprobaciones th { background: #c8c8c8; }
     </style>
 </head>
 <body>
@@ -216,6 +219,20 @@
     <div class="legal">
         Su cotización comercial hace parte integral de la presente orden... (condiciones legales estándar).
     </div>
+
+    <table class="aprobaciones">
+        <thead>
+            <tr><th>Etapa de aprobación</th><th>Usuario que aprobó</th></tr>
+        </thead>
+        <tbody>
+            @foreach ($orden->aprobacionesParaFormato() as $aprobacion)
+                <tr>
+                    <td>{{ $aprobacion['cargo'] }}</td>
+                    <td>{{ $aprobacion['nombre'] }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
 </body>
 </html>

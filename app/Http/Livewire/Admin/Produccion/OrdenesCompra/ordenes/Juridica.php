@@ -150,20 +150,10 @@ class Juridica extends Component{
             $nuevoEstado = $this->siguienteEstadoAprobacion();
 
             if ($nuevoEstado === self::ESTADO_APROBADA) {
-                $soloAprobada = false;
-
                 try {
-                    DB::transaction(function () use ($nuevoEstado, &$soloAprobada) {
+                    DB::transaction(function () use ($nuevoEstado) {
                         $orden = OrdenCompra::lockForUpdate()->findOrFail($this->orden_compra->id);
-
-                        if (!empty($orden->cod_oc)) {
-                            $orden->estado_id        = $nuevoEstado;
-                            $orden->save();
-
-                            $this->orden_compra = $orden;
-                            $soloAprobada = true;
-                            return;
-                        }
+                        $orden->registrarAprobadorFormato($this->getRolUsuario(), Auth::user());
 
                         $orden->load([
                             'proveedor',
@@ -187,7 +177,9 @@ class Juridica extends Component{
                         $nombreArchivo = 'orden_compra_' . $orden->id . '_' . time() . '.pdf';
                         $rutaAlmacenamiento = 'public/ordenes_compra/' . $nombreArchivo;
 
-                        Storage::put($rutaAlmacenamiento, $pdfOutput);
+                        if (!Storage::put($rutaAlmacenamiento, $pdfOutput)) {
+                            throw new \RuntimeException('No se pudo guardar el PDF de la OC.');
+                        }
 
                         $orden->archivo_orden_helisa = $rutaAlmacenamiento;
                         $orden->estado_id            = $nuevoEstado;
@@ -200,11 +192,10 @@ class Juridica extends Component{
                     return;
                 }
 
-                $mensaje = $soloAprobada
-                    ? 'Orden de compra APROBADA con éxito.'
-                    : 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' asignado y PDF guardado.';
+                $mensaje = 'Orden de compra APROBADA con éxito, código ' . $this->orden_compra->cod_oc . ' y PDF actualizado.';
 
             } else {
+                $this->orden_compra->registrarAprobadorFormato($this->getRolUsuario(), Auth::user());
                 $this->orden_compra->estado_id = $nuevoEstado;
                 $this->orden_compra->update();
 

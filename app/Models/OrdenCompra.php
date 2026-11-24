@@ -33,7 +33,47 @@ class OrdenCompra extends Model
 
     protected $casts = [
         'porcentaje' => 'decimal:2',
+        'aprobadores_formato' => 'array',
     ];
+
+    // Solo prepara el registro; se persiste junto con el cambio de estado.
+    public function registrarAprobadorFormato(string $etapa, User $usuario): void
+    {
+        $aprobadores = $etapa === 'lider_produccion' ? [] : ($this->aprobadores_formato ?? []);
+        $aprobadores[$etapa] = [
+            'usuario_id' => $usuario->getKey(),
+            'nombre' => $usuario->name,
+            'fecha' => now()->toDateTimeString(),
+        ];
+        $this->aprobadores_formato = $aprobadores;
+    }
+
+    public function aprobacionesParaFormato(): array
+    {
+        $esNatural = (int) $this->tipo_oc === 2;
+        $total = (float) $this->ordenItems->sum('vtotal_oc');
+        $etapas = ['lider_produccion' => 'Líder de producción'];
+
+        if (!$esNatural) {
+            $etapas['controller'] = 'Controller';
+        }
+        if ($total > ($esNatural ? 2000000 : 5000000)) {
+            $etapas['lider_comercial'] = 'Líder comercial';
+        }
+        if ($total > ($esNatural ? 5000000 : 10000000)) {
+            $etapas['gerencia'] = 'Gerencia';
+        }
+
+        $filas = [];
+        foreach ($etapas as $etapa => $cargo) {
+            $filas[] = [
+                'cargo' => $cargo,
+                'nombre' => $this->aprobadores_formato[$etapa]['nombre'] ?? 'Sin aprobación registrada',
+            ];
+        }
+
+        return $filas;
+    }
 
     public function ordenItems(){
         return $this->hasMany(OcItem::class, 'oc_id', 'id');

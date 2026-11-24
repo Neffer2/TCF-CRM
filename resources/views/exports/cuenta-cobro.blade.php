@@ -44,7 +44,7 @@
             $fechaLetras = $fecha;
         }
 
-        $nombreCompleto = $tercero->nombre . ' ' . $tercero->apellido;
+        $nombreCompleto = $tercero->apellido . ' ' . $tercero->nombre;
         $fechasEvidencia = $orden->evidencias
             ->pluck('fecha_evidencia')
             ->concat($fechasEvidenciaTemporales ?? [])

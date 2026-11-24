@@ -64,6 +64,7 @@ class OrdenJuridica extends Component {
         if ($estado == 9) {
             
             $this->orden_compra->fecha_aprobacion = now();
+            $this->orden_compra->registrarAprobadorFormato('lider_produccion', auth()->user());
             
             $mensaje = 'Orden de compra APROBADA con éxito.';
 

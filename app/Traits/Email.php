@@ -427,62 +427,30 @@ trait Email
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
     }
 
-    /* **** */
-    /*
-    public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
+    /** Configure every notification from Laravel's cached mail settings. */
+    protected function configureSmtp(PHPMailer $mail)
     {
-        require base_path("vendor/autoload.php");
-        $mail = new PHPMailer(true);
+        $smtp = config('mail.mailers.smtp');
+        $mail->isSMTP();
+        $mail->Host = $smtp['host'];
+        $mail->Port = (int) $smtp['port'];
+        $mail->SMTPAuth = filter_var($smtp['smtp_auth'] ?? true, FILTER_VALIDATE_BOOLEAN);
+        $mail->AuthType = $smtp['auth_mode'] ?? 'LOGIN';
+        $mail->Username = $smtp['username'] ?? '';
+        $mail->Password = $smtp['password'] ?? '';
+        $mail->Timeout = (int) ($smtp['timeout'] ?? 30);
+        $mail->CharSet = 'UTF-8';
 
-        try {
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->Port       = env('MAIL_PORT', 1025);
-            $mail->SMTPAuth   = false;          // Mailpit no requiere auth
-            $mail->SMTPSecure = false;          // sin TLS/SSL en local
-            $mail->SMTPAutoTLS = false;
-
-            $from = env('MAIL_FROM_ADDRESS', 'no-reply@bullmarketing.local');
-            $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
-
-            /* Destinatarios principales *//*
-            if (is_iterable($recipients)) {
-                foreach ($recipients as $recipient) {
-                    if (is_array($recipient) && isset($recipient['email'])) {
-                        $mail->addAddress($recipient['email'], $recipient['name'] ?? '');
-                    }
-                }
-            }
-
-            /* Copias (CC) *//*
-            if (is_iterable($cc)) {
-                foreach ($cc as $copiados) {
-                    if (is_array($copiados) && isset($copiados['email'])) {
-                        $mail->addCC($copiados['email'], $copiados['name'] ?? '');
-                    }
-                }
-            }
-
-            /* Archivos adjuntos *//*
-            if ($attachment) {
-                $archivo_pago = str_replace('public/', '', $attachment);
-                $mail->addAttachment("storage/{$archivo_pago}");
-            }
-
-            $mail->isHTML(true);
-            $mail->CharSet = 'UTF-8';
-            $mail->Subject = $subject;
-            $mail->Body    = view('mails.presupuestos', ['body' => $body, 'recipients' => $recipients])->render();
-            $mail->AltBody = $altBody;
-
-            $mail->send();
-        } catch (Exception $e) {
-            \Log::error('Error enviando mail: ' . $e->getMessage());
-            // Ver nota abajo sobre este return
-        }
+        $encryption = $smtp['encryption'] ?? null;
+        $mail->SMTPSecure = $encryption === 'tls'
+            ? PHPMailer::ENCRYPTION_STARTTLS
+            : ($encryption === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : '');
+        $mail->SMTPAutoTLS = !empty($encryption);
+        $mail->setFrom(
+            config('mail.from.address') ?: $mail->Username,
+            config('mail.from.name', 'BullMarketing')
+        );
     }
-    */
-
 
     public function sendMail($subject, $body, $altBody = null, $params = null, $recipients = [], $cc = [], $attachment = null)
     {
@@ -490,28 +458,7 @@ trait Email
         $mail = new PHPMailer(true);
 
         try {
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->Port       = env('MAIL_PORT', 587);
-            $mail->SMTPAuth   = filter_var(env('MAIL_SMTP_AUTH', true), FILTER_VALIDATE_BOOLEAN);
-
-            if ($mail->SMTPAuth) {
-                $mail->Username = env('MAIL_USERNAME');
-                $mail->Password = env('MAIL_PASSWORD');
-            }
-
-            $encryption = env('MAIL_ENCRYPTION'); // 'tls', 'ssl', o null
-            if ($encryption === 'tls') {
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            } elseif ($encryption === 'ssl') {
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            } else {
-                $mail->SMTPSecure = false;
-                $mail->SMTPAutoTLS = false;
-            }
-
-            $from = env('MAIL_FROM_ADDRESS');
-            $mail->setFrom($from, env('MAIL_FROM_NAME', 'BullMarketing'));
+            $this->configureSmtp($mail);
 
             /* Destinatarios principales */
             if (is_iterable($recipients)) {
@@ -558,18 +505,7 @@ trait Email
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
         try{
-            //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
-
-            //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $this->configureSmtp($mail);
             /* COMPRAS */
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
@@ -615,18 +551,7 @@ trait Email
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
         try{
-            //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
-
-            //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $this->configureSmtp($mail);
             /* COMPRAS */
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
@@ -665,18 +590,7 @@ trait Email
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
         try{
-            //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
-
-            //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $this->configureSmtp($mail);
             /* COMPRAS */
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Luz Melo');
             /* *** */
@@ -713,18 +627,7 @@ trait Email
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
 
         try{
-            //Server settings
-            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-            $mail->isSMTP();
-            $mail->Host       = env('MAIL_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = env('MAIL_USERNAME');
-            $mail->Password   = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = env('MAIL_PORT', 587);
-
-            //Recipients
-            $mail->setFrom(env('MAIL_USERNAME'), 'BullMarketing');
+            $this->configureSmtp($mail);
             /* COMPRAS */
                 $mail->addAddress('Compras@bullmarketing.com.co', 'Compras');
             /* *** */
