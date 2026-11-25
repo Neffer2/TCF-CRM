@@ -9,28 +9,12 @@ trait Email
 {
     public $controller = [
         [
-            'name'=> 'Lider Controller',
-            'email'=> 'Lider.Controller@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Equipo Controller',
-            'email'=> 'controller@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Susana Bautista',
-            'email'=> 'Susana.Bautista@bullmarketing.com.co'
-        ],
-        [
-            'name'=> 'Auxiliar Comercial',
-            'email'=> 'Auxiliar.Comercial@bullmarketing.com.co'
-        ],
-        [
             'name'=> 'Maria Guerrero',
             'email'=> 'Maria.Guerrero@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Coordinador Proyectos',
-            'email'=> 'Coordinador.Proyectos@bullmarketing.com.co'
+            'name'=> 'Jullieth Castro',
+            'email'=> 'Analista.Controller@bullmarketing.com.co'
         ],
         [
             
@@ -42,10 +26,6 @@ trait Email
             'name'=> 'Carlos Gómez',
             'email'=> 'Carlos.Gomez@bullmarketing.com.co'
         ],
-        [
-            'name'=> 'Brandon Vega',
-            'email'=> 'Brandon.Vega@bullmarketing.com.co'
-        ]
     ];
 
     public $produccion = [
@@ -54,13 +34,9 @@ trait Email
             'email'=> 'fernando.paez@bullmarketing.com.co'
         ],
         [
-            'name'=> 'Geraldin Parada',
-            'email'=> 'geraldin.parada@bullmarketing.com.co'
+            'name'=> 'Hanny Yesid',
+            'email'=> 'Director.Produccion@bullmarketing.com.co'
         ],
-        [
-            'name'=> 'Jesica Ramirez',
-            'email'=> 'jesica.ramirez@bullmarketing.com.co'
-        ]
     ];
 
     public $contabilidad = [

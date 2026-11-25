@@ -129,20 +129,101 @@
 
     <!-- MODAL DE DETALLE COMPLETO Y APROBACIÓN -->
     @if ($showModal && $selectedAnticipo)
+        <style>
+            /* Contenedor del modal */
+            .modal-anticipo-wrapper {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1050;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            /* Escritorio: compensar el sidebar */
+            @media (min-width: 1200px) {
+                .modal-anticipo-wrapper {
+                    left: 150px;
+                    width: calc(100% - 150px);
+                }
+            }
+
+            /* Cuerpo con scroll interno */
+            .modal-anticipo-body {
+                max-height: 75vh;
+                overflow-y: auto;
+            }
+
+            /* Tabla: ancho mínimo para que haga scroll horizontal en vez de aplastarse */
+            .modal-anticipo-table {
+                min-width: 700px;
+            }
+
+            /* Tablet y móvil */
+            @media (max-width: 991.98px) {
+                .modal-anticipo-wrapper .modal-dialog {
+                    margin: 0;
+                    max-width: 100%;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .modal-anticipo-wrapper .modal-content {
+                    height: 100%;
+                    border-radius: 0;
+                }
+
+                .modal-anticipo-body {
+                    max-height: none;
+                    flex: 1 1 auto;
+                    overflow-y: auto;
+                    padding: 1rem;
+                }
+
+                .modal-anticipo-wrapper .modal-title {
+                    font-size: 1rem;
+                    line-height: 1.3;
+                }
+            }
+
+            /* Móvil: footer apilado */
+            @media (max-width: 575.98px) {
+                .modal-anticipo-footer {
+                    flex-direction: column-reverse;
+                    align-items: stretch !important;
+                    gap: .5rem;
+                }
+
+                .modal-anticipo-footer .footer-actions {
+                    display: flex;
+                    flex-direction: column;
+                    gap: .5rem;
+                    width: 100%;
+                }
+
+                .modal-anticipo-footer .btn {
+                    width: 100%;
+                    margin: 0 !important;
+                }
+            }
+        </style>
+
         <!-- Overlay oscuro independiente del flujo del card -->
         <div class="modal-backdrop fade show" style="z-index: 1040;"></div>
 
-        <!-- Contenedor del Modal con Centrado Flexbox Absoluto -->
-        <div class="modal fade show d-flex align-items-center justify-content-center" 
-             tabindex="-1" 
-             role="dialog"
-             style="display: flex !important; position: fixed; top: 0; left: 150px; width: 100vw; height: 100vh; z-index: 1050; overflow-x: hidden; overflow-y: auto;">
-            
-            <div class="modal-dialog modal-dialog-centered modal-xl w-100 my-auto" role="document">
+        <!-- Contenedor del Modal -->
+        <div class="modal fade show modal-anticipo-wrapper align-items-center justify-content-center"
+            tabindex="-1"
+            role="dialog">
+
+            <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-lg-down w-100 my-auto" role="document">
                 <div class="modal-content shadow-lg border-0">
                     <div class="modal-header bg-light">
                         <h5 class="modal-title">
-                            Detalle del Anticipo #{{ $selectedAnticipo->id }} 
+                            Detalle del Anticipo #{{ $selectedAnticipo->id }}
                             @if($selectedAnticipo->ordenCompra)
                                 - Orden de Compra #{{ $selectedAnticipo->ordenCompra->id }}
                             @endif
@@ -152,27 +233,27 @@
                         </button>
                     </div>
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body modal-anticipo-body">
                         <!-- Cabecera Informativa -->
                         <div class="card card-body shadow-none border mb-3">
                             <div class="row">
-                                <div class="col-md-3 col-6 mb-2">
+                                <div class="col-lg-3 col-sm-6 col-12 mb-2">
                                     <span class="text-xs text-secondary">Monto Solic. Anticipo:</span>
                                     <h6 class="mb-0 text-primary">$ {{ number_format($selectedAnticipo->total_anticipo ?? 0, 2) }}</h6>
                                 </div>
-                                <div class="col-md-3 col-6 mb-2">
+                                <div class="col-lg-3 col-sm-6 col-12 mb-2">
                                     <span class="text-xs text-secondary">Productor solicitante:</span>
-                                    <h6 class="mb-0 text-primary">{{ $selectedAnticipo->productor?->name ?? 'Sin productor registrado' }}</h6>
+                                    <h6 class="mb-0 text-primary text-break">{{ $selectedAnticipo->productor?->name ?? 'Sin productor registrado' }}</h6>
                                 </div>
-                                <div class="col-md-3 col-6 mb-2">
+                                <div class="col-lg-3 col-sm-6 col-12 mb-2">
                                     <span class="text-xs text-secondary">Fecha Solicitud:</span>
                                     <h6 class="mb-0">{{ $selectedAnticipo->created_at ? $selectedAnticipo->created_at->format('d/m/Y H:i') : 'N/A' }}</h6>
                                 </div>
-                                <div class="col-md-3 col-6 mb-2">
+                                <div class="col-lg-3 col-sm-6 col-12 mb-2">
                                     <span class="text-xs text-secondary">Centro de Costos / OC:</span>
-                                    <h6 class="mb-0">{{ $selectedAnticipo->ordenCompra?->presupuesto?->cod_cc ?? ('OC #' . ($selectedAnticipo->ordenCompra?->id ?? 'N/A')) }}</h6>
+                                    <h6 class="mb-0 text-break">{{ $selectedAnticipo->ordenCompra?->presupuesto?->cod_cc ?? ('OC #' . ($selectedAnticipo->ordenCompra?->id ?? 'N/A')) }}</h6>
                                 </div>
-                                <div class="col-md-3 col-6 mb-2">
+                                <div class="col-lg-3 col-sm-6 col-12 mb-2">
                                     <span class="text-xs text-secondary">Estado Actual:</span>
                                     <div>
                                         <span class="badge badge-sm bg-gradient-info">
@@ -186,7 +267,7 @@
                         <!-- Tabla de Ítems de la Orden de Compra -->
                         <h6 class="mb-2">Ítems de la Orden de Compra</h6>
                         <div class="table-responsive border rounded mb-3">
-                            <table class="table align-items-center mb-0">
+                            <table class="table align-items-center mb-0 modal-anticipo-table">
                                 <thead>
                                     <tr>
                                         <th class="font-weight-bold bg-gradient-primary text-white text-xs py-2 text-center">No. ITEM</th>
@@ -206,11 +287,11 @@
                                                 <td class="text-center text-xs align-middle">{{ $item->cant_oc }}</td>
                                                 <td class="text-center text-xs align-middle">{{ $item->dias_oc }}</td>
                                                 <td class="text-center text-xs align-middle">{{ $item->otros_oc }}</td>
-                                                <td class="align-middle" style="min-width: 250px;">
+                                                <td class="align-middle" style="min-width: 220px;">
                                                     <textarea disabled class="form-control form-control-sm text-xs bg-light" rows="2" style="resize: none;">{{ $item->desc_oc }}</textarea>
                                                 </td>
-                                                <td class="text-center text-xs align-middle">$ {{ number_format($item->vunit_oc, 2) }}</td>
-                                                <td class="text-center text-xs align-middle font-weight-bold">$ {{ number_format($item->vtotal_oc, 2) }}</td>
+                                                <td class="text-center text-xs align-middle text-nowrap">$ {{ number_format($item->vunit_oc, 2) }}</td>
+                                                <td class="text-center text-xs align-middle font-weight-bold text-nowrap">$ {{ number_format($item->vtotal_oc, 2) }}</td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -224,22 +305,22 @@
                             </table>
                         </div>
 
-                        <div class="form-group mb-0">
+                        <div class="form-group mb-3">
                             <label for="justificacion_productor" class="form-control-label text-xs font-weight-bold text-primary">
                                 Justificacion del productor
                             </label>
-                            <textarea class="form-control" rows="3" disabled>{{ $selectedAnticipo->justificacion_productor ?? 'N/A'}}</textarea>
+                            <textarea id="justificacion_productor" class="form-control" rows="3" disabled>{{ $selectedAnticipo->justificacion_productor ?? 'N/A'}}</textarea>
                         </div>
 
                         <div class="form-group mb-0">
                             <label for="justificacion_rechazo" class="form-control-label text-xs font-weight-bold text-danger">
                                 Justificación / Motivo de Rechazo <span class="text-muted">(Requerido para rechazar)</span>:
                             </label>
-                            <textarea id="justificacion_rechazo" 
-                                      wire:model.defer="justificacion_rechazo" 
-                                      class="form-control form-control-sm @error('justificacion_rechazo') is-invalid @enderror" 
-                                      rows="3" 
-                                      placeholder="Escriba aquí la razón del rechazo..."></textarea>
+                            <textarea id="justificacion_rechazo"
+                                    wire:model.defer="justificacion_rechazo"
+                                    class="form-control form-control-sm @error('justificacion_rechazo') is-invalid @enderror"
+                                    rows="3"
+                                    placeholder="Escriba aquí la razón del rechazo..."></textarea>
 
                             @error('justificacion_rechazo')
                                 <div class="invalid-feedback d-block text-xs mt-1">
@@ -250,19 +331,19 @@
                     </div>
 
                     <!-- Footer del Modal -->
-                    <div class="modal-footer d-flex justify-content-between bg-light">
+                    <div class="modal-footer modal-anticipo-footer d-flex justify-content-between bg-light">
                         <button type="button" class="btn btn-secondary mb-0" wire:click="cerrarModal">
                             Cerrar
                         </button>
-                        <div>
-                            <button type="button" 
-                                    wire:click="rechazarAnticipo" 
+                        <div class="footer-actions">
+                            <button type="button"
+                                    wire:click="rechazarAnticipo"
                                     wire:loading.attr="disabled"
                                     class="btn btn-danger me-2 mb-0">
                                 Rechazar
                             </button>
-                            <button type="button" 
-                                    wire:click="aprobarAnticipo" 
+                            <button type="button"
+                                    wire:click="aprobarAnticipo"
                                     wire:loading.attr="disabled"
                                     class="btn btn-success mb-0">
                                 Aprobar
