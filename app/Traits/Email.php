@@ -55,8 +55,16 @@ trait Email
     ];
     public $lider_comercial = [
         [
-            'name' => 'Nefer Barragan',
-            'email' => 'Neffer.Barragan@bullmarketing.com.co'
+            'name' => 'Lady Ortiz',
+            'email' => 'lady.ortiz@bullmarketing.com.co'
+        ],
+        [
+            'name' => 'Leonardo Guarin',
+            'email' => 'Leonardo.Guarin@bullmarketing.com.co'
+        ],
+        [
+            'name' => 'Paula Garnica',
+            'email' => 'Paula.Garnica@bullmarketing.com.co'
         ],
     ];
     public $tesoreria = [
@@ -87,7 +95,18 @@ trait Email
             $body .= "<br><b>{$user->name}</b> ha realizado las siguientes observaciones: {$presto->justificacion}.";
         }
 
-        array_push($recipients, ...$this->lider_comercial);
+        $lideres = $user->lideres()->get();
+
+        foreach ($lideres as $lider) {
+            $recipients[] = [
+                'name'  => $lider->name,
+                'email' => $lider->email,
+            ];
+        }
+
+        if (empty($recipients)) {
+            array_push($recipients, ...$this->lider_comercial);
+        }
 
         $altBody = "NOTIFICACIÓN CRM";
         $this->sendMail($subject, $body, $altBody, null, $recipients, $cc);
