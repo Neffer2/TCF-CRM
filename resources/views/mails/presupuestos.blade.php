@@ -10,14 +10,14 @@
         Hola
         @foreach ($recipients as $key => $recipient)
             @if ($key == count($recipients)-1)
-                {{ utf8_decode($recipient['name']) }}.
+                {{ $recipient['name'] }}.
             @else
-                {{ utf8_decode($recipient['name']) }},
+                {{ $recipient['name'] }},
             @endif
         @endforeach
         <br><br>
 
-        {!! utf8_decode($body) !!} <br><br><br>
+        {!! $body !!} <br><br><br>
     </p>
     <p style='font-size: 12px'>
         Enviado desde <b>BULLCRM</b>. <br>
