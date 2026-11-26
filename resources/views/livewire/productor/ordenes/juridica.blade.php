@@ -458,13 +458,23 @@
                                 placeholder="Total" disabled required wire:model.lazy="vTotal" x-mask:dynamic="$money($input)">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <div class="form-group">
-                                <label for="porcentaje">NEGOCIACIÓN (%)</label>
+                                <label for="porcentaje">% de anticipo</label>
                                 <input id="porcentaje" type="number" min="0" max="100" step="0.01" class="form-control @error('porcentaje') is-invalid @enderror"
-                                placeholder="Porcentaje de negociación" required wire:model.lazy="porcentaje">
+                                placeholder="Porcentaje de anticipo" required wire:model.lazy="porcentaje">
                                 @error('porcentaje')
                                     <div class="text-invalid">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="negociacion">Tipo de negociación</label>
+                                <input id="negociacion" type="text" class="form-control @error('negociacion') is-invalid @enderror"
+                                    placeholder="Ej. 90 días / Contado" wire:model.defer="negociacion" maxlength="255" required>
+                                @error('negociacion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>

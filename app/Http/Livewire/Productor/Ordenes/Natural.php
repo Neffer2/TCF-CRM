@@ -25,7 +25,7 @@ class Natural extends Component
             $search_nombre, $search_cedula, $search_telefono,
             $selected_item, $presupuesto, $item_presupuesto, $cantidad, $dias, $otros, $valor_unitario = 0, $valor_total = 0,
             $tipo_servicio, $tipo_contrato, $cod_oc, $gr, $oc_helisa, $justificacion_rechazo, $justificacion_productor, $toggleRechazo = false,
-            $porcentaje;
+            $porcentaje, $negociacion;
 
     // Variables útiles para almacenar colecciones y límites
     public $terceros = [], $ciudades, $items = [], $presupuestos = [], $items_presupuesto = [], $servicios = [], $bancos = [],
@@ -270,6 +270,7 @@ class Natural extends Component
         $this->validate([
             'tercero' => [Rule::requiredIf(fn () => ! $this->es_orden_trabajo)],
             'justificacion_productor' => 'required|string|max:255',
+            'negociacion' => [Rule::requiredIf(fn () => ! $this->es_orden_trabajo), 'nullable', 'string', 'max:255'],
             'porcentaje' => $this->es_orden_trabajo ? ['nullable'] : ['required', 'numeric', 'between:0,100', 'regex:/^\d+(\.\d{1,2})?$/'],
         ]);
 
@@ -298,6 +299,7 @@ class Natural extends Component
             'justificacion_productor' => $this->justificacion_productor,
             'proveedor_id'          => 3,
             'porcentaje'            => $this->es_orden_trabajo ? null : $this->porcentaje,
+            'negociacion'           => $this->es_orden_trabajo ? null : $this->negociacion,
         ]);
 
         NaturalInfo::create([
@@ -346,6 +348,7 @@ class Natural extends Component
             'banco',
             'es_orden_trabajo',
             'porcentaje',
+            'negociacion',
         ]);
 
         unset($this->tercero);
@@ -402,12 +405,14 @@ class Natural extends Component
         $this->validate([
             'tercero' => 'required',
             'justificacion_productor' => ($tieneContrato ? 'nullable' : 'required') . '|string|max:1000',
+            'negociacion' => 'required|string|max:255',
             'porcentaje' => ['required', 'numeric', 'between:0,100', 'regex:/^\d+(\.\d{1,2})?$/'],
         ]);
 
         $this->queriedOrden->update([
             'justificacion_productor' => $this->justificacion_productor,
             'porcentaje' => $this->porcentaje,
+            'negociacion' => $this->negociacion,
         ]);
 
         // Si la orden tiene contrato, cambia el estado y envía mensaje
@@ -504,6 +509,7 @@ class Natural extends Component
         $this->justificacion_productor = $this->queriedOrden->justificacion_productor;
         $this->justificacion_rechazo = $this->queriedOrden->justificacion_rechazo;
         $this->porcentaje = $this->queriedOrden->porcentaje;
+        $this->negociacion = $this->queriedOrden->negociacion;
         // Items
         $queriedItems = $this->queriedOrden->ordenItems;
         foreach ($queriedItems as $item){

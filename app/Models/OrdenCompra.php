@@ -29,6 +29,7 @@ class OrdenCompra extends Model
         'fecha_envio_produccion',
         'gr',
         'porcentaje',
+        'negociacion',
     ];
 
     protected $casts = [

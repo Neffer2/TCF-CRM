@@ -147,9 +147,12 @@
             <td>{{ $contactoProv }}</td>
         </tr>
         <tr>
-            <td class="lbl">Productor solicitante:</td>
-            <td style="width:40%;">{{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</td>
-            <td colspan="2"><b>Negociación:</b> {{ number_format($orden->porcentaje, 0) }}%</td>
+            <td class="lbl" rowspan="2">Productor solicitante:</td>
+            <td style="width:40%;" rowspan="2">{{ $orden->productor_solicitante?->name ?? 'Sin productor registrado' }}</td>
+            <td colspan="3"><b>Anticipo:</b> {{ number_format($orden->porcentaje, 0) }}%</td>
+        </tr>
+        <tr>
+            <td colspan="3"><b>Tipo de negociación:</b> {{ $orden->negociacion }}</td>
         </tr>
     </table>
 
