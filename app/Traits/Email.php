@@ -423,6 +423,15 @@ trait Email
     }
 
     /** Configure every notification from Laravel's cached mail settings. */
+    private function notificationEmail($email)
+    {
+        if (strcasecmp((string) $email, 'crm.paula.garnica@bullmarketing.com.co') === 0) {
+            return 'Paula.Garnica@bullmarketing.com.co';
+        }
+
+        return $email;
+    }
+
     protected function configureSmtp(PHPMailer $mail)
     {
         $smtp = config('mail.mailers.smtp');
@@ -459,7 +468,7 @@ trait Email
             if (is_iterable($recipients)) {
                 foreach ($recipients as $recipient) {
                     if (is_array($recipient) && isset($recipient['email'])) {
-                        $mail->addAddress($recipient['email'], $recipient['name'] ?? '');
+                        $mail->addAddress($this->notificationEmail($recipient['email']), $recipient['name'] ?? '');
                     }
                 }
             }
@@ -468,7 +477,7 @@ trait Email
             if (is_iterable($cc)) {
                 foreach ($cc as $copiados) {
                     if (is_array($copiados) && isset($copiados['email'])) {
-                        $mail->addCC($copiados['email'], $copiados['name'] ?? '');
+                        $mail->addCC($this->notificationEmail($copiados['email']), $copiados['name'] ?? '');
                     }
                 }
             }
@@ -506,8 +515,8 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR, COMERCIAL */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->gestion->comercial->email), $orden->presupuesto->gestion->comercial->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->productor_info->email), $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
@@ -552,8 +561,8 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->gestion->comercial->email), $orden->presupuesto->gestion->comercial->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->productor_info->email), $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
@@ -591,8 +600,8 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION & PROVEEDOR */
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->gestion->comercial->email), $orden->presupuesto->gestion->comercial->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->productor_info->email), $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
@@ -628,8 +637,8 @@ trait Email
             /* *** */
 
             /* LD PRODUCCION, PROVEEDOR & PRODUCTOR*/
-                $mail->addAddress($orden->presupuesto->gestion->comercial->email, $orden->presupuesto->gestion->comercial->name);
-                $mail->addAddress($orden->presupuesto->productor_info->email, $orden->presupuesto->productor_info->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->gestion->comercial->email), $orden->presupuesto->gestion->comercial->name);
+                $mail->addAddress($this->notificationEmail($orden->presupuesto->productor_info->email), $orden->presupuesto->productor_info->name);
                 // $mail->addCC('Armando.Espinosa@bullmarketing.com.co');
                 // $mail->addCC('cristhian.rodriguez@bullmarketing.com.co');
                 $mail->addCC('nicol.riano@bullmarketing.com.co');
